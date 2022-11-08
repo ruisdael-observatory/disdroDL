@@ -47,7 +47,7 @@ while True:
     try:
         parsivel_bytes = parsivel.readline()  # Reads the output the serial communication
         now_utc = datetime.utcnow()
-        now_utc_ymdHMS = now_utc.strftime("%Y%m%d-%H%M%S")
+        now_utc_iso = now_utc.isoformat()
         now_utc_ymd = now_utc.strftime("%Y%m%d")
         filename = now_utc_ymd + '.csv'
         filename_field_d61 = now_utc_ymd + '_field61.csv'
@@ -55,21 +55,22 @@ while True:
             print(parsivel_bytes)
 
         elif len(parsivel_bytes)> 5 and len(parsivel_bytes) < 20:
+            # field 61
                 with open(data_dir / filename_field_d61, "a") as g:  # 61
                     writer = csv.writer(g, delimiter=";")
                     # TODO time.time in UTC
-                    writer.writerow([now_utc_ymdHMS, time.time(), parsivel_bytes]) 
+                    writer.writerow([now_utc_iso, parsivel_bytes]) 
                     logger.info(msg='Written row to {filename_field_d61}')
                 print(parsivel_bytes)
 
-
-        else:
+        else: 
+            # message with all fields, except 61
             with open(data_dir / filename, "a") as f:
                     writer = csv.writer(f, delimiter=";")
-                    
+
                     parsivel.write(config_dict['parsivel_request_field_61'].encode('utf-8'))  # write to serial
 
-                    writer.writerow([now_utc_ymdHMS, time.time(), parsivel_bytes])
+                    writer.writerow([now_utc_iso, parsivel_bytes])
                     print(parsivel_bytes)
                     logger.info(msg='Written row to {filename}')
 
