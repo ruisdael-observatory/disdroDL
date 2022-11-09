@@ -2,7 +2,7 @@ import logging
 import os
 import json
 import time
-from logging.handlers import RotatingFileHandler
+from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 from datetime import datetime
 from  util_functions import yaml2dict
@@ -19,9 +19,12 @@ def log(log_path, log_name):
                     'msg': '%(message)s',
                     })
     )
-    log_handler = RotatingFileHandler(filename=log_path,
-                                      maxBytes=512000,
-                                      backupCount=2)  # 512Kb log file
+    log_handler = TimedRotatingFileHandler(
+        filename=log_path,
+        when='midnight',
+        backupCount=7,
+        utc=True)
+    log_handler.suffix = "%Y%m%d"
     log_handler.setFormatter(log_format)
     logger.addHandler(log_handler)
     logger.setLevel(logging.DEBUG)
