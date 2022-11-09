@@ -54,17 +54,23 @@ while True:
         now_utc_ymd = now_utc.strftime("%Y%m%d")
         filename = f"{now_utc_ymd}_{config_dict['Parsivel_name']}.csv"
         filename_field_d61 = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.csv"
-        # TODO: remove condition  
-        # print(parsivel_bytes, ' len:', len(parsivel_str))
-        # if len(parsivel_bytes) >= 0 and len(parsivel_bytes) <= 5:
-        #     print(parsivel_str)
+        filename_field_d61_txt = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.txt"
 
         if len(parsivel_bytes)> 5 and len(parsivel_bytes) < 20:
             # field 61 condition
+                with open(data_dir / filename_field_d61_txt, "a") as g:  # 61
+                    logger.info(msg=f'Started writing rows to {filename_field_d61_txt} {parsivel_str}')
+                    g.write(f'{now_utc_iso} {parsivel_bytes}')
+                    logger.info(msg=f'Ended writing rows to {filename_field_d61_txt} {parsivel_str}')
+
+                    # to do: how to speed up time of row writting
+                    #  the fact that each row is written, 1 by one, is a slow process
+
                 with open(data_dir / filename_field_d61, "a") as g:  # 61
+                    logger.info(msg=f'Started writing rows to {filename_field_d61} {parsivel_str}')
                     writer = csv.writer(g, delimiter=";")
                     writer.writerow([now_utc_iso, parsivel_bytes])
-                    logger.info(msg=f'Written row to {filename_field_d61} {parsivel_str}')
+                    logger.info(msg=f'Ended writing rows to {filename_field_d61} {parsivel_str}')
 
         elif len(parsivel_bytes) >= 20: 
             # message with all fields, except 61
@@ -83,4 +89,4 @@ while True:
             print(e.message)
         else:
             print(e)
-    time.sleep(1)
+    # time.sleep(1)
