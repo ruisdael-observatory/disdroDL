@@ -37,7 +37,9 @@ logger.info(msg=f"Starting {config_dict['script_name']} for {config_dict['Parsiv
 data_dir = wd / config_dict['data_dir']
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
-print(data_dir)
+
+
+print(f'{__file__} running\nLogs written to {log_dir}\nData written to {data_dir}')
 
 
 # intiated serial connection
@@ -52,24 +54,24 @@ while True:
         now_utc_ymd = now_utc.strftime("%Y%m%d")
         filename = f"{now_utc_ymd}_{config_dict['Parsivel_name']}.csv"
         filename_field_d61 = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.csv"
-        + # TODO: remove condition  
-        print(len(parsivel_bytes))
-        if len(parsivel_bytes) >= 0 and len(parsivel_bytes) <= 5:
-            print(parsivel_bytes)
+        # TODO: remove condition  
+        # print(parsivel_bytes, ' len:', len(parsivel_str))
+        # if len(parsivel_bytes) >= 0 and len(parsivel_bytes) <= 5:
+        #     print(parsivel_str)
 
-        elif len(parsivel_bytes)> 5 and len(parsivel_bytes) < 20:
+        if len(parsivel_bytes)> 5 and len(parsivel_bytes) < 20:
             # field 61 condition
                 with open(data_dir / filename_field_d61, "a") as g:  # 61
                     writer = csv.writer(g, delimiter=";")
-                    writer.writerow([now_utc_iso, parsivel_bytes]) 
-                    logger.info(msg=f'Written row to {filename_field_d61} {parivel_bytes}')
-                # print(parsivel_bytes)
+                    writer.writerow([now_utc_iso, parsivel_bytes])
+                    logger.info(msg=f'Written row to {filename_field_d61} {parsivel_str}')
 
-        else: 
+        elif len(parsivel_bytes) >= 20: 
             # message with all fields, except 61
+            parsivel_str = parsivel_str.replace('\n','').replace('\r','') # strip non-printing chars
             with open(data_dir / filename, "a") as f:
                     writer = csv.writer(f, delimiter=";")
-                    writer.writerow([now_utc_iso, parsivel_bytes])
+                    writer.writerow([now_utc_iso, parsivel_str])
                     # print(parsivel_bytes)
                     logger.info(msg=f'Written row to {filename}')
             parsivel.write(config_dict['parsivel_request_field_61'].encode('utf-8'))  # request field 61
