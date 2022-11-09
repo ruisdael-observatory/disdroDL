@@ -12,7 +12,7 @@ from log import log
 def init_serial(port: str, baud: int):
     try:
         parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
-        logger.info(msg='Connected to parsivel {parsivel}')
+        logger.info(msg=f'Connected to parsivel, via: {parsivel}')
     except Exception as e:
         logger.error(msg=e)
         print(e)
@@ -46,34 +46,34 @@ parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'])
 while True:
     try:
         parsivel_bytes = parsivel.readline()  # Reads the output the serial communication
+        parsivel_str = parsivel_bytes.decode('utf-8') 
         now_utc = datetime.utcnow()
         now_utc_iso = now_utc.isoformat()
         now_utc_ymd = now_utc.strftime("%Y%m%d")
-        filename = now_utc_ymd + '.csv'
-        filename_field_d61 = now_utc_ymd + '_field61.csv'
+        filename = f"{now_utc_ymd}_{config_dict['Parsivel_name']}.csv"
+        filename_field_d61 = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.csv"
+        + # TODO: remove condition  
+        print(len(parsivel_bytes))
         if len(parsivel_bytes) >= 0 and len(parsivel_bytes) <= 5:
             print(parsivel_bytes)
 
         elif len(parsivel_bytes)> 5 and len(parsivel_bytes) < 20:
-            # field 61
+            # field 61 condition
                 with open(data_dir / filename_field_d61, "a") as g:  # 61
                     writer = csv.writer(g, delimiter=";")
-                    # TODO time.time in UTC
                     writer.writerow([now_utc_iso, parsivel_bytes]) 
-                    logger.info(msg='Written row to {filename_field_d61}')
-                print(parsivel_bytes)
+                    logger.info(msg=f'Written row to {filename_field_d61} {parivel_bytes}')
+                # print(parsivel_bytes)
 
         else: 
             # message with all fields, except 61
             with open(data_dir / filename, "a") as f:
                     writer = csv.writer(f, delimiter=";")
-
-                    parsivel.write(config_dict['parsivel_request_field_61'].encode('utf-8'))  # write to serial
-
                     writer.writerow([now_utc_iso, parsivel_bytes])
-                    print(parsivel_bytes)
-                    logger.info(msg='Written row to {filename}')
-
+                    # print(parsivel_bytes)
+                    logger.info(msg=f'Written row to {filename}')
+            parsivel.write(config_dict['parsivel_request_field_61'].encode('utf-8'))  # request field 61
+            logger.info(msg=f"Requested F61: {config_dict['parsivel_request_field_61'].encode('utf-8')}")
 
 #               send_data.SendtoWebServer()
     except Exception as e:
