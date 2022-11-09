@@ -58,35 +58,23 @@ while True:
 
         if len(parsivel_bytes)> 5 and len(parsivel_bytes) < 20:
             # field 61 condition
-                with open(data_dir / filename_field_d61_txt, "a") as g:  # 61
-                    logger.info(msg=f'Started writing rows to {filename_field_d61_txt} {parsivel_str}')
-                    g.write(f'{now_utc_iso} {parsivel_bytes}')
-                    logger.info(msg=f'Ended writing rows to {filename_field_d61_txt} {parsivel_str}')
-
-                    # to do: how to speed up time of row writting
-                    #  the fact that each row is written, 1 by one, is a slow process
-
-                with open(data_dir / filename_field_d61, "a") as g:  # 61
-                    logger.info(msg=f'Started writing rows to {filename_field_d61} {parsivel_str}')
-                    writer = csv.writer(g, delimiter=";")
-                    writer.writerow([now_utc_iso, parsivel_bytes])
-                    logger.info(msg=f'Ended writing rows to {filename_field_d61} {parsivel_str}')
+            # TODO: process parsivel_bytes to str and remove non-printing chars
+            with open(data_dir / filename_field_d61, "a") as g:  # 61
+                writer = csv.writer(g, delimiter=";")
+                writer.writerow([now_utc_iso, parsivel_bytes])
+            logger.info(msg=f'Written row to {filename_field_d61} {parsivel_str}')
 
         elif len(parsivel_bytes) >= 20: 
             # message with all fields, except 61
             parsivel_str = parsivel_str.replace('\n','').replace('\r','') # strip non-printing chars
             with open(data_dir / filename, "a") as f:
-                    writer = csv.writer(f, delimiter=";")
-                    writer.writerow([now_utc_iso, parsivel_str])
-                    # print(parsivel_bytes)
-                    logger.info(msg=f'Written row to {filename}')
+                writer = csv.writer(f, delimiter=";")
+                writer.writerow([now_utc_iso, parsivel_str])
+            logger.info(msg=f'Written row to {filename}')
             parsivel.write(config_dict['parsivel_request_field_61'].encode('utf-8'))  # request field 61
             logger.info(msg=f"Requested F61: {config_dict['parsivel_request_field_61'].encode('utf-8')}")
-
-#               send_data.SendtoWebServer()
     except Exception as e:
         if hasattr(e, 'message'):
             print(e.message)
         else:
             print(e)
-    # time.sleep(1)

@@ -9,13 +9,14 @@ script: [capture_disdo_data.py](capture_disdo_data.py)
     - [ ] variables with appended names and/or time need to be completed in py script
 - [ ] reset commands in another script [reset-parsivel.py](reset-parsivel.py)
 - [X] time in UTC
-- [ ] include a logger
+- [X] include a logger
 - [ ] add script user to dialout group (to access /dev/ttyUSB0)
 - [x] write to data dir
-- [ ] time.time() ?? why is it used in CSV? "Return the time in seconds since the epoch as a floating point number"
-- [ ] date format: why and not isoformat() utcnow.
-- [ ] field 61
-- [ ] log and data dirs
+- [X] time.time() Not needed, remove
+- [X] date format: isoformat() utcnow.
+- [ ] field 61 process parsivel_bytes to str and remove non-printing chars
+- [ ] log and data dirs defined in config.yml
+- [X] CSV sctructure: timestamp; telegram; or timestamp;field1;field2;... ?
 
 
 * varaibles are set 
