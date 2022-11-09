@@ -1,5 +1,4 @@
 data/*
 logs/*
-*.csv
 .python-version
 __pycache__
