@@ -71,9 +71,10 @@ while True:
             # single message with all fields, except 61
             parsivel_str = parsivel_lines[0].decode('utf-8') 
             parsivel_str = parsivel_str.replace('\n','').replace('\r','') # strip non-printing chars
+            parsivel_str_list = parsivel_str.split(';')
             with open(data_dir / filename, "a") as f:
                 writer = csv.writer(f, delimiter=";")
-                writer.writerow([now_utc_iso, parsivel_lines])
+                writer.writerow([now_utc_iso] + parsivel_str_list)
             logger.info(msg=f'Written row to {filename}')
             parsivel.write(parsivel_request_field_61)  # request field 61
         elif len(parsivel_lines) > 1:
