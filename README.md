@@ -28,7 +28,10 @@ Run:
 - [ ] field 61 process parsivel_bytes to str and remove non-printing chars
 - [ ] log and data dirs defined in config.yml
 - [ ] add script user to dialout group (to access /dev/ttyUSB0)
-- [ ] service file
+- [X] service file
+    - [ ] python executable path
+    - [ ] script path
+- [ ] python environment + requirements 
 - [ ] Make file that:
         - [ ] stops and remove service (if present)
         - [ ] resets parsivel
