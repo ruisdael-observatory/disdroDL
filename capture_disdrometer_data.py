@@ -20,8 +20,10 @@ def init_serial(port: str, baud: int):
     parsivel.reset_input_buffer()              
     return parsivel
 
+print('starting script')
 
 wd = Path(__file__).parent 
+print(wd)
 config_dict = yaml2dict(path = wd / 'config.yml')
 
 # set up log
@@ -54,8 +56,7 @@ while True:
         now_utc_ymd = now_utc.strftime("%Y%m%d")
         filename = f"{now_utc_ymd}_{config_dict['Parsivel_name']}.csv"
         filename_field_d61 = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.csv"
-        filename_field_d61_txt = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.txt"
-
+        
         if len(parsivel_bytes)> 5 and len(parsivel_bytes) < 20:
             # field 61 condition
             # TODO: process parsivel_bytes to str and remove non-printing chars
@@ -69,7 +70,7 @@ while True:
             parsivel_str = parsivel_str.replace('\n','').replace('\r','') # strip non-printing chars
             with open(data_dir / filename, "a") as f:
                 writer = csv.writer(f, delimiter=";")
-                writer.writerow([now_utc_iso, parsivel_str])
+                writer.writerow([now_utc_iso, parsivel_bytes])
             logger.info(msg=f'Written row to {filename}')
             parsivel.write(config_dict['parsivel_request_field_61'].encode('utf-8'))  # request field 61
             logger.info(msg=f"Requested F61: {config_dict['parsivel_request_field_61'].encode('utf-8')}")
