@@ -6,7 +6,9 @@
 
 * Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
 * Configuration values: [config.yml](config.yml)
+* Variables with Parsivel serial commands [parsivel_cmds.py](parsivel_cmds.py)
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
+* Parsivel's set user defined telegram script: [request_telegram.py](request_telegram.py) 
 
 
 TODO: script description
@@ -20,9 +22,6 @@ TODO: install dependencies / run
 
 Run:
 `python capture_disdrometer_data.py`
-
-Auxliary scripts:
-* [request_telegram.py](request_telegram.py) setups parsival's to return user defined telegram  and prints configuration info
 
 # Changes implemented
 - [X] variables in yaml file [config.yml](config.yml)

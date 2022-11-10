@@ -1,47 +1,41 @@
 
 
 import serial
-import time
-import csv
-# import send_data
+from time import sleep
+from pathlib import Path
+from  util_functions import yaml2dict
+from parsivel_cmds import *
 
-port = '/dev/ttyUSB0'
-baud = 19200
-Parsivel_name = 'PAR003'
-Parsivel_ID = '003'
-parsivel_telegram_command = 'CS/RA\r'  # Asks the Parsivel to read out all fields
-parsivel_request_field_61 = 'CS/R/61\r'  # Asks the Parsivel to read out field 61
-parsivel_request_field_90 = 'CS/R/91\r'  # Asks the Parsivel to read out field 61
-parsivel_command_list = 'CS/?\r'  # Reads out a list of serial commands for the Parsivel.
-parsivel_ott_telegram = 'CS/M/M/0\r'  # The Parsivel broadcasts the OTT telegram.
-parsivel_telegram_start = 'CS/*/D/0\r'  # The Parsivel broadcasts the OTT telegram.
-parsivel_user_telegram = 'CS/M/M/1\r'  # The Parsivel broadcasts the user defined telegram.
-parsivel_set_telegram_list = 'CS/M/S/%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%19;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;%90;%91;%93\r'  # Defines which fields are in the telegram
-parsivel_current_configuration = 'CS/L\r'  # Outputs current configuration
-parsivel_impulse_mode = 'CS/I/60\r'  # Turns poll mode off
-parsivel_set_time = 'CS/T/' + time.strftime("%H:%M:%S") + '\r'  # Sets the time on the Parsivel to the time on the Pi
-parsivel_set_date = 'CS/D/' + time.strftime("%d.%m.%Y") + '\r'  # Sets the date on the Parsivel to the date on the Pi
-parsivel_set_name = 'CS/K/' + Parsivel_name + '\r'  # Sets the name of the Parsivel, maximum 10 characters
-parsivel_set_ID = 'CS/J/' + Parsivel_ID + '\r'  # Sets the ID of the Parsivel, maximum 4 numerical characters
-parsivel_reset_factory_settings = 'CS/F/1\r'  # Resets the Parsivel to factory settings.
-parsivel_real_time = 'CS/U\r'
-parsivel_set_real_time = 'CS/U/' + time.strftime("%d.%m.%Y ") + time.strftime("%H:%M:%S") + '\r'
-parsivel_restart = 'CS/Z/1\r'
 
-parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
-parsivel.reset_input_buffer()                   # Flushes input buffer
-parsivel.write(parsivel_ott_telegram.encode('utf-8')) # Writes the Parsivel OTT telegram command to the Parsivel
-parsivel.write(parsivel_set_telegram_list.encode('utf-8')) # Writes the parsivel user telegram string to the Parsivel
-parsivel.write(parsivel_telegram_command.encode('utf-8'))
-parsivel.write(parsivel_command_list.encode('utf-8'))
-parsivel.write(parsivel_user_telegram.encode('utf-8'))
-parsivel.write(parsivel_telegram_start.encode('utf-8'))
-parsivel.write(parsivel_current_configuration.encode('utf-8'))
-parsivel.write(parsivel_impulse_mode.encode('utf-8'))
-parsivel.write(parsivel_set_name.encode('utf-8'))
-parsivel.write(parsivel_set_ID.encode('utf-8'))
-parsivel.write(parsivel_real_time.encode('utf-8'))
-parsivel.write(parsivel_request_field_90.encode('utf-8'))
-parsivel.write(parsivel_set_real_time.encode('utf-8'))
-parsivel.write(parsivel_restart.encode('utf-8'))
+print(__file__)
+wd = Path(__file__).parent 
+config_dict = yaml2dict(path = wd / 'config.yml')
+
+
+def init_serial(port: str, baud: int):
+    try:
+        parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
+    except Exception as e:
+        print(e)
+        sys.exit()
+    parsivel.reset_input_buffer()              
+    return parsivel
+
+parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'])
+parsivel.reset_input_buffer()  # Flushes input buffer
+
+parsivel.write(parsivel_ott_telegram) # Writes the Parsivel OTT telegram command to the Parsivel
+parsivel.write(parsivel_set_telegram_list) # Writes the parsivel user telegram string to the Parsivel
+parsivel.write(parsivel_telegram_command)
+parsivel.write(parsivel_command_list)
+parsivel.write(parsivel_user_telegram)
+parsivel.write(parsivel_telegram_start)
+parsivel.write(parsivel_current_configuration)
+parsivel.write(parsivel_impulse_mode)
+# parsivel.write(parsivel_set_name)
+# parsivel.write(parsivel_set_ID)
+parsivel.write(parsivel_real_time)
+parsivel.write(parsivel_request_field_90)
+# parsivel.write(parsivel_set_real_time)
+parsivel.write(parsivel_restart)
 parsivel.write('CS/R/19\r'.encode('utf-8'))
