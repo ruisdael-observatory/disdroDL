@@ -48,12 +48,9 @@ if not os.path.exists(data_dir):
     os.mkdir(data_dir)
 print(f'{__file__} running\nLogs written to {log_dir}\nData written to {data_dir}')
 
-def create_new_csv(csv_path):
+def create_new_csv(csv_path, headers):
     if not os.path.exists(csv_path):
         logger.info(msg=f"Creating {csv_path}")
-        parsivel_set_telegram_list_str = parsivel_set_telegram_list.decode('utf-8')
-        parsivel_set_telegram_list_str = parsivel_set_telegram_list_str.replace('CS/M/S/', '').replace('\r','').replace('%', 'Field_')
-        headers = ['Timestamp (UTC)']+ parsivel_set_telegram_list_str.split(';')
         with open(csv_path, "w") as f:
             writer = csv.writer(f, delimiter=";")
             writer.writerow(headers)
@@ -77,9 +74,14 @@ while True:
         now_utc = datetime.utcnow()
         now_utc_iso = now_utc.isoformat()
         now_utc_ymd = now_utc.strftime("%Y%m%d")
+        parsivel_set_telegram_list_str = parsivel_set_telegram_list.decode('utf-8')
+        parsivel_set_telegram_list_str = parsivel_set_telegram_list_str.replace('CS/M/S/', '').replace('\r','').replace('%', 'Field_')
+        headers = ['Timestamp (UTC)']+ parsivel_set_telegram_list_str.split(';')
         filename = f"{now_utc_ymd}_{config_dict['Parsivel_name']}.csv"
-        create_new_csv(csv_path=data_dir / filename) # if does not exist
+        create_new_csv(csv_path=data_dir / filename, headers=headers) # if does not exist
         filename_field_d61 = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.csv"
+        create_new_csv(csv_path=data_dir / filename_field_d61, headers=['Timestamp (UTC)','Particle_size', 'Particle_speed']) # if does not exist
+
         if len(parsivel_lines) == 1 and len(parsivel_lines[0]) >= 20:
             # single message with all fields, except 61
             parsivel_str_list = binary2list(binarystr=parsivel_lines[0], spliter=';')
