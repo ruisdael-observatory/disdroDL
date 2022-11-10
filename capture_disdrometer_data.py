@@ -20,7 +20,12 @@ def init_serial(port: str, baud: int):
         sys.exit()
     parsivel.reset_input_buffer()              
     return parsivel
-    
+
+def binary2list(binarystr, spliter):
+    binarystr = binarystr.decode('utf-8') 
+    binarystr = binarystr.replace('\n','').replace('\r','') # strip non-printing chars
+    binarystr_list = binarystr.split(spliter) 
+    return binarystr_list  
 
 print('starting script')
 
@@ -41,11 +46,15 @@ logger.info(msg=f"Starting {config_dict['script_name']} for {config_dict['Parsiv
 data_dir = wd / config_dict['data_dir']
 if not os.path.exists(data_dir):
     os.mkdir(data_dir)
-
-
 print(f'{__file__} running\nLogs written to {log_dir}\nData written to {data_dir}')
 
-
+def create_new_csv(csv_path, headers):
+    if not os.path.exists(csv_path):
+        logger.info(msg=f"Creating {csv_path}")
+        with open(csv_path, "w") as f:
+            writer = csv.writer(f, delimiter=";")
+            writer.writerow(headers)
+            
 # intiated serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'])
 
@@ -65,15 +74,20 @@ while True:
         now_utc = datetime.utcnow()
         now_utc_iso = now_utc.isoformat()
         now_utc_ymd = now_utc.strftime("%Y%m%d")
+        parsivel_set_telegram_list_str = parsivel_set_telegram_list.decode('utf-8')
+        parsivel_set_telegram_list_str = parsivel_set_telegram_list_str.replace('CS/M/S/', '').replace('\r','').replace('%', 'Field_')
+        headers = ['Timestamp (UTC)']+ parsivel_set_telegram_list_str.split(';')
         filename = f"{now_utc_ymd}_{config_dict['Parsivel_name']}.csv"
+        create_new_csv(csv_path=data_dir / filename, headers=headers) # if does not exist
         filename_field_d61 = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.csv"
+        create_new_csv(csv_path=data_dir / filename_field_d61, headers=['Timestamp (UTC)','Particle_size', 'Particle_speed']) # if does not exist
+
         if len(parsivel_lines) == 1 and len(parsivel_lines[0]) >= 20:
             # single message with all fields, except 61
-            parsivel_str = parsivel_lines[0].decode('utf-8') 
-            parsivel_str = parsivel_str.replace('\n','').replace('\r','') # strip non-printing chars
+            parsivel_str_list = binary2list(binarystr=parsivel_lines[0], spliter=';')
             with open(data_dir / filename, "a") as f:
                 writer = csv.writer(f, delimiter=";")
-                writer.writerow([now_utc_iso, parsivel_lines])
+                writer.writerow([now_utc_iso] + parsivel_str_list)
             logger.info(msg=f'Written row to {filename}')
             parsivel.write(parsivel_request_field_61)  # request field 61
         elif len(parsivel_lines) > 1:
@@ -83,8 +97,9 @@ while True:
                 for line in parsivel_lines:
                     if len(line) > 5 and len(line) < 20:
                         # TODO: process parsivel_lines to str and remove non-printing chars
-                        writer.writerow([now_utc_iso, line])
-                        logger.info(msg=f'Written row to {filename_field_d61} {parsivel_str}')
+                        parsivel_str_list = binary2list(binarystr=line, spliter=';')
+                        writer.writerow([now_utc_iso] + parsivel_str_list)
+                        logger.info(msg=f'Written row to {filename_field_d61} {parsivel_str_list}')
     except Exception as e:
         if hasattr(e, 'message'):
             print(e.message)
