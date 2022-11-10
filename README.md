@@ -6,10 +6,17 @@
 
 * Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
 * Configuration values: [config.yml](config.yml)
+* Variables with Parsivel serial commands [parsivel_cmds.py](parsivel_cmds.py)
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
+* Parsivel's set user defined telegram script: [request_telegram.py](request_telegram.py) 
 
 
 TODO: script description
+* setups parsival's to return user defined telegram 
+    * requests parsivel to send user defined telegram
+    * defines list of fields in  user defined telegram
+
+
 
 TODO: install dependencies / run
 
@@ -36,3 +43,13 @@ Run:
         - [ ] stops and remove service (if present)
         - [ ] resets parsivel
         - [ ] creates and starts service
+
+- [X] get full telegram an not only OTT(default telegram)
+    - [X] check config
+    - [X] change config with to User telegram mode = 1 with `'CS/M/M/1\r'.encode('utf-8')`
+    - [X] check order of the telegram
+- [ ] perform changes in reset_parsivel or at start of script
+- [ ] output telegram in different columns (bytes -> str)
+- [ ] include field numbers/name in csv header
+- [ ] test receiving F61 with .readlines()  
+
