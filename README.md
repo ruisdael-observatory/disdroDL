@@ -10,6 +10,20 @@
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
 * Parsivel's set user defined telegram script: [request_telegram.py](request_telegram.py) 
 
+[capture_disdrometer_data.py](capture_disdrometer_data.py) 
+* creates the data and log directories 
+* sets up the serial communication with Parsivel 
+* sends the desired configuration (`parsivel_user_telegram` & `parsivel_set_telegram_list`) to Parsivel
+* starts a endless loop, where:
+    * time (in UTC) is checked: 
+    * each new day a new data dir, data files and a log are created
+    * Parsivel telegram is requested and processed:
+        * telegrams with 1 line of length >= 20 are all fileds, except 61
+            * they are written to data file with format YYYYMMdd_Parsivel_name.csv
+            * request field 61
+        * telegrams with more than 1 line, are fields 61, which includes a list of particle size & particle speed pairs 
+            * they are written to data file: YYYYMMdd_Parsivel_name_field61.csv
+
 
 TODO: script description
 * setups parsival's to return user defined telegram 
