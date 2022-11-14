@@ -12,7 +12,7 @@ wd = Path(__file__).parent
 config_dict = yaml2dict(path = wd / 'config.yml')
 
 # set up log
-log_dir = wd / config_dict['log_dir']
+log_dir = Path(config_dict['log_dir'])
 created_log_dir = create_dir(log_dir)
 log_file = log_dir / 'log.json'
 logger = log(log_path=log_file, 
@@ -21,7 +21,7 @@ logger.info(msg=f"Starting {__file__} for {config_dict['Parsivel_name']}")
 print(f'{__file__} running\nLogs written to {log_dir}')
 
 
-# # intiated serial connection
+# intiated serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
 # setup parsivel config commands 
 parsivel.write(parsivel_user_telegram) # set up parsivel: to send user defined telegram 
@@ -40,7 +40,7 @@ while True:
         now_utc_iso = now_utc.isoformat()
         now_utc_ymd = now_utc.strftime("%Y%m%d")
         # daily data dirs
-        data_dir = wd / config_dict['data_dir'] / now_utc_ymd # set up data dir
+        data_dir = Path(config_dict['data_dir']) / now_utc_ymd # set up data dir
         created_data_dir = create_dir(data_dir)
         if created_data_dir:
             logger.info(msg=f'Created data directory: {data_dir}')
