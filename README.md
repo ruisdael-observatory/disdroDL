@@ -10,7 +10,9 @@
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
 * Parsivel's set user defined telegram script: [request_telegram.py](request_telegram.py) 
 
-[capture_disdrometer_data.py](capture_disdrometer_data.py) 
+
+**[capture_disdrometer_data.py](capture_disdrometer_data.py) execusion steps**
+
 * creates the data and log directories 
 * sets up the serial communication with Parsivel 
 * sends the desired configuration (`parsivel_user_telegram` & `parsivel_set_telegram_list`) to Parsivel
