@@ -3,5 +3,5 @@ baud: 19200
 Parsivel_name: 'PAR003'
 Parsivel_ID: '003'
 script_name: 'capture_disdro_data.py'
-data_dir: 'data'
-log_dir: 'logs'
+data_dir: '/data/disdroDL/'
+log_dir: '/var/log/disdroDL/'
