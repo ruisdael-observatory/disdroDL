@@ -14,7 +14,8 @@ def yaml2dict(path: str) -> Dict:
 
 def create_dir(path: str):
     if not os.path.exists(path):
-        os.mkdir(path)
+        path.mkdir(parents=True)
+        # os.mkdir(path)
         created_dir = True
     else:
         created_dir = False
