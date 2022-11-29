@@ -56,6 +56,16 @@ create symbolic link between the station's config file and config.yml
 **via service file**: 
 * [disdrodlv2.service](disdrodlv2.service) **TODO**
 
+## Debug Serial communcation
+
+with 2 different screens (use tmux multiplexer or 2 different shells)
+
+terminal one: listen to serial port `tail -f /dev/ttyUSB0`
+
+terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
+
+
+
 # Changes implemented
 - [X] variables in yaml file [config.yml](config.yml)
 - [x] reset commands in another script [reset-parsivel.py](reset-parsivel.py)
