@@ -3,8 +3,8 @@ Description=disdrodlv2
 After=multi-user.target
 
 [Service]
-ExecStart=/home/andre/.pyenv/versions/grs-parsivel/bin/python /home/andre/Documents/GRS/projects/parsivel-distrometer-datalogger/capture_disdrometer_data.py
-ExecReload=/home/andre/.pyenv/versions/grs-parsivel/bin/python /home/andre/Documents/GRS/projects/parsivel-distrometer-datalogger/capture_disdrometer_data.py
+ExecStart=python3 /usr/local/src/disdrodlv2/capture_disdrometer_data.py
+ExecReload=python3 /usr/local/src/disdrodlv2/capture_disdrometer_data.py
 TimeoutStopSec=10
 Restart=always
 RestartSec=30
