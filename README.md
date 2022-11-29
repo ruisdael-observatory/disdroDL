@@ -44,6 +44,10 @@ create data directory with read and write permissions to all users: `sudo mkdir 
 
 run Parsivel [reset script](./reset_parsivel.py): `python reset_parsivel.py`
 
+create symbolic link between the station's config file and config.yml
+`ln config_GV_008.yml config.yml`
+
+
 ## Run script
 
 **manually**: 
