@@ -40,7 +40,6 @@ while True:
         now_utc_iso = now_utc.isoformat()
         now_utc_ymd = now_utc.strftime("%Y%m%d")
         now_utc_ym = now_utc.strftime("%Y%m")
-
         data_dir = Path(config_dict['data_dir']) / now_utc_ym # create monthly data dir
         created_data_dir = create_dir(data_dir)
         if created_data_dir:
