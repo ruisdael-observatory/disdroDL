@@ -47,12 +47,12 @@ while True:
         parsivel_set_telegram_list_str = parsivel_set_telegram_list.decode('utf-8')
         parsivel_set_telegram_list_str = parsivel_set_telegram_list_str.replace('CS/M/S/', '').replace('\r','').replace('%', 'Field_')
         headers = ['Timestamp (UTC)']+ parsivel_set_telegram_list_str.split(';')
-        filename = f"{now_utc_ymd}_{config_dict['Parsivel_name']}.csv"
+        filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}.csv"
         created_new_csv = create_new_csv(csv_path=data_dir / filename, headers=headers)
         # daily CSVs
         if created_new_csv:
             logger.info(msg=f'Created CSV: {data_dir / filename}')
-        filename_field_61 = f"{now_utc_ymd}_{config_dict['Parsivel_name']}_field61.csv"
+        filename_field_61 = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}_field61.csv"
         created_new_csv_f61 = create_new_csv(csv_path=data_dir / filename_field_61, headers=['Timestamp (UTC)','Particle_size', 'Particle_speed'])
         if created_new_csv_f61:
             logger.info(msg=f'Created CSV: {data_dir / filename_field_61}')
