@@ -2,8 +2,8 @@ port: '/dev/ttyUSB0'
 baud: 19200
 Parsivel_name: PAR008
 Parsivel_ID: 008
-station_site: 'Delft'
-station_name: 'GV'
+station_site: 'Delft'  # add prefix Camp for a campaign ie CampRotterdam
+station_name: 'GV' # keep under 10 characters, max accepted by Parsivel
 script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
 log_dir: '/var/log/disdroDL/'
