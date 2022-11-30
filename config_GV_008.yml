@@ -2,6 +2,7 @@ port: '/dev/ttyUSB0'
 baud: 19200
 Parsivel_name: PAR008
 Parsivel_ID: 008
+station_site: 'Delft'
 station_name: 'GV'
 script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
