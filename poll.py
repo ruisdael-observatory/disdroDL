@@ -1,3 +1,4 @@
+import re
 import serial
 import sys
 from time import sleep
@@ -42,12 +43,23 @@ sleep(1)
 parsivel.write(parsivel_pooling_mood)
 sleep(float(0.5))
 telegram=parsivel.readline()
-print('telegram:', type(telegram), len(telegram), telegram)
+print('telegram len:', len(telegram))
 parsivel.close()
+
+print('telegram:', type(telegram), telegram)
 
 # parse telegram
 telegramstr = telegram.decode('utf-8') 
-print(type(telegramstr), telegramstr)
+print(type(telegram), telegram)
+
+# with regex
+fields_regex = r'F(?P<field>..):(?P<value>.*?);'
+fields_match = re.findall(fields_regex, telegramstr)
+
+if fields_match:
+    print(fields_match)
+
+
 # Note: something strage is happening. When I split the string, 
 # I no longer se its start
 

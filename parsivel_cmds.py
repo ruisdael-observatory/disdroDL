@@ -15,7 +15,16 @@ parsivel_command_list = 'CS/?\r'.encode('utf-8')  # Reads out a list of serial c
 parsivel_ott_telegram = 'CS/M/M/0\r'.encode('utf-8')  # The Parsivel broadcasts the OTT telegram.
 parsivel_telegram_start = 'CS/*/D/0\r'.encode('utf-8')  # Communication Mode": 0=deactivate; 1=activate
 parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')  # The Parsivel broadcasts the user defined telegram. # DONE = MIGRATED TO SCRIPTS
-parsivel_set_telegram_list = 'CS/M/S/START%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35; -F60- %60; -F90- %90; -F91- %91; -F93- %93; -F61- %61\r'.encode('utf-8')  # Defines which fields are in the telegram # DONE = MIGRATED TO SCRIPTS
+
+parsivel_set_telegram_list = 'CS/M/S/F01:%01;F02:%02;F03:%03;F04:%04;F05:%05;F06:%06;F07:%07;F08:%08;F09:%09;\
+F10:%10;F11:%11;F12:%12;F13:%13;F14:%14;F15:%15;F16:%16;F17:%17;F18:%18;\
+F20:%20;F21:%21;F22:%22;F23:%23;F24:%24;F25:%25;F26:%26;F27:%27;F28:%28;\
+F30:%30;F31:%31;F32:%32;F33:%33;F34:%34;F35:%35;\
+F60:%60;F90:%90;F91:%91;F93:%93;\
+F61:%61\r'.encode('utf-8')
+
+# parsivel_set_telegram_list = 'CS/M/S/F34:%34;F35:%35;'.encode('utf-8')
+
 # parsivel_set_telegram_list = 'CS/M/S/%01;%02;%03;%04;%05;%06;%07;%08;%61\r'.encode('utf-8')  # Defines which fields are in the telegram # DONE = MIGRATED TO SCRIPTS
 
 parsivel_current_configuration = 'CS/L\r'.encode('utf-8')  # Outputs current configuration  # DONE = MIGRATED TO SCRIPTS
