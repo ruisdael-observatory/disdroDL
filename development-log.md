@@ -1,0 +1,77 @@
+# 2023.02.09
+
+* factory reset parsivel `echo -en "CS/F/1\n" > /dev/ttyUSB0`
+* print config `echo -en "CS/L\r" > /dev/ttyUSB0`
+* reset parsivel `echo -en "CS/Z/1\r" > /dev/ttyUSB0`
+* adjust time `echo -en "CS/T/13:12:00\r" > /dev/ttyUSB0`
+* adjust date `echo -en "CS/D/01.01.2000\r" > /dev/ttyUSB0`
+* read date `echo -en "CS/U\r" > /dev/ttyUSB0` 
+    * `09.02.2023 12:12:09` (UTC)
+
+* reset with [reset_parsivel.py](reset_parsivel.py)
+
+* pyserial miniterm ` python -m serial.tools.miniterm /dev/ttyUSB0 19200`
+
+```
+-----------------------------------------------------------------------                                 
+PARSIVEL 2 CONFIGURATION LIST
+-----------------------------------------------------------------------                                 Sensor Date And Time 09.02.2023 -14:00:23
+-----------------------------------------------------------------------                                 RS485 Interface Config
+-----------------------------------------------------------------------                                 RS485 Baudrate        : 19200
+RS485 Bus Mode        : 0 [0 = OFF,1 =ON]
+RS485 Bus Address     : 0 
+-----------------------------------------------------------------------
+SDI12 Interface Config
+-----------------------------------------------------------------------
+SDI12 Bus Mode        : 0 [0 = OFF,1 = ON]
+RS485 Bus Address     : 0 
+-----------------------------------------------------------------------
+SDI12 Interface Config
+-----------------------------------------------------------------------
+SDI12 Bus Mode        : 0 [0 = OFF,1 = ON]
+SDI12 Bus Address     : 0 
+-----------------------------------------------------------------------
+User Telegram Config
+-----------------------------------------------------------------------
+User Telegram mode    : 1 [0 = OFF,1 = ON]
+User Telegram String  : F01:%01;F02:%02;F03:%03;F04:%04;F05:%05;F06:%06;F07:%07;F08:%08;F09:%09;F10:%10;F11:%11;F12:%12;F13:%13;F14:%14;F15:%15;F16:%16;F17:%17;F18:%18;F20:%20;F21:%21;F22:%22;F23:%23;F24:%24;F25:%25;F26:%26;F27:%27;F28:%28;F30:%30;F31:%31;F32:%32;F33:%33;
+-----------------------------------------------------------------------
+Sensor Heating Config
+-----------------------------------------------------------------------
+Sensor Heating mode   : 1 
+Temperature Threshold : +10 
+-----------------------------------------------------------------------
+Impulse Mode Config
+-----------------------------------------------------------------------
+Impulse Mode          : 0 
+Poll Mode             : 1 [0 = OFF,1 = ON]
+Interval time         : 60 
+OK
+```
+
+config seems to be corrrect, although there is no field 61. why?
+
+I do not know if the telegram mode should be ON or OFF: will keep it on `CS/*/D/1\r`
+
+user telegram: `echo -en "CS/M/M/1\r" > /dev/ttyUSB0` 
+
+telegram format: `echo -en "CS/M/S/%01;%02;\r\n" > /dev/ttyUSB0` is not changing the `User Telegram String  : CS/L`
+
+
+
+Restart sensor, reset the rain amount: `echo -en "CS/Z/1\r" > /dev/ttyUSB0`
+
+User telegram: `echo -en 'CS/M/M/1\r\n' > /dev/ttyUSB0 `
+
+format telegram: `echo -en 'CS/M/S/%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;%90;%91;%93;%61\r\n' > /dev/ttyUSB0`
+
+format telegram: `echo -en 'CS/M/S/%01|%02|%03|%04|%05|%06|%07|%08|%09|%10|%11|%12|%13|%14|%15|%16|%17|%18|%20|%21|%22|%23|%24|%25|%26|%27|%28|%30|%31|%32|%33|%34|%35|%60|%90|%91|%93|%61\r\n' > /dev/ttyUSB0`
+
+
+
+there seems to be a maximum length for the telegram format string 
+
+poll data: `echo -en 'CS/P\r' > /dev/ttyUSB0`
+
+print config: `echo -en "CS/L\r\n" > /dev/ttyUSB0`
+
