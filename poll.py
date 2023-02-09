@@ -36,12 +36,13 @@ parsivel.reset_input_buffer()  # Flushes input buffer
 
 parsivel.write('CS/Z/1\r\n'.encode('utf-8'))  # Restart sensor, reset the rain amount
 sleep(10)
-parsivel.write('CS/M/M/1\r\n'.encode('utf-8')) # User telegram:
+parsivel.write('CS/M/M/1\r\n'.encode('utf-8')) # User defined telegram
 
 while True:
     parsivel.write('CS/M/S/%01,%02,%03,%04,%05,%06,%07,%08,%09,%10,%11,%12,%13,%14,%15,%16,%17,%18,%20,%21,%22,%23,%24,%25,%26,%27,%28,%30,%31,%32,%33,%34,%35,%60,\r\n'.encode('utf-8'))
     sleep(float(0.5))
     parsivel.write('CS/P\r\n'.encode('utf-8'))
+    sleep(float(0.5))
     telegram_single_values=parsivel.readline()
     print(telegram_single_values)
     print('ending iteration')
