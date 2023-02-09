@@ -43,7 +43,14 @@ while True:
     sleep(1)
     parsivel.write('CS/P\r\n'.encode('utf-8'))
     sleep(1)
-    telegram_single_values=parsivel.readline()
-    print('telegram:', telegram_single_values)
+    telegram_single_values=parsivel.readlines()
+    print('telegram_single_values:', telegram_single_values)
+
+    parsivel.write('CS/M/S/%90,\r\n'.encode('utf-8'))
+    sleep(1)
+    parsivel.write('CS/P\r\n'.encode('utf-8'))
+    sleep(1)
+    f90_values=parsivel.readlines()
+    print('f90_values:', f90_values)
     sleep(60)
 
