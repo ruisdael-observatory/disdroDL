@@ -32,9 +32,9 @@ def create_new_csv(csv_path, headers):
 
 def binary2list(binarystr, spliter, prefix):
     binarystr = binarystr.decode('utf-8') 
-    print('binarystr:' binarystr[0:10])
+    print('binarystr:', binarystr[0:10])
     binarystr = binarystr.replace(prefix, '')
-    print('binarystr w/out prefix:' binarystr[0:10])
+    print('binarystr w/out prefix:', binarystr[0:10])
 
     # binarystr = binarystr.replace('\n','').replace('\r','') # strip non-printing chars
     binarystr_list = binarystr.split(spliter) 
