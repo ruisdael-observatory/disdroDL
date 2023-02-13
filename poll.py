@@ -39,17 +39,17 @@ sleep(10)
 parsivel.write('CS/M/M/1\r\n'.encode('utf-8')) # User defined telegram
 
 while True:
-    parsivel.write('CS/M/S/%01,%02,%03,%04,%05,%06,%07,%08,%09,%10,%11,%12,%13,%14,%15,%16,%17,%18,%20,%21,%22,%23,%24,%25,%26,%27,%28,%30,%31,%32,%33,%34,%35,%60,\r\n'.encode('utf-8'))
+    parsivel.write('CS/M/S/%01,%02,%03,%04,%05,%06,%07,%08,%09,%10,%11,%12,%13,%14,%15,%16,%17,%18,%20,%21,%22,%23,%24,%25,%26,%27,%28,%30,%31,%32,%33,%34,%35,%60\r%90\r\n'.encode('utf-8'))
     sleep(1)
     parsivel.write('CS/P\r\n'.encode('utf-8'))
     telegram_single_values=parsivel.readlines()
     print('telegram_single_values:', telegram_single_values)
 
-    parsivel.write('CS/M/S/%90,\r\n'.encode('utf-8'))
-    sleep(1)
-    parsivel.write('CS/P\r\n'.encode('utf-8'))
-    f90_values=parsivel.readlines()
-    print('f90_values:', f90_values)
+    # parsivel.write('CS/M/S/%90,\r\n'.encode('utf-8'))
+    # sleep(1)
+    # parsivel.write('CS/P\r\n'.encode('utf-8'))
+    # f90_values=parsivel.readlines()
+    # print('f90_values:', f90_values)
 
     parsivel.write('CS/M/S/%91,\r\n'.encode('utf-8'))
     sleep(1)
@@ -68,3 +68,5 @@ while True:
     parsivel.write('CS/P\r\n'.encode('utf-8'))
     f61_values=parsivel.readlines()
     print('f61_values:', f61_values)
+
+# how to get the values at the same moment, so there is no time discrepancy?
