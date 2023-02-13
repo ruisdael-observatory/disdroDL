@@ -71,7 +71,7 @@ while True:
                     print(item)
                     parsivel_str_list = binary2list(binarystr=item, spliter=',', prefix=svfs_prefix)
                     with open(data_dir / filename, "a") as f:
-                        writer = csv.writer(f, delimiter=";")
+                        writer = csv.writer(f, delimiter=",")
                         writer.writerow([now_utc_iso] + parsivel_str_list)
 
                 print(index, item)
