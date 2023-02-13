@@ -50,19 +50,29 @@ while True:
                 logger.info(msg=f'Created data directory: {data_dir}')
 
             # request telegram
-            parsivel.write('CS/M/S/SFs:%01,%02,%03,%04,%05,%06,%07,%08,%09,%10,%11,%12,%13,%14,%15,%16,%17,%18,%20,%21,%22,%23,%24,%25,%26,%27,%28,%30,%31,%32,%33,%34,%35,%60,\nF90:%90,\nF91:%91,\nF93:%93,\nF61:%61;\r\n'.encode('utf-8'))
+            svfs = '%01,%02,%03,%04,%05,%06,%07,%08,%09,%10,%11,%12,%13,%14,%15,%16,%17,%18,%20,%21,%22,%23,%24,%25,%26,%27,%28,%30,%31,%32,%33,%34,%35,%60,'
+            svfs_prefix = 'SVFs:'  # Single Value Fields; for identification 
+            svfs_cmd = 'CS/M/S/' + prefix
+            parsivel.write(svfs_cmd + svfs + '\nF90:%90,\nF91:%91,\nF93:%93,\nF61:%61;\r\n'.encode('utf-8'))
             sleep(1)
             parsivel.write('CS/P\r\n'.encode('utf-8'))
             telegram_single_values=parsivel.readlines()
 
             # create CSV
-            # headers = ['Timestamp (UTC)']+ parsivel_set_telegram_list_str.split(';')
+            headers = (svfs.replace('%','')).split(',')            
             filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}.csv"
-            # created_new_csv = create_new_csv(csv_path=data_dir / filename) # headers=headers)
-            # if created_new_csv:
-            #     logger.info(msg=f'Created CSV: {data_dir / filename}')
+            created_new_csv = create_new_csv(csv_path=data_dir / filename, headers=headers)
+            if created_new_csv:
+                logger.info(msg=f'Created CSV: {data_dir / filename}')
 
             for index, item in enumerate(telegram_single_values):
+                if index == 2:
+                    print(item)
+                    parsivel_str_list = binary2list(binarystr=item, spliter=',', prefix=svfs_prefix)
+                    with open(data_dir / filename, "a") as f:
+                        writer = csv.writer(f, delimiter=";")
+                        writer.writerow([now_utc_iso] + parsivel_str_list)
+
                 print(index, item)
             print('\n')
 
@@ -85,3 +95,4 @@ while True:
 # * write to CSV
 # * CSV headers
 # * write to several CSVs
+# * add timestamp to CSV headers
