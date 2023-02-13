@@ -59,12 +59,18 @@ while True:
             parsivel.write('CS/P\r\n'.encode('utf-8'))
             telegram_single_values=parsivel.readlines()
 
-            # create CSV
-            headers = (svfs.replace('%','')).split(',')            
-            filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}.csv"
-            created_new_csv = create_new_csv(csv_path=data_dir / filename, headers=headers)
-            if created_new_csv:
-                logger.info(msg=f'Created CSV: {data_dir / filename}')
+            # create CSVs
+            csvs_suffixes = {'SVFS':None, 'F90':None, 'F91':None, 'F93':None, 'F61':None}
+            for suffix in csvs_suffixes:
+                filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}_{suffix}.csv"
+                csvs_suffixes[suffix] = filename
+                if suffix == 'SVFS':
+                    headers = (svfs.replace('%','')).split(',')
+                else:
+                    headers = []
+                created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)
+                if created_new_csv:
+                    logger.info(msg=f'Created CSV: {data_dir / csvs_suffixes[suffix]}')
 
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
@@ -73,10 +79,10 @@ while True:
                     with open(data_dir / filename, "a") as f:
                         writer = csv.writer(f, delimiter=",")
                         writer.writerow([now_utc_iso] + parsivel_str_list)
-                elif (item.decode('utf-8')).startswith('F91'):
-                    print("F91:", item)
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
+                elif (item.decode('utf-8')).startswith('F91'):
+                    print("F91:", item)
                 elif (item.decode('utf-8')).startswith('F93'):
                     print("F93:", item)
                 elif (item.decode('utf-8')).startswith('F61'):
