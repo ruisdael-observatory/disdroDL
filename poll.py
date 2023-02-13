@@ -50,5 +50,21 @@ while True:
     parsivel.write('CS/P\r\n'.encode('utf-8'))
     f90_values=parsivel.readlines()
     print('f90_values:', f90_values)
-    sleep(60)
 
+    parsivel.write('CS/M/S/%91,\r\n'.encode('utf-8'))
+    sleep(1)
+    parsivel.write('CS/P\r\n'.encode('utf-8'))
+    f91_values=parsivel.readlines()
+    print('f91_values:', f91_values)
+
+    parsivel.write('CS/M/S/%93,\r\n'.encode('utf-8'))
+    sleep(1)
+    parsivel.write('CS/P\r\n'.encode('utf-8'))
+    f93_values=parsivel.readlines()
+    print('f93_values:', f93_values)
+
+    parsivel.write('CS/M/S/%61,\r\n'.encode('utf-8'))
+    sleep(1)
+    parsivel.write('CS/P\r\n'.encode('utf-8'))
+    f61_values=parsivel.readlines()
+    print('f61_values:', f61_values)
