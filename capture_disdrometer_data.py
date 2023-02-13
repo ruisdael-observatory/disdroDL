@@ -74,7 +74,7 @@ while True:
                         writer = csv.writer(f, delimiter=",")
                         writer.writerow([now_utc_iso] + parsivel_str_list)
 
-                print(index, item)
+                # print(index, item)
             print('\n')
 
 
