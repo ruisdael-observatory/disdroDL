@@ -58,7 +58,7 @@ while True:
             # create CSV
             # headers = ['Timestamp (UTC)']+ parsivel_set_telegram_list_str.split(';')
             filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}.csv"
-            created_new_csv = create_new_csv(csv_path=data_dir / filename) # headers=headers)
+            # created_new_csv = create_new_csv(csv_path=data_dir / filename) # headers=headers)
             # daily CSVs
             if created_new_csv:
                 logger.info(msg=f'Created CSV: {data_dir / filename}')
