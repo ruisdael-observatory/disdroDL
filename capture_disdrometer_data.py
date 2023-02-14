@@ -77,7 +77,7 @@ while True:
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
                     print(svfs_prefix,":", item)
-                    parsivel_str_list = binary2list(binarystr=item, spliter=',', prefix=svfs_prefix)
+                    parsivel_str_list = binary2list(binarystr=item, spliter=';', prefix=svfs_prefix)
                     filename = csvs_suffixes['SVFS']
                     with open(data_dir / filename, "a") as f:
                         writer = csv.writer(f, delimiter=";")

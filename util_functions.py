@@ -30,11 +30,11 @@ def create_new_csv(csv_path, headers, delimiter=";"):
     else:
         created_csv = False
 
-def binary2list(binarystr, spliter, prefix):
+def binary2list(binarystr, delimiter, prefix):
     binarystr = binarystr.decode('utf-8') 
     binarystr = binarystr.replace(prefix, '')
     # binarystr = binarystr.replace('\n','').replace('\r','') # strip non-printing chars
-    binarystr_list = binarystr.split(spliter) 
+    binarystr_list = binarystr.split(delimiter) 
     return binarystr_list  
 
 def init_serial(port: str, baud: int, logger):
