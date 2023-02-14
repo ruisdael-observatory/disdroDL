@@ -42,6 +42,8 @@ def binary2list(binarystr, delimiter, prefix):
     binarystr_list = binarystr.split(delimiter) 
     return binarystr_list  
 
+# def parsivel_str_2_csv():
+
 def init_serial(port: str, baud: int, logger):
     try:
         parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port

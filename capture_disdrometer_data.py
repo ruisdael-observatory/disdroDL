@@ -73,7 +73,7 @@ while True:
                 created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)
                 if created_new_csv:
                     logger.info(msg=f'Created CSV: {data_dir / csvs_suffixes[suffix]}')
-
+            parsivel_str_list = None
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
                     print(svfs_prefix,":", item)
