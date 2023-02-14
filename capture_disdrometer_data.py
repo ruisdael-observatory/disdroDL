@@ -74,6 +74,7 @@ while True:
                 if created_new_csv:
                     logger.info(msg=f'Created CSV: {data_dir / csvs_suffixes[suffix]}')
             parsivel_str_list = None
+            prefix = None
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
                     filename=csvs_suffixes['SVFS']
@@ -96,7 +97,7 @@ while True:
                     print("F61:", item) 
     
                 if item and prefix:
-                    print('write to:', filename)
+                    print('write to:', filename, 'prefix:', prefix)
                     parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
                                         prefix=prefix, data_dir=data_dir, filename=filename)
                     parsivel_str_list = None  # reset 
