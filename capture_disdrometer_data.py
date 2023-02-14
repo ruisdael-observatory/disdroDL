@@ -80,7 +80,7 @@ while True:
             for item in telegram_single_values:
                 print(item)
                 #capture prefix 
-                prefix_match = re.match(r'(^F\d\d:)', item.decode('utf-8'))
+                prefix_match = re.match(r'(^\w{3,4}:)', item.decode('utf-8'))
                 print(prefix_match)
                 if prefix_match:
                     prefix = prefix_match.group(0)
