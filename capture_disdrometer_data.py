@@ -105,7 +105,7 @@ while True:
                     filename=csvs_suffixes['F90']
                     print("F61:", item) 
     
-                if parsivel_str_list
+                if parsivel_str_list:
                     parsivel_list_2_csv(binarystr=item, delimiter=';', prefix=svfs_prefix, 
                         data_dir=data_dir, filename=csvs_suffixes['SVFS'], 
                         row_list=[now_utc_iso] + parsivel_str_list)
