@@ -78,22 +78,23 @@ while True:
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
                     filename=csvs_suffixes['SVFS']
-                    prefix = 'SVFS'
+                    prefix = 'SVFS:'
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
                     filename=csvs_suffixes['F90']
-                    prefix = 'F90'
+                    prefix = 'F90:'
                 elif (item.decode('utf-8')).startswith('F91'):
                     filename=csvs_suffixes['F91']
-                    prefix = 'F91'
+                    prefix = 'F91:'
                     print("F91:", item)
                 elif (item.decode('utf-8')).startswith('F93'):
                     filename=csvs_suffixes['F93']
-                    prefix = 'F93'
+                    prefix = 'F93:'
                     print("F93:", item)
+                    # TODO: remove : from 1st item
                 elif (item.decode('utf-8')).startswith('F61'):
                     filename=csvs_suffixes['F61']
-                    prefix = 'F61'
+                    prefix = 'F61:'
                     print("F61:", item) 
     
                 if item and prefix:
