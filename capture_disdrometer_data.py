@@ -81,28 +81,9 @@ while True:
                 print(item)
                 #capture prefix 
                 prefix_match = re.match(r'(^F\d\d:)', item.decode('utf-8'))
-                prefix = prefix_match.group(0)
-                # if (item.decode('utf-8')).startswith(svfs_prefix):
-                #     filename=csvs_suffixes['SVFS']
-                #     prefix = 'SVFS:'
-                # elif (item.decode('utf-8')).startswith('F90'):
-                #     print("F90:", item)
-                #     filename=csvs_suffixes['F90']
-                #     prefix = 'F90:'
-                # elif (item.decode('utf-8')).startswith('F91'):
-                #     filename=csvs_suffixes['F91']
-                #     prefix = 'F91:'
-                #     print("F91:", item)
-                # elif (item.decode('utf-8')).startswith('F93'):
-                #     filename=csvs_suffixes['F93']
-                #     prefix = 'F93:'
-                #     print("F93:", item)
-                # elif (item.decode('utf-8')).startswith('F61'):
-                #     filename=csvs_suffixes['F61']
-                #     prefix = 'F61:'
-                #     print("F61:", item) 
-    
-                if item and prefix:
+                print(prefix_match)
+                if prefix_match:
+                    prefix = prefix_match.group(0)
                     print('item:', item.decode('utf-8'))
                     print('RE prefix:', prefix)
                     filename=csvs_suffixes[prefix.replace(":",'')]                    
