@@ -76,41 +76,29 @@ while True:
             parsivel_str_list = None
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
-                    filename=csvs_suffixes['SVFS'] 
-                    # parsivel_list_2_csv(binarystr=item, delimiter=';', prefix=svfs_prefix, 
-                    #                     data_dir=data_dir, filename=csvs_suffixes['SVFS'],
-                    #                     row_list=[now_utc_iso] + parsivel_str_list)
-
-                    # print(svfs_prefix,":", item)
-                    # parsivel_str_list = binary2list(binarystr)
-                    # if parsivel_str_list[-1] == '\n':
-                    #     parsivel_str_list = parsivel_str_list[:-1]  
-                    # filename = csvs_suffixes['SVFS']
-                    # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
+                    filename=csvs_suffixes['SVFS']
+                    prefix = 'SVFS'
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
                     filename=csvs_suffixes['F90']
-                    # parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix='F90:')
-                    # filename = csvs_suffixes['F90']
-                    # if parsivel_str_list[-1] == '\n':
-                    #     parsivel_str_list = parsivel_str_list[:-1]
-                    # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
+                    prefix = 'F90'
                 elif (item.decode('utf-8')).startswith('F91'):
                     filename=csvs_suffixes['F91']
+                    prefix = 'F91'
                     print("F91:", item)
                 elif (item.decode('utf-8')).startswith('F93'):
-                    filename=csvs_suffixes['F90']
+                    filename=csvs_suffixes['F93']
+                    prefix = 'F93'
                     print("F93:", item)
                 elif (item.decode('utf-8')).startswith('F61'):
-                    filename=csvs_suffixes['F90']
+                    filename=csvs_suffixes['F61']
+                    prefix = 'F61'
                     print("F61:", item) 
     
-                if item:
+                if item and prefix:
+                    print('write to:', filename)
                     parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
-                                        prefix=svfs_prefix, data_dir=data_dir, filename=csvs_suffixes['SVFS'])
-
-                    # row_list=[now_utc_iso] + parsivel_str_list)
-                    # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
+                                        prefix=prefix, data_dir=data_dir, filename=filename)
                     parsivel_str_list = None  # reset 
             print('\n')
 
