@@ -77,7 +77,7 @@ while True:
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
                     parsivel_list_2_csv(binarystr=item, delimiter=';', prefix=svfs_prefix, 
-                                        data_dir=data_dir, filename=csvs_suffixes['SVFS'], delimiter=";", 
+                                        data_dir=data_dir, filename=csvs_suffixes['SVFS'],
                                         row_list=[now_utc_iso] + parsivel_str_list)
                     # print(svfs_prefix,":", item)
                     # parsivel_str_list = binary2list(binarystr)
@@ -88,7 +88,7 @@ while True:
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
                     parsivel_list_2_csv(binarystr=item, delimiter=';', prefix=svfs_prefix, 
-                                        data_dir=data_dir, filename=csvs_suffixes['SVFS'], delimiter=";", 
+                                        data_dir=data_dir, filename=csvs_suffixes['SVFS'], 
                                         row_list=[now_utc_iso] + parsivel_str_list)
                     # parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix='F90:')
                     # filename = csvs_suffixes['F90']
