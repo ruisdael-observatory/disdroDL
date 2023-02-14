@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 from pathlib import Path
-from  util_functions import yaml2dict, create_dir, create_new_csv, binary2list, init_serial, append_csv_row
+from  util_functions import yaml2dict, create_dir, create_new_csv, binary2list, init_serial, parsivel_list_2_csv
 from parsivel_cmds import *
 from log import log 
 from time import sleep
@@ -76,18 +76,24 @@ while True:
             parsivel_str_list = None
             for item in telegram_single_values:
                 if (item.decode('utf-8')).startswith(svfs_prefix):
-                    print(svfs_prefix,":", item)
-                    parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix=svfs_prefix)
-                    if parsivel_str_list[-1] == '\n':
-                        parsivel_str_list = parsivel_str_list[:-1]  
-                    filename = csvs_suffixes['SVFS']
+                    parsivel_list_2_csv(binarystr=item, delimiter=';', prefix=svfs_prefix, 
+                                        data_dir=data_dir, filename=csvs_suffixes['SVFS'], delimiter=";", 
+                                        row_list=[now_utc_iso] + parsivel_str_list)
+                    # print(svfs_prefix,":", item)
+                    # parsivel_str_list = binary2list(binarystr)
+                    # if parsivel_str_list[-1] == '\n':
+                    #     parsivel_str_list = parsivel_str_list[:-1]  
+                    # filename = csvs_suffixes['SVFS']
                     # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
-                    parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix='F90:')
-                    filename = csvs_suffixes['F90']
-                    if parsivel_str_list[-1] == '\n':
-                        parsivel_str_list = parsivel_str_list[:-1]
+                    parsivel_list_2_csv(binarystr=item, delimiter=';', prefix=svfs_prefix, 
+                                        data_dir=data_dir, filename=csvs_suffixes['SVFS'], delimiter=";", 
+                                        row_list=[now_utc_iso] + parsivel_str_list)
+                    # parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix='F90:')
+                    # filename = csvs_suffixes['F90']
+                    # if parsivel_str_list[-1] == '\n':
+                    #     parsivel_str_list = parsivel_str_list[:-1]
                     # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
                 elif (item.decode('utf-8')).startswith('F91'):
                     print("F91:", item)

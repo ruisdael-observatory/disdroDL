@@ -30,11 +30,6 @@ def create_new_csv(csv_path, headers, delimiter=";"):
     else:
         created_csv = False
 
-def append_csv_row(data_dir, filename, delimiter, row_list):
-    with open(data_dir / filename, "a") as f:
-        writer = csv.writer(f, delimiter=delimiter)
-        writer.writerow(row_list)
-
 def binary2list(binarystr, delimiter, prefix):
     binarystr = binarystr.decode('utf-8') 
     binarystr = binarystr.replace(prefix, '')
@@ -42,12 +37,18 @@ def binary2list(binarystr, delimiter, prefix):
     binarystr_list = binarystr.split(delimiter) 
     return binarystr_list  
 
-def parsivel_str_2_csv(binarystr, delimiter, prefix):
-        # in progress
-    parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix=svfs_prefix)
+def append_csv_row(data_dir, filename, delimiter, row_list):
+    with open(data_dir / filename, "a") as f:
+        writer = csv.writer(f, delimiter=delimiter)
+        writer.writerow(row_list)
+
+def parsivel_list_2_csv(binarystr, delimiter, prefix, data_dir, filename, row_list):
+    # in progress
+    parsivel_str_list = binary2list(binarystr=binarystr, delimiter=delimiter, prefix=prefix)
     if parsivel_str_list[-1] == '\n':
         parsivel_str_list = parsivel_str_list[:-1]  
-    filename = csvs_suffixes['SVFS']
+    append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, row_list=row_list)
+
 
 def init_serial(port: str, baud: int, logger):
     try:
