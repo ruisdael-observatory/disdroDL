@@ -105,10 +105,11 @@ while True:
                     filename=csvs_suffixes['F90']
                     print("F61:", item) 
     
-                if parsivel_str_list:
-                    parsivel_list_2_csv(binarystr=item, delimiter=';', prefix=svfs_prefix, 
-                        data_dir=data_dir, filename=csvs_suffixes['SVFS'], 
-                        row_list=[now_utc_iso] + parsivel_str_list)
+                if item:
+                    parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
+                                        prefix=svfs_prefix, data_dir=data_dir, filename=csvs_suffixes['SVFS'])
+
+                    # row_list=[now_utc_iso] + parsivel_str_list)
                     # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
                     parsivel_str_list = None  # reset 
             print('\n')
