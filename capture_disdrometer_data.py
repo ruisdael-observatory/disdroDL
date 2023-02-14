@@ -86,8 +86,11 @@ while True:
                         writer.writerow([now_utc_iso] + parsivel_str_list)
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
+                    item = item.replace('F90', '')
                     parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix=svfs_prefix)
                     filename = csvs_suffixes['F90']
+                    if parsivel_str_list[-1] == '\n':
+                        parsivel_str_list = parsivel_str_list[:-1]                      
                     with open(data_dir / filename, "a") as f:
                         writer = csv.writer(f, delimiter=";")
                         writer.writerow([now_utc_iso] + parsivel_str_list)
