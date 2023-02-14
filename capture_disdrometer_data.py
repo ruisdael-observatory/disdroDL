@@ -78,6 +78,7 @@ while True:
             prefix = None
             filename = None
             for item in telegram_single_values:
+                print(item)
                 #capture prefix 
                 prefix_match = re.match(r'(^F\d\d:)', item.decode('utf-8'))
                 prefix = prefix_match.group(0)
