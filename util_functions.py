@@ -24,7 +24,7 @@ def create_dir(path: str):
 def create_new_csv(csv_path, headers):
     if not os.path.exists(csv_path):
         with open(csv_path, "w") as f:
-            writer = csv.writer(f, delimiter=";")
+            writer = csv.writer(f, delimiter=",")
             writer.writerow(headers)
         created_csv = True
     else:
