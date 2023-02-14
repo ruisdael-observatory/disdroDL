@@ -66,7 +66,7 @@ while True:
                 csvs_suffixes[suffix] = filename
                 if suffix == 'SVFS':
                     headers = (svfs.replace('%','')).split(',')
-                    print(headers)
+                    print('headers:', headers)  
                 else:
                     headers = []
                 created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)
