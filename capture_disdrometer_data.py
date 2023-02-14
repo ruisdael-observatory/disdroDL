@@ -53,7 +53,7 @@ while True:
             svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;'
             svfs_prefix = 'SVFS:'  # Single Value Fields; for identification 
             svfs_cmd = 'CS/M/S/' + svfs_prefix
-            svfs_cmd = (svfs_cmd + svfs + '\nF90:%90,\nF91:%91,\nF93:%93,\nF61:%61;\r\n').encode('utf-8')
+            svfs_cmd = (svfs_cmd + svfs + '\nF90:%90;\nF91:%91;\nF93:%93;\nF61:%61;\r\n').encode('utf-8')
             parsivel.write(svfs_cmd)
             sleep(1)
             parsivel.write('CS/P\r\n'.encode('utf-8'))
@@ -86,6 +86,11 @@ while True:
                         writer.writerow([now_utc_iso] + parsivel_str_list)
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
+                    parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix=svfs_prefix)
+                    filename = csvs_suffixes['F90']
+                    with open(data_dir / filename, "a") as f:
+                        writer = csv.writer(f, delimiter=";")
+                        writer.writerow([now_utc_iso] + parsivel_str_list)
                 elif (item.decode('utf-8')).startswith('F91'):
                     print("F91:", item)
                 elif (item.decode('utf-8')).startswith('F93'):
