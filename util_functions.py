@@ -30,6 +30,11 @@ def create_new_csv(csv_path, headers, delimiter=";"):
     else:
         created_csv = False
 
+def append_csv_row(data_dir, filename, delimiter, row_list):
+    with open(data_dir / filename, "a") as f:
+        writer = csv.writer(f, delimiter=delimiter)
+        writer.writerow(timestamp + row_list)
+
 def binary2list(binarystr, delimiter, prefix):
     binarystr = binarystr.decode('utf-8') 
     binarystr = binarystr.replace(prefix, '')

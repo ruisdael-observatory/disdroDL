@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 from pathlib import Path
-from  util_functions import yaml2dict, create_dir, create_new_csv, binary2list, init_serial
+from  util_functions import yaml2dict, create_dir, create_new_csv, binary2list, init_serial, append_csv_row
 from parsivel_cmds import *
 from log import log 
 from time import sleep
@@ -81,25 +81,24 @@ while True:
                     if parsivel_str_list[-1] == '\n':
                         parsivel_str_list = parsivel_str_list[:-1]  
                     filename = csvs_suffixes['SVFS']
-                    with open(data_dir / filename, "a") as f:
-                        writer = csv.writer(f, delimiter=";")
-                        writer.writerow([now_utc_iso] + parsivel_str_list)
+                    # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
                 elif (item.decode('utf-8')).startswith('F90'):
                     print("F90:", item)
                     parsivel_str_list = binary2list(binarystr=item, delimiter=';', prefix='F90:')
                     filename = csvs_suffixes['F90']
                     if parsivel_str_list[-1] == '\n':
-                        parsivel_str_list = parsivel_str_list[:-1]                      
-                    with open(data_dir / filename, "a") as f:
-                        writer = csv.writer(f, delimiter=";")
-                        writer.writerow([now_utc_iso] + parsivel_str_list)
+                        parsivel_str_list = parsivel_str_list[:-1]
+                    # append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
                 elif (item.decode('utf-8')).startswith('F91'):
                     print("F91:", item)
                 elif (item.decode('utf-8')).startswith('F93'):
                     print("F93:", item)
                 elif (item.decode('utf-8')).startswith('F61'):
-                    print("F61:", item)                    
-                # print(index, item)
+                    print("F61:", item) 
+    
+                if parsivel_str_list:                
+                    append_csv_row(data_dir=data_dir, filename=filename, delimiter=";", row_list=[now_utc_iso] + parsivel_str_list)
+                    parsivel_str_list = None  # reset 
             print('\n')
 
 
