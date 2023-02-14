@@ -65,7 +65,8 @@ while True:
                 filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}_{suffix}.csv"
                 csvs_suffixes[suffix] = filename
                 if suffix == 'SVFS':
-                    headers = (svfs.replace('%','')).split(',')
+                    headers = ["timestamp"] + ((svfs.replace('%','')).split(','))
+                    headers = headers[:-1] # remove last (empty) item from headers list
                     print('headers:', headers)  
                 else:
                     headers = []
@@ -108,7 +109,11 @@ while True:
 # TODO:
 # * check how field 61 is written 
 # * monthly dir creation
-# * write to CSV
-# * CSV headers
+# - [X] write to CSV 
+#   - [ ] Single Value Fields 
+# - [ ] CSV headers: 
+    # - [x] numbers
+    # - [ ] parameter names
 # * write to several CSVs
 # * add timestamp to CSV headers
+# documentation on seperate CSVs
