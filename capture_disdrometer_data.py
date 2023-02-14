@@ -1,4 +1,5 @@
 import csv
+import re
 from datetime import datetime
 from pathlib import Path
 from  util_functions import yaml2dict, create_dir, create_new_csv, binary2list, init_serial, parsivel_list_2_csv
@@ -75,33 +76,41 @@ while True:
                     logger.info(msg=f'Created CSV: {data_dir / csvs_suffixes[suffix]}')
             parsivel_str_list = None
             prefix = None
+            filename = None
             for item in telegram_single_values:
-                if (item.decode('utf-8')).startswith(svfs_prefix):
-                    filename=csvs_suffixes['SVFS']
-                    prefix = 'SVFS:'
-                elif (item.decode('utf-8')).startswith('F90'):
-                    print("F90:", item)
-                    filename=csvs_suffixes['F90']
-                    prefix = 'F90:'
-                elif (item.decode('utf-8')).startswith('F91'):
-                    filename=csvs_suffixes['F91']
-                    prefix = 'F91:'
-                    print("F91:", item)
-                elif (item.decode('utf-8')).startswith('F93'):
-                    filename=csvs_suffixes['F93']
-                    prefix = 'F93:'
-                    print("F93:", item)
-                    # TODO: remove : from 1st item
-                elif (item.decode('utf-8')).startswith('F61'):
-                    filename=csvs_suffixes['F61']
-                    prefix = 'F61:'
-                    print("F61:", item) 
+                #capture prefix 
+                prefix_match = re.match(r'(^F\d\d:)', item.decode('utf-8'))
+                prefix = prefix_match.group(0)
+                print('RE prefix:', prefix)
+                filename=csvs_suffixes[prefix.replace(":",'')]
+                # if (item.decode('utf-8')).startswith(svfs_prefix):
+                #     filename=csvs_suffixes['SVFS']
+                #     prefix = 'SVFS:'
+                # elif (item.decode('utf-8')).startswith('F90'):
+                #     print("F90:", item)
+                #     filename=csvs_suffixes['F90']
+                #     prefix = 'F90:'
+                # elif (item.decode('utf-8')).startswith('F91'):
+                #     filename=csvs_suffixes['F91']
+                #     prefix = 'F91:'
+                #     print("F91:", item)
+                # elif (item.decode('utf-8')).startswith('F93'):
+                #     filename=csvs_suffixes['F93']
+                #     prefix = 'F93:'
+                #     print("F93:", item)
+                # elif (item.decode('utf-8')).startswith('F61'):
+                #     filename=csvs_suffixes['F61']
+                #     prefix = 'F61:'
+                #     print("F61:", item) 
     
-                if item and prefix:
+                if item and prefix and filename:
                     print('write to:', filename, 'prefix:', prefix)
                     parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
                                         prefix=prefix, data_dir=data_dir, filename=filename)
-                    parsivel_str_list = None  # reset 
+                    # reset vars
+                    parsivel_str_list = None
+                    prefix = None
+                    filename = None 
             print('\n')
 
 
