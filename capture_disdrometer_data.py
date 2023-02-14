@@ -81,8 +81,6 @@ while True:
                 #capture prefix 
                 prefix_match = re.match(r'(^F\d\d:)', item.decode('utf-8'))
                 prefix = prefix_match.group(0)
-                print('RE prefix:', prefix)
-                filename=csvs_suffixes[prefix.replace(":",'')]
                 # if (item.decode('utf-8')).startswith(svfs_prefix):
                 #     filename=csvs_suffixes['SVFS']
                 #     prefix = 'SVFS:'
@@ -103,7 +101,10 @@ while True:
                 #     prefix = 'F61:'
                 #     print("F61:", item) 
     
-                if item and prefix and filename:
+                if item and prefix:
+                    print('item:', item.decode('utf-8'))
+                    print('RE prefix:', prefix)
+                    filename=csvs_suffixes[prefix.replace(":",'')]                    
                     print('write to:', filename, 'prefix:', prefix)
                     parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
                                         prefix=prefix, data_dir=data_dir, filename=filename)
