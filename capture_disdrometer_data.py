@@ -2,7 +2,7 @@ import csv
 import re
 from datetime import datetime
 from pathlib import Path
-from  util_functions import yaml2dict, create_dir, create_new_csv, binary2list, init_serial, parsivel_list_2_csv
+from  util_functions import yaml2dict, create_dir, create_new_csv, init_serial, parsivel_list_2_csv
 from parsivel_cmds import *
 from log import log 
 from time import sleep
@@ -61,7 +61,7 @@ while True:
             parsivel.write(svfs_cmd)
             sleep(1)
             parsivel.write('CS/P\r\n'.encode('utf-8'))
-            telegram_single_values=parsivel.readlines()
+            telegram_lines=parsivel.readlines()
 
             # create CSVs
             csvs_suffixes = {'SVFS':None, 'F90':None, 'F91':None, 'F93':None, 'F61':None}
@@ -70,7 +70,7 @@ while True:
                 csvs_suffixes[suffix] = filename
                 if suffix == 'SVFS':
                     headers = ["timestamp"] + ((svfs.replace('%','')).split(';'))
-                    headers = headers[:-1] # remove last (empty) item from headers list
+                    headers = headers[:-1] # remove last (empty) telegram_line from headers list
                     print('headers:', headers)  
                 else:
                     headers = []
@@ -80,9 +80,9 @@ while True:
             parsivel_str_list = None
             prefix = None
             filename = None
-            for item in telegram_single_values:
+            for telegram_line in telegram_lines:
                 #capture prefix 
-                prefix_match = re.match(r'(^.{3,4}):(.*?)$', item.decode('utf-8'))  # TODO: how expression handles F61
+                prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line.decode('utf-8'))  # TODO: how expression handles F61
                 if prefix_match:
                     prefix = prefix_match.group(1)
                     values = prefix_match.group(2)
@@ -112,17 +112,15 @@ while True:
 
 
 # TODO:
-# * check how field 61 is written 
 # * monthly dir creation
 # - [X] write to CSV 
 #   - [X] Single Value Fields
 #   - [X] F90
 #   - [X] F91
 #   - [X] F93
-#   - [ ] F61 (dont write empty lines)
+#   - [ ] F61 not sure if the input will be multi line and how to handle it
 # - [ ] CSV headers: 
     # - [x] numbers
     # - [ ] parameter names
-# * write to several CSVs
-# * add timestamp to CSV headers
+# use of classes to store 
 # documentation on seperate CSVs

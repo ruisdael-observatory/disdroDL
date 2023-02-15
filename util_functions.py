@@ -30,12 +30,7 @@ def create_new_csv(csv_path, headers, delimiter=";"):
     else:
         created_csv = False
 
-def binary2list(binarystr, delimiter, prefix):
-    binarystr = binarystr.decode('utf-8') 
-    binarystr = binarystr.replace(prefix, '')
-    # binarystr = binarystr.replace('\n','').replace('\r','') # strip non-printing chars
-    binarystr_list = binarystr.split(delimiter) 
-    return binarystr_list  
+
 
 def append_csv_row(data_dir, filename, delimiter, row_list):
     with open(data_dir / filename, "a") as f:
@@ -44,10 +39,9 @@ def append_csv_row(data_dir, filename, delimiter, row_list):
 
 def parsivel_list_2_csv(timestamp, valuestr, delimiter, prefix, data_dir, filename):
     parsivel_row_value_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
-    # parsivel_row_value_list = binary2list(binarystr=binarystr, delimiter=delimiter, prefix=prefix)
     parsivel_row_value_list = [timestamp] + parsivel_row_value_list
     print(prefix, parsivel_row_value_list)
-    if len(parsivel_row_value_list) > 0:
+    if prefix == 'F61' and parsivel_row_value_list[1] != '' :
         if parsivel_row_value_list[-1] == '\n':
             parsivel_row_value_list = parsivel_row_value_list[:-1]  
         append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, row_list=parsivel_row_value_list)
