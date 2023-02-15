@@ -81,33 +81,40 @@ while True:
             prefix = None
             filename = None
             for item in telegram_single_values:
-                print('item:', item)
+                print(item)
                 #capture prefix 
                 prefix_match = re.match(r'(^.{3,4}):', item.decode('utf-8'))
-                print(prefix_match)
-                if prefix_match:
-                    prefix = prefix_match.group(0)
-                    print('item:', item.decode('utf-8'))
-                    print('RE prefix:', prefix)
-                    filename=csvs_suffixes[prefix]                    
-                    print('write to:', filename, 'prefix:', prefix)
-                    parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
-                                        prefix=prefix, data_dir=data_dir, filename=filename)
-                    # reset vars
-                    parsivel_str_list = None
-                    prefix = None
-                    filename = None 
-            print('\n')
 
-        elif int(now_hour_min_secs[2]) != 0 and flag_zero_seconds == True:
-            # once we passed 00secs: reset flag_zero_seconds
-            flag_zero_seconds = False
-    except Exception as e:
-        if hasattr(e, 'message'):
-            print(e.message)
-            logger.error(msg=e.message)
-        else:
-            print(e)
+                # ISSUE: why am I seeing ony matches for SVFS
+                print(prefix_match)
+                import pdb; pdb.set_trace()
+    #             if prefix_match:
+    #                 prefix = prefix_match.group(0)
+    #                 if prefix == 'F61':
+    #                     import pdb; pdb.set_trace()
+    #                 print('item:', item.decode('utf-8'))
+    #                 print('RE prefix:', prefix)
+    #                 filename=csvs_suffixes[prefix]                    
+    #                 print('write to:', filename, 'prefix:', prefix)
+    #                 parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
+    #                                     prefix=prefix, data_dir=data_dir, filename=filename)
+
+    #                 # Doing: F61
+    #                 # reset vars
+    #                 parsivel_str_list = None
+    #                 prefix = None
+    #                 filename = None 
+    #         print('\n')
+
+    #     elif int(now_hour_min_secs[2]) != 0 and flag_zero_seconds == True:
+    #         # once we passed 00secs: reset flag_zero_seconds
+    #         flag_zero_seconds = False
+    # except Exception as e:
+    #     if hasattr(e, 'message'):
+    #         print(e.message)
+    #         logger.error(msg=e.message)
+    #     else:
+    #         print(e)
     sleep(1)
 
 
