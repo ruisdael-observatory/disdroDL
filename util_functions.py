@@ -41,9 +41,12 @@ def parsivel_list_2_csv(timestamp, valuestr, delimiter, prefix, data_dir, filena
     parsivel_row_value_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
     parsivel_row_value_list = [timestamp] + parsivel_row_value_list
     print(prefix, parsivel_row_value_list)
-    if prefix == 'F61' and parsivel_row_value_list[1] != '' :
-        if parsivel_row_value_list[-1] == '\n':
-            parsivel_row_value_list = parsivel_row_value_list[:-1]  
+    if parsivel_row_value_list[-1] == '\n':
+        parsivel_row_value_list = parsivel_row_value_list[:-1]  
+    if prefix == 'F61' and parsivel_row_value_list[1] != '':
+        # prevent writing empty F61 
+        append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, row_list=parsivel_row_value_list)
+    else:
         append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, row_list=parsivel_row_value_list)
 
 
