@@ -42,8 +42,9 @@ def append_csv_row(data_dir, filename, delimiter, row_list):
         writer = csv.writer(f, delimiter=delimiter)
         writer.writerow(row_list)
 
-def parsivel_list_2_csv(timestamp, binarystr, delimiter, prefix, data_dir, filename):
-    parsivel_row_value_list = binary2list(binarystr=binarystr, delimiter=delimiter, prefix=prefix)
+def parsivel_list_2_csv(timestamp, valuestr, delimiter, prefix, data_dir, filename):
+    parsivel_row_value_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
+    # parsivel_row_value_list = binary2list(binarystr=binarystr, delimiter=delimiter, prefix=prefix)
     parsivel_row_value_list = [timestamp] + parsivel_row_value_list
     if parsivel_row_value_list[-1] == '\n':
         parsivel_row_value_list = parsivel_row_value_list[:-1]  
