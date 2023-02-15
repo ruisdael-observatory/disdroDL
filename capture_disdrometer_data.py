@@ -109,12 +109,12 @@ while True:
     #     elif int(now_hour_min_secs[2]) != 0 and flag_zero_seconds == True:
     #         # once we passed 00secs: reset flag_zero_seconds
     #         flag_zero_seconds = False
-    # except Exception as e:
-    #     if hasattr(e, 'message'):
-    #         print(e.message)
-    #         logger.error(msg=e.message)
-    #     else:
-    #         print(e)
+    except Exception as e:
+        if hasattr(e, 'message'):
+            print(e.message)
+            logger.error(msg=e.message)
+        else:
+            print(e)
     sleep(1)
 
 
