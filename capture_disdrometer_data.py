@@ -81,9 +81,9 @@ while True:
             prefix = None
             filename = None
             for item in telegram_single_values:
-                print(item)
+                print('item:', item)
                 #capture prefix 
-                prefix_match = re.match(r'(^\w{3,4}):', item.decode('utf-8'))
+                prefix_match = re.match(r'(^.{3,4}):', item.decode('utf-8'))
                 print(prefix_match)
                 if prefix_match:
                     prefix = prefix_match.group(0)
