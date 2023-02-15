@@ -83,15 +83,17 @@ while True:
             for item in telegram_single_values:
                 print(item)
                 #capture prefix 
-                prefix_match = re.match(r'(^.{3,4}):', item.decode('utf-8'))
+                prefix_match = re.match(r'(^.{3,4}:(.*?)$', item.decode('utf-8'))  # todo: how expression handles F61
 
                 # ISSUE: why am I seeing ony matches for SVFS
                 print(prefix_match)
-                import pdb; pdb.set_trace()
-    #             if prefix_match:
-    #                 prefix = prefix_match.group(0)
-    #                 if prefix == 'F61':
-    #                     import pdb; pdb.set_trace()
+                if prefix_match.group(1):
+                    import pdb; pdb.set_trace()
+                    prefix = prefix_match.group(1)
+                    values = prefix_match.group(2)
+    #               if prefix == 'F61':  # TODO: fix indentnation
+    #                    b'F61:;'
+
     #                 print('item:', item.decode('utf-8'))
     #                 print('RE prefix:', prefix)
     #                 filename=csvs_suffixes[prefix]                    
