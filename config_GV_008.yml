@@ -7,3 +7,44 @@ station_name: 'GV' # keep under 10 characters, max accepted by Parsivel
 script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
 log_dir: '/var/log/disdroDL/'
+
+telegram_fields:
+  '01': Rain intensity (mm/h)
+  '02': Rain amount accumulated (mm)
+  '03': Weather code to SYNOP waw
+  '04': Weather code to SYNOP ww
+  '05': Weather co de METAR/SPECI
+  '06': Weather co de according to NWS 
+  '07': Radar reflectivity (dBz)
+  '08': MOR visibility in precipitation (m)
+  '09': Sample interval (s)
+  '10': Signal amplitude of the laser strip
+  '11': Number of particles detected and validated
+  '12': Temperature in the sen sor housing (°C)
+  '13': Sensor serial number
+  '14': Firmware IOP version number
+  '15': Firmware DSP version number
+  '16': Sensor head heating current (A)
+  '17': Power supply voltage (V)
+  '18': Sensor status
+  '19': Date/time measuring start
+  '20': Sensor time
+  '21': Sensor date
+  '22': Station name
+  '23': Station number
+  '24': Rain amount absolute (mm)
+  '25': Error code
+  '26': Temperature PCB (°C)
+  '27': Temperature right sensor head (°C)  
+  '28': Temperature left sensor head (°C)  
+  '30': Rain intensity max. 30.000 mm/h (mm/h)
+  '31': Rain intensity max. 1200.0 mm/h (mm/h)
+  '32': Rain amount accumulate (mm)
+  '33': Radar reflectivit (dBz)
+  '34': Kinetic energy (J/(m2h))
+  '35': Snow depth intensity (mm/h)
+  '60': Number of all particles detected
+  '61': List of all particles detected (particle-size speed) (mm mm/h) 
+  '90': Field N(d) (log 10 (1/m 3 mm))
+  '91': Field v(d) (m/s)
+  '93': Raw data
