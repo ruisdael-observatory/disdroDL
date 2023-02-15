@@ -99,9 +99,9 @@ while True:
                     filename = None 
             print('\n')
 
-    #     elif int(now_hour_min_secs[2]) != 0 and flag_zero_seconds == True:
-    #         # once we passed 00secs: reset flag_zero_seconds
-    #         flag_zero_seconds = False
+        elif int(now_hour_min_secs[2]) != 0 and flag_zero_seconds == True:
+            # once we passed 00secs: reset flag_zero_seconds
+            flag_zero_seconds = False
     except Exception as e:
         if hasattr(e, 'message'):
             print(e.message)
