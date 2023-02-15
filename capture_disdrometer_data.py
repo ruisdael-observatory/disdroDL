@@ -51,6 +51,9 @@ while True:
                 logger.info(msg=f'Created data directory: {data_dir}')
 
             # request telegram
+            # although requested in the same telegram string,
+            # single value fields(svfs) and multi value fields are appended to telegram string
+            # so that svfs numbers can be used in CSV headers 
             svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;'
             svfs_prefix = 'SVFS:'  # Single Value Fields; for identification 
             svfs_cmd = 'CS/M/S/' + svfs_prefix
@@ -80,13 +83,13 @@ while True:
             for item in telegram_single_values:
                 print(item)
                 #capture prefix 
-                prefix_match = re.match(r'(^\w{3,4}:)', item.decode('utf-8'))
+                prefix_match = re.match(r'(^\w{3,4}):', item.decode('utf-8'))
                 print(prefix_match)
                 if prefix_match:
                     prefix = prefix_match.group(0)
                     print('item:', item.decode('utf-8'))
                     print('RE prefix:', prefix)
-                    filename=csvs_suffixes[prefix.replace(":",'')]                    
+                    filename=csvs_suffixes[prefix]                    
                     print('write to:', filename, 'prefix:', prefix)
                     parsivel_list_2_csv(timestamp=now_utc_iso, binarystr=item, delimiter=';', 
                                         prefix=prefix, data_dir=data_dir, filename=filename)
@@ -95,7 +98,6 @@ while True:
                     prefix = None
                     filename = None 
             print('\n')
-
 
         elif int(now_hour_min_secs[2]) != 0 and flag_zero_seconds == True:
             # once we passed 00secs: reset flag_zero_seconds
@@ -113,7 +115,11 @@ while True:
 # * check how field 61 is written 
 # * monthly dir creation
 # - [X] write to CSV 
-#   - [ ] Single Value Fields 
+#   - [X] Single Value Fields
+#   - [X] F90
+#   - [X] F91
+#   - [X] F93
+#   - [ ] F61 (dont write empty lines)
 # - [ ] CSV headers: 
     # - [x] numbers
     # - [ ] parameter names
