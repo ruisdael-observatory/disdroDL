@@ -75,3 +75,25 @@ poll data: `echo -en 'CS/P\r' > /dev/ttyUSB0`
 
 print config: `echo -en "CS/L\r\n" > /dev/ttyUSB0`
 
+
+
+## F61 only 1 value pair from each call
+2023.02.16
+
+The F61 in te correct version is only receiving one line"
+
+I am not sure the request is returning only 1 value, or whether the processing of the telegram is discarding the following lines.
+
+The value capture is `'00.798;02.139\r'`
+
+Resulting in the CSV:
+
+```
+2023-02-16T09:35:00.366139;00.785;02.381
+2023-02-16T09:39:00.305705;00.517;01.347
+2023-02-16T09:48:00.884114;00.689;01.971
+```
+
+I will stop the script and send a telegram request just for F61
+
+ `echo -en 'CS/M/S/%61\r\n' > /dev/ttyUSB0`
