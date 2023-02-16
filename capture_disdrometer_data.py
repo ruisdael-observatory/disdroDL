@@ -80,6 +80,7 @@ while True:
             parsivel_str_list = None
             prefix = None
             filename = None
+            print('telegram_lines:', telegram_lines)
             for telegram_line in telegram_lines:
                 #capture prefix 
                 prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line.decode('utf-8'))  # TODO: how expression handles F61
@@ -87,9 +88,10 @@ while True:
                     prefix = prefix_match.group(1)
                     values = prefix_match.group(2)
                     print('prefix:', prefix)
-                    print('values:', values)
+                    # print('values:', values)
                     if prefix == 'F61':  # TODO: fix indentnation
                         values = values.replace('\r', '')
+                        print('F61:', values)
                         # import pdb; pdb.set_trace()    # b'F61:;'
                         # values '00.798;02.139\r'
                         # F61 ['2023-02-16T08:47:00.059784', '00.798', '02.139\r']
