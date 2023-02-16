@@ -37,7 +37,7 @@ while True:
         now_hour_min_secs = now_utc.strftime("%H:%M:%S")
         now_hour_min_secs = now_hour_min_secs.split(":")
         print(now_hour_min_secs)
-        if int(now_hour_min_secs[2]) == 0 and flag_zero_seconds == False:
+        if int(now_hour_min_secs[1])%5 == 0 and int(now_hour_min_secs[2]) == 0 and flag_zero_seconds == False:
             print('time to write:', now_hour_min_secs, datetime.utcnow().strftime("%H:%M:%S"))
             flag_zero_seconds = True
             # dates
@@ -80,6 +80,7 @@ while True:
             parsivel_str_list = None
             prefix = None
             filename = None
+            print('telegram_lines:', telegram_lines)
             for telegram_line in telegram_lines:
                 #capture prefix 
                 prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line.decode('utf-8'))  # TODO: how expression handles F61
@@ -87,9 +88,10 @@ while True:
                     prefix = prefix_match.group(1)
                     values = prefix_match.group(2)
                     print('prefix:', prefix)
-                    print('values:', values)
-                    if prefix == 'F61':  # TODO: fix indentnation
+                    # print('values:', values)
+                    if prefix == 'F61':  
                         values = values.replace('\r', '')
+                        print('F61:', values)
                         # import pdb; pdb.set_trace()    # b'F61:;'
                         # values '00.798;02.139\r'
                         # F61 ['2023-02-16T08:47:00.059784', '00.798', '02.139\r']
