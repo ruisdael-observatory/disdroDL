@@ -29,18 +29,18 @@ parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logge
 parsivel.reset_input_buffer()  # Flushes input buffer
 sleep(10)
 parsivel.write('CS/M/M/1\r\n'.encode('utf-8')) # User defined telegram
-
-svfs_cmd = 'CS/M/S/F61:%61;\r\n'.encode('utf-8')
-parsivel.write(svfs_cmd)
 sleep(1)
-parsivel.write('CS/P\r\n'.encode('utf-8'))
-telegram_lines=parsivel.readlines()
-print(telegram_lines)
-
+svfs_cmd = 'CS/M/S/%61\r'.encode('utf-8')
+#svfs_cmd = 'CS/R/61\r'.encode('utf-8')
 while True:
     now_utc = datetime.utcnow()
     now_hour_min_secs = now_utc.strftime("%H:%M:%S")    
     print(now_hour_min_secs)
+    parsivel.write(svfs_cmd)
+    sleep(1)
+    parsivel.write('CS/P\r\n'.encode('utf-8'))
+    telegram_lines=parsivel.readlines()
+    print(telegram_lines)
     for telegram_line in telegram_lines:
         print('line', telegram_line)
     sleep(60)

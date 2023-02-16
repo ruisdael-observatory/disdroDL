@@ -37,7 +37,7 @@ while True:
         now_hour_min_secs = now_utc.strftime("%H:%M:%S")
         now_hour_min_secs = now_hour_min_secs.split(":")
         print(now_hour_min_secs)
-        if int(now_hour_min_secs[1])%5 == 0 and int(now_hour_min_secs[2]) == 0 and flag_zero_seconds == False:
+        if int(now_hour_min_secs[2]) == 0 and flag_zero_seconds == False:
             print('time to write:', now_hour_min_secs, datetime.utcnow().strftime("%H:%M:%S"))
             flag_zero_seconds = True
             # dates
@@ -57,7 +57,7 @@ while True:
             svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;'
             svfs_prefix = 'SVFS:'  # Single Value Fields; for identification 
             svfs_cmd = 'CS/M/S/' + svfs_prefix
-            svfs_cmd = (svfs_cmd + svfs + '\nF90:%90;\nF91:%91;\nF93:%93;\nF61:%61;\r\n').encode('utf-8')
+            svfs_cmd = (svfs_cmd + svfs + '\nF90:%90;\nF91:%91;\nF93:%93;\nF61:%61;\r').encode('utf-8')
             parsivel.write(svfs_cmd)
             sleep(1)
             parsivel.write('CS/P\r\n'.encode('utf-8'))
@@ -89,10 +89,11 @@ while True:
                     values = prefix_match.group(2)
                     print('prefix:', prefix)
                     # print('values:', values)
+                    # todo: condition to filter empty F61
                     if prefix == 'F61':  
                         values = values.replace('\r', '')
                         print('F61:', values)
-                        # import pdb; pdb.set_trace()    # b'F61:;'
+                        import pdb; pdb.set_trace()    # b'F61:;'
                         # values '00.798;02.139\r'
                         # F61 ['2023-02-16T08:47:00.059784', '00.798', '02.139\r']
                         # "023-02-16T08:47:00.059784;00.798;"02.139
