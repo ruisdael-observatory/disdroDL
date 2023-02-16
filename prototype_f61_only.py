@@ -31,7 +31,7 @@ parsivel.write('CS/Z/1\r\n'.encode('utf-8'))  # Restart sensor, reset the rain a
 sleep(10)
 parsivel.write('CS/M/M/1\r\n'.encode('utf-8')) # User defined telegram
 
-svfs_cmd = 'CS/M/S/F61:%61;\r\n'
+svfs_cmd = 'CS/M/S/F61:%61;\r\n'.encode('utf-8')
 parsivel.write(svfs_cmd)
 sleep(1)
 parsivel.write('CS/P\r\n'.encode('utf-8'))
