@@ -13,6 +13,17 @@ print('starting script')
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'config.yml')
 
+# set up log
+log_dir = Path(config_dict['log_dir'])
+created_log_dir = create_dir(log_dir)
+log_file = log_dir / 'log.json'
+logger = log(log_path=log_file, 
+            log_name=f"{config_dict['script_name']}: {config_dict['Parsivel_name']}")  
+logger.info(msg=f"Starting {__file__} for {config_dict['Parsivel_name']}")
+print(f'{__file__} running\nLogs written to {log_dir}')
+
+
+
 # intiated serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
 parsivel.reset_input_buffer()  # Flushes input buffer
