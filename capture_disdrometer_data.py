@@ -88,8 +88,13 @@ while True:
                     values = prefix_match.group(2)
                     print('prefix:', prefix)
                     print('values:', values)
-                    # if prefix == 'F61':  # TODO: fix indentnation
-                        # b'F61:;'
+                    if prefix == 'F61':  # TODO: fix indentnation
+                        values = values.replace('\r', '')
+                        # import pdb; pdb.set_trace()    # b'F61:;'
+                        # values '00.798;02.139\r'
+                        # F61 ['2023-02-16T08:47:00.059784', '00.798', '02.139\r']
+                        # "023-02-16T08:47:00.059784;00.798;"02.139
+
                     filename=csvs_suffixes[prefix]                    
                     print('write to:', filename, 'prefix:', prefix)
                     parsivel_list_2_csv(timestamp=now_utc_iso, valuestr=values, delimiter=';', 
