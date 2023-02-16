@@ -27,7 +27,6 @@ print(f'{__file__} running\nLogs written to {log_dir}')
 # intiated serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
 parsivel.reset_input_buffer()  # Flushes input buffer
-parsivel.write('CS/Z/1\r\n'.encode('utf-8'))  # Restart sensor, reset the rain amount
 sleep(10)
 parsivel.write('CS/M/M/1\r\n'.encode('utf-8')) # User defined telegram
 
@@ -38,6 +37,10 @@ parsivel.write('CS/P\r\n'.encode('utf-8'))
 telegram_lines=parsivel.readlines()
 print(telegram_lines)
 
-for telegram_line in telegram_lines:
-    print('line', telegram_line)
-
+while True:
+    now_utc = datetime.utcnow()
+    now_hour_min_secs = now_utc.strftime("%H:%M:%S")    
+    print(now_hour_min_secs)
+    for telegram_line in telegram_lines:
+        print('line', telegram_line)
+    sleep(60)
