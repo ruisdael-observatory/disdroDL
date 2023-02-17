@@ -1,10 +1,10 @@
 import re
 from datetime import datetime
 from pathlib import Path
-from util_functions import yaml2dict, create_dir, create_new_csv, init_serial, append_csv_row, string2row, join_f61_items
-from parsivel_cmds import *
-from log import log 
 from time import sleep
+from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, append_csv_row, string2row, join_f61_items
+from modules.parsivel_cmds import *
+from modules.log import log 
 
 print('starting script')
 
@@ -19,7 +19,6 @@ logger = log(log_path=log_file,
             log_name=f"{config_dict['script_name']}: {config_dict['Parsivel_name']}")  
 logger.info(msg=f"Starting {__file__} for {config_dict['Parsivel_name']}")
 print(f'{__file__} running\nLogs written to {log_dir}')
-
 
 # intiated serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)

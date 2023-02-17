@@ -1,13 +1,10 @@
 from datetime import datetime
 from pathlib import Path
-from  util_functions import yaml2dict
+from  modules.util_functions import yaml2dict
 
 
-print(__file__)
-wd = Path(__file__).parent 
+wd = Path(__file__).parent.parent 
 config_dict = yaml2dict(path = wd / 'config.yml')
-
-
 parsivel_telegram_command = 'CS/RA\r'.encode('utf-8')  # Asks the Parsivel to read out all fields
 parsivel_request_field_61 = 'CS/R/61\r'.encode('utf-8')  # Asks the Parsivel to read out field 61
 parsivel_request_field_91 = 'CS/R/91\r'.encode('utf-8')  # Asks the Parsivel to read out field 61
