@@ -123,3 +123,4 @@ slowing while loop to every 10min, so that the droplets can be accumulated
 
 
 look at regex 
+

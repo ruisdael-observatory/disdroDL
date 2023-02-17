@@ -37,7 +37,7 @@ def append_csv_row(data_dir, filename, delimiter, data_list):
         writer = csv.writer(f, delimiter=delimiter)
         if type(data_list[0]) == list:
             for data_item in data_list:
-                writer.writerow(data_list)                
+                writer.writerow(delimiter.join(data_list))                
         elif type(data_list[0]) == str:
             writer.writerow(data_list)
 
