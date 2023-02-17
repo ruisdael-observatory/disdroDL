@@ -32,10 +32,28 @@ def create_new_csv(csv_path, headers, delimiter=";"):
 
 
 
-def append_csv_row(data_dir, filename, delimiter, row_list):
+def append_csv_row(data_dir, filename, delimiter, data_list):
     with open(data_dir / filename, "a") as f:
         writer = csv.writer(f, delimiter=delimiter)
-        writer.writerow(row_list)
+        if type(data_list[0]) == list:
+            for data_item in data_list:
+                writer.writerow(data_list)                
+        elif type(data_list[0]) == str:
+            writer.writerow(data_list)
+
+# TODO: add timestamp to first item of data_list list or sublists
+
+def string2row(timestamp, valuestr, delimiter, prefix):
+    '''
+    Converts a telegram string to a list of values, separated by the delimiter 
+    and added timestamp to first item.
+    The output is ready to be written to CSV 
+    '''
+    values_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
+    values_list = [timestamp] + values_list
+    if values_list[-1] == '\n':
+        values_list = values_list[:-1]  
+    return values_list
 
 def parsivel_list_2_csv(timestamp, valuestr, delimiter, prefix, data_dir, filename):
     parsivel_row_value_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
@@ -47,9 +65,9 @@ def parsivel_list_2_csv(timestamp, valuestr, delimiter, prefix, data_dir, filena
     if prefix == 'F61':
         if parsivel_row_value_list[1] != '':
             # prevent writing empty F61 
-            append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, row_list=parsivel_row_value_list)
+            append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, data_list=parsivel_row_value_list)
     else:
-        append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, row_list=parsivel_row_value_list)
+        append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, data_list=parsivel_row_value_list)
 
 
 def init_serial(port: str, baud: int, logger):
