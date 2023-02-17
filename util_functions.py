@@ -41,8 +41,6 @@ def append_csv_row(data_dir, filename, delimiter, data_list):
         elif type(data_list[0]) == str:
             writer.writerow(data_list)
 
-# TODO: add timestamp to first item of data_list list or sublists
-
 def string2row(timestamp, valuestr, delimiter, prefix):
     '''
     Converts a telegram string to a list of values, separated by the delimiter 
@@ -55,19 +53,35 @@ def string2row(timestamp, valuestr, delimiter, prefix):
         values_list = values_list[:-1]  
     return values_list
 
-def parsivel_list_2_csv(timestamp, valuestr, delimiter, prefix, data_dir, filename):
-    parsivel_row_value_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
-    parsivel_row_value_list = [timestamp] + parsivel_row_value_list
-    print(prefix, parsivel_row_value_list)
-    if parsivel_row_value_list[-1] == '\n':
-        parsivel_row_value_list = parsivel_row_value_list[:-1]  
+def join_f61_items(telegram_list):
+    '''
+    def uses the telegram_list index, of where F61 is positioned
+    to mark th start of F61 items in telegram_list.
+    Those items (with exception iog last, empty item) are return in the list of string f61_items
 
-    if prefix == 'F61':
-        if parsivel_row_value_list[1] != '':
-            # prevent writing empty F61 
-            append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, data_list=parsivel_row_value_list)
-    else:
-        append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, data_list=parsivel_row_value_list)
+    Each one of the f61_items will be a row, with 2 columns (3 if we include timestamp).
+    '''
+    for index, item in enumerate(telegram_list):
+        if 'F61:' in item.decode('utf-8'):
+            f61_items = telegram_list[index:-1]  
+            f61_items = [item.decode('utf-8').replace('\r\n', '').replace('F61:','') for item in f61_items]
+            f61_items = f61_items
+    return f61_items
+
+
+# def parsivel_list_2_csv(timestamp, valuestr, delimiter, prefix, data_dir, filename):
+#     parsivel_row_value_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
+#     parsivel_row_value_list = [timestamp] + parsivel_row_value_list
+#     print(prefix, parsivel_row_value_list)
+#     if parsivel_row_value_list[-1] == '\n':
+#         parsivel_row_value_list = parsivel_row_value_list[:-1]  
+
+#     if prefix == 'F61':
+#         if parsivel_row_value_list[1] != '':
+#             # prevent writing empty F61 
+#             append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, data_list=parsivel_row_value_list)
+#     else:
+#         append_csv_row(data_dir=data_dir, filename=filename, delimiter=delimiter, data_list=parsivel_row_value_list)
 
 
 def init_serial(port: str, baud: int, logger):
