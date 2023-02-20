@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
-from  modules.util_functions import yaml2dict, capture_telegram_prfx_vars, join_f61_items,string2row, append_csv_row
+from  modules.util_functions import yaml2dict, capture_telegram_prfx_vars, join_f61_items,string2row, append_csv_row, csv_headers, create_new_csv
 
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
 csvs_suffixes = {'SVFS':'test_SVFS.csv', 'F90':'test_F90.csv', 'F91':'test_F91.csv', 'F93':'test_F93.csv', 'F61':'test_F61.csv'}
 now_utc_iso = '2023-02-16T14:10:00.966776'
+svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;'
+config_dict = yaml2dict(path = wd / 'config.yml')
 telegram_lines=[b'OK\r\n', 
                 b'\n', 
                 b'SVFS:0000.000;0000.00;00;00;   NP;   C;-9.999;20000;00059;12773;00000;012;450994;2.11.6;2.11.1;0.50;24.3;0;14:09:59;16.02.2023;;;0000.00;000;025;013;013;00.000;0000.0;0000.00;-9.99;0000.00;0000.00;00000007;\n', 
@@ -20,7 +22,6 @@ telegram_lines=[b'OK\r\n',
                 b'00.559;01.710\r\n', 
                 b'00.571;01.572\r\n', 
                 b';']
-
 f61_rows = [['2023-02-16T14:10:00.966776', '00.502', '00.853'],
             ['2023-02-16T14:10:00.966776', '00.606', '02.026'],
             ['2023-02-16T14:10:00.966776', '00.550', '01.595'],
@@ -28,10 +29,9 @@ f61_rows = [['2023-02-16T14:10:00.966776', '00.502', '00.853'],
             ['2023-02-16T14:10:00.966776', '00.540', '01.070'],
             ['2023-02-16T14:10:00.966776', '00.559', '01.710'],
             ['2023-02-16T14:10:00.966776', '00.571', '01.572']]
+svfs_telegram_line = telegram_lines[2]
 
 def test_yaml():
-    config_dict = yaml2dict(path = wd / 'config.yml')
-    # print(config_dict)
     assert len(config_dict.keys()) > 1
 
 
@@ -80,3 +80,32 @@ def test_append_row_f61():
             if n == 0:
                 assert row_list[0] == '2023-02-16T14:10:00.966776' and row_list[1] == '00.502' and row_list[2] == '00.853\n'
             print(n, row_list)
+
+def test_csv_headers():
+    # SVFS headers 
+    headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
+    assert headers[-1] != ''
+    assert headers[0] == 'timestamp' and headers[1] == 'Rain intensity (mm/h)' and headers[-1] == 'Number of all particles detected'
+    # print(len(headers)) # 35
+    csv_path = test_data_dir/csvs_suffixes['SVFS']
+    if csv_path.is_file():
+        os.remove(test_data_dir / csvs_suffixes['SVFS'])
+    create_new_csv(csv_path=csv_path, headers=headers, delimiter=";")
+    prefix, values = capture_telegram_prfx_vars(telegram_line=svfs_telegram_line)
+    assert prefix == 'SVFS'
+    values_list = string2row(timestamp=now_utc_iso, valuestr=values, delimiter=';', prefix=prefix)
+    print(values_list)
+    assert len(values_list) > 1
+    append_csv_row(data_dir=test_data_dir, filename=csvs_suffixes['SVFS'], delimiter=";", data_list=values_list)
+    with open(test_data_dir / csvs_suffixes['SVFS'], "r") as f:
+        headers_in_csv = (list(f)[0]).split(";") # for row in f:
+        assert headers_in_csv[0] == 'timestamp' 
+        assert headers_in_csv[1] == 'Rain intensity (mm/h)' 
+        assert headers_in_csv[-1] == 'Number of all particles detected\n'
+        data_rows = (list(f)[1:])
+        for row in data_rows:
+            print(row)
+            assert row[0] == now_utc_iso
+            assert row[8] == '20000' 
+            assert row[18] == '14:09:59'
+        # assert headers_in_csv[-1] == 'Number of all particles detected\n'

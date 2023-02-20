@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from time import sleep
-from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items
+from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items, csv_headers
 from modules.parsivel_cmds import *
 from modules.log import log 
 
@@ -67,9 +67,8 @@ while True:
                 filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}_{suffix}.csv"
                 csvs_suffixes[suffix] = filename
                 if suffix == 'SVFS':
-                    headers = ["timestamp"] + ((svfs.replace('%','')).split(';'))
-                    headers = headers[:-1] # remove last (empty) telegram_line from headers list
-                    print('headers:', headers)  
+                    headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
+                    # print('headers:', headers)  
                 else:
                     headers = []
                 created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)

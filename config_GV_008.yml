@@ -9,63 +9,102 @@ data_dir: '/data/disdroDL/'
 log_dir: '/var/log/disdroDL/'
 
 telegram_fields:
-  '01': Rain intensity
-    unit: mm/h
-  '02': Rain amount accumulated 
-		unit: mm
-  '03': Weather code to SYNOP waw
-  '04': Weather code to SYNOP ww
-  '05': Weather co de METAR/SPECI
-  '06': Weather co de according to NWS 
-  '07': Radar reflectivity 
-		unit: dBz
-  '08': MOR visibility in precipitation 
-		unit: m
-  '09': Sample interval 
-		unit: s
-  '10': Signal amplitude of the laser strip
-  '11': Number of particles detected and validated
-  '12': Temperature in the sen sor housing 
-		unit: °C
-  '13': Sensor serial number
-  '14': Firmware IOP version number
-  '15': Firmware DSP version number
-  '16': Sensor head heating current 
-		unit: A
-  '17': Power supply voltage 
-		unit: V
-  '18': Sensor status
-  '19': Date/time measuring start
-  '20': Sensor time
-  '21': Sensor date
-  '22': Station name
-  '23': Station number
-  '24': Rain amount absolute 
-		unit: mm
-  '25': Error code
-  '26': Temperature PCB 
-		unit: °C
-  '27': Temperature right sensor head 
-		unit: °C  
-  '28': Temperature left sensor head 
-		unit: °C  
-  '30': Rain intensity max. 30.000 mm/h
-		unit: mm/h
-  '31': Rain intensity max. 1200.0 mm/h
-		unit: mm/h
-  '32': Rain amount accumulate 
-		unit: mm
-  '33': Radar reflectivit 
-		unit: dBz
-  '34': Kinetic energy 
-  		unit: J/(m2h)
-  '35': Snow depth intensity
-		unit: mm/h  
-  '60': Number of all particles detected
-  '61': List of all particles detected (particle-size speed) 
-    unit: mm, mm/h 
-  '90': Field N
-		unit: log 10 (1/m 3 mm)
-  '91': Field v
-		unit: m/s
-  '93': Raw data
+  '01':
+      name: Rain intensity
+      unit: "mm/h"
+  '02':
+      name: Rain amount accumulated 
+      unit: "mm"
+  '03':
+      name: Weather code to SYNOP waw
+  '04':
+      name: Weather code to SYNOP ww
+  '05':
+      name: Weather co de METAR/SPECI
+  '06':
+      name: Weather co de according to NWS 
+  '07':
+      name: Radar reflectivity 
+      unit: "dBz"
+  '08':
+      name: MOR visibility in precipitation 
+      unit: "m"
+  '09':
+      name: Sample interval 
+      unit: "s"
+  '10':
+      name: Signal amplitude of the laser strip
+  '11':
+      name: Number of particles detected and validated
+  '12':
+      name: Temperature in the sen sor housing 
+      unit: "°C"
+  '13':
+      name: Sensor serial number
+  '14':
+      name: Firmware IOP version number
+  '15':
+      name: Firmware DSP version number
+  '16':
+      name: Sensor head heating current 
+      unit: "A"
+  '17':
+      name: Power supply voltage 
+      unit: "V"
+  '18':
+      name: Sensor status
+  '19':
+      name: Date/time measuring start
+  '20':
+      name: Sensor time
+  '21':
+      name: Sensor date
+  '22':
+      name: Station name
+  '23':
+      name: Station number
+  '24':
+      name: Rain amount absolute 
+      unit: "mm"
+  '25':
+      name: Error code
+  '26':
+      name: Temperature PCB 
+      unit: "°C"
+  '27':
+      name: Temperature right sensor head 
+      unit: "°C  "
+  '28':
+      name: Temperature left sensor head 
+      unit: "°C  "
+  '30':
+      name: Rain intensity max. 30.000 mm/h
+      unit: "mm/h"
+  '31':
+      name: Rain intensity max. 1200.0 mm/h
+      unit: "mm/h"
+  '32':
+      name: Rain amount accumulate 
+      unit: "mm"
+  '33':
+      name: Radar reflectivit 
+      unit: "dBz"
+  '34':
+      name: Kinetic energy 
+      unit: "J/(m^2h)"
+  '35':
+      name: Snow depth intensity
+      unit: "mm/h"
+  '60':
+      name: Number of all particles detected
+  '61':
+      name: List of all particles detected (particle-size speed)
+      unit: "mm, mm/h "
+  '90':
+      name: Field N
+      unit: "log10 (1/m^3 mm)"
+  '91':
+      name: Field v
+      unit: "m/s"
+  '93':
+      name: Raw data

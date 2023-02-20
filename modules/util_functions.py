@@ -31,6 +31,20 @@ def create_new_csv(csv_path, headers, delimiter=";"):
     else:
         created_csv = False
 
+def csv_headers(sfvs_telegram_resquest, config_dict):
+    '''for Single Value Fields 
+    config.yml telegram_fields name and unit are used to created the CSV headers
+    '''
+    headers_numbers = ((sfvs_telegram_resquest.replace('%','')).split(';'))[:-1]
+    headers_names = []
+    for key in headers_numbers:
+        header = f"{config_dict['telegram_fields'][key]['name']}"
+        if 'unit' in config_dict['telegram_fields'][key].keys():
+            header = f"{header} ({config_dict['telegram_fields'][key]['unit']})"
+        headers_names.append(header)
+    headers = ['timestamp'] + headers_names
+    return headers  
+
 def capture_telegram_prfx_vars(telegram_line):
     ''' input: line received from telegram
         output: line prefix, values
