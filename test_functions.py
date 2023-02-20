@@ -77,9 +77,11 @@ def test_append_row_f61():
         print(f)
         for n, row in enumerate(f):
             row_list = row.split(';')
-            if n == 0:
-                assert row_list[0] == '2023-02-16T14:10:00.966776' and row_list[1] == '00.502' and row_list[2] == '00.853\n'
             print(n, row_list)
+            if n == 0:
+                assert row_list[0] == '2023-02-16T14:10:00.966776' 
+                assert row_list[1] == '00.502' 
+                assert row_list[2] == '00.853\n' #TODO: remove \n
 
 def test_csv_headers():
     # SVFS headers 
@@ -97,15 +99,17 @@ def test_csv_headers():
     print(values_list)
     assert len(values_list) > 1
     append_csv_row(data_dir=test_data_dir, filename=csvs_suffixes['SVFS'], delimiter=";", data_list=values_list)
+    print('values_list',values_list)
     with open(test_data_dir / csvs_suffixes['SVFS'], "r") as f:
-        headers_in_csv = (list(f)[0]).split(";") # for row in f:
+        content = list(f)
+        headers_in_csv = (content[0]).split(";") # for row in f:
+        headers_in_csv_len = len(headers_in_csv)
         assert headers_in_csv[0] == 'timestamp' 
         assert headers_in_csv[1] == 'Rain intensity (mm/h)' 
         assert headers_in_csv[-1] == 'Number of all particles detected\n'
-        data_rows = (list(f)[1:])
-        for row in data_rows:
-            print(row)
-            assert row[0] == now_utc_iso
-            assert row[8] == '20000' 
-            assert row[18] == '14:09:59'
-        # assert headers_in_csv[-1] == 'Number of all particles detected\n'
+        data_rows = content[1].split(';')
+        assert data_rows[-1] != '\n'
+        assert headers_in_csv_len == len(data_rows)
+        assert data_rows[0] == now_utc_iso
+        assert data_rows[8] == '20000' 
+        assert data_rows[19] == '14:09:59'

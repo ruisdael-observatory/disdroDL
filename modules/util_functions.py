@@ -76,8 +76,9 @@ def string2row(timestamp, valuestr, delimiter, prefix):
     The output is ready to be written to CSV 
     '''
     values_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
+    # import pdb; pdb.set_trace()
     values_list = [timestamp] + values_list
-    if values_list[-1] == '\n':
+    if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
 

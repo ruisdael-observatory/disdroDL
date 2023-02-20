@@ -68,7 +68,7 @@ while True:
                 csvs_suffixes[suffix] = filename
                 if suffix == 'SVFS':
                     headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
-                    # print('headers:', headers)  
+                    print('headers:', headers)  
                 else:
                     headers = []
                 created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)
@@ -122,9 +122,14 @@ while True:
 #   - [X] F90
 #   - [X] F91
 #   - [X] F93
-#   - [ ] F61 not sure if the input will be multi line and how to handle it
-# - [ ] CSV headers: 
+# - [x] CSV headers: 
     # - [x] numbers
-    # - [ ] parameter names
+    # - [x] parameter names
+# - [ ] set Station name
+# - [ ]	set Station number 
+
 # use of classes to store 
 # documentation on seperate CSVs
+
+# F61: [['2023-02-20T12:33:00.694872', '00.362', '02.338']]
+# sequence item 0: expected str instance, list found
