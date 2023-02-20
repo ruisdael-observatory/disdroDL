@@ -2,8 +2,6 @@
 
 **Data Aquisition Script for Parsifel Disdrometer**
 
-(based on sftp.tudelft.nl:/staff-umbrella/Parsivel/Scripts/Parsivel_serial_communication_v3.py)
-
 * Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
 * Configuration values: [config.yml](config.yml)
 * Variables with Parsivel serial commands [parsivel_cmds.py](parsivel_cmds.py)
@@ -64,6 +62,10 @@ terminal one: listen to serial port `tail -f /dev/ttyUSB0`
 
 terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
+## Tests
+in [test_functions.py](test_functions.py)
+
+run: `pytest -s`
 
 
 # Changes implemented
