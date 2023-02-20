@@ -34,7 +34,6 @@ while True:
         now_utc = datetime.utcnow()
         now_hour_min_secs = now_utc.strftime("%H:%M:%S")
         now_hour_min_secs = now_hour_min_secs.split(":")
-        print(now_hour_min_secs)
         if int(now_hour_min_secs[2]) == 0 and flag_zero_seconds == False:
             print('time to write:', now_hour_min_secs, datetime.utcnow().strftime("%H:%M:%S"))
             flag_zero_seconds = True
