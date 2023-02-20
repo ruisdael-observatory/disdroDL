@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from time import sleep
-from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, append_csv_row, string2row, join_f61_items
+from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items
 from modules.parsivel_cmds import *
 from modules.log import log 
 
@@ -80,23 +80,21 @@ while True:
             filename = None
             print('telegram_lines:', telegram_lines)
             for telegram_line in telegram_lines:
-                #capture prefix 
-                prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line.decode('utf-8'))  # TODO: how expression handles F61
-                if prefix_match:
-                    prefix = prefix_match.group(1)
-                    values = prefix_match.group(2)
-                    print('prefix:', prefix)
-                    # print('values:', values)
-                    if prefix == 'F61':
-                        f61_rows =[]
-                        f61_values_items = join_f61_items(telegram_list=telegram_lines)
-                        for f61_item in f61_values_items:
-                            f61row = string2row(timestamp=now_utc_iso, valuestr=f61_item, delimiter=';', prefix=prefix)
-                            f61_rows.append(f61row)
-                        print('F61:', f61_rows)
-                        values_list = f61_rows
-                    else: 
-                        values_list = string2row(timestamp=now_utc_iso, valuestr=values, delimiter=';', prefix=prefix)
+                prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
+                if prefix and values and prefix == 'F61':
+                    f61_rows =[]
+                    f61_values_items = join_f61_items(telegram_list=telegram_lines)
+                    for f61_item in f61_values_items:
+                        f61row = string2row(timestamp=now_utc_iso, valuestr=f61_item, delimiter=';', prefix=prefix)
+                        f61_rows.append(f61row)
+                    print('F61:', f61_rows)
+                    values_list = f61_rows
+                    append_csv_row(data_dir=data_dir, filename=csvs_suffixes[prefix], delimiter=';', data_list=values_list)
+                    filename=csvs_suffixes[prefix]                    
+                    print('write to:', filename, 'prefix:', prefix)
+
+                elif prefix and values and prefix != 'F61':
+                    values_list = string2row(timestamp=now_utc_iso, valuestr=values, delimiter=';', prefix=prefix)
                     append_csv_row(data_dir=data_dir, filename=csvs_suffixes[prefix], delimiter=';', data_list=values_list)
                     filename=csvs_suffixes[prefix]                    
                     print('write to:', filename, 'prefix:', prefix)

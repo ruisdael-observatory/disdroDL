@@ -2,6 +2,7 @@ import yaml
 import os
 import csv
 import sys
+import re
 import serial
 from typing import Dict
 
@@ -30,6 +31,19 @@ def create_new_csv(csv_path, headers, delimiter=";"):
     else:
         created_csv = False
 
+def capture_telegram_prfx_vars(telegram_line):
+    ''' input: line received from telegram
+        output: line prefix, values
+        Through regex the prefix and values are captures from telegram str
+Note:  F61 will be an exception since its values are multiline
+    '''
+    prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line.decode('utf-8')) 
+    if prefix_match:
+        prefix = prefix_match.group(1)
+        values = prefix_match.group(2)
+        return prefix, values
+    else:
+        return None, None 
 
 
 def append_csv_row(data_dir, filename, delimiter, data_list):
