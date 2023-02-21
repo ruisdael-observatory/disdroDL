@@ -23,10 +23,13 @@ print(f'{__file__} running\nLogs written to {log_dir}')
 # intiated serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
 parsivel.reset_input_buffer()  # Flushes input buffer
-parsivel.write('CS/Z/1\r\n'.encode('utf-8'))  # Restart sensor, reset the rain amount
+parsivel.write(parsivel_set_station_name)
+sleep(1)
+parsivel.write(parsivel_set_ID)
+sleep(2)
+parsivel.write(parsivel_restart)  # resets rain amount
 sleep(10)
-parsivel.write('CS/M/M/1\r\n'.encode('utf-8')) # User defined telegram
-
+parsivel.write(parsivel_user_telegram) 
 
 flag_zero_seconds = False
 while True:
@@ -124,8 +127,8 @@ while True:
 # - [x] CSV headers: 
     # - [x] numbers
     # - [x] parameter names
-# - [ ] set Station name
-# - [ ]	set Station number 
+# - [X] set Station name
+# - [X]	set Station number 
 
 # use of classes to store 
 # documentation on seperate CSVs
