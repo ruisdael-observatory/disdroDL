@@ -32,8 +32,8 @@ sleep(10)
 parsivel.write(parsivel_user_telegram) 
 
 flag_zero_seconds = False
-while True:
-    try:
+try:
+    while True:
         now_utc = datetime.utcnow()
         now_hour_min_secs = now_utc.strftime("%H:%M:%S")
         now_hour_min_secs = now_hour_min_secs.split(":")
@@ -108,18 +108,18 @@ while True:
         elif int(now_hour_min_secs[2]) != 0 and flag_zero_seconds == True:
             # once we passed 00secs: reset flag_zero_seconds
             flag_zero_seconds = False
-    except Exception as e:
-        if hasattr(e, 'message'):
-            print(e.message)
-            logger.error(msg=e.message)
-        else:
-            print(e)
-    except KeyboardInterrupt:
-        print('KeyboardInterrupt')
-        keyboardInterruptHandler(serial_connection=parsivel, logger=logger)
         sleep(1)
-        print('bye')
+except Exception as e:
+    if hasattr(e, 'message'):
+        print(e.message)
+        logger.error(msg=e.message)
+    else:
+        print(e)
+except KeyboardInterrupt:
+    print('KeyboardInterrupt')
+    keyboardInterruptHandler(serial_connection=parsivel, logger=logger)
     sleep(1)
+    print('bye')
 
 
 # TODO:
