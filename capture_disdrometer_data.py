@@ -111,11 +111,6 @@ try:
             # once we passed 00secs: reset flag_zero_seconds
             flag_zero_seconds = False
         sleep(1)
-# except KeyboardInterrupt:
-#     print('KeyboardInterrupt')
-#     interruptHandler(serial_connection=parsivel, logger=logger)
-#     sleep(1)
-#     print('bye')
 except (Exception, KeyboardInterrupt) as e:
     interruptHandler(serial_connection=parsivel, logger=logger)
     if hasattr(e, 'message'):
@@ -126,9 +121,9 @@ except (Exception, KeyboardInterrupt) as e:
 
 # TODO:
 # - [X] F61 CSV headers
-# - [ ] re-enable exception
+# - [X] re-enable exception
 # - [ ] refactor
-#   - [ ] use of classes data and methos 
+#   - [ ] use of classes data and methods 
 # - [ ] documentation 
 #     - [ ] program logic
 #     - [ ] on seperate CSVs
