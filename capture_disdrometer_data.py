@@ -82,7 +82,7 @@ while True:
         print('telegram_lines:', telegram_lines)
         for telegram_line in telegram_lines:
             prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
-            if prefix and values and prefix == 'F61':
+            if prefix and len(values) > 1 and prefix == 'F61':  # len(values) > 1 since ";" can be captured without values
                 f61_rows =[]
                 f61_values_items = join_f61_items(telegram_list=telegram_lines)
                 for f61_item in f61_values_items:
