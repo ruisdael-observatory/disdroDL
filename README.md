@@ -4,12 +4,25 @@
 
 * Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
 * Configuration values: [config.yml](config.yml)
-* Variables with Parsivel serial commands [parsivel_cmds.py](parsivel_cmds.py)
+* Variables with Parsivel serial commands [modules/parsivel_cmds.py](modules/parsivel_cmds.py)
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
-* Parsivel's set user defined telegram script: [request_telegram.py](request_telegram.py) 
+
+## Outputs
+[capture_disdrometer_data.py](capture_disdrometer_data.py) outputs 4 CSV to the data dir (see data_dir variable in [config_GV_008.yml](config_GV_008.yml) )
+
+CSVS:
+* `*_SVFS.csv` stores all single value fields (SVFS). Example: [sample_data/20230221_Delft-GV_PAR008_SVFS.csv](sample_data/20230221_Delft-GV_PAR008_SVFS.csv)
+* `*_F61.csv` stores field 61 values (list of all particles detected between requests, including particle-size and speed ). Example: [sample_data/20230221_Delft-GV_PAR008_F61.csv](sample_data/20230221_Delft-GV_PAR008_F61.csv)
+* `*_F90.csv` stores field 90 values (Field N). Example: [sample_data/20230221_Delft-GV_PAR008_F90.csv](sample_data/20230221_Delft-GV_PAR008_F90.csv)
+* `*_F91.csv` stores field 91 values (Field v). Example: [sample_data/20230221_Delft-GV_PAR008_F91.csv](sample_data/20230221_Delft-GV_PAR008_F91.csv)
+* `*_F93.csv` stores field 93 values (Raw data). Example: [sample_data/20230221_Delft-GV_PAR008_F93.csv](sample_data/20230221_Delft-GV_PAR008_F93.csv)
+
+
 
 
 **[capture_disdrometer_data.py](capture_disdrometer_data.py) execusion steps**
+
+**TODO: rewrite**
 
 * creates the data and log directories 
 * sets up the serial communication with Parsivel 
