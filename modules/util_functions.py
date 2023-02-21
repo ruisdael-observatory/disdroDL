@@ -112,7 +112,7 @@ def init_serial(port: str, baud: int, logger):
 def resetSerialBuffers(serial_connection):
     serial_connection.reset_input_buffer()
     sleep(1)
-    serial_connection. reset_ouput_buffer()
+    serial_connection.reset_ouput_buffer()
 
 def interruptHandler(serial_connection, logger):
     msg = 'Interrupting execution'
