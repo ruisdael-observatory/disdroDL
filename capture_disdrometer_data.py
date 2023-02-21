@@ -71,7 +71,7 @@ try:
                     headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
                     print('headers:', headers)
                 elif suffix == 'F61':
-                    headers = ['timestamp', f"{config_dict['telegram_fields']['61size']['name']}", f"({config_dict['telegram_fields']['61size']['unit']})"]                    
+                    headers = ['timestamp', f"{config_dict['telegram_fields']['61size']['name']}", f"({config_dict['telegram_fields']['61speed']['unit']})"]                    
                 else:
                     headers = []
                 created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)
