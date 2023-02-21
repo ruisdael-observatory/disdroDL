@@ -71,7 +71,7 @@ try:
                     headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
                     print('headers:', headers)
                 elif suffix == 'F61':
-                    headers = ['timestamp', f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})"]                    
+                    headers = ['timestamp', f"{config_dict['telegram_fields']['61size']['name']}", f"({config_dict['telegram_fields']['61size']['unit']})"]                    
                 else:
                     headers = []
                 created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)
@@ -123,10 +123,19 @@ except KeyboardInterrupt:
 
 
 # TODO:
-# - [ ] F61 CSV headers
+# - [X] F61 CSV headers
 # - [ ] re-enable exception
 # - [ ] refactor
 #   - [ ] use of classes data and methos 
 # - [ ] documentation 
 #     - [ ] program logic
 #     - [ ] on seperate CSVs
+
+'''
+Traceback (most recent call last):
+  File "/usr/local/src/disdrodlv2/capture_disdrometer_data.py", line 63, in <module>
+    telegram_lines=parsivel.readlines()
+  File "/usr/local/lib/python3.9/dist-packages/serial/serialposix.py", line 595, in read
+    raise SerialException(
+serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)
+'''
