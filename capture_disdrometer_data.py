@@ -1,4 +1,3 @@
-import re
 from datetime import datetime
 from pathlib import Path
 from time import sleep
@@ -123,23 +122,8 @@ except KeyboardInterrupt:
 
 
 # TODO:
-# * monthly dir creation
-# - [X] write to CSV 
-#   - [X] Single Value Fields
-#   - [X] F90
-#   - [X] F91
-#   - [X] F93
-# - [x] CSV headers: 
-    # - [x] numbers
-    # - [x] parameter names
-# - [X] set Station name
-# - [X]	set Station number 
-
-# use of classes to store 
-# documentation on seperate CSVs
-
-# F61: [['2023-02-20T12:33:00.694872', '00.362', '02.338']]
-# sequence item 0: expected str instance, list found
-
-# Error: list index out of range
-
+# - [ ] refactor
+#   - [ ] use of classes data and methos 
+# - [ ] documentation 
+#     - [ ] program logic
+#     - [ ] on seperate CSVs
