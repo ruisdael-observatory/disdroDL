@@ -20,9 +20,9 @@ telegram_fields:
   '04':
       name: Weather code to SYNOP ww
   '05':
-      name: Weather co de METAR/SPECI
+      name: Weather code METAR/SPECI
   '06':
-      name: Weather co de according to NWS 
+      name: Weather code according to NWS 
   '07':
       name: Radar reflectivity 
       unit: "dBz"
@@ -73,10 +73,10 @@ telegram_fields:
       unit: "°C"
   '27':
       name: Temperature right sensor head 
-      unit: "°C  "
+      unit: "°C"
   '28':
       name: Temperature left sensor head 
-      unit: "°C  "
+      unit: "°C"
   '30':
       name: Rain intensity max. 30.000 mm/h
       unit: "mm/h"
@@ -99,7 +99,7 @@ telegram_fields:
       name: Number of all particles detected
   '61':
       name: List of all particles detected (particle-size speed)
-      unit: "mm, mm/h "
+      unit: "mm, mm/h"
   '90':
       name: Field N
       unit: "log10 (1/m^3 mm)"
