@@ -69,7 +69,9 @@ try:
                 csvs_suffixes[suffix] = filename
                 if suffix == 'SVFS':
                     headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
-                    print('headers:', headers)  
+                    print('headers:', headers)
+                elif suffix == 'F61':
+                    headers = ['timestamp', f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})"]                    
                 else:
                     headers = []
                 created_new_csv = create_new_csv(csv_path=data_dir / csvs_suffixes[suffix], headers=headers)
@@ -88,8 +90,7 @@ try:
                         f61row = string2row(timestamp=now_utc_iso, valuestr=f61_item, delimiter=';', prefix=prefix)
                         f61_rows.append(f61row)
                     print('F61:', f61_rows)
-                    values_list = f61_rows
-                    append_csv_row(data_dir=data_dir, filename=csvs_suffixes[prefix], delimiter=';', data_list=values_list)
+                    append_csv_row(data_dir=data_dir, filename=csvs_suffixes[prefix], delimiter=';', data_list=f61_rows)
                     filename=csvs_suffixes[prefix]                    
                     print('write to:', filename, 'prefix:', prefix)
 
@@ -122,6 +123,8 @@ except KeyboardInterrupt:
 
 
 # TODO:
+# - [ ] F61 CSV headers
+# - [ ] re-enable exception
 # - [ ] refactor
 #   - [ ] use of classes data and methos 
 # - [ ] documentation 
