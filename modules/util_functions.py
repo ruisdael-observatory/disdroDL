@@ -114,9 +114,10 @@ def resetSerialBuffers(serial_connection):
     sleep(1)
     serial_connection. reset_ouput_buffer()
 
-def keyboardInterruptHandler(serial_connection, logger):
+def interruptHandler(serial_connection, logger):
     msg = 'User interrupting execution'
     print(msg)
     logger.info(msg=msg)
+    resetSerialBuffers(serial_connection=serial_connection)
     serial_connection.close()    
     
