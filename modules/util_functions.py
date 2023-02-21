@@ -130,5 +130,4 @@ def keyboardInterruptHandler(serial_connection, logger):
     print(msg)
     logger.info(msg=msg)
     serial_connection.close()    
-    exit(0)
     

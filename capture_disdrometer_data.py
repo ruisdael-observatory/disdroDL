@@ -115,7 +115,10 @@ while True:
         else:
             print(e)
     except KeyboardInterrupt:
+        print('KeyboardInterrupt')
         keyboardInterruptHandler(serial_connection=parsivel, logger=logger)
+        sleep(1)
+        print('bye')
     sleep(1)
 
 
