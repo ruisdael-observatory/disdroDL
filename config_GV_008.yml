@@ -37,7 +37,7 @@ telegram_fields:
   '11':
       name: Number of particles detected and validated
   '12':
-      name: Temperature in the sen sor housing 
+      name: Temperature in the sensor housing 
       unit: "°C"
   '13':
       name: Sensor serial number
@@ -87,7 +87,7 @@ telegram_fields:
       name: Rain amount accumulate 
       unit: "mm"
   '33':
-      name: Radar reflectivit 
+      name: Radar reflectivity
       unit: "dBz"
   '34':
       name: Kinetic energy 
