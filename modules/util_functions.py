@@ -5,6 +5,7 @@ import sys
 import re
 import serial
 from typing import Dict
+from time import sleep
 
 def yaml2dict(path: str) -> Dict:
     with open(path, 'r') as yaml_f:
@@ -107,6 +108,11 @@ def init_serial(port: str, baud: int, logger):
         sys.exit()
     parsivel.reset_input_buffer()              
     return parsivel
+
+def resetSerialBuffers(serial_connection):
+    serial_connection.reset_input_buffer()
+    sleep(1)
+    serial_connection. reset_ouput_buffer()
 
 def keyboardInterruptHandler(serial_connection, logger):
     msg = 'User interrupting execution'
