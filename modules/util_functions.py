@@ -59,11 +59,13 @@ Note:  F61 will be an exception since its values are multiline
         return None, None 
 
 def append_csv_row(data_dir, filename, delimiter, data_list):
+    # import pdb; pdb.set_trace()
     with open(data_dir / filename, "a") as f:
         writer = csv.writer(f, delimiter=delimiter)
         if type(data_list[0]) == list:
             for data_item in data_list:
-                writer.writerow(delimiter.join(data_list))                
+                writer.writerow(data_item)
+                # writer.writerow(delimiter.join(data_list))                
         elif type(data_list[0]) == str:
             writer.writerow(data_list)
 

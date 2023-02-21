@@ -108,12 +108,12 @@ try:
             # once we passed 00secs: reset flag_zero_seconds
             flag_zero_seconds = False
         sleep(1)
-except Exception as e:
-    if hasattr(e, 'message'):
-        print(e.message)
-        logger.error(msg=e.message)
-    else:
-        print(e)
+# except Exception as e:
+#     if hasattr(e, 'message'):
+#         print(e.message)
+#         logger.error(msg=e.message)
+#    else:
+#         print(e)
 except KeyboardInterrupt:
     print('KeyboardInterrupt')
     keyboardInterruptHandler(serial_connection=parsivel, logger=logger)
