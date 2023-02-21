@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from time import sleep
-from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items, csv_headers
+from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items, csv_headers, keyboardInterruptHandler
 from modules.parsivel_cmds import *
 from modules.log import log 
 
@@ -114,6 +114,8 @@ while True:
             logger.error(msg=e.message)
         else:
             print(e)
+    except KeyboardInterrupt:
+        keyboardInterruptHandler(serial_connection=parsivel, logger=logger)
     sleep(1)
 
 

@@ -123,3 +123,12 @@ def init_serial(port: str, baud: int, logger):
         sys.exit()
     parsivel.reset_input_buffer()              
     return parsivel
+
+
+def keyboardInterruptHandler(serial_connection, logger):
+    msg = 'User interrupting execution'
+    print(msg)
+    logger.info(msg=msg)
+    serial_connection.close()    
+    exit(0)
+    
