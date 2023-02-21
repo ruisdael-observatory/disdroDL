@@ -117,10 +117,10 @@ try:
 #     sleep(1)
 #     print('bye')
 except (Exception, KeyboardInterrupt) as e:
+    interruptHandler(serial_connection=parsivel, logger=logger)
     if hasattr(e, 'message'):
         print(e.message)
         logger.error(msg=e.message)
-        interruptHandler(serial_connection=parsivel, logger=logger)
 
 
 

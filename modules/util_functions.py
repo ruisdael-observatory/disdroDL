@@ -115,7 +115,7 @@ def resetSerialBuffers(serial_connection):
     serial_connection. reset_ouput_buffer()
 
 def interruptHandler(serial_connection, logger):
-    msg = 'User interrupting execution'
+    msg = 'Interrupting execution'
     print(msg)
     logger.info(msg=msg)
     resetSerialBuffers(serial_connection=serial_connection)
