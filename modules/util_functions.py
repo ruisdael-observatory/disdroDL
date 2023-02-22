@@ -6,6 +6,7 @@ import re
 import serial
 from typing import Dict
 from time import sleep
+from modules.log import log 
 
 def yaml2dict(path: str) -> Dict:
     with open(path, 'r') as yaml_f:
@@ -121,3 +122,11 @@ def interruptHandler(serial_connection, logger):
     resetSerialBuffers(serial_connection=serial_connection)
     serial_connection.close()    
     
+def create_logger(log_dir, script_name, parsivel_name):
+    create_dir(log_dir)
+    log_file = log_dir / 'log.json'
+    logger = log(log_path=log_file, 
+                log_name=f"{script_name}: {parsivel_name}")  
+    logger.info(msg=f"Starting {script_name} for {parsivel_name}")
+    return logger
+

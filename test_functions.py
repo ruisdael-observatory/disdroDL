@@ -1,6 +1,7 @@
 import os
+import json
 from pathlib import Path
-from  modules.util_functions import yaml2dict, capture_telegram_prfx_vars, join_f61_items,string2row, append_csv_row, csv_headers, create_new_csv
+from  modules.util_functions import yaml2dict, capture_telegram_prfx_vars, join_f61_items,string2row, append_csv_row, csv_headers, create_new_csv, create_logger
 
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
@@ -113,3 +114,17 @@ def test_csv_headers():
         assert data_rows[0] == now_utc_iso
         assert data_rows[8] == '20000' 
         assert data_rows[19] == '14:09:59'
+
+def test_logger():
+    logger = create_logger(log_dir=Path(config_dict['log_dir']), 
+                        script_name=config_dict['script_name'], 
+                        parsivel_name=config_dict['Parsivel_name'])
+    logger.info(msg=f"Testing logger in {__file__}")
+    assert logger.name == f"{config_dict['script_name']}: {config_dict['Parsivel_name']}"
+
+    log_file = Path(config_dict['log_dir']) / 'log.json'
+    with open(log_file, 'r') as log_file_r:
+        last_log_line = log_file_r.readlines()[-1]
+        last_log_line = (json.loads(last_log_line))
+        assert last_log_line['name'] == f"{config_dict['script_name']}: {config_dict['Parsivel_name']}"
+        assert last_log_line['msg'] == f"Testing logger in {__file__}"
