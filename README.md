@@ -4,7 +4,6 @@
 
 * Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
 * Configuration values: [config.yml](config.yml)
-* Variables with Parsivel serial commands [modules/parsivel_cmds.py](modules/parsivel_cmds.py)
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
 
 ## Outputs
