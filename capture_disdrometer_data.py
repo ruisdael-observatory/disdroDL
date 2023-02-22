@@ -35,7 +35,8 @@ try:
     while True:
         now_utc = NowTime()
         if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
-            print('time to write:', now_utc.time_list, datetime.utcnow().strftime("%H:%M:%S"))
+            now_utc.date_strings()
+            print('time to write:', now_utc.time_list, now_utc.ymd, datetime.utcnow().strftime("%H:%M:%S"))
             flag_zero_seconds = True
             # create dir
             data_dir = Path(config_dict['data_dir']) / now_utc.ym # create monthly data dir
