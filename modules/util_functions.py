@@ -6,7 +6,10 @@ import re
 import serial
 from typing import Dict
 from time import sleep
-from modules.log import log 
+if __name__ == '__main__': 
+    from log import log 
+else:
+    from modules.log import log 
 
 def yaml2dict(path: str) -> Dict:
     with open(path, 'r') as yaml_f:
@@ -107,7 +110,7 @@ def init_serial(port: str, baud: int, logger):
         logger.error(msg=e)
         # print(e)
         sys.exit()
-    parsivel.reset_input_buffer()              
+    serialconnection.reset_input_buffer()              
     return parsivel
 
 def resetSerialBuffers(serial_connection):
@@ -130,3 +133,16 @@ def create_logger(log_dir, script_name, parsivel_name):
     logger.info(msg=f"Starting {script_name} for {parsivel_name}")
     return logger
 
+def parsivel_start_sequence(serialconnection, config_dict):
+    serialconnection.reset_input_buffer()  # Flushes input buffer
+    parsivel_set_station_name = ('CS/K/' + config_dict['station_name'] + '\r').encode('utf-8')  # Sets the name of the Parsivel, maximum 10 characters
+    serialconnection.write(parsivel_set_station_name)
+    sleep(1)
+    parsivel_set_ID = ('CS/J/' + config_dict['Parsivel_ID'] + '\r').encode('utf-8')  # Sets the ID of the Parsivel, maximum 4 numerical characters
+    serialconnection.write(parsivel_set_ID)
+    sleep(2)
+    parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
+    serialconnection.write(parsivel_restart)  # resets rain amount
+    sleep(10)
+    parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')  # The Parsivel broadcasts the user defined telegram. # DONE = MIGRATED TO SCRIPTS
+    serialconnection.write(parsivel_user_telegram) 

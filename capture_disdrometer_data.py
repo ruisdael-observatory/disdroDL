@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from time import sleep
-from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items, csv_headers, interruptHandler, create_logger
+from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items, csv_headers, interruptHandler, create_logger, parsivel_start_sequence
 from modules.parsivel_cmds import *
 from modules.classes import NowTime
 from modules.log import log 
@@ -17,14 +17,7 @@ print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
-parsivel.reset_input_buffer()  # Flushes input buffer
-parsivel.write(parsivel_set_station_name)
-sleep(1)
-parsivel.write(parsivel_set_ID)
-sleep(2)
-parsivel.write(parsivel_restart)  # resets rain amount
-sleep(10)
-parsivel.write(parsivel_user_telegram) 
+parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict)
 
 flag_zero_seconds = False
 try:

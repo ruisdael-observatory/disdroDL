@@ -25,7 +25,7 @@ F61:%61\r'.encode('utf-8')
 # parsivel_set_telegram_list = 'CS/M/S/%01;%02;%03;%04;%05;%06;%07;%08;%61\r'.encode('utf-8')  # Defines which fields are in the telegram # DONE = MIGRATED TO SCRIPTS
 
 parsivel_current_configuration = 'CS/L\r'.encode('utf-8')  # Outputs current configuration  # DONE = MIGRATED TO SCRIPTS
-# parsivel_sample_interval = 'CS/I/60\r'.encode('utf-8')  # Adjust sample interval and start transfer in seconds; 0=pooling mode
+parsivel_sample_interval = 'CS/I/60\r'.encode('utf-8')  # Adjust sample interval and start transfer in seconds; 0=pooling mode
 parsivel_sample_interval = 'CS/I/0\r'.encode('utf-8')  # Adjust sample interval and start transfer in seconds; 0=pooling mode
 parsivel_set_station_name = ('CS/K/' + config_dict['station_name'] + '\r').encode('utf-8')  # Sets the name of the Parsivel, maximum 10 characters
 parsivel_set_ID = ('CS/J/' + config_dict['Parsivel_ID'] + '\r').encode('utf-8')  # Sets the ID of the Parsivel, maximum 4 numerical characters
