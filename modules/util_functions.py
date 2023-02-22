@@ -147,6 +147,7 @@ def parsivel_start_sequence(serialconnection, config_dict, logger):
     parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')  # The Parsivel broadcasts the user defined telegram. # DONE = MIGRATED TO SCRIPTS
     serialconnection.write(parsivel_user_telegram) 
 
-def parsivel_reset(serialconnection):
+def parsivel_reset(serialconnection, logger):
+    logger.info(msg="Reseting Parsivel")
     parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
     serialconnection.write(parsivel_restart)

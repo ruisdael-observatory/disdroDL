@@ -3,7 +3,7 @@ from pathlib import Path
 from time import sleep
 from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items, csv_headers, interruptHandler, create_logger, parsivel_start_sequence
 from modules.classes import NowTime
-from modules.log import log 
+# from modules.log import log 
 
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'config.yml')
