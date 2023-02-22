@@ -110,7 +110,7 @@ def init_serial(port: str, baud: int, logger):
         logger.error(msg=e)
         # print(e)
         sys.exit()
-    serialconnection.reset_input_buffer()              
+    parsivel.reset_input_buffer()              
     return parsivel
 
 def resetSerialBuffers(serial_connection):
