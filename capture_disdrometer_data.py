@@ -17,7 +17,7 @@ print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
-parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict)
+parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
 
 flag_zero_seconds = False
 try:
