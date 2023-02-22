@@ -13,7 +13,7 @@ logger = create_logger(log_dir=Path(config_dict['log_dir']),
                        script_name=config_dict['script_name'], 
                        parsivel_name=config_dict['Parsivel_name'])
 logger.info(msg=f"Starting {__file__} for {config_dict['Parsivel_name']}")
-print(f'{__file__} running\nLogs written to {config_dict['log_dir']}')
+print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
