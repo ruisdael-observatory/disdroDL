@@ -3,7 +3,7 @@ from datetime import datetime
 from pprint import pprint
 from pathlib import Path
 from modules.classes import NowTime, Telegram
-from modules.util_functions import yaml2dict, csv_headers
+from modules.util_functions import yaml2dict
 
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
@@ -44,20 +44,18 @@ def test_Telegram():
     telegram = Telegram(telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
-                        data_fn_start=fn_start)
-    telegram.f61_headers = ['timestamp', 
-                            f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})", 
-                            f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"]                    
+                        data_fn_start=fn_start)                    
+    # csv_headers methods and attributes
+    telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)                   
     assert telegram.f61_headers == ['timestamp',
                                     f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})", 
                                     f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"]
-    
-    telegram.svfs_headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)                   
-    
     assert telegram.svfs_headers[0:3] == ['timestamp',
                                           f"{config_dict['telegram_fields']['01']['name']} ({config_dict['telegram_fields']['01']['unit']})", 
                                           f"{config_dict['telegram_fields']['02']['name']} ({config_dict['telegram_fields']['02']['unit']})"] 
+    # data and prefixes
     telegram.capture_prefixes_and_data()
+    
     pprint(telegram.__dict__)
     assert telegram.f61_rows[0][1] == '00.502' and telegram.f61_rows[0][2] ==  '00.853'
     assert len(telegram.f61_rows[0]) == (len(telegram.f61_headers))
@@ -76,7 +74,9 @@ def delete_csv(fn_start, prefix, data_dir):
         os.remove(test_csv_path)
 
 def csv_test(telegram, fn_start, prefix, data_dir, now_iso):
+
     telegram.append_data_to_csv(prefix=prefix)
+    
     test_csv_path = data_dir / f'{fn_start}_{prefix}.csv'
     lastrow = get_row(csv_path=test_csv_path, row_number=-1)
     assert lastrow[0] == now_iso
@@ -94,6 +94,7 @@ def get_row(csv_path, row_number):
     with open(csv_path, 'r') as f:
         last_row = f.readlines()[row_number].split(';')
         return last_row
+
 
 #     with open(csv_path, 'r') as f:
 #         f_lines_len = len(list(f))

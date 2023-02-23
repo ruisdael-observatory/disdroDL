@@ -31,6 +31,11 @@ class Telegram:
     Class dedicated to handling the returned telegram lines:
         storing, processing and writing to CSV
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
+    
+    Methods:
+        * create_csv_headers()
+        * capture_prefixes_and_data()
+        * append_data_to_csv()
     '''
     def __init__(self, telegram_lines, timestamp, data_dir, data_fn_start):
         self.telegram_lines = telegram_lines
@@ -48,6 +53,27 @@ class Telegram:
         self.data_fn_start = data_fn_start 
         # data_fn_start shared filename start str, based on date_location_parsivelcode_
         # ie. 20230221_Delft-GV_PAR008_  *.csv
+
+    def create_csv_headers(self, sfvs_telegram_resquest, config_dict):
+        '''def Creates the headers to CSV of F61 and SVFS
+            config.yml telegram_fields name and unit are used
+            adds them to self.f61_headers & self.svfs_headers variables
+        '''
+        # SVFS
+        headers_numbers = ((sfvs_telegram_resquest.replace('%','')).split(';'))[:-1]
+        headers_names = []
+        for key in headers_numbers:
+            header = f"{config_dict['telegram_fields'][key]['name']}"
+            if 'unit' in config_dict['telegram_fields'][key].keys():
+                header = f"{header} ({config_dict['telegram_fields'][key]['unit']})"
+            headers_names.append(header)
+        self.svfs_headers = ['timestamp'] + headers_names 
+        # F61
+        self.f61_headers = [
+            'timestamp',
+            f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})",
+            f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"
+            ]                    
 
     def capture_prefixes_and_data(self):
         '''
@@ -94,20 +120,6 @@ class Telegram:
                 writer.writerow(data)
 
 
-def csv_headers(sfvs_telegram_resquest, config_dict):
-    '''for Single Value Fields 
-    config.yml telegram_fields name and unit are used to created the CSV headers
-    '''
-    headers_numbers = ((sfvs_telegram_resquest.replace('%','')).split(';'))[:-1]
-    headers_names = []
-    for key in headers_numbers:
-        header = f"{config_dict['telegram_fields'][key]['name']}"
-        if 'unit' in config_dict['telegram_fields'][key].keys():
-            header = f"{header} ({config_dict['telegram_fields'][key]['unit']})"
-        headers_names.append(header)
-    headers = ['timestamp'] + headers_names
-    return headers  
-
 def join_f61_items(telegram_list):
     '''
     def uses the telegram_list index, of where F61 is positioned
@@ -135,7 +147,6 @@ def string2row(timestamp, valuestr, delimiter, prefix):
         values_list = values_list[:-1]  
     return values_list
 
-# TODO: clean unused functions in util functions 
 
 
 if __name__ == '__main__':
