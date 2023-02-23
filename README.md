@@ -75,37 +75,10 @@ terminal one: listen to serial port `tail -f /dev/ttyUSB0`
 terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
 ## Tests
-in [test_functions.py](test_functions.py)
+* [test_functions.py](test_functions.py)
+* [test_classes.py](test_classes.py)
 
 run: `pytest -s`
 
-
-# Changes implemented
-- [X] variables in yaml file [config.yml](config.yml)
-- [x] reset commands in another script [reset-parsivel.py](reset-parsivel.py)
-- [X] time in UTC
-- [X] include a logger
-- [x] write to data dir
-- [X] time.time() Not needed, remove
-- [X] date format: isoformat() utcnow.
-- [X] CSV sctructure: timestamp; telegram; or timestamp;field1;field2;... ?
-- [X] log and data dirs defined in config.yml
-- [X] output telegram in different columns (bytes -> str)
-- [X] include field numbers/name in csv header
-- [X] get full telegram an not only OTT(default telegram)
-    - [X] check config
-    - [X] change config with to User telegram mode = 1 with `'CS/M/M/1\r'.encode('utf-8')`
-    - [X] check order of the telegram
-- [X] test receiving F61 with .readlines()  
-- [ ] perform changes in reset_parsivel or at start of script
-- [ ] add script user to dialout group (to access /dev/ttyUSB0)
-- [ ] field 61 process parsivel_bytes to str and remove non-printing chars
-- [X] service file
-    - [ ] in documentation mention: python executable path
-    - [ ] in documentation mention: script path
-- [ ] Make file or Ansible playbook that:
-        - [ ] stops and remove service (if present)
-        - [ ] resets parsivel
-        - [ ] creates and starts service
 
 
