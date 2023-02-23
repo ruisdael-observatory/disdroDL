@@ -111,13 +111,14 @@ class Telegram:
         else: 
             data = self.__dict__[f'{prefix_lcase}_values']  # prefix will determine what var will be used
         print(prefix, data)
-        with open(self.data_dir / fn, "a") as f:
-            writer = csv.writer(f, delimiter=self.delimiter)
-            if type(data[0]) == list:
-                for data_item in data:
-                    writer.writerow(data_item)
-            elif type(data[0]) == str:
-                writer.writerow(data)
+        if len(data) > 0:  # prevent empty data to be written
+            with open(self.data_dir / fn, "a") as f:
+                writer = csv.writer(f, delimiter=self.delimiter)
+                if type(data[0]) == list:
+                    for data_item in data:
+                        writer.writerow(data_item)
+                elif type(data[0]) == str:
+                    writer.writerow(data)
 
 
 def join_f61_items(telegram_list):
