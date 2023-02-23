@@ -1,8 +1,8 @@
 from datetime import datetime
 from pathlib import Path
 from time import sleep
-from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, capture_telegram_prfx_vars, append_csv_row, string2row, join_f61_items, csv_headers, interruptHandler, create_logger, parsivel_start_sequence
-from modules.classes import NowTime
+from modules.util_functions import yaml2dict, create_dir, create_new_csv, init_serial, append_csv_row, string2row, join_f61_items, csv_headers, interruptHandler, create_logger, parsivel_start_sequence
+from modules.classes import NowTime, Telegram
 # from modules.log import log 
 
 wd = Path(__file__).parent 
@@ -22,9 +22,9 @@ try:
     while True:
         now_utc = NowTime()
         if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
-            now_utc.date_strings()
-            print('time to write:', now_utc.time_list, now_utc.ymd, datetime.utcnow().strftime("%H:%M:%S"))
             flag_zero_seconds = True
+            now_utc.date_strings()
+            print('time to write:', now_utc.time_list, now_utc.utc)
             # create dir
             data_dir = Path(config_dict['data_dir']) / now_utc.ym # create monthly data dir
             created_data_dir = create_dir(data_dir)
