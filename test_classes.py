@@ -39,6 +39,7 @@ def test_Telegram():
     now = NowTime()
     now.date_strings()
     fn_start = 'classtest'
+    create_test_data_dir(dir=test_data_dir)
     for prefix in prefixes_list:
         delete_csv(fn_start=fn_start, prefix=prefix, data_dir=test_data_dir)
     telegram = Telegram(telegram_lines=telegram_lines, 
@@ -67,6 +68,9 @@ def test_Telegram():
     for prefix in prefixes_list:
         csv_test(telegram=telegram, fn_start=fn_start, prefix=prefix, data_dir=test_data_dir, now_iso=now.iso)
      
+def create_test_data_dir(dir):
+    if not os.path.exists(path=dir):
+        os.mkdir(path=dir)
 
 def delete_csv(fn_start, prefix, data_dir):
     test_csv_path = data_dir / f'{fn_start}_{prefix}.csv'
