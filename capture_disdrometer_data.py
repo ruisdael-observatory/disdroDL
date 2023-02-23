@@ -1,84 +1,69 @@
-import time
-import csv
-from datetime import datetime
 from pathlib import Path
-from  util_functions import yaml2dict, create_dir, create_new_csv, binary2list, init_serial
-from parsivel_cmds import *
-from log import log 
+from time import sleep
+from modules.util_functions import yaml2dict, create_dir, init_serial, interruptHandler, create_logger, parsivel_start_sequence
 
-print('starting script')
+from modules.classes import NowTime, Telegram
+# from modules.log import log 
 
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'config.yml')
 
-# set up log
-log_dir = Path(config_dict['log_dir'])
-created_log_dir = create_dir(log_dir)
-log_file = log_dir / 'log.json'
-logger = log(log_path=log_file, 
-            log_name=f"{config_dict['script_name']}: {config_dict['Parsivel_name']}")  
+logger = create_logger(log_dir=Path(config_dict['log_dir']), 
+                       script_name=config_dict['script_name'], 
+                       parsivel_name=config_dict['Parsivel_name'])
 logger.info(msg=f"Starting {__file__} for {config_dict['Parsivel_name']}")
-print(f'{__file__} running\nLogs written to {log_dir}')
+print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
+# Telegram request string:
+# although requested in the same telegram string (user_telegram_str)
+#   single value fields(svfs) and multi value fields are appended to user_telegram_str
+#   so that svfs numbers can be used in CSV headers 
+prefixes_list = ['SVFS', 'F61', 'F90', 'F91', 'F93']
+svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;'
+user_telegram_str = f'CS/M/S/{prefixes_list[0]}:' 
+user_telegram_str = (user_telegram_str + svfs + '\nF90:%90;\nF91:%91;\nF93:%93;\nF61:%61;\r').encode('utf-8')
 
-# intiated serial connection
-parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
-# setup parsivel config commands 
-parsivel.write(parsivel_user_telegram) # set up parsivel: to send user defined telegram 
-time.sleep(2) 
-parsivel.write(parsivel_set_telegram_list)  # set up parsivel: defining list of fields 
-time.sleep(2)
-parsivel.write(parsivel_current_configuration) # ask parsivel for config
-for config_line in parsivel.readlines(): # print config
-    logger.info(msg=f'Config: {config_line}')
+# Serial connection
+parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
+parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
 
+flag_zero_seconds = False
+try:
+    while True:
+        now_utc = NowTime()
+        if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
+            flag_zero_seconds = True
+            now_utc.date_strings()
+            print('time to write:', now_utc.time_list, now_utc.utc)
+            # create dir
+            data_dir = Path(config_dict['data_dir']) / now_utc.ym # create monthly data dir
+            created_data_dir = create_dir(data_dir)
+            if created_data_dir:
+                logger.info(msg=f'Created data directory: {data_dir}')
 
-while True:
-    try:
-        # time
-        now_utc = datetime.utcnow()
-        now_utc_iso = now_utc.isoformat()
-        now_utc_ymd = now_utc.strftime("%Y%m%d")
-        now_utc_ym = now_utc.strftime("%Y%m")
-        data_dir = Path(config_dict['data_dir']) / now_utc_ym # create monthly data dir
-        created_data_dir = create_dir(data_dir)
-        if created_data_dir:
-            logger.info(msg=f'Created data directory: {data_dir}')
-        parsivel_set_telegram_list_str = parsivel_set_telegram_list.decode('utf-8')
-        parsivel_set_telegram_list_str = parsivel_set_telegram_list_str.replace('CS/M/S/', '').replace('\r','').replace('%', 'Field_')
-        headers = ['Timestamp (UTC)']+ parsivel_set_telegram_list_str.split(';')
-        filename = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}.csv"
-        created_new_csv = create_new_csv(csv_path=data_dir / filename, headers=headers)
-        # daily CSVs
-        if created_new_csv:
-            logger.info(msg=f'Created CSV: {data_dir / filename}')
-        filename_field_61 = f"{now_utc_ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}_field61.csv"
-        created_new_csv_f61 = create_new_csv(csv_path=data_dir / filename_field_61, headers=['Timestamp (UTC)','Particle_size', 'Particle_speed'])
-        if created_new_csv_f61:
-            logger.info(msg=f'Created CSV: {data_dir / filename_field_61}')
-        # Telegram processing
-        parsivel_lines = parsivel.readlines()  # Reads the output the serial communication
-        if len(parsivel_lines) == 1 and len(parsivel_lines[0]) >= 20:
-            # single message with all fields, except 61
-            parsivel_str_list = binary2list(binarystr=parsivel_lines[0], spliter=';')
-            with open(data_dir / filename, "a") as f:
-                writer = csv.writer(f, delimiter=";")
-                writer.writerow([now_utc_iso] + parsivel_str_list)
-            logger.info(msg=f'Written row to {filename}')
-            parsivel.write(parsivel_request_field_61)  # request field 61
-        elif len(parsivel_lines) > 1:
-            # field 61 condition
-            with open(data_dir / filename_field_61, "a") as g:  # 61
-                writer = csv.writer(g, delimiter=";")
-                for line in parsivel_lines:
-                    if len(line) > 5 and len(line) < 20:
-                        # TODO: process parsivel_lines to str and remove non-printing chars
-                        parsivel_str_list = binary2list(binarystr=line, spliter=';')
-                        writer.writerow([now_utc_iso] + parsivel_str_list)
-                        logger.info(msg=f'Written row to {filename_field_61} {parsivel_str_list}')
-    except Exception as e:
-        if hasattr(e, 'message'):
-            print(e.message)
-            logger.error(msg=e.message)
-        else:
-            print(e)
+            # Request telegram:
+            parsivel.write(user_telegram_str)  # string format
+            sleep(1)
+            parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
+
+            # Handle telegram 
+            fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}"
+            telegram = Telegram(telegram_lines=parsivel.readlines(), 
+                                timestamp=now_utc.iso, 
+                                data_dir=data_dir,
+                                data_fn_start=fn_start)    
+            telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
+            telegram.capture_prefixes_and_data()
+            for prefix in prefixes_list:
+                telegram.append_data_to_csv(prefix=prefix)
+
+        elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
+            # once we passed 00secs: reset flag_zero_seconds
+            flag_zero_seconds = False
+        sleep(1)
+except (Exception, KeyboardInterrupt) as e:
+    interruptHandler(serial_connection=parsivel, logger=logger)
+    if hasattr(e, 'message'):
+        print(e.message)
+        logger.error(msg=e.message)
+

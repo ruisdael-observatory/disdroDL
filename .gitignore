@@ -2,3 +2,5 @@ prototypes/*
 .python-version
 __pycache__
 config.yml
+test_data/
+.vscode/
