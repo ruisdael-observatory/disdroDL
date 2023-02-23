@@ -28,55 +28,42 @@ parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logge
 parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
 
 flag_zero_seconds = False
-# try:
-while True:
-    now_utc = NowTime()
-    if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
-        flag_zero_seconds = True
-        now_utc.date_strings()
-        print('time to write:', now_utc.time_list, now_utc.utc)
-        # create dir
-        data_dir = Path(config_dict['data_dir']) / now_utc.ym # create monthly data dir
-        created_data_dir = create_dir(data_dir)
-        if created_data_dir:
-            logger.info(msg=f'Created data directory: {data_dir}')
+try:
+    while True:
+        now_utc = NowTime()
+        if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
+            flag_zero_seconds = True
+            now_utc.date_strings()
+            print('time to write:', now_utc.time_list, now_utc.utc)
+            # create dir
+            data_dir = Path(config_dict['data_dir']) / now_utc.ym # create monthly data dir
+            created_data_dir = create_dir(data_dir)
+            if created_data_dir:
+                logger.info(msg=f'Created data directory: {data_dir}')
 
-        # Request telegram:
-        parsivel.write(user_telegram_str)  # string format
+            # Request telegram:
+            parsivel.write(user_telegram_str)  # string format
+            sleep(1)
+            parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
+
+            # Handle telegram 
+            fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}"
+            telegram = Telegram(telegram_lines=parsivel.readlines(), 
+                                timestamp=now_utc.iso, 
+                                data_dir=data_dir,
+                                data_fn_start=fn_start)    
+            telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
+            telegram.capture_prefixes_and_data()
+            for prefix in prefixes_list:
+                telegram.append_data_to_csv(prefix=prefix)
+
+        elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
+            # once we passed 00secs: reset flag_zero_seconds
+            flag_zero_seconds = False
         sleep(1)
-        parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
+except (Exception, KeyboardInterrupt) as e:
+    interruptHandler(serial_connection=parsivel, logger=logger)
+    if hasattr(e, 'message'):
+        print(e.message)
+        logger.error(msg=e.message)
 
-        # Handle telegram 
-        fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}"
-        telegram = Telegram(telegram_lines=parsivel.readlines(), 
-                            timestamp=now_utc.iso, 
-                            data_dir=data_dir,
-                            data_fn_start=fn_start)    
-        telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
-        telegram.capture_prefixes_and_data()
-        for prefix in prefixes_list:
-            telegram.append_data_to_csv(prefix=prefix)
-
-    elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
-        # once we passed 00secs: reset flag_zero_seconds
-        flag_zero_seconds = False
-    sleep(1)
-# except (Exception, KeyboardInterrupt) as e:
-#     interruptHandler(serial_connection=parsivel, logger=logger)
-#     if hasattr(e, 'message'):
-#         print(e.message)
-#         logger.error(msg=e.message)
-
-
-
-# TODO:
-# - [X] F61 CSV headers
-# - [X] re-enable exception
-# - [X] refactor
-#   - [X] use of classes data and methods 
-# - [ ] documentation 
-#     - [ ] program logic
-#     - [ ] on seperate CSVs
-
-# issues:
-# re enable try
