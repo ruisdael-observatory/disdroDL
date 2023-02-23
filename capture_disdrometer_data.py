@@ -44,14 +44,15 @@ while True:
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
         sleep(1)
-        parsivel.write('CS/P\r\n'.eF61 []
-Traceback (most recent call last):
-  File "/usr/local/src/disdrodlv2/capture_disdrometer_data.py", line 58, in <module>
-    telegram.append_data_to_csv(prefix=prefix)
-  File "/usr/local/src/disdrodlv2/modules/classes.py", line 116, in append_data_to_csv
-    if type(data[0]) == list:
-IndexError: list index out of range
-(sfvs_telegram_resquest=svfs, config_dict=config_dict)
+        parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
+
+        # Handle telegram 
+        fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}_"
+        telegram = Telegram(telegram_lines=parsivel.readlines(), 
+                            timestamp=now_utc.iso, 
+                            data_dir=data_dir,
+                            data_fn_start=fn_start)    
+        telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
         telegram.capture_prefixes_and_data()
         for prefix in prefixes_list:
             telegram.append_data_to_csv(prefix=prefix)
@@ -78,10 +79,5 @@ IndexError: list index out of range
 #     - [ ] on seperate CSVs
 
 # issues:
-# F61 []
-# Traceback (most recent call last):
-#   File "/usr/local/src/disdrodlv2/capture_disdrometer_data.py", line 58, in <module>
-#     telegram.append_data_to_csv(prefix=prefix)
-#   File "/usr/local/src/disdrodlv2/modules/classes.py", line 116, in append_data_to_csv
-#     if type(data[0]) == list:
-# IndexError: list index out of range
+# empty F61 []
+#    Interrupting execution
