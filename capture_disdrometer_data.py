@@ -54,7 +54,7 @@ try:
                                 data_fn_start=fn_start)    
             telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
             telegram.capture_prefixes_and_data()               
-            telegram.append_data_to_csv('SVFS')
+            telegram.append_data_to_csv()
 
 
         elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
