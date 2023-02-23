@@ -47,7 +47,7 @@ while True:
         parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
 
         # Handle telegram 
-        fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}_"
+        fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}"
         telegram = Telegram(telegram_lines=parsivel.readlines(), 
                             timestamp=now_utc.iso, 
                             data_dir=data_dir,
@@ -79,5 +79,4 @@ while True:
 #     - [ ] on seperate CSVs
 
 # issues:
-# empty F61 []
-#    Interrupting execution
+# re enable try
