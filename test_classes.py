@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from pprint import pprint
 from pathlib import Path
@@ -7,6 +8,7 @@ from modules.util_functions import yaml2dict, csv_headers
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
 config_dict = yaml2dict(path = wd / 'config.yml')
+prefixes_list = ['SVFS', 'F61', 'F90', 'F91', 'F93']
 telegram_lines=[b'OK\r\n', 
                 b'\n', 
                 b'SVFS:0000.000;0000.00;00;00;   NP;   C;-9.999;20000;00059;12773;00000;012;450994;2.11.6;2.11.1;0.50;24.3;0;14:09:59;16.02.2023;;;0000.00;000;025;013;013;00.000;0000.0;0000.00;-9.99;0000.00;0000.00;00000007;\n', 
@@ -18,8 +20,6 @@ telegram_lines=[b'OK\r\n',
                 b'00.550;01.595\r\n', 
                 b'00.521;01.237\r\n', 
                 b'00.540;01.070\r\n', 
-                b'00.559;01.710\r\n', 
-                b'00.571;01.572\r\n', 
                 b';']
 svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;'
 
@@ -38,18 +38,22 @@ def test_NowTime():
 def test_Telegram():
     now = NowTime()
     now.date_strings()
-    fn_prefix = 'classtest'
+    fn_start = 'classtest'
+    for prefix in prefixes_list:
+        delete_csv(fn_start=fn_start, prefix=prefix, data_dir=test_data_dir)
     telegram = Telegram(telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
-                        data_fn_prefix=fn_prefix)
+                        data_fn_start=fn_start)
     telegram.f61_headers = ['timestamp', 
                             f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})", 
                             f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"]                    
     assert telegram.f61_headers == ['timestamp',
                                     f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})", 
                                     f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"]
+    
     telegram.svfs_headers = csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)                   
+    
     assert telegram.svfs_headers[0:3] == ['timestamp',
                                           f"{config_dict['telegram_fields']['01']['name']} ({config_dict['telegram_fields']['01']['unit']})", 
                                           f"{config_dict['telegram_fields']['02']['name']} ({config_dict['telegram_fields']['02']['unit']})"] 
@@ -62,23 +66,30 @@ def test_Telegram():
     assert telegram.f90_values[1] == '-9.999'
     assert telegram.f91_values[1] == '00.000'
     assert telegram.f93_values[1] == '000'
-    csv_test(telegram=telegram, fn_prefix=fn_prefix, prefix='SVFS', data_dir=test_data_dir, now_iso=now.iso)
-    csv_test(telegram=telegram, fn_prefix=fn_prefix, prefix='F90', data_dir=test_data_dir, now_iso=now.iso)
-    # csv_test(telegram=telegram, fn_prefix=fn_prefix, prefix='F61', data_dir=test_data_dir, now_iso=now.iso)  # TODO: F61 
+    for prefix in prefixes_list:
+        csv_test(telegram=telegram, fn_start=fn_start, prefix=prefix, data_dir=test_data_dir, now_iso=now.iso)
+     
 
-def csv_test(telegram, fn_prefix, prefix, data_dir, now_iso):
+def delete_csv(fn_start, prefix, data_dir):
+    test_csv_path = data_dir / f'{fn_start}_{prefix}.csv'
+    if os.path.exists(test_csv_path):
+        os.remove(test_csv_path)
+
+def csv_test(telegram, fn_start, prefix, data_dir, now_iso):
     telegram.append_data_to_csv(prefix=prefix)
-    test_csv_path = data_dir / f'{fn_prefix}_{prefix}.csv'
+    test_csv_path = data_dir / f'{fn_start}_{prefix}.csv'
     lastrow = get_row(csv_path=test_csv_path, row_number=-1)
     assert lastrow[0] == now_iso
 
     # TODO: more tests
-    # TODO: test headers of f61 and svfs
-    if prefix == 'SVFS' or prefix == 'F61':
-        csv_headers = get_row(csv_path=test_csv_path, row_number=0)
-        assert len(lastrow) == len(csv_headers)
-        assert csv_headers[0:3] == telegram.svfs_headers[0:3]
+
+    # test headers 
+    csv_headers = get_row(csv_path=test_csv_path, row_number=0)
+    assert len(lastrow) == len(csv_headers)  # same length as data?
+    if prefix == 'SVFS' or prefix == 'F61': # f61 and svfs are the only csvs w/ headers
+        assert csv_headers[0:-1] == telegram.__dict__[f'{prefix.lower()}_headers'][0:-1] # same headers in CSV as in object?
  
+
 def get_row(csv_path, row_number):
     with open(csv_path, 'r') as f:
         last_row = f.readlines()[row_number].split(';')

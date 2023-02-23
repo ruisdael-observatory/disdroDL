@@ -32,7 +32,7 @@ class Telegram:
         storing, processing and writing to CSV
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
     '''
-    def __init__(self, telegram_lines, timestamp, data_dir, data_fn_prefix):
+    def __init__(self, telegram_lines, timestamp, data_dir, data_fn_start):
         self.telegram_lines = telegram_lines
         self.timestamp = timestamp
         self.svfs_values = None
@@ -45,8 +45,8 @@ class Telegram:
         self.f61_headers = []
         self.delimiter = ';'
         self.data_dir = data_dir  
-        self.data_fn_prefix = data_fn_prefix 
-        # data_fn_prefix shared filename start str, based on date_location_parsivelcode_
+        self.data_fn_start = data_fn_start 
+        # data_fn_start shared filename start str, based on date_location_parsivelcode_
         # ie. 20230221_Delft-GV_PAR008_  *.csv
 
     def capture_prefixes_and_data(self):
@@ -61,7 +61,6 @@ class Telegram:
                 for f61_item in self.f61_values:
                     f61_item_pair = string2row(timestamp=self.timestamp, valuestr=f61_item, delimiter=self.delimiter, prefix=prefix)
                     self.f61_rows.append(f61_item_pair) 
-            # elif prefix and values and prefix != 'F61':
             elif prefix in ['SVFS', 'F90', 'F91', 'F93'] and values:
                 prefix_lcase = prefix.lower()
                 super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
@@ -73,7 +72,7 @@ class Telegram:
         In cases of multiline values (F61) several rows are written
         '''
         prefix_lcase = prefix.lower()
-        fn = f'{self.data_fn_prefix}_{prefix}.csv'
+        fn = f'{self.data_fn_start}_{prefix}.csv'
         # write headers to csv
         if f'{prefix_lcase}_headers' in self.__dir__() and not os.path.exists(self.data_dir / fn):
             # if headers variable exists and file does not exist
@@ -81,7 +80,10 @@ class Telegram:
                 writer = csv.writer(f, delimiter=self.delimiter)
                 writer.writerow(self.__dict__[f'{prefix_lcase}_headers'])
         # write data
-        data = self.__dict__[f'{prefix_lcase}_values']  # prefix will determine what var will be used
+        if prefix == 'F61':
+            data = self.__dict__[f'{prefix_lcase}_rows']
+        else: 
+            data = self.__dict__[f'{prefix_lcase}_values']  # prefix will determine what var will be used
         print(prefix, data)
         with open(self.data_dir / fn, "a") as f:
             writer = csv.writer(f, delimiter=self.delimiter)
@@ -90,18 +92,6 @@ class Telegram:
                     writer.writerow(data_item)
             elif type(data[0]) == str:
                 writer.writerow(data)
-
-    # def csv_headers(self, prefix):
-    #     '''
-    #     def Creates headers for CSVs (SFVS and F61) and stores them in self.*_header vars
-    #     ? and writes them to file
-    #     '''
-
-# todo: write f61_headers
-
-    
-# TODO: headers for F61 and SVFS
-# add timestamp to start of headers
 
 
 def csv_headers(sfvs_telegram_resquest, config_dict):
@@ -117,11 +107,6 @@ def csv_headers(sfvs_telegram_resquest, config_dict):
         headers_names.append(header)
     headers = ['timestamp'] + headers_names
     return headers  
-
-# 
-
-# TODO: clean unused functions in util functions 
-
 
 def join_f61_items(telegram_list):
     '''
@@ -149,6 +134,9 @@ def string2row(timestamp, valuestr, delimiter, prefix):
     if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
+
+# TODO: clean unused functions in util functions 
+
 
 if __name__ == '__main__':
     now = NowTime()
