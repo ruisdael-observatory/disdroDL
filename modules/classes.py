@@ -110,7 +110,6 @@ class Telegram:
             data = self.__dict__[f'{prefix_lcase}_rows']
         else: 
             data = self.__dict__[f'{prefix_lcase}_values']  # prefix will determine what var will be used
-        print(prefix, data)
         if len(data) > 0:  # prevent empty data to be written
             with open(self.data_dir / fn, "a") as f:
                 writer = csv.writer(f, delimiter=self.delimiter)
