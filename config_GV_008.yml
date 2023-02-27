@@ -84,7 +84,7 @@ telegram_fields:
       name: Rain intensity max. 1200.0 mm/h
       unit: "mm/h"
   '32':
-      name: Rain amount accumulate 
+      name: Rain amount accumulated 16bit
       unit: "mm"
   '33':
       name: Radar reflectivity
