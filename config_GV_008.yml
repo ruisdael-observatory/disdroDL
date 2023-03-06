@@ -91,7 +91,7 @@ telegram_fields:
       unit: "dBz"
   '34':
       name: Kinetic energy 
-      unit: "J/(m^2h)"
+      unit: "J/((m^2)*h)"
   '35':
       name: Snow depth intensity
       unit: "mm/h"
@@ -108,7 +108,7 @@ telegram_fields:
       unit: "mm/h"
   '90':
       name: Field N
-      unit: "log10 (1/m^3 mm)"
+      unit: "log(10)*(1/((m^3)*mm))"
   '91':
       name: Field v
       unit: "m/s"
