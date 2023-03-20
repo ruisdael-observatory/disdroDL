@@ -83,9 +83,11 @@ def test_Telegram_netCDF():
     
     telegram.append_data_to_netCDF(config_dict=config_dict)
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")
+    # test dimensions
+    assert 'time' in rootgrp.dimensions.keys()
     # test global attributes
     assert rootgrp.title == config_dict['global_attrs']['title']
-    assert rootgrp.contributors == config_dict['global_attrs']['contributors']
+    assert rootgrp.contributors == config_dict['global_attrs']['contributors']    
     pprint(rootgrp.__dict__)
     rootgrp.close()
 
