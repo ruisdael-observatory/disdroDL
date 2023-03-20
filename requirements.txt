@@ -1,3 +1,4 @@
 PyYAML
 pyserial
 pytest
+netCDF4
