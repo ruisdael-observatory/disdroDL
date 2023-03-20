@@ -1,9 +1,22 @@
+# global attributes (all will be written to netCDF as global attributes)
+global_attrs:
+    title: 'OTT Parsivel2 disdrometer data'
+    institution: 'Delft University of Technology'
+    source: 'surface observation'
+    history: '-'
+    Conventions: 'CF-1.7'
+    site_name: 'Green_Village'
+    sensor_name: PAR008
+    project_name: 'https://ruisdael-observatory.nl/'
+    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro'
+    sensor_type: 'OTT Hydromet Parsivel2'
+    sensor_serial_number: '450994'
+    NETDL_number: '1'
+
+# sensor and script settings
+station_code: 'GV' # keep under 10 characters, max accepted by Parsivel
 port: '/dev/ttyUSB0'
 baud: 19200
-Parsivel_name: PAR008
-Parsivel_ID: 008
-station_site: 'Delft'  # add prefix Camp for a campaign ie CampRotterdam
-station_name: 'GV' # keep under 10 characters, max accepted by Parsivel
 script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
 log_dir: '/var/log/disdroDL/'
@@ -11,10 +24,10 @@ log_dir: '/var/log/disdroDL/'
 telegram_fields:
   '01':
       name: Rain intensity
-      unit: "mm/h"
+      unit: 'mm/h'
   '02':
       name: Rain amount accumulated 
-      unit: "mm"
+      unit: 'mm'
   '03':
       name: Weather code to SYNOP waw
   '04':
@@ -25,20 +38,20 @@ telegram_fields:
       name: Weather code according to NWS 
   '07':
       name: Radar reflectivity 
-      unit: "dBz"
+      unit: 'dBz'
   '08':
       name: MOR visibility in precipitation 
-      unit: "m"
+      unit: 'm'
   '09':
       name: Sample interval 
-      unit: "s"
+      unit: 's'
   '10':
       name: Signal amplitude of the laser strip
   '11':
       name: Number of particles detected and validated
   '12':
       name: Temperature in the sensor housing 
-      unit: "°C"
+      unit: '°C'
   '13':
       name: Sensor serial number
   '14':
@@ -47,10 +60,10 @@ telegram_fields:
       name: Firmware DSP version number
   '16':
       name: Sensor head heating current 
-      unit: "A"
+      unit: 'A'
   '17':
       name: Power supply voltage 
-      unit: "V"
+      unit: 'V'
   '18':
       name: Sensor status
   '19':
@@ -65,52 +78,52 @@ telegram_fields:
       name: Station number
   '24':
       name: Rain amount absolute 
-      unit: "mm"
+      unit: 'mm'
   '25':
       name: Error code
   '26':
       name: Temperature PCB 
-      unit: "°C"
+      unit: '°C'
   '27':
       name: Temperature right sensor head 
-      unit: "°C"
+      unit: '°C'
   '28':
       name: Temperature left sensor head 
-      unit: "°C"
+      unit: '°C'
   '30':
       name: Rain intensity max. 30.000 mm/h
-      unit: "mm/h"
+      unit: 'mm/h'
   '31':
       name: Rain intensity max. 1200.0 mm/h
-      unit: "mm/h"
+      unit: 'mm/h'
   '32':
       name: Rain amount accumulated 16bit
-      unit: "mm"
+      unit: 'mm'
   '33':
       name: Radar reflectivity
-      unit: "dBz"
+      unit: 'dBz'
   '34':
       name: Kinetic energy 
-      unit: "J/((m^2)*h)"
+      unit: 'J/((m^2)*h)'
   '35':
       name: Snow depth intensity
-      unit: "mm/h"
+      unit: 'mm/h'
   '60':
       name: Number of all particles detected
   '61':
       name: List of all particles detected (particle-size speed)
-      unit: "mm, mm/h"
+      unit: 'mm, mm/h'
   '61size':
       name: Particle size
-      unit: "mm"
+      unit: 'mm'
   '61speed':
       name: Particle speed
-      unit: "mm/h"
+      unit: 'mm/h'
   '90':
       name: Field N
-      unit: "log(10)*(1/((m^3)*mm))"
+      unit: 'log(10)*(1/((m^3)*mm))'
   '91':
       name: Field v
-      unit: "m/s"
+      unit: 'm/s'
   '93':
       name: Raw data

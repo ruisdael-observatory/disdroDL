@@ -10,8 +10,8 @@ config_dict = yaml2dict(path = wd / 'config.yml')
 
 logger = create_logger(log_dir=Path(config_dict['log_dir']), 
                        script_name=config_dict['script_name'], 
-                       parsivel_name=config_dict['Parsivel_name'])
-logger.info(msg=f"Starting {__file__} for {config_dict['Parsivel_name']}")
+                       parsivel_name=config_dict['sensor_name'])
+logger.info(msg=f"Starting {__file__} for {config_dict['sensor_name']}")
 print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 # Telegram request string:
@@ -47,7 +47,7 @@ try:
             parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
 
             # Handle telegram 
-            fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}"
+            fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['sensor_name']}"
             telegram = Telegram(telegram_lines=parsivel.readlines(), 
                                 timestamp=now_utc.iso, 
                                 data_dir=data_dir,

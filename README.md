@@ -26,7 +26,7 @@
 * monthly data directories, inside parent data directory 
    * monthly data directories naming: `yyyymm`
 * every day new data files created:
-    * data files naming: `yyyymmdd_{station_site}_{station_name}_{Parsivel_ID}_{fields}`
+    * data files naming: `yyyymmdd_{site_name}_{station_code}_{sensor_name}_{fields}`
 
 **Telegram field names and units**
 In accordance to [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) the telegram field names and units are defined in [config.yml](config.yml) `telegram_fields` 
