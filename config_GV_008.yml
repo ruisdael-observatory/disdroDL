@@ -21,6 +21,50 @@ script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
 log_dir: '/var/log/disdroDL/'
 
+variables:
+    latitude:
+        is_dimension: False
+        dimensions: # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 51.9675917
+        var_attrs: 
+            units: 'degree_north'
+            long_name: 'Latitude of site'
+            standard_name: 'latitude'
+    longitude:
+        is_dimension: False
+        dimensions:  # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 4.927277
+        var_attrs: 
+            units: 'degree_east'
+            long_name: 'Longitude of site'
+            standard_name: 'longitude'
+    altitude:
+        is_dimension: False
+        dimensions:  # empty for scalar variables
+        dtype: 'i1'  # 32bit floating point
+        value: 
+            - 1
+        var_attrs: 
+            units: 'm'
+            long_name: 'Altitude of site'
+            standard_name: 'altitude'
+
+
+
+        # float time(time) ;
+        #         time:units = "hours since 2023-03-06 00:00:00 +00:00" ;
+        #         time:long_name = "Time UTC" ;
+        #         time:standard_name = "time" ;
+        #         time:axis = "T" ;
+        #         time:calendar = "standard" ;
+        # int interval(time) ;
+        #         interval:_FillValue = -2147483647 ;
+        #         interval:units = "s" ;
+        #         interval:long_name = "Length of measurement interval" ;
 telegram_fields:
   '01':
       name: Rain intensity

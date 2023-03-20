@@ -83,5 +83,5 @@ terminal one: listen to serial port `tail -f /dev/ttyUSB0`
 terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
 
-
-
+# TODO
+- [ ] NetCDF global attributes - same as ACTRIS

@@ -4,6 +4,7 @@ from datetime  import datetime
 from netCDF4 import Dataset
 from modules.util_functions import capture_telegram_prfx_vars
 from pprint import pprint
+import random 
 
 class NowTime:
     '''
@@ -126,16 +127,53 @@ class Telegram:
         '''
         def creates and appends data to daily netCDF file with all the disdrometer data
         '''
-        
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
-            add_global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
+            global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
+            vars_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
+            
             netCDF_rootgrp.close()
 
+def vars_to_netCDF(nc_rootgrp, config_dict):
+    for key in config_dict['variables'].keys():
+        var_sub_dict = config_dict['variables'][key]
+        print(key, var_sub_dict, var_sub_dict['dimensions'])
+
+        if var_sub_dict['dimensions'] == None:
+            # scalar value: no dimensions are sure
+            variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
+                                                 var_sub_dict['dtype'],)
+            variable.assignValue(var_sub_dict['value'])
 
 
-def add_global_attrs_to_netCDF(nc_rootgrp, config_dict):
+
+        # # dimensions
+        # if var_sub_dict['is_dimension'] is True:
+        #     dimension = nc_rootgrp.createDimension(var_sub_dict['var_attrs']['standard_name'])
+
+
+
+        # variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
+        #                                      var_sub_dict['dtype'],
+        #                                      #(var_sub_dict['dimensions'],)
+        #                                      )
+        for var_attr in var_sub_dict['var_attrs']:
+            variable.__setattr__(var_attr, var_sub_dict['var_attrs'][var_attr])
+        print('value:', var_sub_dict['value'])
+        # values
+
+# >>> times = rootgrp.createVariable("time","f8",("time",))
+# >>> levels = rootgrp.createVariable("level","i4",("level",))
+# >>> latitudes = rootgrp.createVariable("lat","f4",("lat",))
+# >>> longitudes = rootgrp.createVariable("lon","f4",("lon",))
+
+# variable
+## scalar values
+## with method: assignValue(self, val)
+##  To create a scalar variable, simply leave out the dimensions keyword.
+
+def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''
     def writes global attributes (mostly metadata) to newly created netCDF
     '''
