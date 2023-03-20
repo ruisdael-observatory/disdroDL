@@ -131,42 +131,39 @@ class Telegram:
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
             global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
+            dimensions_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
             vars_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
             
             netCDF_rootgrp.close()
+
+def dimensions_to_netCDF(nc_rootgrp, config_dict):
+    for key in config_dict['dimensions'].keys():
+        print('dimension:', key)
+        nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
 
 def vars_to_netCDF(nc_rootgrp, config_dict):
     for key in config_dict['variables'].keys():
         var_sub_dict = config_dict['variables'][key]
         print(key, var_sub_dict, var_sub_dict['dimensions'])
-
         if var_sub_dict['dimensions'] == None:
             # scalar value: no dimensions are sure
             variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
                                                  var_sub_dict['dtype'],)
             variable.assignValue(var_sub_dict['value'])
-
-
-
-        # # dimensions
-        # if var_sub_dict['is_dimension'] is True:
-        #     dimension = nc_rootgrp.createDimension(var_sub_dict['var_attrs']['standard_name'])
-
-
-
-        # variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
-        #                                      var_sub_dict['dtype'],
-        #                                      #(var_sub_dict['dimensions'],)
-        #                                      )
+        elif len(var_sub_dict['dimensions']) == 1:
+            variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
+                                                 var_sub_dict['dtype'],
+                                                 tuple([dim for dim in var_sub_dict['dimensions']])
+                                                 )                                      
         for var_attr in var_sub_dict['var_attrs']:
             variable.__setattr__(var_attr, var_sub_dict['var_attrs'][var_attr])
-        print('value:', var_sub_dict['value'])
+        if  key == 'time':
+            # TODO: replace YYYY for current date
+            variable.__setattr__('units', 'hours since YYY-MM-DD 00:00:00 +00:00')
+
+        # print('value:', var_sub_dict['value'])
         # values
 
-# >>> times = rootgrp.createVariable("time","f8",("time",))
-# >>> levels = rootgrp.createVariable("level","i4",("level",))
-# >>> latitudes = rootgrp.createVariable("lat","f4",("lat",))
-# >>> longitudes = rootgrp.createVariable("lon","f4",("lon",))
 
 # variable
 ## scalar values

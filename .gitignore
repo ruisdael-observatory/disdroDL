@@ -2,5 +2,6 @@ prototypes/*
 .python-version
 __pycache__
 config.yml
-test_data/
+test_data/*
 .vscode/
+!test_data/classtest.nc

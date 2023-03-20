@@ -21,9 +21,12 @@ script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
 log_dir: '/var/log/disdroDL/'
 
+dimensions:
+    time:
+        size: 1440
+
 variables:
     latitude:
-        is_dimension: False
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
@@ -33,7 +36,6 @@ variables:
             long_name: 'Latitude of site'
             standard_name: 'latitude'
     longitude:
-        is_dimension: False
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
@@ -43,7 +45,6 @@ variables:
             long_name: 'Longitude of site'
             standard_name: 'longitude'
     altitude:
-        is_dimension: False
         dimensions:  # empty for scalar variables
         dtype: 'i1'  # 32bit floating point
         value: 
@@ -52,19 +53,25 @@ variables:
             units: 'm'
             long_name: 'Altitude of site'
             standard_name: 'altitude'
+    time:
+        dimensions:
+            - time
+        dtype: 'i1'  # 32bit floating point        
+        var_attrs:
+            long_name: "Time UTC"
+            standard_name: "time"
+            axis: "T"
+            calendar: "standard"
+    interval:
+        dimensions:
+            - time
+        dtype: 'i1'  # 32bit floating point        
+        var_attrs:
+            units: s
+            long_name: 'Length of measurement interval'
+            standard_name: 'interval'         
+        
 
-
-
-        # float time(time) ;
-        #         time:units = "hours since 2023-03-06 00:00:00 +00:00" ;
-        #         time:long_name = "Time UTC" ;
-        #         time:standard_name = "time" ;
-        #         time:axis = "T" ;
-        #         time:calendar = "standard" ;
-        # int interval(time) ;
-        #         interval:_FillValue = -2147483647 ;
-        #         interval:units = "s" ;
-        #         interval:long_name = "Length of measurement interval" ;
 telegram_fields:
   '01':
       name: Rain intensity
