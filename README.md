@@ -84,4 +84,7 @@ terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
 
 # TODO
-- [ ] NetCDF global attributes - same as ACTRIS
+- [X] NetCDF global attributes - same as ACTRIS
+- [ ] handling time dimension ??
+- [ ] Xarray: could it makes it easier? https://xarray.pydata.org/en/v0.13.0/why-xarray.html
+- [ ] turn telegram_fields to netCDF vars
