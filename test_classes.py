@@ -4,6 +4,7 @@ from pprint import pprint
 from pathlib import Path
 from modules.classes import NowTime, Telegram
 from modules.util_functions import yaml2dict
+from netCDF4 import Dataset
 
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
@@ -80,10 +81,16 @@ def test_Telegram_netCDF():
                         data_dir=test_data_dir,
                         data_fn_start=fn_start)     
     
-    telegram.append_data_to_netCDF()
-    pprint(telegram.__dict__)
-
+    telegram.append_data_to_netCDF(config_dict=config_dict)
+    rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")
     # test global attributes
+    assert rootgrp.title == config_dict['global_attrs']['title']
+    assert rootgrp.contributors == config_dict['global_attrs']['contributors']
+    pprint(rootgrp.__dict__)
+    rootgrp.close()
+
+
+
 
 
 def create_test_data_dir(dir):

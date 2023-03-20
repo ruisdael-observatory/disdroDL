@@ -39,7 +39,7 @@ def log(log_path, log_name):
 #     log_file = log_dir / 'log.json'
 
 #     logger = log(log_path=log_file, 
-#                 log_name=f"{config_dict['script_name']}: {config_dict['Parsivel_name']}")  
+#                 log_name=f"{config_dict['script_name']}: {config_dict['sensor_name']}")  
 #     logger.info(msg='hello info')
 #     logger.debug(msg='I am debugging')
 #     logger.error(msg='I am an an error')

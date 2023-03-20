@@ -3,6 +3,7 @@ import os
 from datetime  import datetime
 from netCDF4 import Dataset
 from modules.util_functions import capture_telegram_prfx_vars
+from pprint import pprint
 
 class NowTime:
     '''
@@ -121,7 +122,7 @@ class Telegram:
                 elif type(data[0]) == str:
                     writer.writerow(data)
 
-    def append_data_to_netCDF(self):
+    def append_data_to_netCDF(self, config_dict):
         '''
         def creates and appends data to daily netCDF file with all the disdrometer data
         '''
@@ -129,35 +130,18 @@ class Telegram:
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
-            add_global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp)
+            add_global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
             netCDF_rootgrp.close()
 
 
 
-def add_global_attrs_to_netCDF(nc_rootgrp):
+def add_global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''
     def writes global attributes (mostly metadata) to newly created netCDF
     '''
-    nc_rootgrp.title = "OTT Parsivel2 disdrometer data"
-    nc_rootgrp.institution = "Delft University of Technology" ;
+    for key in config_dict['global_attrs'].keys():
+        nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
 
-
-
-
-'''
-string :title = "OTT Parsivel2 disdrometer data" ;
-string :institution = "Delft University of Technology" ;
-string :source = "surface observation" ;
-string :history = "-" ;
-string :Conventions = "CF-1.7" ;
-string :site_name = "Green_Village" ;
-string :sensor_name = "PAR008" ;
-string :project_name = "https://ruisdael-observatory.nl/" ;
-string :contributors = "Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro" ;
-string :sensor_type = "OTT Hydromet Parsivel2" ;
-string :sensor_serial_number = "450542" ;
-string :NETDL_number = "1" ;
-'''
 
 def join_f61_items(telegram_list):
     '''
