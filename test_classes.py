@@ -68,6 +68,24 @@ def test_Telegram():
     for prefix in prefixes_list:
         csv_test(telegram=telegram, fn_start=fn_start, prefix=prefix, data_dir=test_data_dir, now_iso=now.iso)
      
+
+def test_Telegram_netCDF():
+    now = NowTime()
+    now.date_strings()
+    fn_start = 'classtest'
+    create_test_data_dir(dir=test_data_dir)
+    delete_netcdf(fn_start='classtest', data_dir=test_data_dir, )
+    telegram = Telegram(telegram_lines=telegram_lines, 
+                        timestamp=now.iso, 
+                        data_dir=test_data_dir,
+                        data_fn_start=fn_start)     
+    
+    telegram.append_data_to_netCDF()
+    pprint(telegram.__dict__)
+
+    # test global attributes
+
+
 def create_test_data_dir(dir):
     if not os.path.exists(path=dir):
         os.mkdir(path=dir)
@@ -76,6 +94,12 @@ def delete_csv(fn_start, prefix, data_dir):
     test_csv_path = data_dir / f'{fn_start}_{prefix}.csv'
     if os.path.exists(test_csv_path):
         os.remove(test_csv_path)
+
+def delete_netcdf(fn_start, data_dir):
+    test_nc_path = data_dir / f'{fn_start}.nc'
+    if os.path.exists(test_nc_path):
+        os.remove(test_nc_path)
+
 
 def csv_test(telegram, fn_start, prefix, data_dir, now_iso):
 
@@ -91,7 +115,7 @@ def csv_test(telegram, fn_start, prefix, data_dir, now_iso):
     csv_headers = get_row(csv_path=test_csv_path, row_number=0)
     assert len(lastrow) == len(csv_headers)  # same length as data?
     if prefix == 'SVFS' or prefix == 'F61': # f61 and svfs are the only csvs w/ headers
-        assert csv_headers[0:-1] == telegram.__dict__[f'{prefix.lower()}_headers'][0:-1] # same headers in CSV as in object?
+         assert csv_headers[0:-1] == telegram.__dict__[f'{prefix.lower()}_headers'][0:-1] # same headers in CSV as in object?
  
 
 def get_row(csv_path, row_number):
