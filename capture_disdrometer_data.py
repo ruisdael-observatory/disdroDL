@@ -35,9 +35,9 @@ try:
             flag_zero_seconds = True
             now_utc.date_strings()
             print('time to write:', now_utc.time_list, now_utc.utc)
-            # create dir
-            data_dir = Path(config_dict['data_dir']) / now_utc.ym # create monthly data dir
-            created_data_dir = create_dir(data_dir)
+            # (monthly) data dir
+            data_dir = Path(config_dict['data_dir']) / now_utc.ym 
+            created_data_dir = create_dir(data_dir) # create if does not exist
             if created_data_dir:
                 logger.info(msg=f'Created data directory: {data_dir}')
 
