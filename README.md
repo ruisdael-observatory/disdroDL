@@ -88,3 +88,4 @@ terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 - [ ] handling time dimension ??
 - [ ] Xarray: could it makes it easier? https://xarray.pydata.org/en/v0.13.0/why-xarray.html
 - [ ] turn telegram_fields to netCDF vars
+- [ ] config.yml: possible split in 2: constant values, over written by site specific values file: `config.yml` & `site.yml`

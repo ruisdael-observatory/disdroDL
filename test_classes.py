@@ -81,7 +81,7 @@ def test_Telegram_netCDF():
                         data_dir=test_data_dir,
                         data_fn_start=fn_start)     
     
-    telegram.append_data_to_netCDF(config_dict=config_dict)
+    telegram.create_netCDF(config_dict=config_dict)
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")
     # test dimensions
     assert 'time' in rootgrp.dimensions.keys()
