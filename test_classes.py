@@ -1,11 +1,13 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pprint import pprint
 from pathlib import Path
 from time import sleep
 from modules.classes import NowTime, Telegram
 from modules.util_functions import yaml2dict
 from netCDF4 import Dataset
+from cftime import num2date
+
 
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
@@ -93,32 +95,31 @@ def test_Telegram_netCDF():
     rootgrp.close()
 
 def test_append_data_netCDF():
-    # append data: test time
+    # -- append data: test time
+    amount_data_points = 10
     now = NowTime()
     now.date_strings()
     fn_start = 'classtest'
+    # write data
     telegram = Telegram(telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
                         data_fn_start=fn_start)     
-    
-    # telegram.create_netCDF(config_dict=config_dict) # in production code: runs if f'{fn_start}.nc' is not present
-    telegram.append_data_to_netCDF()
-    sleep(60) # after data is appended previous test
-    now = NowTime()
-    now.date_strings()
-    telegram.append_data_to_netCDF()
+    for i in range(amount_data_points):
+        new_time = now.utc + (i*timedelta(minutes=1)) # time offset: by 1 minute
+        telegram.append_data_to_netCDF(now_time_obj=new_time) # here we are appending 
+    # read and test
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
     netCDF_var_time = rootgrp.variables['time']
     netCDF_var_time_data = netCDF_var_time[:].data
-    print(netCDF_var_time_data)
-    # import pdb; pdb.set_trace()
-
-    # TODO: to test time append_data_to_netCDF 
-    # could be changed to have time object at input in order to 
-    # 
-
-    # telegram.append_data_to_netCDF()
+    assert len(netCDF_var_time_data) == amount_data_points
+    first_time_item = num2date(netCDF_var_time_data[0], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
+    assert first_time_item == now.utc
+    last_time_item = num2date(netCDF_var_time_data[-1], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
+    elapsed_time = last_time_item - first_time_item
+    elapsed_time_secs = elapsed_time.total_seconds() / 60
+    assert elapsed_time_secs == (amount_data_points - 1)
+    print('elapsed_time_secs:', elapsed_time_secs)
 
 
 
