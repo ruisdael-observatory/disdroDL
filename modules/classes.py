@@ -4,9 +4,8 @@ from datetime  import datetime, timedelta
 from netCDF4 import Dataset
 from modules.util_functions import capture_telegram_prfx_vars
 from pprint import pprint
-from cftime import date2num, num2date
+from cftime import date2num
 import numpy
-import random 
 
 class NowTime:
     '''
@@ -138,9 +137,12 @@ class Telegram:
             netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict, todaysdateobj=self.timestamp_datetime)
             netCDF_rootgrp.close()
     
-    def append_data_to_netCDF(self):
+    def append_data_to_netCDF(self, now_time_obj):
         '''
         appends data to netCDF
+        DONE: time
+        TODO: other parameters
+        
         '''
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'  # TODO: move var assignment to __init__
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
@@ -148,8 +150,7 @@ class Telegram:
         # (temp) appending timestamps to var time
         netCDF_var_time = netCDF_rootgrp.variables['time']
         print(netCDF_var_time)
-        print(self.timestamp_datetime)
-        time_now_array = date2num([self.timestamp_datetime], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
+        time_now_array = date2num([now_time_obj], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
         print('time_now_array:', time_now_array)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )
@@ -199,13 +200,6 @@ def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj):
             variable.__setattr__('units', f'hours since {todaysdateobj.strftime("%Y-%m-%d")} 00:00:00 +00:00')
         # print('value:', var_sub_dict['value'])
     temp = nc_rootgrp.createVariable("temp","f4",("time"))
-
-
-
-# variable
-## scalar values
-## with method: assignValue(self, val)
-##  To create a scalar variable, simply leave out the dimensions keyword.
 
 
 
