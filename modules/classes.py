@@ -123,30 +123,43 @@ class Telegram:
                 elif type(data[0]) == str:
                     writer.writerow(data)
 
-    def append_data_to_netCDF(self, config_dict):
+    def create_netCDF(self, config_dict):
         '''
-        def creates and appends data to daily netCDF file with all the disdrometer data
+        def creates new netCDF file with dimensions and global attributes
         '''
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
             global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
-            dimensions_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
-            vars_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
-            
+            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
+            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
             netCDF_rootgrp.close()
 
-def dimensions_to_netCDF(nc_rootgrp, config_dict):
+def global_attrs_to_netCDF(nc_rootgrp, config_dict):
+    '''
+    def writes global attributes (metadata) to newly created netCDF
+    '''
+    for key in config_dict['global_attrs'].keys():
+        nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
+
+def netCDF_dimensions(nc_rootgrp, config_dict):
+    '''
+    reads dimensions from yaml config file and writes them to netCDF
+    '''
     for key in config_dict['dimensions'].keys():
         print('dimension:', key)
         nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
 
-def vars_to_netCDF(nc_rootgrp, config_dict):
+def netCDF_variables(nc_rootgrp, config_dict):
+    '''
+    Reads variables' definition from yaml config file and writes them to netCDF
+    If variable values are set in the yml file def also assigns them their value
+    '''
     for key in config_dict['variables'].keys():
         var_sub_dict = config_dict['variables'][key]
         print(key, var_sub_dict, var_sub_dict['dimensions'])
         if var_sub_dict['dimensions'] == None:
-            # scalar value: no dimensions are sure
+            # scalar variables do not use dimensions
             variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
                                                  var_sub_dict['dtype'],)
             variable.assignValue(var_sub_dict['value'])
@@ -160,9 +173,7 @@ def vars_to_netCDF(nc_rootgrp, config_dict):
         if  key == 'time':
             # TODO: replace YYYY for current date
             variable.__setattr__('units', 'hours since YYY-MM-DD 00:00:00 +00:00')
-
         # print('value:', var_sub_dict['value'])
-        # values
 
 
 # variable
@@ -170,12 +181,6 @@ def vars_to_netCDF(nc_rootgrp, config_dict):
 ## with method: assignValue(self, val)
 ##  To create a scalar variable, simply leave out the dimensions keyword.
 
-def global_attrs_to_netCDF(nc_rootgrp, config_dict):
-    '''
-    def writes global attributes (mostly metadata) to newly created netCDF
-    '''
-    for key in config_dict['global_attrs'].keys():
-        nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
 
 
 def join_f61_items(telegram_list):
