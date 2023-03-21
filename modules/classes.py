@@ -1,9 +1,11 @@
 import csv
 import os
-from datetime  import datetime
+from datetime  import datetime, timedelta
 from netCDF4 import Dataset
 from modules.util_functions import capture_telegram_prfx_vars
 from pprint import pprint
+from cftime import date2num, num2date
+import numpy
 import random 
 
 class NowTime:
@@ -42,7 +44,8 @@ class Telegram:
     '''
     def __init__(self, telegram_lines, timestamp, data_dir, data_fn_start):
         self.telegram_lines = telegram_lines
-        self.timestamp = timestamp
+        self.timestamp = timestamp  # change to self.timestamp_str
+        self.timestamp_datetime = datetime.fromisoformat(self.timestamp) 
         self.svfs_values = None
         self.svfs_headers = []
         self.f90_values = None
@@ -102,7 +105,7 @@ class Telegram:
         In cases of multiline values (F61) several rows are written
         '''
         prefix_lcase = prefix.lower()
-        fn = f'{self.data_fn_start}_{prefix}.csv'
+        fn = f'{self.data_fn_start}_{prefix}.csv' # TODO: move var assignment to __init__
         # write headers to csv
         if f'{prefix_lcase}_headers' in self.__dir__() and not os.path.exists(self.data_dir / fn):
             # if headers variable exists and file does not exist
@@ -127,13 +130,33 @@ class Telegram:
         '''
         def creates new netCDF file with dimensions and global attributes
         '''
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
+        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
             global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
             netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
-            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
+            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict, todaysdateobj=self.timestamp_datetime)
             netCDF_rootgrp.close()
+    
+    def append_data_to_netCDF(self):
+        '''
+        appends data to netCDF
+        '''
+        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'  # TODO: move var assignment to __init__
+        netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
+        
+        # (temp) appending timestamps to var time
+        netCDF_var_time = netCDF_rootgrp.variables['time']
+        print(netCDF_var_time)
+        print(self.timestamp_datetime)
+        time_now_array = date2num([self.timestamp_datetime], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
+        print('time_now_array:', time_now_array)
+        netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
+        print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )
+        # netCDF_var_time = times
+        netCDF_rootgrp.close()
+        # write timestamp to netCDF_rootgrp
+
 
 def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''
@@ -150,7 +173,7 @@ def netCDF_dimensions(nc_rootgrp, config_dict):
         print('dimension:', key)
         nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
 
-def netCDF_variables(nc_rootgrp, config_dict):
+def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj):
     '''
     Reads variables' definition from yaml config file and writes them to netCDF
     If variable values are set in the yml file def also assigns them their value
@@ -167,13 +190,16 @@ def netCDF_variables(nc_rootgrp, config_dict):
             variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
                                                  var_sub_dict['dtype'],
                                                  tuple([dim for dim in var_sub_dict['dimensions']])
-                                                 )                                      
+                                                 )   
+            
         for var_attr in var_sub_dict['var_attrs']:
             variable.__setattr__(var_attr, var_sub_dict['var_attrs'][var_attr])
         if  key == 'time':
             # TODO: replace YYYY for current date
-            variable.__setattr__('units', 'hours since YYY-MM-DD 00:00:00 +00:00')
+            variable.__setattr__('units', f'hours since {todaysdateobj.strftime("%Y-%m-%d")} 00:00:00 +00:00')
         # print('value:', var_sub_dict['value'])
+    temp = nc_rootgrp.createVariable("temp","f4",("time"))
+
 
 
 # variable

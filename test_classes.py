@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from pprint import pprint
 from pathlib import Path
+from time import sleep
 from modules.classes import NowTime, Telegram
 from modules.util_functions import yaml2dict
 from netCDF4 import Dataset
@@ -75,21 +76,49 @@ def test_Telegram_netCDF():
     now.date_strings()
     fn_start = 'classtest'
     create_test_data_dir(dir=test_data_dir)
-    delete_netcdf(fn_start='classtest', data_dir=test_data_dir, )
+    delete_netcdf(fn_start='classtest', data_dir=test_data_dir,)  # delete old netCDF
     telegram = Telegram(telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
                         data_fn_start=fn_start)     
     
-    telegram.create_netCDF(config_dict=config_dict)
-    rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")
+    telegram.create_netCDF(config_dict=config_dict) # in production code: runs if f'{fn_start}.nc' is not present
     # test dimensions
+    rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
     assert 'time' in rootgrp.dimensions.keys()
     # test global attributes
     assert rootgrp.title == config_dict['global_attrs']['title']
     assert rootgrp.contributors == config_dict['global_attrs']['contributors']    
     pprint(rootgrp.__dict__)
     rootgrp.close()
+
+def test_append_data_netCDF():
+    # append data: test time
+    now = NowTime()
+    now.date_strings()
+    fn_start = 'classtest'
+    telegram = Telegram(telegram_lines=telegram_lines, 
+                        timestamp=now.iso, 
+                        data_dir=test_data_dir,
+                        data_fn_start=fn_start)     
+    
+    # telegram.create_netCDF(config_dict=config_dict) # in production code: runs if f'{fn_start}.nc' is not present
+    telegram.append_data_to_netCDF()
+    sleep(60) # after data is appended previous test
+    now = NowTime()
+    now.date_strings()
+    telegram.append_data_to_netCDF()
+    rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
+    netCDF_var_time = rootgrp.variables['time']
+    netCDF_var_time_data = netCDF_var_time[:].data
+    print(netCDF_var_time_data)
+    # import pdb; pdb.set_trace()
+
+    # TODO: to test time append_data_to_netCDF 
+    # could be changed to have time object at input in order to 
+    # 
+
+    # telegram.append_data_to_netCDF()
 
 
 
