@@ -87,6 +87,7 @@ terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 - [X] NetCDF global attributes - same as ACTRIS
 - [X] handling time dimension ??
 - [ ] turn telegram_fields to netCDF vars
+   - use the index of telegram_fields
 - [ ] config.yml: possible split in 2: constant values, over written by site specific values file: `config.yml` & `site.yml`
 
 # questions:

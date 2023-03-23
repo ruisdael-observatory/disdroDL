@@ -70,9 +70,9 @@ class Telegram:
         headers_numbers = ((sfvs_telegram_resquest.replace('%','')).split(';'))[:-1]
         headers_names = []
         for key in headers_numbers:
-            header = f"{config_dict['telegram_fields'][key]['name']}"
+            header = f"{config_dict['telegram_fields'][key]['var_attrs']['long_name']}"
             if 'unit' in config_dict['telegram_fields'][key].keys():
-                header = f"{header} ({config_dict['telegram_fields'][key]['unit']})"
+                header = f"{header} ({config_dict['telegram_fields'][key]['var_attrs']['units']})"
             headers_names.append(header)
         self.svfs_headers = ['timestamp'] + headers_names 
         # F61
@@ -153,10 +153,8 @@ class Telegram:
         time_now_array = date2num([now_time_obj], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )
-
-
         currentindex = len(netCDF_var_time[:].data) - 1
-
+        
         # (temp) append rain_intensity 
         netCDF_var_ri = netCDF_rootgrp.variables['rain_intensity']
         random_val = float(random.random())
@@ -190,32 +188,37 @@ def netCDF_dimensions(nc_rootgrp, config_dict):
         print('dimension:', key)
         nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
 
+def set_netcdf_variable(key, one_var_dict, nc_group, todaysdateobj):
+    print(key, one_var_dict, one_var_dict['dimensions'])
+    if one_var_dict['dimensions'] == None:
+        # scalar variables do not use dimensions
+        variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
+                                                one_var_dict['dtype'],)
+        variable.assignValue(one_var_dict['value'])
+    elif len(one_var_dict['dimensions']) == 1:
+        variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
+                                                one_var_dict['dtype'],
+                                                tuple([dim for dim in one_var_dict['dimensions']])
+                                                )               
+    for var_attr in one_var_dict['var_attrs']:
+        variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
+    if  key == 'time':
+        # TODO: replace YYYY for current date
+        variable.__setattr__('units', f'hours since {todaysdateobj.strftime("%Y-%m-%d")} 00:00:00 +00:00')
+    # print('value:', one_var_dict['value'])
+
+
 def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj):
     '''
     Reads variables' definition from yaml config file and writes them to netCDF
     If variable values are set in the yml file def also assigns them their value
     '''
+    # variables not in telegram
     for key in config_dict['variables'].keys():
-        var_sub_dict = config_dict['variables'][key]
-        print(key, var_sub_dict, var_sub_dict['dimensions'])
-        if var_sub_dict['dimensions'] == None:
-            # scalar variables do not use dimensions
-            variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
-                                                 var_sub_dict['dtype'],)
-            variable.assignValue(var_sub_dict['value'])
-        elif len(var_sub_dict['dimensions']) == 1:
-            variable = nc_rootgrp.createVariable(var_sub_dict['var_attrs']['standard_name'], 
-                                                 var_sub_dict['dtype'],
-                                                 tuple([dim for dim in var_sub_dict['dimensions']])
-                                                 )   
-            
-        for var_attr in var_sub_dict['var_attrs']:
-            variable.__setattr__(var_attr, var_sub_dict['var_attrs'][var_attr])
-        if  key == 'time':
-            # TODO: replace YYYY for current date
-            variable.__setattr__('units', f'hours since {todaysdateobj.strftime("%Y-%m-%d")} 00:00:00 +00:00')
-        # print('value:', var_sub_dict['value'])
+        set_netcdf_variable(key=key, one_var_dict=config_dict['variables'][key], nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
 
+    for key in config_dict['telegram_fields'].keys():
+        set_netcdf_variable(key=key, one_var_dict=config_dict['telegram_fields'][key], nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
 
 
 def join_f61_items(telegram_list):
