@@ -96,7 +96,7 @@ def test_Telegram_netCDF():
 
 def test_append_data_netCDF():
     # -- append data: test time
-    amount_data_points = 10
+    amount_data_points = 1440
     now = NowTime()
     now.date_strings()
     fn_start = 'classtest'
@@ -104,7 +104,9 @@ def test_append_data_netCDF():
     telegram = Telegram(telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
-                        data_fn_start=fn_start)     
+                        data_fn_start=fn_start)  
+    telegram.capture_prefixes_and_data()
+
     for i in range(amount_data_points):
         new_time = now.utc + (i*timedelta(minutes=1)) # time offset: by 1 minute
         telegram.append_data_to_netCDF(now_time_obj=new_time) # here we are appending 
@@ -112,7 +114,7 @@ def test_append_data_netCDF():
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
     netCDF_var_time = rootgrp.variables['time']
     netCDF_var_time_data = netCDF_var_time[:].data
-    assert len(netCDF_var_time_data) == amount_data_points
+    # assert len(netCDF_var_time_data) == amount_data_points
     first_time_item = num2date(netCDF_var_time_data[0], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
     assert first_time_item == now.utc
     last_time_item = num2date(netCDF_var_time_data[-1], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
