@@ -77,7 +77,7 @@ telegram_fields:
     '01':
         dimensions:
             - time
-        dtype: 'f8'  # 64bit floating point                
+        dtype: 'f4'  # 32bit floating point                
         var_attrs:
             units: 'mm/h'
             long_name: 'Rain intensity'
@@ -85,49 +85,80 @@ telegram_fields:
     '02':
         dimensions:
             - time
-        dtype: 'f8'  # 64bit floating point                
+        dtype: 'f4'                 
         var_attrs:
             units: 'mm'
             long_name: 'Rain amount accumulated'
-            standard_name: 'rain_amount_accumulated'
+            standard_name: 'acc_rain_amount'
     '03':
         dimensions:
             - time
-        dtype: 'f8'  # TODO: string dimensions               
+        dtype: 'i2'  # 16-bit signed integer               
         var_attrs:
             long_name: 'Weather code to SYNOP waw'
-            standard_name: 'synop_waw'
+            standard_name: 'code_4680'
     '04':
         dimensions:
             - time
-        dtype: 'f8'  # 64bit floating point                
+        dtype: 'i2'  # 16-bit signed integer                
         var_attrs:
             long_name: 'Weather code to SYNOP ww'
-            standard_name: 'synop_ww'
+            standard_name: 'code_4677'
     '05':
         dimensions:
             - time
-        dtype: 'f8'  # 64bit floating point                
+        dtype: 'S1'  # string            
         var_attrs:
             long_name: 'Weather code METAR/SPECI'
-            standard_name: 'metar_speci'
-    
+            standard_name: 'code_4678'
+    '06':
+        dimensions:
+            - time
+        dtype: 'S1'  # string            
+        var_attrs:
+            long_name: 'Weather code according to NWS'
+            standard_name: 'code_NWS'
+    '07':
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Radar reflectivity'
+            standard_name: 'reflectivity'
+            units: 'dBz'
+    '08':
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Meteorological Optical Range in precipitation'
+            standard_name: 'MOR'
+            units: 'm'
+    '09':
+        dimensions:
+            - time
+        dtype: 'i2'            
+        var_attrs:
+            long_name: 'Sample interval'
+            standard_name: 'sample_interval'
+            units: 's'
+    '10':
+        dimensions:
+            - time
+        dtype: 'i4'            
+        var_attrs:
+            long_name: 'Signal amplitude of the laser strip'
+            standard_name: 'amplitude'
+            units: '1'
+    '11':
+        dimensions:
+            - time
+        dtype: 'i4'            
+        var_attrs:
+            long_name: 'Number of particles detected and validated'
+            standard_name: 'n_particles'
+            units: '1'
 
-  # '05':
-  #     name: Weather code METAR/SPECI
-  # '06':
-  #     name: Weather code according to NWS 
-  # '07':
-  #     name: Radar reflectivity 
-  #     unit: 'dBz'
-  # '08':
-  #     name: MOR visibility in precipitation 
-  #     unit: 'm'
-  # '09':
-  #     name: Sample interval 
-  #     unit: 's'
-  # '10':
-  #     name: Signal amplitude of the laser strip
   # '11':
   #     name: Number of particles detected and validated
   # '12':

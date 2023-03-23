@@ -85,10 +85,10 @@ terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
 # TODO
 - [X] NetCDF global attributes - same as ACTRIS
-- [X] handling time dimension ??
+- [X] handling time dimension
 - [ ] turn telegram_fields to netCDF vars
-   - use the index of telegram_fields
-- [ ] config.yml: possible split in 2: constant values, over written by site specific values file: `config.yml` & `site.yml`
+   - use [marks script](https://github.com/DISDRONET/parsivel-txt-to-netcdf/blob/main/lib_Parsivel.R), ACTRIS disdrometer netCDF, [Parsivel-2_with_heating.pdf](https://ruisdael-wiki.citg.tudelft.nl/images/9/9f/Parsivel-2_with_heating.pdf) as reference
+- [ ] handling string in netCDF (see https://unidata.github.io/netcdf4-python/#dealing-with-strings)
 
 # questions:
 * how to deal with different data types: floats, strings, integers?

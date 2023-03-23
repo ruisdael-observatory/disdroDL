@@ -1,7 +1,7 @@
 import csv
 import os
 from datetime  import datetime, timedelta
-from netCDF4 import Dataset
+from netCDF4 import Dataset, stringtochar
 from modules.util_functions import capture_telegram_prfx_vars
 from pprint import pprint
 from cftime import date2num, num2date
@@ -154,19 +154,17 @@ class Telegram:
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )
         currentindex = len(netCDF_var_time[:].data) - 1
-        
+
         # (temp) append rain_intensity 
         netCDF_var_ri = netCDF_rootgrp.variables['rain_intensity']
         random_val = float(random.random())
         netCDF_var_ri[currentindex] = random_val 
 
-        netCDF_var_interval = netCDF_rootgrp.variables['interval']        
-        netCDF_var_interval[currentindex] = 60
-        # interval seconds can be calculate, like in the comment line below
-        # however the 1st value will be 0, and that is wrong
-        #  (num2date(netCDF_var_time[currentindex], netCDF_var_time.units) - num2date(netCDF_var_time[currentindex -1], netCDF_var_time.units)).seconds
+        # (temp) append synop_waw (code_4680)
+        netCDF_var_synop_waw = netCDF_rootgrp.variables['code_4680']
+        random_val = random.choice([00, 20, 54])
+        netCDF_var_synop_waw[currentindex] = random_val
         
-
         # print('concat:', netCDF_var_ri[:].data, [random_val],numpy.concatenate([netCDF_var_ri[:].data, [random_val]]) )
         # print('netCDF_var_ri[:].data',netCDF_var_ri[:].data)
         # netCDF_var_ri[:] =  numpy.append( netCDF_var_ri[:].data, values=[random_val])
