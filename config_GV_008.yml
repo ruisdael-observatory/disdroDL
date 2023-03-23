@@ -58,7 +58,7 @@ variables:
     time:
         dimensions:
             - time
-        dtype: 'f8'  # 32bit floating point        
+        dtype: 'f8'  # 64bit floating point        
         var_attrs:
             long_name: "Time UTC"
             standard_name: "time"
@@ -67,12 +67,19 @@ variables:
     interval:
         dimensions:
             - time
-        dtype: 'i1'  # 32bit floating point        
+        dtype: 'i1'  # 8bit signed integer (0-255)         
         var_attrs:
             units: s
             long_name: 'Length of measurement interval'
             standard_name: 'interval'         
-        
+    rain_intensity:
+        dimensions:
+            - time
+        dtype: 'f8'  # 64bit floating point                
+        var_attrs:
+            units: 'mm/h'
+            long_name: 'Rain intensity'
+            standard_name: 'rain_intensity'
 
 telegram_fields:
   '01':

@@ -85,7 +85,13 @@ terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
 # TODO
 - [X] NetCDF global attributes - same as ACTRIS
-- [ ] handling time dimension ??
-- [ ] Xarray: could it makes it easier? https://xarray.pydata.org/en/v0.13.0/why-xarray.html
+- [X] handling time dimension ??
 - [ ] turn telegram_fields to netCDF vars
 - [ ] config.yml: possible split in 2: constant values, over written by site specific values file: `config.yml` & `site.yml`
+
+# questions:
+* how to deal with different data types: floats, strings, integers?
+* how to know what index from the list `telegram.svfs_values` will have? perhaps can be declared in yml
+
+# Questions to Mark:
+* role of `interval` variable: values are `[60, 60, ...]`

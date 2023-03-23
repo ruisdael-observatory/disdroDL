@@ -4,8 +4,9 @@ from datetime  import datetime, timedelta
 from netCDF4 import Dataset
 from modules.util_functions import capture_telegram_prfx_vars
 from pprint import pprint
-from cftime import date2num
+from cftime import date2num, num2date
 import numpy
+import random
 
 class NowTime:
     '''
@@ -142,22 +143,37 @@ class Telegram:
         appends data to netCDF
         DONE: time
         TODO: other parameters
-        
         '''
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'  # TODO: move var assignment to __init__
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
+        # netCDF_rootgrp.set_fill_off()
         
-        # (temp) appending timestamps to var time
+        # (time) appending timestamps to var time
         netCDF_var_time = netCDF_rootgrp.variables['time']
-        print(netCDF_var_time)
         time_now_array = date2num([now_time_obj], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
-        print('time_now_array:', time_now_array)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )
-        # netCDF_var_time = times
-        netCDF_rootgrp.close()
-        # write timestamp to netCDF_rootgrp
 
+
+        currentindex = len(netCDF_var_time[:].data) - 1
+
+        # (temp) append rain_intensity 
+        netCDF_var_ri = netCDF_rootgrp.variables['rain_intensity']
+        random_val = float(random.random())
+        netCDF_var_ri[currentindex] = random_val 
+
+        netCDF_var_interval = netCDF_rootgrp.variables['interval']        
+        netCDF_var_interval[currentindex] = 60
+        # interval seconds can be calculate, like in the comment line below
+        # however the 1st value will be 0, and that is wrong
+        #  (num2date(netCDF_var_time[currentindex], netCDF_var_time.units) - num2date(netCDF_var_time[currentindex -1], netCDF_var_time.units)).seconds
+        
+
+        # print('concat:', netCDF_var_ri[:].data, [random_val],numpy.concatenate([netCDF_var_ri[:].data, [random_val]]) )
+        # print('netCDF_var_ri[:].data',netCDF_var_ri[:].data)
+        # netCDF_var_ri[:] =  numpy.append( netCDF_var_ri[:].data, values=[random_val])
+        netCDF_rootgrp.close()
+       
 
 def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''
@@ -199,7 +215,6 @@ def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj):
             # TODO: replace YYYY for current date
             variable.__setattr__('units', f'hours since {todaysdateobj.strftime("%Y-%m-%d")} 00:00:00 +00:00')
         # print('value:', var_sub_dict['value'])
-    temp = nc_rootgrp.createVariable("temp","f4",("time"))
 
 
 
