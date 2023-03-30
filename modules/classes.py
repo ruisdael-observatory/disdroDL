@@ -153,18 +153,29 @@ class Telegram:
         netCDF_var_time = netCDF_rootgrp.variables['time']
         time_now_array = date2num([now_time_obj], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
-        print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )
+        print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
         currentindex = len(netCDF_var_time[:].data) - 1
 
-        # (temp) append rain_intensity 
-        netCDF_var_ri = netCDF_rootgrp.variables['rain_intensity']
-        random_val = float(random.random())
-        netCDF_var_ri[currentindex] = random_val 
+        # SFVs
+        for disdro_index, disdro_val in enumerate(self.svfs_values):
+            # the svfs_values are ordered in same way as telegram fields
+            # import pdb;pdb.set_trace()
+            if disdro_index != 0 and disdro_index < 12: # not time; 12: 11 is last field of config
+                field_dict = self.config_dict['telegram_fields'][str(disdro_index).zfill(2)]
+                standard_name = field_dict['var_attrs']['standard_name']
+                netCDF_var = netCDF_rootgrp.variables[standard_name]
+                netCDF_var[currentindex] = disdro_val
 
-        # (temp) append synop_waw (code_4680)
-        netCDF_var_synop_waw = netCDF_rootgrp.variables['code_4680']
-        random_val = random.choice([00, 20, 54])
-        netCDF_var_synop_waw[currentindex] = random_val
+
+        # # (temp) append rain_intensity 
+        # netCDF_var_ri = netCDF_rootgrp.variables['rain_intensity']
+        # random_val = float(random.random())
+        # netCDF_var_ri[currentindex] = random_val 
+
+        # # (temp) append synop_waw (code_4680)
+        # netCDF_var_synop_waw = netCDF_rootgrp.variables['code_4680']
+        # random_val = random.choice([00, 20, 54])
+        # netCDF_var_synop_waw[currentindex] = random_val
         
         # print('concat:', netCDF_var_ri[:].data, [random_val],numpy.concatenate([netCDF_var_ri[:].data, [random_val]]) )
         # print('netCDF_var_ri[:].data',netCDF_var_ri[:].data)
