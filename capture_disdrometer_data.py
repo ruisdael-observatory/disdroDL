@@ -52,7 +52,7 @@ try:
                                 timestamp=now_utc.iso, 
                                 data_dir=data_dir,
                                 data_fn_start=fn_start)    
-            telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)
+            telegram.create_csv_headers(sfvs_telegram_resquest=svfs)
             telegram.capture_prefixes_and_data()
             for prefix in prefixes_list:
                 telegram.append_data_to_csv(prefix=prefix)

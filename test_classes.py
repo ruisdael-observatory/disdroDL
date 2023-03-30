@@ -127,7 +127,7 @@ def test_append_data_netCDF():
     elapsed_time_secs = elapsed_time.total_seconds() / 60
     assert elapsed_time_secs == (amount_data_points - 1)
     print('elapsed_time_secs:', elapsed_time_secs)
-
+    # TODO: MORE tests, based on CSV tests
 
 
 
