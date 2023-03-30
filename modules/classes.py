@@ -156,15 +156,20 @@ class Telegram:
         print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
         currentindex = len(netCDF_var_time[:].data) - 1
 
-        # SFVs
+        # SF Vs
         for disdro_index, disdro_val in enumerate(self.svfs_values):
+            # TODO: change the way index is handled so there can be gaps in yml 
+
             # the svfs_values are ordered in same way as telegram fields
             # import pdb;pdb.set_trace()
-            if disdro_index != 0 and disdro_index < 12: # not time; 12: 11 is last field of config
-                field_dict = self.config_dict['telegram_fields'][str(disdro_index).zfill(2)]
+            index_str = str(disdro_index).zfill(2)
+            if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
+                print('index:', disdro_index, index_str)
+                field_dict = self.config_dict['telegram_fields'][index_str]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
+
 
 
         # # (temp) append rain_intensity 

@@ -158,12 +158,63 @@ telegram_fields:
             long_name: 'Number of particles detected and validated'
             standard_name: 'n_particles'
             units: '1'
+    '12': # issue with values
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Temperature in the sensor housing'
+            standard_name: 'T_sensor'
+            units: '°C'  
+    # '13': 
+    #     dimensions:
+    #         - time
+    #     dtype: 'f4'            
+    #     var_attrs:
+    #         long_name: 'Sensor serial number'
+    #         standard_name: 'SSN'
+    # '14':
+    #     dimensions:
+    #         - time     
+    #     dtype: 'f4'            
+    #     var_attrs:
+    #         long_name: 'Firmware IOP version number'
+    #         standard_name: 'IOPversion'
+    # '15':
+    #     dimensions:
+    #         - time     
+    #     dtype: 'f4'            
+    #     var_attrs:
+    #         long_name: 'Firmware DSP version number'
+    #         standard_name: 'FWversion'
+    '16': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Sensor head heating current'
+            standard_name: 'I_heating'
+            units: 'A'
+    '17': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Power supply voltage'
+            standard_name: 'V_power_supply'
+            units: 'V'
+    '18': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Sensor status'
+            standard_name: 'state_sensor'
+            comment: "0 = OK, 1 = Dirty, 2 = No measurement possible." 
 
-  # '11':
-  #     name: Number of particles detected and validated
-  # '12':
-  #     name: Temperature in the sensor housing 
-  #     unit: '°C'
+
+
+
   # '13':
   #     name: Sensor serial number
   # '14':
@@ -232,10 +283,10 @@ telegram_fields:
   #     name: Particle speed
   #     unit: 'mm/h'
   # '90':
-  #     name: Field N
+  #     name: Field N  # diameter after filtering
   #     unit: 'log(10)*(1/((m^3)*mm))'
   # '91':
-  #     name: Field v
+  #     name: Field v # velocity after filtering
   #     unit: 'm/s'
   # '93':
   #     name: Raw data
