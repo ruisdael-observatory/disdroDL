@@ -211,48 +211,46 @@ telegram_fields:
             long_name: 'Sensor status'
             standard_name: 'state_sensor'
             comment: "0 = OK, 1 = Dirty, 2 = No measurement possible." 
-
-
-
-
-  # '13':
-  #     name: Sensor serial number
-  # '14':
-  #     name: Firmware IOP version number
-  # '15':
-  #     name: Firmware DSP version number
-  # '16':
-  #     name: Sensor head heating current 
-  #     unit: 'A'
-  # '17':
-  #     name: Power supply voltage 
-  #     unit: 'V'
-  # '18':
-  #     name: Sensor status
-  # '19':
-  #     name: Date/time measuring start
-  # '20':
-  #     name: Sensor time
-  # '21':
-  #     name: Sensor date
-  # '22':
-  #     name: Station name
-  # '23':
-  #     name: Station number
-  # '24':
-  #     name: Rain amount absolute 
-  #     unit: 'mm'
-  # '25':
-  #     name: Error code
-  # '26':
-  #     name: Temperature PCB 
-  #     unit: '°C'
-  # '27':
-  #     name: Temperature right sensor head 
-  #     unit: '°C'
-  # '28':
-  #     name: Temperature left sensor head 
-  #     unit: '°C'
+    '24': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Rain amount absolute'
+            standard_name: 'absolute_rain_amount'
+            units: 'mm' 
+    '25': 
+        dimensions:
+            - time
+        dtype: 'i4'            
+        var_attrs:
+            long_name: 'Error code'
+            standard_name: 'error_code'
+            units: '1'
+    '26': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Temperature PCB'
+            standard_name: 'T_pcb'
+            units: '°C'            
+    '27': 
+        dimensions:
+            - time
+        dtype: 'i4'            
+        var_attrs:
+            long_name: 'Temperature left sensor head'
+            standard_name: 'T_L_sensor_head'
+    '28': 
+        dimensions:
+            - time
+        dtype: 'i4'            
+        var_attrs:
+            long_name: 'Temperature right sensor head'
+            standard_name: 'T_R_sensor_head'
+            units: '°C' 
+ 
   # '30':
   #     name: Rain intensity max. 30.000 mm/h
   #     unit: 'mm/h'

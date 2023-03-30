@@ -90,9 +90,4 @@ terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
    - use [marks script](https://github.com/DISDRONET/parsivel-txt-to-netcdf/blob/main/lib_Parsivel.R), ACTRIS disdrometer netCDF, [Parsivel-2_with_heating.pdf](https://ruisdael-wiki.citg.tudelft.nl/images/9/9f/Parsivel-2_with_heating.pdf) as reference
 - [ ] handling string in netCDF (see https://unidata.github.io/netcdf4-python/#dealing-with-strings)
 
-# questions:
-* how to deal with different data types: floats, strings, integers?
-* how to know what index from the list `telegram.svfs_values` will have? perhaps can be declared in yml
 
-# Questions to Mark:
-* role of `interval` variable: values are `[60, 60, ...]`
