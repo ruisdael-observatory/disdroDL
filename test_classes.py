@@ -128,6 +128,24 @@ def test_append_data_netCDF():
     assert elapsed_time_secs == (amount_data_points - 1)
     print('elapsed_time_secs:', elapsed_time_secs)
     # TODO: MORE tests, based on CSV tests
+    netCDF_var_MOR = rootgrp.variables['MOR']
+    netCDF_var_MOR_data = netCDF_var_MOR[:].data
+    netCDF_var_MOR_data[0] = 2000
+    netCDF_var_amp = rootgrp.variables['amplitude']
+    netCDF_var_amp_data = netCDF_var_amp[:].data
+    netCDF_var_amp_data[0] = 12773
+
+
+    # assert telegram.f61_rows[0][1] == '00.502' and telegram.f61_rows[0][2] ==  '00.853'
+    # assert len(telegram.f61_rows[0]) == (len(telegram.f61_headers))
+    # assert telegram.svfs_values[1] == '0000.000'
+    # assert len(telegram.svfs_values) == len(telegram.svfs_headers)
+    # assert telegram.f90_values[1] == '-9.999'
+    # assert telegram.f91_values[1] == '00.000'
+    # assert telegram.f93_values[1] == '000'
+    # for prefix in prefixes_list:
+    #     csv_test(telegram=telegram, fn_start=fn_start, prefix=prefix, data_dir=test_data_dir, now_iso=now.iso)
+     
 
 
 
