@@ -42,7 +42,8 @@ class Telegram:
         * capture_prefixes_and_data()
         * append_data_to_csv()
     '''
-    def __init__(self, telegram_lines, timestamp, data_dir, data_fn_start):
+    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start):
+        self.config_dict = config_dict
         self.telegram_lines = telegram_lines
         self.timestamp = timestamp  # change to self.timestamp_str
         self.timestamp_datetime = datetime.fromisoformat(self.timestamp) 
@@ -61,7 +62,7 @@ class Telegram:
         # data_fn_start shared filename start str, based on date_location_parsivelcode_
         # ie. 20230221_Delft-GV_PAR008_  *.csv
 
-    def create_csv_headers(self, sfvs_telegram_resquest, config_dict):
+    def create_csv_headers(self, sfvs_telegram_resquest):
         '''def Creates the headers to CSV of F61 and SVFS
             config.yml telegram_fields name and unit are used
             adds them to self.f61_headers & self.svfs_headers variables
@@ -70,16 +71,16 @@ class Telegram:
         headers_numbers = ((sfvs_telegram_resquest.replace('%','')).split(';'))[:-1]
         headers_names = []
         for key in headers_numbers:
-            header = f"{config_dict['telegram_fields'][key]['var_attrs']['long_name']}"
-            if 'unit' in config_dict['telegram_fields'][key].keys():
-                header = f"{header} ({config_dict['telegram_fields'][key]['var_attrs']['units']})"
+            header = f"{self.config_dict['telegram_fields'][key]['var_attrs']['long_name']}"
+            if 'unit' in self.config_dict['telegram_fields'][key].keys():
+                header = f"{header} ({self.config_dict['telegram_fields'][key]['var_attrs']['units']})"
             headers_names.append(header)
         self.svfs_headers = ['timestamp'] + headers_names 
         # F61
         self.f61_headers = [
             'timestamp',
-            f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})",
-            f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"
+            f"{self.config_dict['telegram_fields']['61size']['name']} ({self.config_dict['telegram_fields']['61size']['unit']})",
+            f"{self.config_dict['telegram_fields']['61speed']['name']} ({self.config_dict['telegram_fields']['61speed']['unit']})"
             ]                    
 
     def capture_prefixes_and_data(self):
@@ -126,16 +127,16 @@ class Telegram:
                 elif type(data[0]) == str:
                     writer.writerow(data)
 
-    def create_netCDF(self, config_dict):
+    def create_netCDF(self):
         '''
         def creates new netCDF file with dimensions and global attributes
         '''
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
-            global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
-            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict)
-            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=config_dict, todaysdateobj=self.timestamp_datetime)
+            global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
+            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
+            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, todaysdateobj=self.timestamp_datetime)
             netCDF_rootgrp.close()
     
     def append_data_to_netCDF(self, now_time_obj):
@@ -212,11 +213,11 @@ def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj):
     If variable values are set in the yml file def also assigns them their value
     '''
     # variables not in telegram
-    for key in config_dict['variables'].keys():
-        set_netcdf_variable(key=key, one_var_dict=config_dict['variables'][key], nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
+    for key, var_dict in config_dict['variables'].items():
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
 
-    for key in config_dict['telegram_fields'].keys():
-        set_netcdf_variable(key=key, one_var_dict=config_dict['telegram_fields'][key], nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
+    for key,var_dict in config_dict['telegram_fields'].items():
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
 
 
 def join_f61_items(telegram_list):

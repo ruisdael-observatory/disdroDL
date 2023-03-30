@@ -46,14 +46,15 @@ def test_Telegram():
     create_test_data_dir(dir=test_data_dir)
     for prefix in prefixes_list:
         delete_csv(fn_start=fn_start, prefix=prefix, data_dir=test_data_dir)
-    telegram = Telegram(telegram_lines=telegram_lines, 
+    telegram = Telegram(config_dict=config_dict,
+                        telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
                         data_fn_start=fn_start)                    
     # csv_headers methods and attributes 
 
     # NOTE (temporary disabling to allow for imcomplete config fields
-    # telegram.create_csv_headers(sfvs_telegram_resquest=svfs, config_dict=config_dict)                   
+    # telegram.create_csv_headers(sfvs_telegram_resquest=svfs)                   
     # assert telegram.f61_headers == ['timestamp',
     #                                 f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})", 
     #                                 f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"]
@@ -81,12 +82,13 @@ def test_Telegram_netCDF():
     fn_start = 'classtest'
     create_test_data_dir(dir=test_data_dir)
     delete_netcdf(fn_start='classtest', data_dir=test_data_dir,)  # delete old netCDF
-    telegram = Telegram(telegram_lines=telegram_lines, 
+    telegram = Telegram(config_dict=config_dict,
+                        telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
                         data_fn_start=fn_start)     
     
-    telegram.create_netCDF(config_dict=config_dict) # in production code: runs if f'{fn_start}.nc' is not present
+    telegram.create_netCDF() # in production code: runs if f'{fn_start}.nc' is not present
     # test dimensions
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
     assert 'time' in rootgrp.dimensions.keys()
@@ -103,7 +105,8 @@ def test_append_data_netCDF():
     now.date_strings()
     fn_start = 'classtest'
     # write data
-    telegram = Telegram(telegram_lines=telegram_lines, 
+    telegram = Telegram(config_dict=config_dict,
+                        telegram_lines=telegram_lines, 
                         timestamp=now.iso, 
                         data_dir=test_data_dir,
                         data_fn_start=fn_start)  
