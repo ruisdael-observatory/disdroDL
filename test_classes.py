@@ -135,10 +135,11 @@ def test_append_data_netCDF():
     netCDF_var_amp_data = netCDF_var_amp[:].data
     netCDF_var_amp_data[0] = 12773
 
-
-
-
-
+    netCDF_var_temp_l_sensor = rootgrp.variables['T_L_sensor_head']
+    netCDF_var_temp_l_sensor_data = netCDF_var_temp_l_sensor[:].data
+    netCDF_var_temp_r_sensor = rootgrp.variables['T_R_sensor_head']
+    netCDF_var_temp_r_sensor_data = netCDF_var_temp_r_sensor[:].data
+    assert netCDF_var_temp_r_sensor_data[0] == netCDF_var_temp_l_sensor_data[0] # same temp on L & R sensors: only valid for current data
 
 def create_test_data_dir(dir):
     if not os.path.exists(path=dir):
