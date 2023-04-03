@@ -91,7 +91,13 @@ def test_Telegram_netCDF():
     telegram.create_netCDF() # in production code: runs if f'{fn_start}.nc' is not present
     # test dimensions
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
-    assert 'time' in rootgrp.dimensions.keys()
+    assert set(['time', 'diameter', 'velocity']).issubset(set(rootgrp.dimensions.keys()))
+    netCDF_var_velocity = rootgrp.variables['velocity']
+    netCDF_var_velocity_data = netCDF_var_velocity[:].data
+    assert len(netCDF_var_velocity_data) == rootgrp.dimensions['velocity'].size
+    netCDF_var_diameter = rootgrp.variables['diameter']
+    netCDF_var_diameter_data = netCDF_var_diameter[:].data
+    assert len(netCDF_var_diameter_data) == rootgrp.dimensions['diameter'].size
     # test global attributes
     assert rootgrp.title == config_dict['global_attrs']['title']
     assert rootgrp.contributors == config_dict['global_attrs']['contributors']    
@@ -119,7 +125,7 @@ def test_append_data_netCDF():
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
     netCDF_var_time = rootgrp.variables['time']
     netCDF_var_time_data = netCDF_var_time[:].data
-    # assert len(netCDF_var_time_data) == amount_data_points
+    assert len(netCDF_var_time_data) == amount_data_points
     first_time_item = num2date(netCDF_var_time_data[0], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
     assert first_time_item == now.utc
     last_time_item = num2date(netCDF_var_time_data[-1], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
@@ -130,10 +136,10 @@ def test_append_data_netCDF():
     # TODO: MORE tests, based on CSV tests
     netCDF_var_MOR = rootgrp.variables['MOR']
     netCDF_var_MOR_data = netCDF_var_MOR[:].data
-    netCDF_var_MOR_data[0] = 2000
+    assert netCDF_var_MOR_data[0] == float(20000.0)
     netCDF_var_amp = rootgrp.variables['amplitude']
     netCDF_var_amp_data = netCDF_var_amp[:].data
-    netCDF_var_amp_data[0] = 12773
+    assert netCDF_var_amp_data[0] == 12773
 
     netCDF_var_temp_l_sensor = rootgrp.variables['T_L_sensor_head']
     netCDF_var_temp_l_sensor_data = netCDF_var_temp_l_sensor[:].data

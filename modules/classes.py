@@ -156,7 +156,7 @@ class Telegram:
         print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
         currentindex = len(netCDF_var_time[:].data) - 1
 
-        # SF Vs
+        # SFVs
         for disdro_index, disdro_val in enumerate(self.svfs_values):
             # TODO: change the way index is handled so there can be gaps in yml 
 
@@ -209,18 +209,27 @@ def set_netcdf_variable(key, one_var_dict, nc_group, todaysdateobj):
         # scalar variables do not use dimensions
         variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
                                                 one_var_dict['dtype'],)
-        variable.assignValue(one_var_dict['value'])
-    elif len(one_var_dict['dimensions']) == 1:
+        # variable.assignValue(one_var_dict['value'])
+    elif len(one_var_dict['dimensions']) >= 1:
         variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
-                                                one_var_dict['dtype'],
-                                                tuple([dim for dim in one_var_dict['dimensions']])
-                                                )               
+                                           one_var_dict['dtype'],
+                                           tuple([dim for dim in one_var_dict['dimensions']])
+                                           )
+    # fill predefine values
+    if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
+        # use .assignValue() method for scalar values
+        variable.assignValue(one_var_dict['value'])  
+    elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
+        variable[:] = one_var_dict['value']
+                 
+
+
     for var_attr in one_var_dict['var_attrs']:
         variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
     if  key == 'time':
-        # TODO: replace YYYY for current date
         variable.__setattr__('units', f'hours since {todaysdateobj.strftime("%Y-%m-%d")} 00:00:00 +00:00')
     # print('value:', one_var_dict['value'])
+
 
 
 def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj):
