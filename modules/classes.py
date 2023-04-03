@@ -170,21 +170,17 @@ class Telegram:
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
 
-
+        # F93: list -> shape 32x32 matrix
+        f93_data = numpy.array(self.f93_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+        f93_data = f93_data.reshape(32,32)
+        data_raw_var = netCDF_rootgrp.variables['data_raw']
+        data_raw_var[currentindex] = f93_data
 
         # # (temp) append rain_intensity 
         # netCDF_var_ri = netCDF_rootgrp.variables['rain_intensity']
         # random_val = float(random.random())
         # netCDF_var_ri[currentindex] = random_val 
 
-        # # (temp) append synop_waw (code_4680)
-        # netCDF_var_synop_waw = netCDF_rootgrp.variables['code_4680']
-        # random_val = random.choice([00, 20, 54])
-        # netCDF_var_synop_waw[currentindex] = random_val
-        
-        # print('concat:', netCDF_var_ri[:].data, [random_val],numpy.concatenate([netCDF_var_ri[:].data, [random_val]]) )
-        # print('netCDF_var_ri[:].data',netCDF_var_ri[:].data)
-        # netCDF_var_ri[:] =  numpy.append( netCDF_var_ri[:].data, values=[random_val])
         netCDF_rootgrp.close()
        
 
