@@ -107,17 +107,20 @@ telegram_fields:
     '05':
         dimensions:
             - time
-        dtype: 'S1'  # string            
+        dtype: 'S4'  # string            
         var_attrs:
             long_name: 'Weather code METAR/SPECI'
             standard_name: 'code_4678'
+            comment: 'Possible values in OTT Parsivel documentation: Table 4678'
     '06':
         dimensions:
             - time
-        dtype: 'S1'  # string            
+        dtype: 'S4'  # string            
         var_attrs:
             long_name: 'Weather code according to NWS'
             standard_name: 'code_NWS'
+            comment: 'Possible values in OTT Parsivel documentation: Table NWS'
+
     '07':
         dimensions:
             - time
@@ -210,7 +213,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Sensor status'
             standard_name: 'state_sensor'
-            comment: '0 = OK, 1 = Dirty, 2 = No measurement possible.'
+            comment: '0=OK, 1=Dirty, 2=No measurement possible'
     '24': 
         dimensions:
             - time
@@ -227,6 +230,7 @@ telegram_fields:
             long_name: 'Error code'
             standard_name: 'error_code'
             units: '1'
+            comment: '0=OK, 1=Screens are dirty; 2=Screens are dirty (no measurements possible), 3=Laser damaged'
     '26': 
         dimensions:
             - time
