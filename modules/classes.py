@@ -99,6 +99,7 @@ class Telegram:
                 prefix_lcase = prefix.lower()
                 super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
                                                   string2row(timestamp=self.timestamp, valuestr=values, delimiter=self.delimiter, prefix=prefix))
+    
     def append_data_to_csv(self, prefix):
         '''
         def Writes headers and appends data from self.*_values to corresponding CSV
