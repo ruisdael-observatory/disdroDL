@@ -155,13 +155,12 @@ class Telegram:
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
         currentindex = len(netCDF_var_time[:].data) - 1
-
+        
+        # housekeeping data 
+        timestamp_var = netCDF_rootgrp.variables['timestamp']
+        timestamp_var[currentindex] = now_time_obj.isoformat()
         # SFVs
         for disdro_index, disdro_val in enumerate(self.svfs_values):
-            # TODO: change the way index is handled so there can be gaps in yml 
-
-            # the svfs_values are ordered in same way as telegram fields
-            # import pdb;pdb.set_trace()
             index_str = str(disdro_index).zfill(2)
             if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
                 print('index:', disdro_index, index_str)
@@ -169,7 +168,6 @@ class Telegram:
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
-
         # F93: list -> shape 32x32 matrix
         f93_data = numpy.array(self.f93_values[1:]) # TODO: why is timestamp in self.f93_values[0]
         f93_data = f93_data.reshape(32,32)
