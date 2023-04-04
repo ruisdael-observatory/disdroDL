@@ -67,9 +67,10 @@ variables:
             axis: "T"
             calendar: "standard"
     interval:
-        dimensions:
-            - time
+        dimensions:  # empty for scalar variables
         dtype: 'i1'  # 8bit signed integer (0-255)         
+        value:
+            - 60
         var_attrs:
             units: s
             long_name: 'Length of measurement interval'
