@@ -355,6 +355,16 @@ telegram_fields:
             standard_name: 'fieldN'
             units: '1/(m3*mm)'  # log 10
             comment: 'Jülich netCDF uses variable name: number_concentration'
+    '91':
+        dimensions:
+            - time
+            - diameter
+        dtype: 'f4'
+        var_attrs:
+            long_name: 'Average particle velocity per diameter class'
+            standard_name: 'fieldV'
+            units: 'm/s' 
+            comment: 'Jülich netCDF uses variable name: fall_velocity'
     '93': 
         dimensions:
             - time

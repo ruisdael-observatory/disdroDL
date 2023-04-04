@@ -168,19 +168,19 @@ class Telegram:
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
+        # F90:
+        f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+        fieldN_var = netCDF_rootgrp.variables['fieldN']
+        fieldN_var[currentindex] = f90_data
+        # F91
+        f91_data = numpy.array(self.f91_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+        fieldV_var = netCDF_rootgrp.variables['fieldV']
+        fieldV_var[currentindex] = f91_data
         # F93: list -> shape 32x32 matrix
         f93_data = numpy.array(self.f93_values[1:]) # TODO: why is timestamp in self.f93_values[0]
         f93_data = f93_data.reshape(32,32)
         data_raw_var = netCDF_rootgrp.variables['data_raw']
         data_raw_var[currentindex] = f93_data
-        # F90:
-        f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
-        fieldN_var = netCDF_rootgrp.variables['fieldN']
-        fieldN_var[currentindex] = f90_data
-        # # (temp) append rain_intensity 
-        # netCDF_var_ri = netCDF_rootgrp.variables['rain_intensity']
-        # random_val = float(random.random())
-        # netCDF_var_ri[currentindex] = random_val 
 
         netCDF_rootgrp.close()
        
