@@ -1,4 +1,5 @@
 prototypes/*
+!prototypes/prototype_f61_netcdf.py
 .python-version
 __pycache__
 config.yml
