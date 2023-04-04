@@ -74,7 +74,14 @@ variables:
         var_attrs:
             units: s
             long_name: 'Length of measurement interval'
-            standard_name: 'interval'         
+            standard_name: 'interval'
+    timestamp:
+        dimensions:
+            - time
+        dtype: 'S4'  # string
+        var_attrs:
+            long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
+            standard_name: 'timestamp'
     velocity:
         dimensions:
             - velocity

@@ -133,6 +133,10 @@ def test_append_data_netCDF():
     elapsed_time_secs = elapsed_time.total_seconds() / 60
     assert elapsed_time_secs == (amount_data_points - 1)
     print('elapsed_time_secs:', elapsed_time_secs)
+
+    netCDF_var_timestamp = rootgrp.variables['timestamp']
+    assert netCDF_var_timestamp[0] == first_time_item.isoformat() and netCDF_var_timestamp[-1] == last_time_item.isoformat()
+
     # TODO: MORE tests, based on CSV tests
     netCDF_var_MOR = rootgrp.variables['MOR']
     netCDF_var_MOR_data = netCDF_var_MOR[:].data
