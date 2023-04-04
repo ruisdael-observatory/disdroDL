@@ -345,6 +345,16 @@ telegram_fields:
             standard_name: 'snowfall_intensity'
             units: 'mm/h'
             comment: 'volume equivalent snow depth intensity'
+    '90':
+        dimensions:
+            - time
+            - diameter
+        dtype: 'f4'
+        var_attrs:
+            long_name: 'Number of particles per diameter class'
+            standard_name: 'fieldN'
+            units: '1/(m3*mm)'  # log 10
+            comment: 'Jülich netCDF uses variable name: number_concentration'
     '93': 
         dimensions:
             - time
