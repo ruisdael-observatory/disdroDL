@@ -350,7 +350,14 @@ telegram_fields:
             standard_name: 'snowfall_intensity'
             units: 'mm/h'
             comment: 'volume equivalent snow depth intensity'
-
+    '60': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        var_attrs:
+            long_name: 'Number of all particles detected'
+            standard_name: 'n_particles'
+            units: '1'
     '61': 
         dimensions:
             - time
