@@ -65,6 +65,8 @@ data_list1 = numpy.array(data_list1)
 print(data_list1.shape)
 netCDF_var_f61_all_particles[1] = data_list1
 
+print('netCDF_var_f61_all_particles.shape:', netCDF_var_f61_all_particles.shape)
+
 netCDF_rootgrp.close()
 
 # output netcdf:
