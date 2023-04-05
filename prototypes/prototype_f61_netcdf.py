@@ -23,16 +23,16 @@ netCDF_var_time.standard_name = 'time'
 netCDF_var_time.calendar = 'standard'
 netCDF_var_time.axis = 'T'
 
-# NOTE: not using size and speed vars
-netCDF_var_f61_size = netCDF_rootgrp.createVariable("field61_size", "f8", ("size"))
-netCDF_var_f61_size.long_name = 'Field61 particle size'
-netCDF_var_f61_size.standard_name = 'field61_size'
-netCDF_var_f61_size.units = 'mm'
+# # NOTE: not using size and speed vars
+# netCDF_var_f61_size = netCDF_rootgrp.createVariable("field61_size", "f8", ("size"))
+# netCDF_var_f61_size.long_name = 'Field61 particle size'
+# netCDF_var_f61_size.standard_name = 'field61_size'
+# netCDF_var_f61_size.units = 'mm'
 
-netCDF_var_f61_speed = netCDF_rootgrp.createVariable("field61_speed", "f8", ("speed"))
-netCDF_var_f61_speed.long_name = 'Field61 particle speed'
-netCDF_var_f61_speed.standard_name = 'field61_speed'
-netCDF_var_f61_speed.units = 'm/s'
+# netCDF_var_f61_speed = netCDF_rootgrp.createVariable("field61_speed", "f8", ("speed"))
+# netCDF_var_f61_speed.long_name = 'Field61 particle speed'
+# netCDF_var_f61_speed.standard_name = 'field61_speed'
+# netCDF_var_f61_speed.units = 'm/s'
 
 netCDF_var_f61_all_particles = netCDF_rootgrp.createVariable("all_particles", "f8", ("time","size", "speed"))
 netCDF_var_f61_all_particles.long_name = 'List of all particles detected (particle-size speed)'
