@@ -1,3 +1,11 @@
+# sensor and script settings
+station_code: 'GV' # keep under 10 characters, max accepted by Parsivel
+port: '/dev/ttyUSB0'
+baud: 19200
+script_name: 'capture_disdro_data.py'
+data_dir: '/data/disdroDL/'
+log_dir: '/var/log/disdroDL/'
+
 # global attributes (all will be written to netCDF as global attributes)
 global_attrs:
     title: 'OTT Parsivel2 disdrometer data'
@@ -13,14 +21,7 @@ global_attrs:
     sensor_serial_number: '450994'
     NETDL_number: '1'
 
-# sensor and script settings
-station_code: 'GV' # keep under 10 characters, max accepted by Parsivel
-port: '/dev/ttyUSB0'
-baud: 19200
-script_name: 'capture_disdro_data.py'
-data_dir: '/data/disdroDL/'
-log_dir: '/var/log/disdroDL/'
-
+# netCDF
 dimensions:
     time:
         size: #None: to create an unlimited dimension (a dimension that can be appended to), the size value is set to None or 0.

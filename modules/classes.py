@@ -154,7 +154,7 @@ class Telegram:
         netCDF_var_time = netCDF_rootgrp.variables['time']
         time_now_array = date2num([now_time_obj], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
-        print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
+        # print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
         currentindex = len(netCDF_var_time[:].data) - 1
         
         # housekeeping data 
@@ -164,7 +164,7 @@ class Telegram:
         for disdro_index, disdro_val in enumerate(self.svfs_values):
             index_str = str(disdro_index).zfill(2)
             if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
-                print('index:', disdro_index, index_str)
+                # print('index:', disdro_index, index_str)
                 field_dict = self.config_dict['telegram_fields'][index_str]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]

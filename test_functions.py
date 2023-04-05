@@ -39,14 +39,14 @@ def test_capture_telegram_prfx_vars():
 def test_logger():
     logger = create_logger(log_dir=Path(config_dict['log_dir']), 
                         script_name=config_dict['script_name'], 
-                        parsivel_name=config_dict['sensor_name'])
+                        parsivel_name=config_dict['global_attrs']['sensor_name'])
     logger.info(msg=f"Testing logger in {__file__}")
-    assert logger.name == f"{config_dict['script_name']}: {config_dict['sensor_name']}"
+    assert logger.name == f"{config_dict['script_name']}: {config_dict['global_attrs']['sensor_name']}"
 
     log_file = Path(config_dict['log_dir']) / 'log.json'
     with open(log_file, 'r') as log_file_r:
         last_log_line = log_file_r.readlines()[-1]
         last_log_line = (json.loads(last_log_line))
-        assert last_log_line['name'] == f"{config_dict['script_name']}: {config_dict['sensor_name']}"
+        assert last_log_line['name'] == f"{config_dict['script_name']}: {config_dict['global_attrs']['sensor_name']}"
         assert last_log_line['msg'] == f"Testing logger in {__file__}"
 
