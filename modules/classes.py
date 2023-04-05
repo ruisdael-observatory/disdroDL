@@ -155,7 +155,7 @@ class Telegram:
         time_now_array = date2num([now_time_obj], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         # print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
-        currentindex = len(netCDF_var_time[:].data) - 1
+        currentindex = len(netCDF_var_time[:].data) - 1  # index needed to write data to *this* slot in other netcdf vars
         
         # housekeeping data 
         timestamp_var = netCDF_rootgrp.variables['timestamp']
@@ -170,9 +170,10 @@ class Telegram:
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
         # F61: 
-        f61_data = numpy.array([i[1:] for i in self.f61_rows])  # list of comprehesions: removes timestamp from each item
-        field91_var = netCDF_rootgrp.variables['all_particles']
-        field91_var[currentindex] = f61_data
+        if len(self.f61_rows) > 0: # prevent writing when there is no data
+            f61_data = numpy.array([i[1:] for i in self.f61_rows])  # list of comprehesions: removes timestamp from each item
+            field91_var = netCDF_rootgrp.variables['all_particles']
+            field91_var[currentindex] = f61_data
         # F90:
         f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
         fieldN_var = netCDF_rootgrp.variables['fieldN']
