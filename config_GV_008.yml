@@ -24,9 +24,9 @@ log_dir: '/var/log/disdroDL/'
 dimensions:
     time:
         size: #None: to create an unlimited dimension (a dimension that can be appended to), the size value is set to None or 0.
-    diameter:
+    diameter_classes:
         size: 32
-    velocity:
+    velocity_classes:
         size: 32
 
 variables:
@@ -82,13 +82,13 @@ variables:
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'timestamp'
-    velocity:
+    velocity_classes:
         dimensions:
-            - velocity
+            - velocity_classes
         dtype: 'f8'  # 64bit floating point        
         var_attrs:
             long_name: 'Center fall velocity of precipitation particles'
-            standard_name: 'velocity'
+            standard_name: 'velocity_classes'
             units: 'm s-1'
             comment: 'Predefined velocity classes.'
         value: 
@@ -124,13 +124,13 @@ variables:
             - 15.2
             - 17.6
             - 20.8  
-    diameter:
+    diameter_classes:
         dimensions:
-            - diameter
+            - diameter_classes
         dtype: 'f8'  # 64bit floating point        
         var_attrs:
             long_name: 'Center diameter of precipitation particles'
-            standard_name: 'diameter'
+            standard_name: 'diameter_classes'
             units: 'm'
             comment: 'Predefined diameter classes.'
         value:
@@ -348,7 +348,7 @@ telegram_fields:
     '90':
         dimensions:
             - time
-            - diameter
+            - diameter_classes
         dtype: 'f4'
         var_attrs:
             long_name: 'Number of particles per diameter class'
@@ -358,7 +358,7 @@ telegram_fields:
     '91':
         dimensions:
             - time
-            - diameter
+            - diameter_classes
         dtype: 'f4'
         var_attrs:
             long_name: 'Average particle velocity per diameter class'
@@ -368,8 +368,8 @@ telegram_fields:
     '93': 
         dimensions:
             - time
-            - diameter
-            - velocity
+            - diameter_classes
+            - velocity_classes
         dtype: 'f4'            
         var_attrs:
             long_name: 'Raw data as a function of particle diameter and velocity'
