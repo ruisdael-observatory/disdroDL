@@ -321,14 +321,14 @@ telegram_fields:
     '27': 
         dimensions:
             - time
-        dtype: 'i4'            
+        dtype: 'f4'            
         var_attrs:
             long_name: 'Temperature left sensor head'
             standard_name: 'T_L_sensor_head'
     '28': 
         dimensions:
             - time
-        dtype: 'i4'            
+        dtype: 'f4'            
         var_attrs:
             long_name: 'Temperature right sensor head'
             standard_name: 'T_R_sensor_head'
