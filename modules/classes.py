@@ -169,6 +169,10 @@ class Telegram:
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
+        # F61: 
+        f61_data = numpy.array([i[1:] for i in self.f61_rows])  # list of comprehesions: removes timestamp from each item
+        field91_var = netCDF_rootgrp.variables['all_particles']
+        field91_var[currentindex] = f61_data
         # F90:
         f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
         fieldN_var = netCDF_rootgrp.variables['fieldN']
