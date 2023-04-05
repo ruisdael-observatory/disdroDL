@@ -57,7 +57,7 @@ while True:
         telegram.capture_prefixes_and_data()
         # for prefix in prefixes_list:
             # telegram.append_data_to_csv(prefix=prefix)
-        telegram.append_data_to_netCDF(now_time_obj=now_utc.iso)
+        telegram.append_data_to_netCDF(now_time_obj=now_utc)
 
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
         # once we passed 00secs: reset flag_zero_seconds

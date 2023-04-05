@@ -142,11 +142,11 @@ class Telegram:
     
     def append_data_to_netCDF(self, now_time_obj):
         '''
-        appends data to netCDF
-        DONE: time
-        TODO: other parameters
+        def appends data to netCDF
         '''
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'  # TODO: move var assignment to __init__
+        if not os.path.exists(self.path_netCDF):
+            self.create_netCDF()
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
         # netCDF_rootgrp.set_fill_off()
         
