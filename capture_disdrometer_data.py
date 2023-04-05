@@ -10,8 +10,8 @@ config_dict = yaml2dict(path = wd / 'config.yml')
 
 logger = create_logger(log_dir=Path(config_dict['log_dir']), 
                        script_name=config_dict['script_name'], 
-                       parsivel_name=config_dict['sensor_name'])
-logger.info(msg=f"Starting {__file__} for {config_dict['sensor_name']}")
+                       parsivel_name=config_dict['global_attrs']['sensor_name'])
+logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}")
 print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 # Telegram request string:
@@ -47,15 +47,16 @@ try:
             parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
 
             # Handle telegram 
-            fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['sensor_name']}"
+            fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
             telegram = Telegram(telegram_lines=parsivel.readlines(), 
                                 timestamp=now_utc.iso, 
                                 data_dir=data_dir,
                                 data_fn_start=fn_start)    
-            telegram.create_csv_headers(sfvs_telegram_resquest=svfs)
+            # telegram.create_csv_headers(sfvs_telegram_resquest=svfs)
             telegram.capture_prefixes_and_data()
-            for prefix in prefixes_list:
-                telegram.append_data_to_csv(prefix=prefix)
+            # for prefix in prefixes_list:
+                # telegram.append_data_to_csv(prefix=prefix)
+            telegram.append_data_to_netCDF(now_time_obj=now_utc.iso)
 
         elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
             # once we passed 00secs: reset flag_zero_seconds

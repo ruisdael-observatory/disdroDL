@@ -75,7 +75,7 @@ def parsivel_start_sequence(serialconnection, config_dict, logger):
     parsivel_set_station_code = ('CS/K/' + config_dict['station_code'] + '\r').encode('utf-8')  # Sets the name of the Parsivel, maximum 10 characters
     serialconnection.write(parsivel_set_station_code)
     sleep(1)
-    parsivel_set_ID = ('CS/J/' + config_dict['sensor_name'] + '\r').encode('utf-8')  # Sets the ID of the Parsivel, maximum 4 numerical characters
+    parsivel_set_ID = ('CS/J/' + config_dict['global_attrs']['sensor_name'] + '\r').encode('utf-8')  # Sets the ID of the Parsivel, maximum 4 numerical characters
     serialconnection.write(parsivel_set_ID)
     sleep(2)
     parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
