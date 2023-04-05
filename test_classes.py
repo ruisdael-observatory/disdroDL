@@ -158,6 +158,19 @@ def test_append_data_netCDF():
     assert netCDF_var_data_raw_shape == (amount_data_points, 32, 32)
     assert sorted(set(netCDF_var_data_raw_data[0][16])) == [0.0, 1.0, 3.0, 8.0]
 
+    # all_particles (f61)
+    netCDF_var_all_particles = rootgrp.variables['all_particles']
+    netCDF_var_all_particles_data = netCDF_var_all_particles[:].data
+    netCDF_var_all_particles_shape = netCDF_var_all_particles_data.shape  
+    # testing shape: should always be (number of data points, number of particles, 2) 
+    assert netCDF_var_all_particles_shape == (amount_data_points, len(telegram.f61_rows), 2)
+    # getting all_particles val from netCDF and telegram.f61_rows, rounding them to 4 decimal places and testing ==
+    sample_f61_vals = [round(float(i),4) for i in telegram.f61_rows[0][1:]]
+    sample_netCDF_all_particles = netCDF_var_all_particles_data[0][0].tolist()
+    sample_netCDF_all_particles = [round(i,4) for i in sample_netCDF_all_particles]
+    assert sample_f61_vals == sample_netCDF_all_particles
+
+
 def create_test_data_dir(dir):
     if not os.path.exists(path=dir):
         os.mkdir(path=dir)
