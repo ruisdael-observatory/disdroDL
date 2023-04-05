@@ -259,7 +259,7 @@ telegram_fields:
         dtype: 'i4'            
         var_attrs:
             long_name: 'Number of particles detected and validated'
-            standard_name: 'n_particles'
+            standard_name: 'n_particles_validated'
             units: '1'
     '12': # issue with values
         dimensions:
@@ -358,6 +358,7 @@ telegram_fields:
             long_name: 'Number of all particles detected'
             standard_name: 'n_particles'
             units: '1'
+            comment: 'not validated'
     '61': 
         dimensions:
             - time
