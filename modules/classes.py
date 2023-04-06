@@ -94,12 +94,12 @@ class Telegram:
             if prefix and len(values) > 1 and prefix == 'F61':  # len(values) > 1 since ";" can be captured without values
                 self.f61_values = join_f61_items(telegram_list=self.telegram_lines)
                 for f61_item in self.f61_values:
-                    f61_item_pair = string2row(timestamp=self.timestamp, valuestr=f61_item, delimiter=self.delimiter, prefix=prefix)
+                    f61_item_pair = string2row(valuestr=f61_item, delimiter=self.delimiter, prefix=prefix)
                     self.f61_rows.append(f61_item_pair) 
             elif prefix in ['SVFS', 'F90', 'F91', 'F93'] and values:
                 prefix_lcase = prefix.lower()
                 super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
-                                                  string2row(timestamp=self.timestamp, valuestr=values, delimiter=self.delimiter, prefix=prefix))
+                                                  string2row(valuestr=values, delimiter=self.delimiter, prefix=prefix))
 
         self.logger.debug(msg=f'SVFS:{self.svfs_values}')
         self.logger.debug(msg=f'F90:{self.f90_values}')
@@ -168,7 +168,7 @@ class Telegram:
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = now_time_obj.isoformat()
         # SFVs
-        if self.svfs_values and len(self.svfs_values) > 0:
+        if self.svfs_values:
             for disdro_index, disdro_val in enumerate(self.svfs_values):
                 index_str = str(disdro_index).zfill(2)
                 if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
@@ -178,23 +178,23 @@ class Telegram:
                     netCDF_var = netCDF_rootgrp.variables[standard_name]
                     netCDF_var[currentindex] = disdro_val
         # F61: 
-        if self.f61_rows and len(self.f61_rows) > 0: # prevent writing when there is no data
-            f61_data = numpy.array([i[1:] for i in self.f61_rows])  # list of comprehesions: removes timestamp from each item
+        if self.f61_rows: # prevent writing when there is no data
+            f61_data = numpy.array(self.f61_rows)
             field91_var = netCDF_rootgrp.variables['all_particles']
             field91_var[currentindex] = f61_data
         # F90:
-        if self.f90_values and len(self.f90_values) > 0:
-            f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+        if self.f90_values:
+            f90_data = numpy.array(self.f90_values)
             fieldN_var = netCDF_rootgrp.variables['fieldN']
             fieldN_var[currentindex] = f90_data
         # F91
-        if self.f91_values and len(self.f91_values) > 0:
-            f91_data = numpy.array(self.f91_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+        if self.f91_values:
+            f91_data = numpy.array(self.f91_values)
             fieldV_var = netCDF_rootgrp.variables['fieldV']
             fieldV_var[currentindex] = f91_data
         # F93: list -> shape 32x32 matrix
         if self.f93_values and len(self.f93_values) > 0:
-            f93_data = numpy.array(self.f93_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+            f93_data = numpy.array(self.f93_values)
             f93_data = f93_data.reshape(32,32)
             data_raw_var = netCDF_rootgrp.variables['data_raw']
             data_raw_var[currentindex] = f93_data
@@ -274,14 +274,13 @@ def join_f61_items(telegram_list):
             f61_items = f61_items
     return f61_items
 
-def string2row(timestamp, valuestr, delimiter, prefix):
+def string2row(valuestr, delimiter, prefix):
     '''
     Converts a telegram string to a list of values, separated by the delimiter 
     and added timestamp to first item.
     The output is ready to be written to CSV 
     '''
     values_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
-    values_list = [timestamp] + values_list
     if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
