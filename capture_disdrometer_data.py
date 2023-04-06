@@ -1,6 +1,6 @@
 from pathlib import Path
 from time import sleep
-from modules.util_functions import yaml2dict, create_dir, init_serial, interruptHandler, create_logger, parsivel_start_sequence
+from modules.util_functions import yaml2dict, create_dir, init_serial, create_logger, parsivel_start_sequence
 
 from modules.classes import NowTime, Telegram
 # from modules.log import log 

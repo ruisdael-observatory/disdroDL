@@ -1,5 +1,6 @@
 import os
 import logging
+from logging import StreamHandler
 from datetime import datetime, timedelta
 from pprint import pprint
 from pathlib import Path
@@ -8,7 +9,9 @@ from modules.util_functions import yaml2dict
 from netCDF4 import Dataset
 from cftime import num2date
 
+log_handler = StreamHandler()
 logger = logging.getLogger('testlog')
+logger.addHandler(log_handler)
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
 config_dict = yaml2dict(path = wd / 'config.yml')
@@ -36,19 +39,7 @@ def test_NowTime():
     assert type(now.iso) == str and type(now.ym) == str and type(now.ymd) == str  
 
 
-def test_Telegram():
-    now = NowTime()
-    now.date_strings()
-    fn_start = 'classtest'
-    create_test_data_dir(dir=test_data_dir)
-    for prefix in prefixes_list:
-        delete_csv(fn_start=fn_start, prefix=prefix, data_dir=test_data_dir)
-    telegram = Telegram(config_dict=config_dict,
-                        telegram_lines=telegram_lines, 
-                        timestamp=now.iso, 
-                        data_dir=test_data_dir,
-                        data_fn_start=fn_start,
-                        logger=logger)                    
+          
 
 
 def test_Telegram_netCDF():
