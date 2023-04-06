@@ -174,7 +174,7 @@ class Telegram:
                 if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
                     field_dict = self.config_dict['telegram_fields'][index_str]
                     standard_name = field_dict['var_attrs']['standard_name']
-                    self.logger.debug(msg=f'index_str: {index_str}; {standard_name}' {field_dict})
+                    self.logger.debug(msg=f'index_str: {index_str}; {standard_name}; {field_dict}')
 
                     netCDF_var = netCDF_rootgrp.variables[standard_name]
                     netCDF_var[currentindex] = disdro_val
