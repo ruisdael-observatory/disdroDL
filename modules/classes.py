@@ -36,6 +36,11 @@ class Telegram:
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
     '''
     def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
+        '''
+        initiates variables and methods:
+        * set_netCDF_path
+        * create_netCDF
+        '''
         self.config_dict = config_dict
         self.telegram_lines = telegram_lines
         self.timestamp = timestamp
@@ -49,10 +54,11 @@ class Telegram:
         self.f61_headers = []
         self.delimiter = ';'
         self.data_dir = data_dir  
-        self.path_netCDF = None
         self.data_fn_start = data_fn_start
         self.logger = logger
-
+        self.path_netCDF = None
+        self.set_netCDF_path()
+        self.create_netCDF()
 
     def capture_prefixes_and_data(self):
         '''
@@ -70,18 +76,19 @@ class Telegram:
                 prefix_lcase = prefix.lower()
                 super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
                                                   string2row(valuestr=values, delimiter=self.delimiter, prefix=prefix))
-
         self.logger.debug(msg=f'SVFS:{self.svfs_values}')
         self.logger.debug(msg=f'F90:{self.f90_values}')
         self.logger.debug(msg=f'F91:{self.f91_values}')
         self.logger.debug(msg=f'F93:{self.f93_values}')
         self.logger.debug(msg=f'F61:{self.f61_values}')
 
+    def set_netCDF_path(self):
+        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
+
     def create_netCDF(self):
         '''
         def creates new netCDF file with global attributes, dimensions and variables (defined in yaml) 
         '''
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
             global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
@@ -93,9 +100,6 @@ class Telegram:
         '''
         def appends data to netCDF
         '''
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'  # TODO: move var assignment to __init__
-        if not os.path.exists(self.path_netCDF):
-            self.create_netCDF()
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")        
         # (time) appending timestamps to var time
         netCDF_var_time = netCDF_rootgrp.variables['time']
