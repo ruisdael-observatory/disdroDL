@@ -13,9 +13,9 @@ logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_n
 print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 # Telegram request string:
-# although requested in the same telegram string (user_telegram_str)
-#   single value fields(svfs) and multi value fields are appended to user_telegram_str
-#   so that svfs numbers can be used in CSV headers 
+#   although Telegram request string is sent as 1 line (user_telegram_str)
+#   the single value fields(svfs) and multi-value fields are appended to user_telegram_str
+#   TODO: move strings to yml 
 prefixes_list = ['SVFS', 'F61', 'F90', 'F91', 'F93']
 svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%16;%17;%18;%24;%25;%26;%27;%28;%34;%35;%60;'
 user_telegram_str = f'CS/M/S/{prefixes_list[0]}:' 
@@ -31,19 +31,16 @@ while True:
     now_utc = NowTime()
     if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
         flag_zero_seconds = True
-        now_utc.date_strings()
         print('time to write:', now_utc.time_list, now_utc.utc)
         # (monthly) data dir
         data_dir = Path(config_dict['data_dir']) / now_utc.ym 
         created_data_dir = create_dir(data_dir) # create if does not exist
         if created_data_dir:
             logger.info(msg=f'Created data directory: {data_dir}')
-            
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
         sleep(1)
         parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
-
         # Handle telegram 
         fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
         telegram = Telegram(config_dict=config_dict,
