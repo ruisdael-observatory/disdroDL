@@ -143,8 +143,8 @@ class Telegram:
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
             global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
-            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
-            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, todaysdateobj=self.timestamp_datetime)
+            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
+            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, todaysdateobj=self.timestamp_datetime,logger=self.logger)
             netCDF_rootgrp.close()
     
     def append_data_to_netCDF(self, now_time_obj):
@@ -170,13 +170,10 @@ class Telegram:
         # SFVs
         if self.svfs_values:
             svfs_keys = [key for key in self.config_dict['telegram_fields'].keys() if self.config_dict['telegram_fields'][key]['svf'] == True]            
-            self.logger.debug(msg=f'svfs_keys {svfs_keys}')
             for index, key in enumerate(svfs_keys):
-                self.logger.debug(msg=f'index: {index} index_str: {key}')
                 disdro_val = self.svfs_values[index] 
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
-                self.logger.debug(msg=f'index_str: {key}; {standard_name}; {field_dict}')
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
         
@@ -212,16 +209,16 @@ def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     for key in config_dict['global_attrs'].keys():
         nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
 
-def netCDF_dimensions(nc_rootgrp, config_dict):
+def netCDF_dimensions(nc_rootgrp, config_dict, logger):
     '''
     reads dimensions from yaml config file and writes them to netCDF
     '''
     for key in config_dict['dimensions'].keys():
-        print('dimension:', key)
+        logger.info(msg=f'creating netCDF dimension: {key}')
         nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
 
-def set_netcdf_variable(key, one_var_dict, nc_group, todaysdateobj):
-    print(key, one_var_dict, one_var_dict['dimensions'])
+def set_netcdf_variable(key, one_var_dict, nc_group, todaysdateobj, logger):
+    logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
     if one_var_dict['dimensions'] == None:
         # scalar variables do not use dimensions
         variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
@@ -249,17 +246,17 @@ def set_netcdf_variable(key, one_var_dict, nc_group, todaysdateobj):
 
 
 
-def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj):
+def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj, logger):
     '''
     Reads variables' definition from yaml config file and writes them to netCDF
     If variable values are set in the yml file def also assigns them their value
     '''
     # variables not in telegram
     for key, var_dict in config_dict['variables'].items():
-        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj, logger=logger)
 
     for key,var_dict in config_dict['telegram_fields'].items():
-        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj)
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj, logger=logger)
 
 
 def join_f61_items(telegram_list):
