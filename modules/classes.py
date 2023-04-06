@@ -169,9 +169,10 @@ class Telegram:
         timestamp_var[currentindex] = now_time_obj.isoformat()
         # SFVs
         if self.svfs_values:
-            for index, key in enumerate(self.config_dict['telegram_fields'].keys()):
+            svfs_keys = [key for key in self.config_dict['telegram_fields'].keys() if self.config_dict['telegram_fields'][key]['svf'] == True]            
+            self.logger.debug(msg=f'svfs_keys {svfs_keys}')
+            for index, key in enumerate(svfs_keys):
                 self.logger.debug(msg=f'index: {index} index_str: {key}')
-                
                 disdro_val = self.svfs_values[index] 
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
