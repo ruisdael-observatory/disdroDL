@@ -1,12 +1,10 @@
 import csv
 import os
-from datetime  import datetime, timedelta
-from netCDF4 import Dataset, stringtochar
+from datetime  import datetime
+from netCDF4 import Dataset
 from modules.util_functions import capture_telegram_prfx_vars
-from pprint import pprint
-from cftime import date2num, num2date
+from cftime import date2num
 import numpy
-import random
 
 class NowTime:
     '''
@@ -45,8 +43,7 @@ class Telegram:
     def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
         self.config_dict = config_dict
         self.telegram_lines = telegram_lines
-        self.timestamp = timestamp  # change to self.timestamp_str
-        self.timestamp_datetime = datetime.fromisoformat(self.timestamp) 
+        self.timestamp = timestamp
         self.svfs_values = None
         self.svfs_headers = []
         self.f90_values = None
@@ -144,10 +141,10 @@ class Telegram:
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
             global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
             netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
-            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, todaysdateobj=self.timestamp_datetime,logger=self.logger)
+            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, timestamp=self.timestamp,logger=self.logger)
             netCDF_rootgrp.close()
     
-    def append_data_to_netCDF(self, now_time_obj):
+    def append_data_to_netCDF(self):
         '''
         def appends data to netCDF
         '''
@@ -159,14 +156,14 @@ class Telegram:
         
         # (time) appending timestamps to var time
         netCDF_var_time = netCDF_rootgrp.variables['time']
-        time_now_array = date2num([now_time_obj], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
+        time_now_array = date2num([self.timestamp], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         # print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
         currentindex = len(netCDF_var_time[:].data) - 1  # index needed to write data to *this* slot in other netcdf vars
         
-        # housekeeping data 
+        # timestamp str 
         timestamp_var = netCDF_rootgrp.variables['timestamp']
-        timestamp_var[currentindex] = now_time_obj.isoformat()
+        timestamp_var[currentindex] = self.timestamp.isoformat()
         # SFVs
         if self.svfs_values:
             svfs_keys = [key for key in self.config_dict['telegram_fields'].keys() if self.config_dict['telegram_fields'][key]['svf'] == True]            
@@ -217,7 +214,7 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
         logger.info(msg=f'creating netCDF dimension: {key}')
         nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
 
-def set_netcdf_variable(key, one_var_dict, nc_group, todaysdateobj, logger):
+def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
     if one_var_dict['dimensions'] == None:
         # scalar variables do not use dimensions
@@ -241,22 +238,22 @@ def set_netcdf_variable(key, one_var_dict, nc_group, todaysdateobj, logger):
     for var_attr in one_var_dict['var_attrs']:
         variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
     if  key == 'time':
-        variable.__setattr__('units', f'hours since {todaysdateobj.strftime("%Y-%m-%d")} 00:00:00 +00:00')
+        variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d")} 00:00:00 +00:00')
     # print('value:', one_var_dict['value'])
 
 
 
-def netCDF_variables(nc_rootgrp, config_dict, todaysdateobj, logger):
+def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
     '''
     Reads variables' definition from yaml config file and writes them to netCDF
     If variable values are set in the yml file def also assigns them their value
     '''
     # variables not in telegram
     for key, var_dict in config_dict['variables'].items():
-        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj, logger=logger)
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 
     for key,var_dict in config_dict['telegram_fields'].items():
-        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, todaysdateobj=todaysdateobj, logger=logger)
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 
 
 def join_f61_items(telegram_list):
@@ -284,16 +281,4 @@ def string2row(valuestr, delimiter, prefix):
     if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
-
-
-
-if __name__ == '__main__':
-    now = NowTime()
-    print(now.__doc__)
-    print(now, now.__dict__, now.utc, now.time_list)
-    print(type(now.utc))
-    now.date_strings()
-    print(now.ymd)
-    print(type(now.iso))
-
 
