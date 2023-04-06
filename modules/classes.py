@@ -169,15 +169,14 @@ class Telegram:
         timestamp_var[currentindex] = now_time_obj.isoformat()
         # SFVs
         if self.svfs_values:
-            for disdro_index, disdro_val in enumerate(self.svfs_values):
-                index_str = str(disdro_index + 1).zfill(2)  # telegram_fields start at 01
-                if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
-                    field_dict = self.config_dict['telegram_fields'][index_str]
-                    standard_name = field_dict['var_attrs']['standard_name']
-                    self.logger.debug(msg=f'index_str: {index_str}; {standard_name}; {field_dict}')
-
-                    netCDF_var = netCDF_rootgrp.variables[standard_name]
-                    netCDF_var[currentindex] = disdro_val
+            for index, key in enumerate(self.config_dict['telegram_fields'].keys()):
+                disdro_val = svfs_values[index]
+                field_dict = self.config_dict['telegram_fields'][key]
+                standard_name = field_dict['var_attrs']['standard_name']
+                self.logger.debug(msg=f'index_str: {key}; {standard_name}; {field_dict}')
+                netCDF_var = netCDF_rootgrp.variables[standard_name]
+                netCDF_var[currentindex] = disdro_val
+        
         # F61: 
         if self.f61_rows: # prevent writing when there is no data
             f61_data = numpy.array(self.f61_rows)
