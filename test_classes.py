@@ -50,7 +50,7 @@ def test_Telegram_netCDF():
     delete_netcdf(fn_start='classtest', data_dir=test_data_dir,)  # delete old netCDF
     telegram = Telegram(config_dict=config_dict,
                         telegram_lines=telegram_lines, 
-                        timestamp=now.iso, 
+                        timestamp=now.utc, 
                         data_dir=test_data_dir,
                         data_fn_start=fn_start,
                         logger=logger)     
@@ -79,17 +79,16 @@ def test_append_data_netCDF():
     now.date_strings()
     fn_start = 'classtest'
     # write data
-    telegram = Telegram(config_dict=config_dict,
-                        telegram_lines=telegram_lines, 
-                        timestamp=now.iso, 
-                        data_dir=test_data_dir,
-                        data_fn_start=fn_start,
-                        logger=logger)  
-    telegram.capture_prefixes_and_data()
-
     for i in range(amount_data_points):
         new_time = now.utc + (i*timedelta(minutes=1)) # time offset: by 1 minute
-        telegram.append_data_to_netCDF(now_time_obj=new_time) # here we are appending 
+        telegram = Telegram(config_dict=config_dict,
+                    telegram_lines=telegram_lines, 
+                    timestamp=new_time, 
+                    data_dir=test_data_dir,
+                    data_fn_start=fn_start,
+                    logger=logger)  
+        telegram.capture_prefixes_and_data()
+        telegram.append_data_to_netCDF() # here we are appending 
     # read and test
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
     netCDF_var_time = rootgrp.variables['time']
