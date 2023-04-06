@@ -33,15 +33,11 @@ def test_NowTime():
     assert type(now.time_list) == list
     assert now.time_list[0] == test_time_list[0] and now.time_list[1] == test_time_list[1] and now.time_list[2] == test_time_list[2]
     # assert: the following attributes are only created after method: date_strings()
-    assert 'iso' not in now.__dict__.keys() and 'ym' not in now.__dict__.keys() and 'ymd' not in now.__dict__.keys() 
-    now.date_strings()
-    assert 'iso' in now.__dict__.keys() and 'ym' in now.__dict__.keys() and 'ymd' in now.__dict__.keys() 
     assert type(now.iso) == str and type(now.ym) == str and type(now.ymd) == str  
 
 
 def test_Telegram_netCDF():
     now = NowTime()
-    now.date_strings()
     fn_start = 'classtest'
     create_test_data_dir(dir=test_data_dir)
     delete_netcdf(fn_start='classtest', data_dir=test_data_dir,)  # delete old netCDF
@@ -73,7 +69,6 @@ def test_append_data_netCDF():
     # -- append data: test time
     amount_data_points = 10
     now = NowTime()
-    now.date_strings()
     fn_start = 'classtest'
     # write data
     for i in range(amount_data_points):

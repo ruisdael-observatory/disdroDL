@@ -16,6 +16,7 @@ class NowTime:
         self.utc = datetime.utcnow()
         self.time_list = (self.utc.strftime("%H:%M:%S")).split(":")  # used to be: now_hour_min_secs
         # now_hour_min_secs = now_hour_min_secs.split(":")
+        self.date_strings()
     def date_strings(self):
         '''
         def Converts instantiation time to different format class attributes
@@ -30,12 +31,9 @@ class NowTime:
 
 class Telegram:
     '''
-    Class dedicated to handling the returned telegram lines:
-        storing, processing and writing parsivel telegram to netCDF
+    Class dedicated to handling the returned the Parsivel telegram lines:
+    * storing, processing and writing telegram to netCDF
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
-    
-    Methods:
-        * ...
     '''
     def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
         self.config_dict = config_dict
@@ -81,7 +79,7 @@ class Telegram:
 
     def create_netCDF(self):
         '''
-        def creates new netCDF file with dimensions and global attributes
+        def creates new netCDF file with global attributes, dimensions and variables (defined in yaml) 
         '''
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
         if not os.path.exists(self.path_netCDF):
@@ -98,19 +96,15 @@ class Telegram:
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'  # TODO: move var assignment to __init__
         if not os.path.exists(self.path_netCDF):
             self.create_netCDF()
-        netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
-        # netCDF_rootgrp.set_fill_off()
-        
+        netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")        
         # (time) appending timestamps to var time
         netCDF_var_time = netCDF_rootgrp.variables['time']
         time_now_array = date2num([self.timestamp], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
-        # print('netCDF_var_time:', netCDF_var_time, netCDF_var_time[:].data )       
-        currentindex = len(netCDF_var_time[:].data) - 1  # index needed to write data to *this* slot in other netcdf vars
-        
-        # timestamp str 
+        # currentindex: write data to *this* slot(currentindex)
+        currentindex = len(netCDF_var_time[:].data) - 1  
         timestamp_var = netCDF_rootgrp.variables['timestamp']
-        timestamp_var[currentindex] = self.timestamp.isoformat()
+        timestamp_var[currentindex] = self.timestamp.isoformat() # timestamp str
         # SFVs
         if self.svfs_values:
             svfs_keys = [key for key in self.config_dict['telegram_fields'].keys() if self.config_dict['telegram_fields'][key]['svf'] == True]            
@@ -120,7 +114,6 @@ class Telegram:
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
-        
         # F61: 
         if self.f61_rows: # prevent writing when there is no data
             f61_data = numpy.array(self.f61_rows)
@@ -142,7 +135,6 @@ class Telegram:
             f93_data = f93_data.reshape(32,32)
             data_raw_var = netCDF_rootgrp.variables['data_raw']
             data_raw_var[currentindex] = f93_data
-
         netCDF_rootgrp.close()
        
 
@@ -153,6 +145,7 @@ def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     for key in config_dict['global_attrs'].keys():
         nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
 
+
 def netCDF_dimensions(nc_rootgrp, config_dict, logger):
     '''
     reads dimensions from yaml config file and writes them to netCDF
@@ -160,6 +153,7 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
     for key in config_dict['dimensions'].keys():
         logger.info(msg=f'creating netCDF dimension: {key}')
         nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
+
 
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
