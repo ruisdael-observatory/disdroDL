@@ -168,7 +168,7 @@ class Telegram:
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = now_time_obj.isoformat()
         # SFVs
-        if len(self.svfs_values) > 0:
+        if self.svfs_values and len(self.svfs_values) > 0:
             for disdro_index, disdro_val in enumerate(self.svfs_values):
                 index_str = str(disdro_index).zfill(2)
                 if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
@@ -178,22 +178,22 @@ class Telegram:
                     netCDF_var = netCDF_rootgrp.variables[standard_name]
                     netCDF_var[currentindex] = disdro_val
         # F61: 
-        if len(self.f61_rows) > 0: # prevent writing when there is no data
+        if self.f61_rows and len(self.f61_rows) > 0: # prevent writing when there is no data
             f61_data = numpy.array([i[1:] for i in self.f61_rows])  # list of comprehesions: removes timestamp from each item
             field91_var = netCDF_rootgrp.variables['all_particles']
             field91_var[currentindex] = f61_data
         # F90:
-        if len(self.f90_values) > 0:
+        if self.f90_values and len(self.f90_values) > 0:
             f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
             fieldN_var = netCDF_rootgrp.variables['fieldN']
             fieldN_var[currentindex] = f90_data
         # F91
-        if len(self.f91_values) > 0:
+        if self.f91_values and len(self.f91_values) > 0:
             f91_data = numpy.array(self.f91_values[1:]) # TODO: why is timestamp in self.f93_values[0]
             fieldV_var = netCDF_rootgrp.variables['fieldV']
             fieldV_var[currentindex] = f91_data
         # F93: list -> shape 32x32 matrix
-        if len(self.f93_values) > 0:
+        if self.f93_values and len(self.f93_values) > 0:
             f93_data = numpy.array(self.f93_values[1:]) # TODO: why is timestamp in self.f93_values[0]
             f93_data = f93_data.reshape(32,32)
             data_raw_var = netCDF_rootgrp.variables['data_raw']
