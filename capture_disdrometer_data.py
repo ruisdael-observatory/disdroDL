@@ -40,7 +40,7 @@ while True:
         created_data_dir = create_dir(data_dir) # create if does not exist
         if created_data_dir:
             logger.info(msg=f'Created data directory: {data_dir}')
-
+            
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
         sleep(1)
@@ -52,7 +52,8 @@ while True:
                             telegram_lines=parsivel.readlines(), 
                             timestamp=now_utc.iso, 
                             data_dir=data_dir,
-                            data_fn_start=fn_start)    
+                            data_fn_start=fn_start,
+                            logger=logger)    
         # telegram.create_csv_headers(sfvs_telegram_resquest=svfs)
         telegram.capture_prefixes_and_data()
         # for prefix in prefixes_list:
