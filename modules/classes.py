@@ -170,6 +170,8 @@ class Telegram:
         # SFVs
         if self.svfs_values:
             for index, key in enumerate(self.config_dict['telegram_fields'].keys()):
+                self.logger.debug(msg=f'index: {index} index_str: {key}')
+                
                 disdro_val = self.svfs_values[index] 
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
