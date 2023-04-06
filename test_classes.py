@@ -39,9 +39,6 @@ def test_NowTime():
     assert type(now.iso) == str and type(now.ym) == str and type(now.ymd) == str  
 
 
-          
-
-
 def test_Telegram_netCDF():
     now = NowTime()
     now.date_strings()
@@ -140,11 +137,6 @@ def test_append_data_netCDF():
 def create_test_data_dir(dir):
     if not os.path.exists(path=dir):
         os.mkdir(path=dir)
-
-def delete_csv(fn_start, prefix, data_dir):
-    test_csv_path = data_dir / f'{fn_start}_{prefix}.csv'
-    if os.path.exists(test_csv_path):
-        os.remove(test_csv_path)
 
 def delete_netcdf(fn_start, data_dir):
     test_nc_path = data_dir / f'{fn_start}.nc'

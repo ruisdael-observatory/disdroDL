@@ -1,9 +1,7 @@
 from pathlib import Path
 from time import sleep
 from modules.util_functions import yaml2dict, create_dir, init_serial, create_logger, parsivel_start_sequence
-
 from modules.classes import NowTime, Telegram
-# from modules.log import log 
 
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'config.yml')
@@ -54,11 +52,8 @@ while True:
                             data_dir=data_dir,
                             data_fn_start=fn_start,
                             logger=logger)    
-        # telegram.create_csv_headers(sfvs_telegram_resquest=svfs)
         telegram.capture_prefixes_and_data()
-        # for prefix in prefixes_list:
-            # telegram.append_data_to_csv(prefix=prefix)
-        telegram.append_data_to_netCDF(now_time_obj=now_utc.utc)
+        telegram.append_data_to_netCDF()
 
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
         # once we passed 00secs: reset flag_zero_seconds
