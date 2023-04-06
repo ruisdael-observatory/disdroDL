@@ -49,30 +49,7 @@ def test_Telegram():
                         data_dir=test_data_dir,
                         data_fn_start=fn_start,
                         logger=logger)                    
-    # csv_headers methods and attributes 
 
-    # NOTE (temporary disabling to allow for imcomplete config fields
-    # telegram.create_csv_headers(sfvs_telegram_resquest=svfs)                   
-    # assert telegram.f61_headers == ['timestamp',
-    #                                 f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})", 
-    #                                 f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"]
-    # assert telegram.svfs_headers[0:3] == ['timestamp',
-    #                                       f"{config_dict['telegram_fields']['01']['name']} ({config_dict['telegram_fields']['01']['unit']})", 
-    #                                       f"{config_dict['telegram_fields']['02']['name']} ({config_dict['telegram_fields']['02']['unit']})"] 
-    # # data and prefixes
-    # telegram.capture_prefixes_and_data()
-    
-    # pprint(telegram.__dict__)
-    # assert telegram.f61_rows[0][1] == '00.502' and telegram.f61_rows[0][2] ==  '00.853'
-    # assert len(telegram.f61_rows[0]) == (len(telegram.f61_headers))
-    # assert telegram.svfs_values[1] == '0000.000'
-    # assert len(telegram.svfs_values) == len(telegram.svfs_headers)
-    # assert telegram.f90_values[1] == '-9.999'
-    # assert telegram.f91_values[1] == '00.000'
-    # assert telegram.f93_values[1] == '000'
-    # for prefix in prefixes_list:
-    #     csv_test(telegram=telegram, fn_start=fn_start, prefix=prefix, data_dir=test_data_dir, now_iso=now.iso)
-     
 
 def test_Telegram_netCDF():
     now = NowTime()
@@ -102,6 +79,7 @@ def test_Telegram_netCDF():
     assert rootgrp.contributors == config_dict['global_attrs']['contributors']    
     pprint(rootgrp.__dict__)
     rootgrp.close()
+
 
 def test_append_data_netCDF():
     # -- append data: test time
@@ -137,7 +115,6 @@ def test_append_data_netCDF():
     netCDF_var_timestamp = rootgrp.variables['timestamp']
     assert netCDF_var_timestamp[0] == first_time_item.isoformat() and netCDF_var_timestamp[-1] == last_time_item.isoformat()
 
-    # TODO: MORE tests, based on CSV tests
     netCDF_var_MOR = rootgrp.variables['MOR']
     netCDF_var_MOR_data = netCDF_var_MOR[:].data
     assert netCDF_var_MOR_data[0] == float(16306.0)
@@ -183,45 +160,3 @@ def delete_netcdf(fn_start, data_dir):
     test_nc_path = data_dir / f'{fn_start}.nc'
     if os.path.exists(test_nc_path):
         os.remove(test_nc_path)
-
-
-def csv_test(telegram, fn_start, prefix, data_dir, now_iso):
-
-    telegram.append_data_to_csv(prefix=prefix)
-    
-    test_csv_path = data_dir / f'{fn_start}_{prefix}.csv'
-    lastrow = get_row(csv_path=test_csv_path, row_number=-1)
-    assert lastrow[0] == now_iso
-
-    # TODO: more tests
-
-    # test headers 
-    csv_headers = get_row(csv_path=test_csv_path, row_number=0)
-    assert len(lastrow) == len(csv_headers)  # same length as data?
-    if prefix == 'SVFS' or prefix == 'F61': # f61 and svfs are the only csvs w/ headers
-         assert csv_headers[0:-1] == telegram.__dict__[f'{prefix.lower()}_headers'][0:-1] # same headers in CSV as in object?
- 
-
-def get_row(csv_path, row_number):
-    with open(csv_path, 'r') as f:
-        last_row = f.readlines()[row_number].split(';')
-        return last_row
-
-
-#     with open(csv_path, 'r') as f:
-#         f_lines_len = len(list(f))
-#         for n, row in enumerate(f):
-#             row_list = row.split(';')
-#             print(n, row_list)
-#             if n == (f_lines_len - 1):  
-#                 return last_lin# last item
-
-    # with open(test_data_dir / csvs_suffixes['F61'], "r") as f:
-    #     print(f)
-    #     for n, row in enumerate(f):
-    #         row_list = row.split(';')
-    #         print(n, row_list)
-    #         if n == 0:
-    #             assert row_list[0] == '2023-02-16T14:10:00.966776' 
-    #             assert row_list[1] == '00.502' 
-    #             assert row_list[2] == '00.853\n' #TODO: remove \n
