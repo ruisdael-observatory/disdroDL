@@ -42,7 +42,7 @@ class Telegram:
         * capture_prefixes_and_data()
         * append_data_to_csv()
     '''
-    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start):
+    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
         self.config_dict = config_dict
         self.telegram_lines = telegram_lines
         self.timestamp = timestamp  # change to self.timestamp_str
@@ -58,7 +58,8 @@ class Telegram:
         self.delimiter = ';'
         self.data_dir = data_dir  
         self.path_netCDF = None
-        self.data_fn_start = data_fn_start 
+        self.data_fn_start = data_fn_start
+        self.logger = logger
         # data_fn_start shared filename start str, based on date_location_parsivelcode_
         # ie. 20230221_Delft-GV_PAR008_  *.csv
 
@@ -99,7 +100,13 @@ class Telegram:
                 prefix_lcase = prefix.lower()
                 super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
                                                   string2row(timestamp=self.timestamp, valuestr=values, delimiter=self.delimiter, prefix=prefix))
-    
+
+        self.logger.debug(msg=f'SVFS:{self.svfs_values}')
+        self.logger.debug(msg=f'F90:{self.f90_values}')
+        self.logger.debug(msg=f'F91:{self.f91_values}')
+        self.logger.debug(msg=f'F93:{self.f93_values}')
+        self.logger.debug(msg=f'F61:{self.f61_values}')
+
     def append_data_to_csv(self, prefix):
         '''
         def Writes headers and appends data from self.*_values to corresponding CSV
@@ -161,32 +168,36 @@ class Telegram:
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = now_time_obj.isoformat()
         # SFVs
-        for disdro_index, disdro_val in enumerate(self.svfs_values):
-            index_str = str(disdro_index).zfill(2)
-            if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
-                # print('index:', disdro_index, index_str)
-                field_dict = self.config_dict['telegram_fields'][index_str]
-                standard_name = field_dict['var_attrs']['standard_name']
-                netCDF_var = netCDF_rootgrp.variables[standard_name]
-                netCDF_var[currentindex] = disdro_val
+        if len(self.svfs_values) > 0:
+            for disdro_index, disdro_val in enumerate(self.svfs_values):
+                index_str = str(disdro_index).zfill(2)
+                if index_str in self.config_dict['telegram_fields'].keys(): # not time; 12: 11 is last field of config
+                    # print('index:', disdro_index, index_str)
+                    field_dict = self.config_dict['telegram_fields'][index_str]
+                    standard_name = field_dict['var_attrs']['standard_name']
+                    netCDF_var = netCDF_rootgrp.variables[standard_name]
+                    netCDF_var[currentindex] = disdro_val
         # F61: 
         if len(self.f61_rows) > 0: # prevent writing when there is no data
             f61_data = numpy.array([i[1:] for i in self.f61_rows])  # list of comprehesions: removes timestamp from each item
             field91_var = netCDF_rootgrp.variables['all_particles']
             field91_var[currentindex] = f61_data
         # F90:
-        f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
-        fieldN_var = netCDF_rootgrp.variables['fieldN']
-        fieldN_var[currentindex] = f90_data
+        if len(self.f90_values) > 0:
+            f90_data = numpy.array(self.f90_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+            fieldN_var = netCDF_rootgrp.variables['fieldN']
+            fieldN_var[currentindex] = f90_data
         # F91
-        f91_data = numpy.array(self.f91_values[1:]) # TODO: why is timestamp in self.f93_values[0]
-        fieldV_var = netCDF_rootgrp.variables['fieldV']
-        fieldV_var[currentindex] = f91_data
+        if len(self.f91_values) > 0:
+            f91_data = numpy.array(self.f91_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+            fieldV_var = netCDF_rootgrp.variables['fieldV']
+            fieldV_var[currentindex] = f91_data
         # F93: list -> shape 32x32 matrix
-        f93_data = numpy.array(self.f93_values[1:]) # TODO: why is timestamp in self.f93_values[0]
-        f93_data = f93_data.reshape(32,32)
-        data_raw_var = netCDF_rootgrp.variables['data_raw']
-        data_raw_var[currentindex] = f93_data
+        if len(self.f93_values) > 0:
+            f93_data = numpy.array(self.f93_values[1:]) # TODO: why is timestamp in self.f93_values[0]
+            f93_data = f93_data.reshape(32,32)
+            data_raw_var = netCDF_rootgrp.variables['data_raw']
+            data_raw_var[currentindex] = f93_data
 
         netCDF_rootgrp.close()
        
