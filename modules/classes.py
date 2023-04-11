@@ -268,9 +268,9 @@ def join_f61_items(telegram_list):
     Each one of the f61_items will be a row, with 2 columns (3 if we include timestamp).
     '''
     for index, item in enumerate(telegram_list):
-        if 'F61:' in item.decode('utf-8'):
+        if 'F61:' in item.decode('utf-8', errors='replace'):
             f61_items = telegram_list[index:-1]  
-            f61_items = [item.decode('utf-8').replace('\r\n', '').replace('F61:','') for item in f61_items]
+            f61_items = [item.decode('utf-8', errors='replace').replace('\r\n', '').replace('F61:','') for item in f61_items]
             f61_items = f61_items
     return f61_items
 
