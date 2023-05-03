@@ -119,10 +119,10 @@ class Telegram:
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 netCDF_var[currentindex] = disdro_val
         # F61: 
-        if self.f61_rows: # prevent writing when there is no data
-            f61_data = numpy.array(self.f61_rows)
-            field91_var = netCDF_rootgrp.variables['all_particles']
-            field91_var[currentindex] = f61_data
+        # if self.f61_rows: # prevent writing when there is no data
+        #     f61_data = numpy.array(self.f61_rows)
+        #     field91_var = netCDF_rootgrp.variables['all_particles']
+        #     field91_var[currentindex] = f61_data
         # F90:
         if self.f90_values:
             f90_data = numpy.array(self.f90_values)
