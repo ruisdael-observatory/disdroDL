@@ -19,7 +19,6 @@ global_attrs:
     contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro'
     sensor_type: 'OTT Hydromet Parsivel2'
     sensor_serial_number: '450994'
-    NETDL_number: '1'
 
 # netCDF
 dimensions:
@@ -58,7 +57,7 @@ variables:
     altitude:
         svf: true
         dimensions:  # empty for scalar variables
-        dtype: 'i1'  # 32bit floating point
+        dtype: 'i4'  # 32bit floating point
         value: 
             - 1
         var_attrs: 
@@ -78,13 +77,13 @@ variables:
     interval:
         svf: true
         dimensions:  # empty for scalar variables
-        dtype: 'i1'  # 8bit signed integer (0-255)         
+        dtype: 'i4'            
         value:
             - 60
         var_attrs:
             units: s
             long_name: 'Length of measurement interval'
-            standard_name: 'interval'
+            standard_name: 'time_interval'
     timestamp:
         svf: true
         dimensions:
@@ -400,7 +399,7 @@ telegram_fields:
     #     var_attrs:
     #         long_name: 'List of all particles detected between previous and current measurement'
     #         standard_name: 'all_particles'
-    #         comment: 'Each particle is register as value pair: particle-diameter, particle-velocity'
+    #         comment: 'Each particle is registered as value pair: particle-diameter, particle-velocity. The exact time at which the particle crossed the beam cannot be retrieved due to hardware limitation.'
     '90':
         svf: false
         dimensions:
@@ -410,8 +409,9 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles per diameter class'
             standard_name: 'fieldN'
-            units: '1/(m3*mm)'  # log 10
-            comment: 'Jülich netCDF uses variable name: number_concentration'
+            units: 'log10()'  # log 10
+            comment: 'This is a processed summary of the raw_data matrix where some particles were removed based on an unknown particle size-velocity filter created by the manufacturer.'
+            # Jülich netCDF uses variable name: number_concentration
     '91':
         svf: false
         dimensions:
@@ -421,8 +421,8 @@ telegram_fields:
         var_attrs:
             long_name: 'Average particle velocity per diameter class'
             standard_name: 'fieldV'
-            units: 'm/s' 
-            comment: 'Jülich netCDF uses variable name: fall_velocity'
+            comment: 'This is a processed summary of the raw_data matrix where some particles were removed based on an unknown particle size-velocity filter created by the manufacturer.' 
+            #'Jülich netCDF uses variable name: fall_velocity'
     '93': 
         svf: false
         dimensions:
