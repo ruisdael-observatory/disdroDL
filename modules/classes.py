@@ -67,12 +67,12 @@ class Telegram:
         '''
         for telegram_line in self.telegram_lines:
             prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
-            if prefix and len(values) > 1 and prefix == 'F61':  # len(values) > 1 since ";" can be captured without values
-                self.f61_values = join_f61_items(telegram_list=self.telegram_lines)
-                for f61_item in self.f61_values:
-                    f61_item_pair = string2row(valuestr=f61_item, delimiter=self.delimiter, prefix=prefix)
-                    self.f61_rows.append(f61_item_pair) 
-            elif prefix in ['SVFS', 'F90', 'F91', 'F93'] and values:
+            # if prefix and len(values) > 1 and prefix == 'F61':  # len(values) > 1 since ";" can be captured without values
+            #     self.f61_values = join_f61_items(telegram_list=self.telegram_lines)
+            #     for f61_item in self.f61_values:
+            #         f61_item_pair = string2row(valuestr=f61_item, delimiter=self.delimiter, prefix=prefix)
+            #         self.f61_rows.append(f61_item_pair) 
+            if prefix in ['SVFS', 'F90', 'F91', 'F93'] and values:
                 prefix_lcase = prefix.lower()
                 super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
                                                   string2row(valuestr=values, delimiter=self.delimiter, prefix=prefix))
@@ -80,7 +80,7 @@ class Telegram:
         self.logger.debug(msg=f'F90:{self.f90_values}')
         self.logger.debug(msg=f'F91:{self.f91_values}')
         self.logger.debug(msg=f'F93:{self.f93_values}')
-        self.logger.debug(msg=f'F61:{self.f61_values}')
+        # self.logger.debug(msg=f'F61:{self.f61_values}')
 
     def set_netCDF_path(self):
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
