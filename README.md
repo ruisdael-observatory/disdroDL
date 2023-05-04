@@ -1,9 +1,11 @@
 # Parsivel disdrometer data logger - version 2
 
-**Data Aquisition Script for Parsifel Disdrometer**
+**Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
 * Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
-* Configuration values: [config.yml](config.yml)
+* Configuration files: 
+    * general: [config_general.yml](config_general.yml) - *should not need editing*
+    * parsivel specific: ie. [config_008_GV.yml](config_008_GV.yml) - **create 1 per parsivel**
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
 
 
@@ -44,17 +46,19 @@ create data directory with read and write permissions to all users: `sudo mkdir 
 
 run Parsivel [reset script](./reset_parsivel.py): `python reset_parsivel.py`
 
-create symbolic link between the station's config file and config.yml
-`ln config_GV_008.yml config.yml`
+create a station-spefic file and commit it to this repo (see [config_008_GV.yml](./config_008_GV.yml) as an example) 
 
 
 ## Run script
 
 **manually**: 
-* [capture_disdrometer_data.py](./capture_disdrometer_data.py) manually: `python capture_disdrometer_data.py`
+* [capture_disdrometer_data.py](./capture_disdrometer_data.py) manually: `python capture_disdrometer_data.py -c config_NNN_??.yml `
 
 **via service file**: 
-* [disdrodlv2.service](disdrodlv2.service)
+* edit the config file name in [disdrodlv2.service](disdrodlv2.service) to match that of the station
+* run: `systemctl enable disdrodlv2.service`
+* run: `systemctl start disdrodlv2.service`
+* check status: `systemctl status disdrodlv2.service`
 
 
 ## Outputs

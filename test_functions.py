@@ -1,9 +1,13 @@
 import json
 from pathlib import Path
 from  modules.util_functions import yaml2dict, capture_telegram_prfx_vars, create_logger
+from pydantic.utils import deep_update
 
 wd = Path(__file__).parent 
-config_dict = yaml2dict(path = wd / 'config.yml')
+config_dict = yaml2dict(path = wd / 'config_general.yml')
+config_dict_site = yaml2dict(path = wd / 'config_008_GV.yml')
+config_dict = deep_update(config_dict, config_dict_site)
+
 telegram_lines=[b'OK\r\n', 
                 b'\n', 
                 b'SVFS:0000.000;0000.00;00;00;   NP;   C;-9.999;20000;00059;12773;00000;012;450994;2.11.6;2.11.1;0.50;24.3;0;14:09:59;16.02.2023;;;0000.00;000;025;013;013;00.000;0000.0;0000.00;-9.99;0000.00;0000.00;00000007;\n', 
@@ -50,3 +54,10 @@ def test_logger():
         assert last_log_line['name'] == f"{config_dict['script_name']}: {config_dict['global_attrs']['sensor_name']}"
         assert last_log_line['msg'] == f"Testing logger in {__file__}"
 
+
+def test_config_dict():
+    for key in ['dimensions', 'variables', 'telegram_fields', 'station_code', 'port', 'baud', 'script_name', 'data_dir', 'log_dir', 'global_attrs', 'variables']:   
+        assert key in config_dict.keys()
+    for variable_key in ['time', 'interval', 'timestamp', 'velocity_classes', 'diameter_classes', 'latitude', 'longitude', 'altitude']:
+        assert variable_key in config_dict['variables'].keys()
+    

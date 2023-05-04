@@ -8,13 +8,18 @@ from modules.classes import NowTime, Telegram
 from modules.util_functions import yaml2dict
 from netCDF4 import Dataset
 from cftime import num2date
+from pydantic.utils import deep_update
+
 
 log_handler = StreamHandler()
 logger = logging.getLogger('testlog')
 logger.addHandler(log_handler)
 wd = Path(__file__).parent 
 test_data_dir = wd / 'test_data'
-config_dict = yaml2dict(path = wd / 'config.yml')
+config_dict = yaml2dict(path = wd / 'config_general.yml')
+config_dict_site = yaml2dict(path = wd / 'config_008_GV.yml')
+config_dict = deep_update(config_dict, config_dict_site)
+
 prefixes_list = ['SVFS', 'F61', 'F90', 'F91', 'F93']
 telegram_lines=[b'OK\r\n', 
                 b'\n',
