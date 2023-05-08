@@ -56,6 +56,7 @@ create a station-spefic file and commit it to this repo (see [config_008_GV.yml]
 
 **via service file**: 
 * edit the config file name in [disdrodlv2.service](disdrodlv2.service) to match that of the station
+* create system link between local service file and service files location: `ln disdrodlv2.service /etc/systemd/system/disdrodlv2.service`
 * run: `systemctl enable disdrodlv2.service`
 * run: `systemctl start disdrodlv2.service`
 * check status: `systemctl status disdrodlv2.service`
