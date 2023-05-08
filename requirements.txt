@@ -2,3 +2,4 @@ PyYAML
 pyserial
 pytest
 netCDF4
+pydantic
