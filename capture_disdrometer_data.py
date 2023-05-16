@@ -57,7 +57,7 @@ while True:
         logger.info(msg=f"parsivel_lines: {parsivel_lines}")
 
         telegram = Telegram(config_dict=config_dict,
-                            telegram_lines=parsivel_readlines, 
+                            telegram_lines=parsivel_lines, 
                             timestamp=now_utc.utc, 
                             data_dir=data_dir,
                             data_fn_start=fn_start,
