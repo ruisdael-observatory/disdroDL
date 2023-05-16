@@ -63,7 +63,9 @@ while True:
                             data_dir=data_dir,
                             data_fn_start=fn_start,
                             logger=logger)    
+        logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
         telegram.capture_prefixes_and_data()
+        logger.debug(msg=f'svfs_values: {telegram.svfs_values}')
         telegram.append_data_to_netCDF()
 
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:

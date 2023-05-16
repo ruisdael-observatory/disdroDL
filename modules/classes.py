@@ -65,6 +65,7 @@ class Telegram:
         def Captures the prefixes and data returned by telegram
         and adds data to appropriate (determined by prefix) self.*_values variable.
         '''
+
         for telegram_line in self.telegram_lines:
             prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
             # if prefix and len(values) > 1 and prefix == 'F61':  # len(values) > 1 since ";" can be captured without values
