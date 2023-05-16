@@ -28,7 +28,7 @@ prefixes_list = ['SVFS', 'F61', 'F90', 'F91', 'F93']
 svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%16;%17;%18;%24;%25;%26;%27;%28;%34;%35;%60;'
 user_telegram_str = f'CS/M/S/{prefixes_list[0]}:' 
 user_telegram_str = (user_telegram_str + svfs + '\nF90:%90;\nF91:%91;\nF93:%93;\nF61:%61;\r').encode('utf-8')
-user_telegram_str = f'CS/M/S/%01;%02;%03;%04;%05;%06;\r' # debug
+user_telegram_str = 'CS/M/S/%01;%02;%03;%04;%05;%06;\r'.encode('utf-8') # debug
 
 # Serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
