@@ -1,6 +1,17 @@
 from pathlib import Path
 from modules.util_functions import create_logger, yaml2dict, init_serial, parsivel_reset
+from argparse import ArgumentParser
+from pydantic.utils import deep_update
 
+
+parser = ArgumentParser(description="Ruisdael: OTT Disdrometer reset. Run: python reset_parsivel.py -c config_*.yml")
+parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV.yml')
+args = parser.parse_args()
+
+wd = Path(__file__).parent 
+config_dict = yaml2dict(path = wd / 'config_general.yml')
+config_dict_site = yaml2dict(path = wd / args.config)  # TODO: come from cli
+config_dict = deep_update(config_dict, config_dict_site)
 
 print(__file__)
 wd = Path(__file__).parent 
