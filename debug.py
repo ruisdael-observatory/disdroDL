@@ -26,11 +26,6 @@ while True:
         flag_zero_seconds = True
         now_utc.date_strings()
         print('time to write:', now_utc.time_list, now_utc.utc)
-        # create dir
-        data_dir = Path(config_dict['data_dir']) / now_utc.ym # create monthly data dir
-        created_data_dir = create_dir(data_dir)
-        if created_data_dir:
-            logger.info(msg=f'Created data directory: {data_dir}')
 
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
@@ -38,4 +33,7 @@ while True:
         parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
         lines = parsivel.readlines()
         print(f'Lines: {lines}')
+    elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
+        # once we passed 00secs: reset flag_zero_seconds
+        flag_zero_seconds = False
     sleep(1)
