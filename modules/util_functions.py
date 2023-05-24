@@ -31,9 +31,7 @@ def capture_telegram_prfx_vars(telegram_line):
         Through regex the prefix and values are captures from telegram str
         Note:  F61 will be an exception since its values are multiline
     '''
-    print(telegram_line)
-    telegram_line_decoded = telegram_line.decode('utf-8')
-    prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line_decoded) 
+    prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line.decode('utf-8', errors='replace'))  
     if prefix_match:
         prefix = prefix_match.group(1)
         values = prefix_match.group(2)
