@@ -11,7 +11,7 @@ logger = create_logger(log_dir=Path(config_dict['log_dir']),
                        parsivel_name=config_dict['Parsivel_name'])
 logger.info(msg=f"Starting {__file__} for {config_dict['Parsivel_name']}")
 
-svfs ='%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60'
+svfs ='%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;' #%11;%12;%13;%14;%15;%16;%17;%18;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;'
 user_telegram_str = f'CS/M/S/SVFS:' 
 user_telegram_str = (user_telegram_str + svfs + '\r').encode('utf-8')
 
