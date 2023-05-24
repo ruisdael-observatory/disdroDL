@@ -33,6 +33,7 @@ user_telegram_str = 'CS/M/S/%01;%02;%03;%04;%05;%06;\r'.encode('utf-8') # debug
 # Serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
 parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
+sleep(3)
 
 flag_zero_seconds = False
 # try:
@@ -48,11 +49,12 @@ while True:
             logger.info(msg=f'Created data directory: {data_dir}')
 
         # poll
-        parsivel.write('CS/P\r\n'.encode('utf-8'))
-        sleep(2)
+        parsivel.write('CS/P\r\n'.encode('utf-8'))  # needed?
+        sleep(2) # needed?
 
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
+        sleep(2)
         logger.info(msg=f"parsivel.write: {user_telegram_str}")
         
         # returned telegram lines  
