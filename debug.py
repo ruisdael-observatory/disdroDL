@@ -19,9 +19,7 @@ user_telegram_str = (user_telegram_str + svfs + '\r').encode('utf-8')
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
 parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
 
-sleep(1)
-parsivel.write('CS/P\r\n'.encode('utf-8')) # poll mode
-sleep(1)
+
 
 flag_zero_seconds = False
 while True:
@@ -29,13 +27,15 @@ while True:
     if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
         flag_zero_seconds = True
 
+        parsivel.write('CS/P\r\n'.encode('utf-8')) # poll mode
+        sleep(1)
 
         now_utc.date_strings()
         print('time to write:', now_utc.time_list, now_utc.utc)
 
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
-        sleep(5)
+        sleep(1)
         # parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
         lines = parsivel.readlines()
         print(f'Lines: {lines}')
