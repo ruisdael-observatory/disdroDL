@@ -39,6 +39,9 @@ while True:
         # parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
         lines = parsivel.readlines()
         print(f'Lines: {lines}')
+        lines_decoded = lines.decode('utf-8', errors='replace')
+        print(f'Lines decoded: {lines_decoded}')
+
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
         # once we passed 00secs: reset flag_zero_seconds
         flag_zero_seconds = False
