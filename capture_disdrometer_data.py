@@ -55,6 +55,7 @@ while True:
         # Handle telegram 
         fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
         parsivel_lines = parsivel.readlines()
+        print(parsivel_lines)
         logger.info(msg=f"parsivel_lines: {parsivel_lines}")
 
         telegram = Telegram(config_dict=config_dict,
