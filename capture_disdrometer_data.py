@@ -63,17 +63,17 @@ while True:
         print(parsivel_lines)
         logger.info(msg=f"parsivel_lines: {parsivel_lines}")
         
-        # # process telegram 
-        # telegram = Telegram(config_dict=config_dict,
-        #                     telegram_lines=parsivel_lines, 
-        #                     timestamp=now_utc.utc, 
-        #                     data_dir=data_dir,
-        #                     data_fn_start=fn_start,
-        #                     logger=logger)    
-        # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
-        # telegram.capture_prefixes_and_data()
-        # logger.debug(msg=f'svfs_values: {telegram.svfs_values}')
-        # telegram.append_data_to_netCDF()
+        # process telegram 
+        telegram = Telegram(config_dict=config_dict,
+                            telegram_lines=parsivel_lines, 
+                            timestamp=now_utc.utc, 
+                            data_dir=data_dir,
+                            data_fn_start=fn_start,
+                            logger=logger)    
+        logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
+        telegram.capture_prefixes_and_data()
+        logger.debug(msg=f'svfs_values: {telegram.svfs_values}')
+        telegram.append_data_to_netCDF()
 
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
         # once we passed 00secs: reset flag_zero_seconds
