@@ -35,7 +35,7 @@ while True:
 
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
-        sleep(1)
+        sleep(5)
         # parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
         lines = parsivel.readlines()
         print(f'Lines: {lines}')
