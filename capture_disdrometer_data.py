@@ -46,18 +46,22 @@ while True:
         created_data_dir = create_dir(data_dir) # create if does not exist
         if created_data_dir:
             logger.info(msg=f'Created data directory: {data_dir}')
+
+        # poll
+        parsivel.write('CS/P\r\n'.encode('utf-8'))
+        sleep(2)
+
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
         logger.info(msg=f"parsivel.write: {user_telegram_str}")
-
-        sleep(1)
-        parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
-        # Handle telegram 
+        
+        # returned telegram lines  
         fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
         parsivel_lines = parsivel.readlines()
         print(parsivel_lines)
         logger.info(msg=f"parsivel_lines: {parsivel_lines}")
-
+        
+        # process telegram 
         telegram = Telegram(config_dict=config_dict,
                             telegram_lines=parsivel_lines, 
                             timestamp=now_utc.utc, 
