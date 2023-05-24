@@ -49,8 +49,8 @@ while True:
             logger.info(msg=f'Created data directory: {data_dir}')
 
         # poll
-        parsivel.write('CS/P\r\n'.encode('utf-8'))  # needed?
-        sleep(2) # needed?
+        # parsivel.write('CS/P\r\n'.encode('utf-8'))  # needed?
+        sleep(1) # needed?
 
         # Request telegram:
         parsivel.write(user_telegram_str)  # string format
