@@ -26,6 +26,9 @@ user_telegram_str = (user_telegram_str + svfs + '\nF90:%90;\nF91:%91;\nF93:%93;\
 # Serial connection
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
 parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
+sleep(1)
+parsivel.write('CS/P\r\n'.encode('utf-8')) # poll mode
+sleep(2)
 
 flag_zero_seconds = False
 try:
@@ -44,7 +47,7 @@ try:
             # Request telegram:
             parsivel.write(user_telegram_str)  # string format
             sleep(1)
-            parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
+            # parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
 
             # Handle telegram 
             fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}"
