@@ -49,10 +49,11 @@ try:
             # Request telegram:
             parsivel.write(user_telegram_str)  # string format
             sleep(2)
-
+            lines=parsivel.readlines()
+            print(lines)
             # Handle telegram 
             fn_start = filename = f"{now_utc.ymd}_{config_dict['station_site']}-{config_dict['station_name']}_{config_dict['Parsivel_name']}"
-            telegram = Telegram(telegram_lines=parsivel.readlines(), 
+            telegram = Telegram(telegram_lines=lines, 
                                 timestamp=now_utc.iso, 
                                 data_dir=data_dir,
                                 data_fn_start=fn_start)    
