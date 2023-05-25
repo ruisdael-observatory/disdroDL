@@ -8,7 +8,7 @@ parsivel.reset_input_buffer()  # Flushes input buffer
 
 sleep(2)
 parsivel.write('CS/P\r\n'.encode(encoding))  # needed:yes
-sleep(2) # needed?
+sleep(5) # needed?
 
 user_telegram_str = (f'CS/M/S/%93;\r').encode(encoding)
 parsivel.write(user_telegram_str)  # string format
