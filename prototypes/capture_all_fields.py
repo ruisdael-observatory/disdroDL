@@ -9,26 +9,19 @@ sleep(2)
 parsivel.write('CS/PA\r\n'.encode('ascii'))
 
 parsivel_lines = parsivel.readlines()
-print(parsivel_lines)
-
-
-# for line in parsivel_lines:
-#     encoding = chardet.detect(line)['encoding']
-#     line_str = line.decode(encoding)
-#     print(line_str, type(line_str))
-#     i_list = line_str.split(":")
-#     if len(i_list) > 1:
-#         field = i_list[0]
-#         value = i_list[1]
-#         if field == '93':
-#             print(field, 'value:', value)
-#             value_list = value.split(';')
-#             print(len(value_list))
-
-#     else: 
-#         print('NO VALUE')
-
-# f_93_str = parsivel_lines[0].decode(encoding='Windows-1252', errors='strict')
-# print(f_93_str)
-# f_93_list = f_93_str.split(';')
-# print('len F93:', len(f_93_list))
+for i in parsivel_lines:
+    encoding = chardet.detect(i)['encoding']
+    # print(i) 
+    # print(encoding)
+    i_str = i.decode(encoding)
+    i_list = i_str.split(":")
+    if len(i_list) > 1 and i_list[1].strip() != ";":
+        field = i_list[0]
+        value = i_list[1].strip() # strip white space
+        print(f'value: "{value}"')
+        value_list = value.split(";")
+        value_list = [v for v in value_list if len(v) > 0]
+        print(f'F:{field} value_list: {value_list}')
+        if field == '93':
+            print(len(value_list))
+            assert len(value_list) == 1024
