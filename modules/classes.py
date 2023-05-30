@@ -54,6 +54,7 @@ class Telegram:
         self.set_netCDF_path()
         self.create_netCDF()
         self.telegram_data = {}
+
     def capture_prefixes_and_data(self):
         '''
         def Captures the prefixes and data returned by telegram
@@ -106,17 +107,22 @@ class Telegram:
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = self.timestamp.isoformat() # timestamp str
         # print(self.telegram_data)
-        for key, value in self.telegram_data.items():
+        for key, value in self.telegram_data.items():         
             if key in self.config_dict['telegram_fields'].keys():
-                field_dict = self.config_dict['telegram_fields'][key]
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
-                print(key, netCDF_var.standard_name, standard_name, value)
-                if type(value) == 'str':
+                print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
+                # print(key, netCDF_var.standard_name, standard_name, value)
+                print(type(value))
+                if isinstance(value, str): #str
+                    print(f'str value: {value}')
                     netCDF_var[currentindex] = value
-                else:
-                    pass # handle list fields 1 by one
+                elif isinstance(value, list): #str
+                    # print(f'list value: {value}')
+                    pass # handle list fields one by one
+            else:
+                print(key, '-- NOT in config_dict[telegram_fields]')
         netCDF_rootgrp.close()
         #TODO: check if data is being writen in netCDF
 
