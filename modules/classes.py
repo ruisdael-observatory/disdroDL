@@ -80,11 +80,15 @@ class Telegram:
 
 
     def set_netCDF_path(self):
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
+        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' 
+        # TODO: move var assignment to __init__
+        #TODO: set path self.path_netCDF_f61
 
     def create_netCDF(self):
         '''
         def creates new netCDF file with global attributes, dimensions and variables (defined in yaml) 
+        TODO: create new netCDF for F61 at self.path_netCDF_f61
+
         '''
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
@@ -95,7 +99,8 @@ class Telegram:
     
     def append_data_to_netCDF(self):
         '''
-        def appends data to netCDF
+        def appends data to netCDF (path_netCDF)
+        TODO: append data to self.path_netCDF_f61
         '''
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")        
         # (time) appending timestamps to var time
@@ -120,6 +125,14 @@ class Telegram:
                     netCDF_var[currentindex] = value
                 elif isinstance(value, list): #str
                     # print(f'list value: {value}')
+                    value_np_array = numpy.array(value)
+                    if key == '93':
+                        value_np_array = value_np_array.reshape(32,32)
+                    elif key == '61':
+                        pass
+                        print('TODO: F61') 
+                        # TODO: F61 write to another file
+                    netCDF_var[currentindex] = value_np_array
                     pass # handle list fields one by one
             else:
                 print(key, '-- NOT in config_dict[telegram_fields]')
