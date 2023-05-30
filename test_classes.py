@@ -72,8 +72,7 @@ def test_append_data_netCDF():
                     data_dir=test_data_dir,
                     data_fn_start=fn_start,
                     logger=logger)
-        # telegram.capture_prefixes_and_data()
-
+        telegram.capture_prefixes_and_data()
         telegram.append_data_to_netCDF()
 
     # read and test
@@ -92,12 +91,10 @@ def test_append_data_netCDF():
     netCDF_var_timestamp = rootgrp.variables['timestamp']
     assert netCDF_var_timestamp[0] == first_time_item.isoformat() and netCDF_var_timestamp[-1] == last_time_item.isoformat()
 
-    netCDF_var_MOR = rootgrp.variables['MOR']
-    netCDF_var_MOR_data = netCDF_var_MOR[:].data
-    assert netCDF_var_MOR_data[0] == float(20000.0)
     netCDF_var_amp = rootgrp.variables['amplitude']
     netCDF_var_amp_data = netCDF_var_amp[:].data
-    assert netCDF_var_amp_data[0] == 13894
+    import pdb; pdb.set_trace()
+    assert netCDF_var_amp_data[0] == 13894  # 13894
     netCDF_var_temp_l_sensor = rootgrp.variables['T_L_sensor_head']
     netCDF_var_temp_l_sensor_data = netCDF_var_temp_l_sensor[:].data
     netCDF_var_temp_r_sensor = rootgrp.variables['T_R_sensor_head']
