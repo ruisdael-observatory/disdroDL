@@ -1,7 +1,6 @@
 import os
 from datetime  import datetime
 from netCDF4 import Dataset
-from modules.util_functions import capture_telegram_prfx_vars
 from cftime import date2num
 import numpy
 import chardet
@@ -73,8 +72,6 @@ class Telegram:
                     value = value_list[0]
                 else:
                     value = value_list
-                # print(f'F:{field} value_list: {value_list}')
-                # TODO: decide data as seperate attributes of dict
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
 
@@ -117,11 +114,11 @@ class Telegram:
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
-                print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
+                # print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
                 # print(key, netCDF_var.standard_name, standard_name, value)
-                print(type(value))
+                # print(type(value))
                 if isinstance(value, str): #str
-                    print(f'str value: {value}')
+                    # print(f'str value: {value}')
                     netCDF_var[currentindex] = value
                 elif isinstance(value, list): #str
                     # print(f'list value: {value}')
@@ -130,49 +127,11 @@ class Telegram:
                         value_np_array = value_np_array.reshape(32,32)
                     elif key == '61':
                         pass
-                        print('TODO: F61') 
+                        # print('TODO: F61') 
                         # TODO: F61 write to another file
                     netCDF_var[currentindex] = value_np_array
                     pass # handle list fields one by one
-            else:
-                print(key, '-- NOT in config_dict[telegram_fields]')
         netCDF_rootgrp.close()
-        #TODO: check if data is being writen in netCDF
-
-
-        '''
-        # SFVs
-        if self.svfs_values:
-            svfs_keys = [key for key in self.config_dict['telegram_fields'].keys() if self.config_dict['telegram_fields'][key]['svf'] == True]            
-            for index, key in enumerate(svfs_keys):
-                disdro_val = self.svfs_values[index] 
-                field_dict = self.config_dict['telegram_fields'][key]
-                standard_name = field_dict['var_attrs']['standard_name']
-                netCDF_var = netCDF_rootgrp.variables[standard_name]
-                netCDF_var[currentindex] = disdro_val
-        # F61: 
-        # if self.f61_rows: # prevent writing when there is no data
-        #     f61_data = numpy.array(self.f61_rows)
-        #     field91_var = netCDF_rootgrp.variables['all_particles']
-        #     field91_var[currentindex] = f61_data
-        # F90:
-        if self.f90_values:
-            f90_data = numpy.array(self.f90_values)
-            fieldN_var = netCDF_rootgrp.variables['fieldN']
-            fieldN_var[currentindex] = f90_data
-        # F91
-        if self.f91_values:
-            f91_data = numpy.array(self.f91_values)
-            fieldV_var = netCDF_rootgrp.variables['fieldV']
-            fieldV_var[currentindex] = f91_data
-        # F93: list -> shape 32x32 matrix
-        if self.f93_values and len(self.f93_values) > 0:
-            f93_data = numpy.array(self.f93_values)
-            f93_data = f93_data.reshape(32,32)
-            data_raw_var = netCDF_rootgrp.variables['data_raw']
-            data_raw_var[currentindex] = f93_data
-        '''
-       
 
 def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''

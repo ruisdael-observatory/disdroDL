@@ -1,5 +1,3 @@
-import chardet
-from pprint import pprint
 from pathlib import Path
 from pydantic.utils import deep_update
 from argparse import ArgumentParser
