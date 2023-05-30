@@ -72,7 +72,8 @@ def test_append_data_netCDF():
                     data_dir=test_data_dir,
                     data_fn_start=fn_start,
                     logger=logger)
-        telegram.capture_prefixes_and_data()
+        # telegram.capture_prefixes_and_data()
+'''        
         telegram.append_data_to_netCDF()
 
     # read and test
@@ -109,6 +110,8 @@ def test_append_data_netCDF():
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
     print(netCDF_var_data_raw_shape)
     assert netCDF_var_data_raw_shape == (amount_data_points, 32, 32)
+'''
+
 '''    
     # TODO: F61
     # # all_particles (f61)

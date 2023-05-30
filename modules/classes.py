@@ -39,7 +39,6 @@ class Telegram:
     def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
         '''
         initiates variables and methods:
-        * set_netCDF_path
         * create_netCDF
         '''
         self.config_dict = config_dict
@@ -48,12 +47,12 @@ class Telegram:
         self.delimiter = ';'
         self.data_dir = data_dir  
         self.data_fn_start = data_fn_start
+        self.path_netCDF = data_dir / f'{data_fn_start}.nc' 
+        self.path_netCDF_f61 =  data_dir / f'{data_fn_start}_f61.nc' 
         self.logger = logger
-        self.path_netCDF = None
-        self.set_netCDF_path()
-        self.create_netCDF()
+        self.create_netCDF(path=self.path_netCDF)
         self.telegram_data = {}
-
+        
     def capture_prefixes_and_data(self):
         '''
         def Captures the telegram prefixes and data stored in self.telegram_lines
@@ -75,24 +74,24 @@ class Telegram:
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
 
-
-    def set_netCDF_path(self):
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' 
-        # TODO: move var assignment to __init__
-        #TODO: set path self.path_netCDF_f61
-
-    def create_netCDF(self):
+    def create_netCDF(self, path):
         '''
         def creates new netCDF file with global attributes, dimensions and variables (defined in yaml) 
-        TODO: create new netCDF for F61 at self.path_netCDF_f61
-
         '''
-        if not os.path.exists(self.path_netCDF):
-            netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
-            global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
-            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
-            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, timestamp=self.timestamp,logger=self.logger)
-            netCDF_rootgrp.close()
+        # import pdb; pdb.set_trace()
+        if not os.path.exists(path):
+            print(f'Creating netCDF file: {str(path)}')
+            self.logger.info(msg=f'Creating netCDF file: {str(path)}')
+            netCDF_rootgrp = Dataset(path, "w", format="NETCDF4")
+            if str(path).endswith('_f61.nc'):
+                pass
+                # TODO: F61 netcdf
+            else:
+                global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, path=path)
+                netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, path=path, logger=self.logger)
+                netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, path=path, timestamp=self.timestamp,logger=self.logger)
+                netCDF_rootgrp.close()
+
     
     def append_data_to_netCDF(self):
         '''
@@ -133,21 +132,28 @@ class Telegram:
                     pass # handle list fields one by one
         netCDF_rootgrp.close()
 
-def global_attrs_to_netCDF(nc_rootgrp, config_dict):
+def global_attrs_to_netCDF(nc_rootgrp, config_dict, path):
     '''
     def writes global attributes (metadata) to newly created netCDF
     '''
-    for key in config_dict['global_attrs'].keys():
-        nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
+    if str(path).endswith('_f61.nc'):
+        path
+    else:
+        for key in config_dict['global_attrs'].keys():
+            nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
 
 
-def netCDF_dimensions(nc_rootgrp, config_dict, logger):
+def netCDF_dimensions(nc_rootgrp, config_dict, path, logger):
     '''
     reads dimensions from yaml config file and writes them to netCDF
     '''
-    for key in config_dict['dimensions'].keys():
-        logger.info(msg=f'creating netCDF dimension: {key}')
-        nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
+    if str(path).endswith('_f61.nc'):
+        pass
+        # TODO: F61 netcdf
+    else:    
+        for key in config_dict['dimensions'].keys():
+            logger.info(msg=f'creating netCDF dimension: {key}')
+            nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
 
 
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
@@ -177,17 +183,21 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
 
 
 
-def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
+def netCDF_variables(nc_rootgrp, config_dict, path, timestamp, logger):
     '''
     Reads variables' definition from yaml config file and writes them to netCDF
     If variable values are set in the yml file def also assigns them their value
     '''
-    # variables not in telegram
-    for key, var_dict in config_dict['variables'].items():
-        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
+    if str(path).endswith('_f61.nc'):
+        pass
+        # TODO: F61 netcdf
+    else:    
+        # variables not in telegram
+        for key, var_dict in config_dict['variables'].items():
+            set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 
-    for key,var_dict in config_dict['telegram_fields'].items():
-        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
+        for key,var_dict in config_dict['telegram_fields'].items():
+            set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 
 def join_f61_items(telegram_list):
     '''
