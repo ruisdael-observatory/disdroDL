@@ -57,8 +57,8 @@ class Telegram:
 
     def capture_prefixes_and_data(self):
         '''
-        def Captures the prefixes and data returned by telegram
-        and adds data to self.telegram_data dict.
+        def Captures the telegram prefixes and data stored in self.telegram_lines
+        and adds the data to self.telegram_data dict.
         '''
         for i in  self.telegram_lines:
             encoding = chardet.detect(i)['encoding']
