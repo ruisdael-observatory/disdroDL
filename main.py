@@ -5,25 +5,27 @@ from modules.util_functions import yaml2dict, create_dir, init_serial, create_lo
 from modules.classes import NowTime, Telegram
 from pydantic.utils import deep_update
 
+######################## BOILER PLATE ##################
+### Parser ###
 parser = ArgumentParser(description="Ruisdael: OTT Disdrometer data logger. Run: python capture_disdrometer_data.py -c config_*.yml")
 parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV.yml')
 args = parser.parse_args()
-
+### Config files ###
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'config_general.yml')
 config_dict_site = yaml2dict(path = wd / args.config)  # TODO: come from cli
 config_dict = deep_update(config_dict, config_dict_site)
-
+### Log ###
 logger = create_logger(log_dir=Path(config_dict['log_dir']), 
                        script_name=config_dict['script_name'], 
                        parsivel_name=config_dict['global_attrs']['sensor_name'])
 logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}")
 print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
-
-# Serial connection
+### Serial connection ###
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
 parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
 sleep(2)
+#########################################################
 
 flag_zero_seconds = False
 # try:
@@ -41,22 +43,20 @@ while True:
 
         # returned telegram lines  
         fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
-        parsivel.write('CS/PA\r\n'.encode('ascii'))
+        parsivel.write('CS/PA\r\n'.encode('ascii')) # Output all telegram measurement values
         parsivel_lines = parsivel.readlines()
         logger.info(msg=f"parsivel_lines: {parsivel_lines}")
 
-
-        # # process telegram 
-        # telegram = Telegram(config_dict=config_dict,
-        #                     telegram_lines=parsivel_lines, 
-        #                     timestamp=now_utc.utc, 
-        #                     data_dir=data_dir,
-        #                     data_fn_start=fn_start,
-        #                     logger=logger)    
-        # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
-        # telegram.capture_prefixes_and_data()
-        # logger.debug(msg=f'svfs_values: {telegram.svfs_values}')
-        # telegram.append_data_to_netCDF()
+        # process telegram into netCDF
+        telegram = Telegram(config_dict=config_dict,
+                            telegram_lines=parsivel_lines, 
+                            timestamp=now_utc.utc, 
+                            data_dir=data_dir,
+                            data_fn_start=fn_start,
+                            logger=logger)    
+        logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
+        telegram.capture_prefixes_and_data()
+        telegram.append_data_to_netCDF()
 
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
         # once we passed 00secs: reset flag_zero_seconds
