@@ -52,7 +52,7 @@ create a station-spefic file and commit it to this repo (see [config_008_GV.yml]
 ## Run script
 
 **manually**: 
-* [capture_disdrometer_data.py](./capture_disdrometer_data.py) manually: `python capture_disdrometer_data.py -c config_NNN_??.yml `
+* [main.py](./main.py) manually: `python main.py -c config_NNN_??.yml `
 
 **via service file**: 
 * edit the config file name in [disdrodlv2.service](disdrodlv2.service) to match that of the station
