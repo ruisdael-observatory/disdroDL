@@ -5,33 +5,27 @@ from modules.util_functions import yaml2dict, create_dir, init_serial, create_lo
 from modules.classes import NowTime, Telegram
 from pydantic.utils import deep_update
 
+######################## BOILER PLATE ##################
+### Parser ###
 parser = ArgumentParser(description="Ruisdael: OTT Disdrometer data logger. Run: python capture_disdrometer_data.py -c config_*.yml")
 parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV.yml')
 args = parser.parse_args()
-
+### Config files ###
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'config_general.yml')
 config_dict_site = yaml2dict(path = wd / args.config)  # TODO: come from cli
 config_dict = deep_update(config_dict, config_dict_site)
-
+### Log ###
 logger = create_logger(log_dir=Path(config_dict['log_dir']), 
                        script_name=config_dict['script_name'], 
                        parsivel_name=config_dict['global_attrs']['sensor_name'])
 logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}")
 print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
-
-# Telegram request string:
-#   although Telegram request string is sent as 1 line (user_telegram_str)
-#   the single value fields(svfs) and multi-value fields are appended to user_telegram_str
-#   TODO: move strings to yml 
-prefixes_list = ['SVFS', 'F61', 'F90', 'F91', 'F93']
-svfs = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%16;%17;%18;%24;%25;%26;%27;%28;%34;%35;%60;'
-user_telegram_str = f'CS/M/S/{prefixes_list[0]}:' 
-user_telegram_str = (user_telegram_str + svfs + '\nF90:%90;\nF91:%91;\nF93:%93;\nF61:%61;\r').encode('utf-8')
-
-# Serial connection
+### Serial connection ###
 parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
 parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
+sleep(2)
+#########################################################
 
 flag_zero_seconds = False
 # try:
@@ -40,23 +34,27 @@ while True:
     if int(now_utc.time_list[2]) == 0 and flag_zero_seconds == False:
         flag_zero_seconds = True
         print('time to write:', now_utc.time_list, now_utc.utc)
+
         # (monthly) data dir
         data_dir = Path(config_dict['data_dir']) / now_utc.ym 
         created_data_dir = create_dir(data_dir) # create if does not exist
         if created_data_dir:
             logger.info(msg=f'Created data directory: {data_dir}')
-        # Request telegram:
-        parsivel.write(user_telegram_str)  # string format
-        sleep(1)
-        parsivel.write('CS/P\r\n'.encode('utf-8')) # poll
-        # Handle telegram 
+
+        # returned telegram lines  
         fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
+        parsivel.write('CS/PA\r\n'.encode('ascii')) # Output all telegram measurement values
+        parsivel_lines = parsivel.readlines()
+        logger.info(msg=f"parsivel_lines: {parsivel_lines}")
+
+        # process telegram into netCDF
         telegram = Telegram(config_dict=config_dict,
-                            telegram_lines=parsivel.readlines(), 
+                            telegram_lines=parsivel_lines, 
                             timestamp=now_utc.utc, 
                             data_dir=data_dir,
                             data_fn_start=fn_start,
                             logger=logger)    
+        logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
         telegram.capture_prefixes_and_data()
         telegram.append_data_to_netCDF()
 

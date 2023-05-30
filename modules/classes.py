@@ -1,9 +1,10 @@
 import os
 from datetime  import datetime
 from netCDF4 import Dataset
-from modules.util_functions import capture_telegram_prfx_vars
 from cftime import date2num
 import numpy
+import chardet
+
 
 class NowTime:
     '''
@@ -44,14 +45,6 @@ class Telegram:
         self.config_dict = config_dict
         self.telegram_lines = telegram_lines
         self.timestamp = timestamp
-        self.svfs_values = None
-        self.svfs_headers = []
-        self.f90_values = None
-        self.f91_values = None
-        self.f93_values = None
-        self.f61_values = None
-        self.f61_rows = []
-        self.f61_headers = []
         self.delimiter = ';'
         self.data_dir = data_dir  
         self.data_fn_start = data_fn_start
@@ -59,35 +52,40 @@ class Telegram:
         self.path_netCDF = None
         self.set_netCDF_path()
         self.create_netCDF()
+        self.telegram_data = {}
 
     def capture_prefixes_and_data(self):
         '''
-        def Captures the prefixes and data returned by telegram
-        and adds data to appropriate (determined by prefix) self.*_values variable.
+        def Captures the telegram prefixes and data stored in self.telegram_lines
+        and adds the data to self.telegram_data dict.
         '''
-        for telegram_line in self.telegram_lines:
-            prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
-            # if prefix and len(values) > 1 and prefix == 'F61':  # len(values) > 1 since ";" can be captured without values
-            #     self.f61_values = join_f61_items(telegram_list=self.telegram_lines)
-            #     for f61_item in self.f61_values:
-            #         f61_item_pair = string2row(valuestr=f61_item, delimiter=self.delimiter, prefix=prefix)
-            #         self.f61_rows.append(f61_item_pair) 
-            if prefix in ['SVFS', 'F90', 'F91', 'F93'] and values:
-                prefix_lcase = prefix.lower()
-                super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
-                                                  string2row(valuestr=values, delimiter=self.delimiter, prefix=prefix))
-        self.logger.debug(msg=f'SVFS:{self.svfs_values}')
-        self.logger.debug(msg=f'F90:{self.f90_values}')
-        self.logger.debug(msg=f'F91:{self.f91_values}')
-        self.logger.debug(msg=f'F93:{self.f93_values}')
-        # self.logger.debug(msg=f'F61:{self.f61_values}')
+        for i in  self.telegram_lines:
+            encoding = chardet.detect(i)['encoding']
+            i_str = i.decode(encoding)
+            i_list = i_str.split(":")
+            if len(i_list) > 1 and i_list[1].strip() != self.delimiter:
+                field = i_list[0]
+                value = i_list[1].strip() # strip white space
+                value_list = value.split(self.delimiter)
+                value_list = [v for v in value_list if len(v) > 0]
+                if len(value_list) == 1:
+                    value = value_list[0]
+                else:
+                    value = value_list
+                super(Telegram, self).__setattr__(f'field_{field}_values', value)
+                self.telegram_data[field] = value
+
 
     def set_netCDF_path(self):
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' # TODO: move var assignment to __init__
+        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' 
+        # TODO: move var assignment to __init__
+        #TODO: set path self.path_netCDF_f61
 
     def create_netCDF(self):
         '''
         def creates new netCDF file with global attributes, dimensions and variables (defined in yaml) 
+        TODO: create new netCDF for F61 at self.path_netCDF_f61
+
         '''
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
@@ -98,7 +96,8 @@ class Telegram:
     
     def append_data_to_netCDF(self):
         '''
-        def appends data to netCDF
+        def appends data to netCDF (path_netCDF)
+        TODO: append data to self.path_netCDF_f61
         '''
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")        
         # (time) appending timestamps to var time
@@ -109,38 +108,30 @@ class Telegram:
         currentindex = len(netCDF_var_time[:].data) - 1  
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = self.timestamp.isoformat() # timestamp str
-        # SFVs
-        if self.svfs_values:
-            svfs_keys = [key for key in self.config_dict['telegram_fields'].keys() if self.config_dict['telegram_fields'][key]['svf'] == True]            
-            for index, key in enumerate(svfs_keys):
-                disdro_val = self.svfs_values[index] 
+        # print(self.telegram_data)
+        for key, value in self.telegram_data.items():         
+            if key in self.config_dict['telegram_fields'].keys():
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
-                netCDF_var[currentindex] = disdro_val
-        # F61: 
-        # if self.f61_rows: # prevent writing when there is no data
-        #     f61_data = numpy.array(self.f61_rows)
-        #     field91_var = netCDF_rootgrp.variables['all_particles']
-        #     field91_var[currentindex] = f61_data
-        # F90:
-        if self.f90_values:
-            f90_data = numpy.array(self.f90_values)
-            fieldN_var = netCDF_rootgrp.variables['fieldN']
-            fieldN_var[currentindex] = f90_data
-        # F91
-        if self.f91_values:
-            f91_data = numpy.array(self.f91_values)
-            fieldV_var = netCDF_rootgrp.variables['fieldV']
-            fieldV_var[currentindex] = f91_data
-        # F93: list -> shape 32x32 matrix
-        if self.f93_values and len(self.f93_values) > 0:
-            f93_data = numpy.array(self.f93_values)
-            f93_data = f93_data.reshape(32,32)
-            data_raw_var = netCDF_rootgrp.variables['data_raw']
-            data_raw_var[currentindex] = f93_data
+                # print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
+                # print(key, netCDF_var.standard_name, standard_name, value)
+                # print(type(value))
+                if isinstance(value, str): #str
+                    # print(f'str value: {value}')
+                    netCDF_var[currentindex] = value
+                elif isinstance(value, list): #str
+                    # print(f'list value: {value}')
+                    value_np_array = numpy.array(value)
+                    if key == '93':
+                        value_np_array = value_np_array.reshape(32,32)
+                    elif key == '61':
+                        pass
+                        # print('TODO: F61') 
+                        # TODO: F61 write to another file
+                    netCDF_var[currentindex] = value_np_array
+                    pass # handle list fields one by one
         netCDF_rootgrp.close()
-       
 
 def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''
