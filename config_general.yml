@@ -230,7 +230,7 @@ telegram_fields:
         svf: true
         dimensions:
             - time
-        dtype: 'f4'            
+        dtype: 'i4'            
         var_attrs:
             long_name: 'Temperature in the sensor housing'
             standard_name: 'T_sensor'
@@ -285,7 +285,7 @@ telegram_fields:
         svf: true
         dimensions:
             - time
-        dtype: 'f4'            
+        dtype: 'i4'            
         var_attrs:
             long_name: 'Temperature PCB'
             standard_name: 'T_pcb'
@@ -294,7 +294,7 @@ telegram_fields:
         svf: true
         dimensions:
             - time
-        dtype: 'f4'            
+        dtype: 'i4'            
         var_attrs:
             long_name: 'Temperature left sensor head'
             standard_name: 'T_L_sensor_head'
@@ -302,7 +302,7 @@ telegram_fields:
         svf: true
         dimensions:
             - time
-        dtype: 'f4'            
+        dtype: 'i4'            
         var_attrs:
             long_name: 'Temperature right sensor head'
             standard_name: 'T_R_sensor_head'
