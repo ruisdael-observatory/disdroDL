@@ -17,6 +17,7 @@ variables:
         dimensions:
             - time
         dtype: 'f4'         
+        fill_value: -0.1        
         var_attrs:
             long_name: "Time UTC"
             standard_name: "time"
@@ -28,6 +29,7 @@ variables:
         dtype: 'i4'            
         value:
             - 60
+        fill_value: -1
         var_attrs:
             units: s
             long_name: 'Length of measurement interval'
@@ -37,6 +39,7 @@ variables:
         dimensions:
             - time
         dtype: 'S4'  # string
+        fill_value: "None"
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'timestamp'
@@ -44,7 +47,8 @@ variables:
         svf: true
         dimensions:
             - velocity_classes
-        dtype: 'f8'  # 64bit floating point        
+        dtype: 'f8'  # 64bit floating point  
+        fill_value: -0.1
         var_attrs:
             long_name: 'center of fall velocity classes'
             standard_name: 'velocity_classes'
@@ -88,6 +92,7 @@ variables:
         dimensions:
             - diameter_classes
         dtype: 'f8'  # 64bit floating point        
+        fill_value: -0.1
         var_attrs:
             long_name: 'center of diameter classes'
             standard_name: 'diameter_classes'
@@ -138,7 +143,6 @@ telegram_fields:
             units: 'mm/h'
             long_name: 'Rain intensity'
             standard_name: 'rain_intensity'
-
 
     '02':
         svf: true
