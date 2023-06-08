@@ -183,7 +183,7 @@ telegram_fields:
     '08':
         dimensions:
             - time
-        dtype: 'f4'            
+        dtype: 'i4'            
         var_attrs:
             long_name: 'Meteorological Optical Range in precipitation'
             standard_name: 'MOR'
@@ -346,7 +346,7 @@ telegram_fields:
             - time
             - diameter_classes
             - velocity_classes
-        dtype: 'f4'            
+        dtype: 'i4'            
         var_attrs:
             long_name: 'Raw data as a function of particle diameter and velocity'
             standard_name: 'data_raw'
