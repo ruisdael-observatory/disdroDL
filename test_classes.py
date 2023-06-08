@@ -81,12 +81,15 @@ def test_append_data_netCDF():
     netCDF_var_time_data = netCDF_var_time[:].data
     assert len(netCDF_var_time_data) == amount_data_points
     first_time_item = num2date(netCDF_var_time_data[0], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
-    assert first_time_item.strftime("%Y-%m-%mT%H:%M:%S") == now.utc.strftime("%Y-%m-%mT%H:%M:%S")
+    assert first_time_item == now.utc
     last_time_item = num2date(netCDF_var_time_data[-1], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
     elapsed_time = last_time_item - first_time_item
     elapsed_time_secs = elapsed_time.total_seconds() / 60
-    assert int(elapsed_time_secs) == (amount_data_points - 1)
+    assert elapsed_time_secs == (amount_data_points - 1)
     print('elapsed_time_secs:', elapsed_time_secs)
+
+    netCDF_var_timestamp = rootgrp.variables['timestamp']
+    assert netCDF_var_timestamp[0] == first_time_item.isoformat() and netCDF_var_timestamp[-1] == last_time_item.isoformat()
 
     netCDF_var_MOR = rootgrp.variables['MOR']
     netCDF_var_MOR_data = netCDF_var_MOR[:].data
