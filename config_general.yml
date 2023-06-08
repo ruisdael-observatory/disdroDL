@@ -16,7 +16,7 @@ variables:
         svf: true
         dimensions:
             - time
-        dtype: 'f8'  # 64bit floating point        
+        dtype: 'f4'         
         var_attrs:
             long_name: "Time UTC"
             standard_name: "time"
