@@ -13,7 +13,6 @@ dimensions:
     #     size:
 variables:
     time:
-        svf: true
         dimensions:
             - time
         dtype: 'f4'         
@@ -23,7 +22,6 @@ variables:
             axis: "T"
             calendar: "standard"
     interval:
-        svf: true
         dimensions:  # empty for scalar variables
         dtype: 'i4'            
         value:
@@ -33,7 +31,6 @@ variables:
             long_name: 'Length of measurement interval'
             standard_name: 'time_interval'
     timestamp:
-        svf: true
         dimensions:
             - time
         dtype: 'S4'  # string
@@ -41,7 +38,6 @@ variables:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'timestamp'
     velocity_classes:
-        svf: true
         dimensions:
             - velocity_classes
         dtype: 'f8'  # 64bit floating point        
@@ -84,7 +80,6 @@ variables:
             - 17.6
             - 20.8  
     diameter_classes:
-        svf: true
         dimensions:
             - diameter_classes
         dtype: 'f8'  # 64bit floating point        
@@ -129,7 +124,6 @@ variables:
             
 telegram_fields:
     '01':
-        svf: true
         dimensions:
             - time
         dtype: 'f4'  # 32bit floating point                
@@ -138,7 +132,6 @@ telegram_fields:
             long_name: 'Rain intensity'
             standard_name: 'rain_intensity'
     '02':
-        svf: true
         dimensions:
             - time
         dtype: 'f4'                 
@@ -147,7 +140,6 @@ telegram_fields:
             long_name: 'Rain amount accumulated'
             standard_name: 'acc_rain_amount'
     '03':
-        svf: true
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer               
@@ -155,7 +147,6 @@ telegram_fields:
             long_name: 'Weather code to SYNOP wcreate_netCDFaw'
             standard_name: 'code_4680'
     '04':
-        svf: true
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer                
@@ -163,7 +154,6 @@ telegram_fields:
             long_name: 'Weather code to SYNOP ww'
             standard_name: 'code_4677'
     '05':
-        svf: true
         dimensions:
             - time
         dtype: 'S4'  # string            
@@ -172,7 +162,6 @@ telegram_fields:
             standard_name: 'code_4678'
             comment: 'Possible values in OTT Parsivel documentation: Table 4678'
     '06':
-        svf: true
         dimensions:
             - time
         dtype: 'S4'  # string            
@@ -182,7 +171,6 @@ telegram_fields:
             comment: 'Possible values in OTT Parsivel documentation: Table NWS'
 
     '07':
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -191,7 +179,6 @@ telegram_fields:
             standard_name: 'reflectivity'
             units: 'dBz'
     '08':
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -200,7 +187,6 @@ telegram_fields:
             standard_name: 'MOR'
             units: 'm'
     '09':
-        svf: true
         dimensions:
             - time
         dtype: 'i2'            
@@ -209,7 +195,6 @@ telegram_fields:
             standard_name: 'sample_interval'
             units: 's'
     '10':
-        svf: true
         dimensions:
             - time
         dtype: 'i4'            
@@ -218,7 +203,6 @@ telegram_fields:
             standard_name: 'amplitude'
             units: '1'
     '11':
-        svf: true
         dimensions:
             - time
         dtype: 'i4'            
@@ -227,7 +211,6 @@ telegram_fields:
             standard_name: 'n_particles_validated'
             units: '1'
     '12': # issue with values
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -236,7 +219,6 @@ telegram_fields:
             standard_name: 'T_sensor'
             units: '°C'  
     '16': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -245,7 +227,6 @@ telegram_fields:
             standard_name: 'I_heating'
             units: 'A'
     '17': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -254,7 +235,6 @@ telegram_fields:
             standard_name: 'V_power_supply'
             units: 'V'
     '18': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -263,7 +243,6 @@ telegram_fields:
             standard_name: 'state_sensor'
             comment: '0=OK, 1=Dirty, 2=No measurement possible'
     '24': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -272,7 +251,6 @@ telegram_fields:
             standard_name: 'absolute_rain_amount'
             units: 'mm' 
     '25': 
-        svf: true
         dimensions:
             - time
         dtype: 'i4'            
@@ -282,7 +260,6 @@ telegram_fields:
             units: '1'
             comment: '0=OK, 1=Screens are dirty; 2=Screens are dirty (no measurements possible), 3=Laser damaged'
     '26': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -291,7 +268,6 @@ telegram_fields:
             standard_name: 'T_pcb'
             units: '°C'            
     '27': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -299,7 +275,6 @@ telegram_fields:
             long_name: 'Temperature left sensor head'
             standard_name: 'T_L_sensor_head'
     '28': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -308,7 +283,6 @@ telegram_fields:
             standard_name: 'T_R_sensor_head'
             units: '°C' 
     '34': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'
@@ -317,7 +291,6 @@ telegram_fields:
             standard_name: 'kinetic_energy'
             units: 'J/(m^2*h)' 
     '35': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -327,7 +300,6 @@ telegram_fields:
             units: 'mm/h'
             comment: 'volume equivalent snow depth intensity'
     '60': 
-        svf: true
         dimensions:
             - time
         dtype: 'f4'            
@@ -337,7 +309,6 @@ telegram_fields:
             units: '1'
             comment: 'not validated'
     # '61': 
-    #     svf: false
     #     dimensions:
     #         - time
     #         - diameter
@@ -348,7 +319,6 @@ telegram_fields:
     #         standard_name: 'all_particles'
     #         comment: 'Each particle is registered as value pair: particle-diameter, particle-velocity. The exact time at which the particle crossed the beam cannot be retrieved due to hardware limitation.'
     '90':
-        svf: false
         dimensions:
             - time
             - diameter_classes
@@ -360,7 +330,6 @@ telegram_fields:
             comment: 'This is a processed summary of the raw_data matrix where some particles were removed based on an unknown particle size-velocity filter created by the manufacturer.'
             # Jülich netCDF uses variable name: number_concentration
     '91':
-        svf: false
         dimensions:
             - time
             - diameter_classes
@@ -371,7 +340,6 @@ telegram_fields:
             comment: 'This is a processed summary of the raw_data matrix where some particles were removed based on an unknown particle size-velocity filter created by the manufacturer.' 
             #'Jülich netCDF uses variable name: fall_velocity'
     '93': 
-        svf: false
         dimensions:
             - time
             - diameter_classes
