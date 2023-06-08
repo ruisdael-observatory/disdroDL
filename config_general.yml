@@ -37,15 +37,15 @@ variables:
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'timestamp'
-    velocity_classes_center:
+    velocity_classes_cent:
         dimensions:
             - velocity_classes
         dtype: 'f8'  # 64bit floating point        
         var_attrs:
             long_name: 'center of fall velocity classes'
-            standard_name: 'velocity_classes_center'
+            standard_name: 'velocity_classes'  # error when changed
             units: 'm s-1'
-            comment: 'Predefined center of velocity classes'
+            comment: 'Predefined center velocity classes'
         value: 
             - 0.05
             - 0.15
@@ -78,7 +78,7 @@ variables:
             - 13.6
             - 15.2
             - 17.6
-            - 20.8              
+            - 20.8  
     velocity_upper_bounds:
         dimensions:
             - velocity_classes
@@ -169,7 +169,7 @@ variables:
         dtype: 'f8'  # 64bit floating point        
         var_attrs:
             long_name: 'width of fall velocity classes interval'
-            standard_name: 'velocity_lower_bounds'
+            standard_name: 'velocity_spread' 
             units: 'm s-1'
             comment: 'Bin size of each velocity interval'
         value:
@@ -247,6 +247,7 @@ variables:
             - 19.0
             - 21.5
             - 24.5
+            
 telegram_fields:
     '01':
         dimensions:
