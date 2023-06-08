@@ -42,7 +42,7 @@ variables:
             standard_name: 'longitude'
     altitude:
         dimensions:  # empty for scalar variables
-        dtype: 'i4'  # 32bit floating point
+        dtype: 'f4'  # 32bit floating point
         value: 
             - 1
         var_attrs: 
