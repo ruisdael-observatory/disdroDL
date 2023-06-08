@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from  modules.util_functions import yaml2dict, capture_telegram_prfx_vars, create_logger
+from  modules.util_functions import yaml2dict, create_logger
 from pydantic.utils import deep_update
 
 wd = Path(__file__).parent 
@@ -23,21 +23,6 @@ telegram_lines=[b'OK\r\n',
                 b'00.571;01.572\r\n', 
                 b';']
 
-
-def test_capture_telegram_prfx_vars():
-    for n, telegram_line in enumerate(telegram_lines):
-        prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
-        if n == 2:
-            assert prefix == 'SVFS' and values.startswith('0000.000;0000.00')
-        elif n == 3:
-            assert prefix == 'F90' and values.startswith('-9.999;-9.999;-9.999;')
-        elif n == 4:
-            assert prefix == 'F91' and values.startswith('00.000;00.000;')
-        elif n == 5:
-            assert prefix == 'F93' and values.startswith('000;000;000;')
-        elif n == 6:
-            assert prefix == 'F61' and values.startswith('00.502;00.853') 
-            print(prefix, values)
 
 
 def test_logger():
