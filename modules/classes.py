@@ -154,16 +154,13 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
     if one_var_dict['dimensions'] == None:
         # scalar variables do not use dimensions
-        variable = nc_group.createVariable( one_var_dict['var_attrs']['standard_name'], 
-                                            one_var_dict['dtype'],
-                                            fill_value=one_var_dict['fill_value']
-                                            )
+        variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
+                                                one_var_dict['dtype'],)
         # variable.assignValue(one_var_dict['value'])
     elif len(one_var_dict['dimensions']) >= 1:
         variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
                                            one_var_dict['dtype'],
-                                           tuple([dim for dim in one_var_dict['dimensions']]),
-                                           fill_value=one_var_dict['fill_value'],
+                                           tuple([dim for dim in one_var_dict['dimensions']])
                                            )
     # fill predefine values
     if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
