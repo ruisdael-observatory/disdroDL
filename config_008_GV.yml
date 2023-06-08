@@ -23,7 +23,6 @@ global_attrs:
 
 variables:
     latitude:
-        svf: true
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
@@ -33,7 +32,6 @@ variables:
             long_name: 'Latitude of site'
             standard_name: 'latitude'
     longitude:
-        svf: true
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
@@ -43,7 +41,6 @@ variables:
             long_name: 'Longitude of site'
             standard_name: 'longitude'
     altitude:
-        svf: true
         dimensions:  # empty for scalar variables
         dtype: 'i4'  # 32bit floating point
         value: 
