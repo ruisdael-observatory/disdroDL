@@ -89,6 +89,7 @@ class Telegram:
         '''
         if not os.path.exists(self.path_netCDF):
             netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
+            # netCDF_rootgrp.set_fill_on()
             global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
             netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
             netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, timestamp=self.timestamp,logger=self.logger)
@@ -154,13 +155,16 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
     if one_var_dict['dimensions'] == None:
         # scalar variables do not use dimensions
-        variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
-                                                one_var_dict['dtype'],)
+        variable = nc_group.createVariable( one_var_dict['var_attrs']['standard_name'], 
+                                            one_var_dict['dtype'],
+                                            fill_value=-1 #one_var_dict['fill_value'],
+                                            )
         # variable.assignValue(one_var_dict['value'])
     elif len(one_var_dict['dimensions']) >= 1:
         variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
                                            one_var_dict['dtype'],
-                                           tuple([dim for dim in one_var_dict['dimensions']])
+                                           tuple([dim for dim in one_var_dict['dimensions']]),
+                                           fill_value=-1  # fill_value=one_var_dict['fill_value'],
                                            )
     # fill predefine values
     if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
