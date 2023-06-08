@@ -239,7 +239,7 @@ telegram_fields:
     '18': 
         dimensions:
             - time
-        dtype: 'f4'            
+        dtype: 'i2'            
         var_attrs:
             long_name: 'Sensor status'
             standard_name: 'state_sensor'
@@ -255,7 +255,7 @@ telegram_fields:
     '25': 
         dimensions:
             - time
-        dtype: 'i4'            
+        dtype: 'i2'            
         var_attrs:
             long_name: 'Error code'
             standard_name: 'error_code'
