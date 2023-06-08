@@ -37,15 +37,15 @@ variables:
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'timestamp'
-    velocity_classes:
+    velocity_classes_center:
         dimensions:
             - velocity_classes
         dtype: 'f8'  # 64bit floating point        
         var_attrs:
             long_name: 'center of fall velocity classes'
-            standard_name: 'velocity_classes'
+            standard_name: 'velocity_classes_center'
             units: 'm s-1'
-            comment: 'Predefined velocity classes'
+            comment: 'Predefined center of velocity classes'
         value: 
             - 0.05
             - 0.15
@@ -78,7 +78,133 @@ variables:
             - 13.6
             - 15.2
             - 17.6
-            - 20.8  
+            - 20.8              
+    velocity_upper_bounds:
+        dimensions:
+            - velocity_classes
+        dtype: 'f8'  # 64bit floating point        
+        var_attrs:
+            long_name: 'upper bounds of fall velocity classes'
+            standard_name: 'velocity_upper_bounds'
+            units: 'm s-1'
+            comment: 'Predefined velocity classes upper bound'
+        value: 
+            - 0.1
+            - 0.2
+            - 0.3
+            - 0.4
+            - 0.5
+            - 0.6
+            - 0.7
+            - 0.8
+            - 0.9
+            - 1.0
+            - 1.2
+            - 1.4
+            - 1.6
+            - 1.8
+            - 2.0
+            - 2.4
+            - 2.8
+            - 3.2
+            - 3.6
+            - 4.0
+            - 4.8
+            - 5.6
+            - 6.4
+            - 7.2
+            - 8.0
+            - 9.6
+            - 11.2
+            - 12.8
+            - 14.4
+            - 16.0
+            - 19.2
+            - 22.4
+    velocity_lower_bounds:
+        dimensions:
+            - velocity_classes
+        dtype: 'f8'  # 64bit floating point        
+        var_attrs:
+            long_name: 'lower bounds of fall velocity classes'
+            standard_name: 'velocity_lower_bounds'
+            units: 'm s-1'
+            comment: 'Predefined velocity classes lower bound'
+        value: 
+            - 0.0
+            - 0.1
+            - 0.2
+            - 0.3
+            - 0.4
+            - 0.5
+            - 0.6
+            - 0.7
+            - 0.8
+            - 0.9
+            - 1.0
+            - 1.2
+            - 1.4
+            - 1.6
+            - 1.8
+            - 2.0
+            - 2.4
+            - 2.8
+            - 3.2
+            - 3.6
+            - 4.0
+            - 4.8
+            - 5.6
+            - 6.4
+            - 7.2
+            - 8.0
+            - 9.6
+            - 11.2
+            - 12.8
+            - 14.4
+            - 16.0
+            - 19.2
+    velocity_spread: 
+        dimensions:
+            - velocity_classes
+        dtype: 'f8'  # 64bit floating point        
+        var_attrs:
+            long_name: 'width of fall velocity classes interval'
+            standard_name: 'velocity_lower_bounds'
+            units: 'm s-1'
+            comment: 'Bin size of each velocity interval'
+        value:
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.2
+            - 0.2
+            - 0.2
+            - 0.2
+            - 0.2
+            - 0.4
+            - 0.4
+            - 0.4
+            - 0.4
+            - 0.4
+            - 0.8
+            - 0.8
+            - 0.8
+            - 0.8
+            - 0.8
+            - 1.6
+            - 1.6
+            - 1.6
+            - 1.6
+            - 1.6
+            - 3.2
+            - 3.2        
     diameter_classes:
         dimensions:
             - diameter_classes
@@ -121,7 +247,6 @@ variables:
             - 19.0
             - 21.5
             - 24.5
-            
 telegram_fields:
     '01':
         dimensions:
