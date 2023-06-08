@@ -139,12 +139,13 @@ telegram_fields:
             units: 'mm'
             long_name: 'Rain amount accumulated'
             standard_name: 'acc_rain_amount'
+            comment: 'accumulated rainfall amount since the last reset'
     '03':
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer               
         var_attrs:
-            long_name: 'Weather code to SYNOP wcreate_netCDFaw'
+            long_name: 'Weather code to SYNOP wawa'
             standard_name: 'code_4680'
     '04':
         dimensions:
@@ -178,6 +179,7 @@ telegram_fields:
             long_name: 'Radar reflectivity'
             standard_name: 'reflectivity'
             units: 'dBz'
+            comment: '-9.999 means that the period was dry'
     '08':
         dimensions:
             - time
