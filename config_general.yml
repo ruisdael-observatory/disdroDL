@@ -205,7 +205,7 @@ variables:
             - 1.6
             - 3.2
             - 3.2        
-    diameter_classes:
+    diameter_classes_center:
         dimensions:
             - diameter_classes
         dtype: 'f8'  # 64bit floating point        
@@ -213,7 +213,7 @@ variables:
             long_name: 'center of diameter classes'
             standard_name: 'diameter_classes'
             units: 'mm'
-            comment: 'Predefined diameter classes'
+            comment: 'Predefined center of diameter classes'
         value:
             - 0.0625
             - 0.1875
@@ -247,7 +247,48 @@ variables:
             - 19.0
             - 21.5
             - 24.5
-            
+    diameter_spread_classes:
+        dimensions:
+            - diameter_classes
+        dtype: 'f8'  # 64bit floating point        
+        var_attrs:
+            long_name: 'spread of diameter classes'
+            standard_name: 'diameter_spread'
+            units: 'mm'
+            comment: 'Bin size of each of diameter classes'
+        value:
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.5
+            - 0.5
+            - 0.5
+            - 0.5
+            - 0.5
+            - 1.0
+            - 1.0
+            - 1.0
+            - 1.0
+            - 1.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 3.0
+            - 3.0
 telegram_fields:
     '01':
         dimensions:
