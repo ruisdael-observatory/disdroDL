@@ -40,12 +40,12 @@ variables:
     velocity_classes_center:
         dimensions:
             - velocity_classes
-        dtype: 'f8'  # 64bit floating point        
+        dtype: 'f4'        
         var_attrs:
-            long_name: 'center of fall velocity classes'
-            standard_name: 'velocity_classes'  # error when changed
+            long_name: 'center fall velocity of precipitation particles'
+            standard_name: 'velocity_center_classes'  # error when changed
             units: 'm s-1'
-            comment: 'Predefined center velocity classes'
+            comment: 'Predefined center of fall velocity classes'
         value: 
             - 0.05
             - 0.15
@@ -82,7 +82,7 @@ variables:
     velocity_upper_bounds:
         dimensions:
             - velocity_classes
-        dtype: 'f8'  # 64bit floating point        
+        dtype: 'f4'        
         var_attrs:
             long_name: 'upper bounds of fall velocity classes'
             standard_name: 'velocity_upper_bounds'
@@ -124,7 +124,7 @@ variables:
     velocity_lower_bounds:
         dimensions:
             - velocity_classes
-        dtype: 'f8'  # 64bit floating point        
+        dtype: 'f4'        
         var_attrs:
             long_name: 'lower bounds of fall velocity classes'
             standard_name: 'velocity_lower_bounds'
@@ -166,9 +166,9 @@ variables:
     velocity_spread: 
         dimensions:
             - velocity_classes
-        dtype: 'f8'  # 64bit floating point        
+        dtype: 'f4'     
         var_attrs:
-            long_name: 'width of fall velocity classes interval'
+            long_name: 'width of fall velocity interval'
             standard_name: 'velocity_spread' 
             units: 'm s-1'
             comment: 'Bin size of each velocity interval'
@@ -208,10 +208,10 @@ variables:
     diameter_classes_center:
         dimensions:
             - diameter_classes
-        dtype: 'f8'  # 64bit floating point        
+        dtype: 'f4'     
         var_attrs:
-            long_name: 'center of diameter classes'
-            standard_name: 'diameter_classes'
+            long_name: 'center of diameter classes of precipitation particles'
+            standard_name: 'diameter_center_classes'
             units: 'mm'
             comment: 'Predefined center of diameter classes'
         value:
@@ -247,48 +247,132 @@ variables:
             - 19.0
             - 21.5
             - 24.5
-    # diameter_spread_classes:
-    #     dimensions:
-    #         - diameter_classes
-    #     dtype: 'f8'  # 64bit floating point        
-    #     var_attrs:
-    #         long_name: 'spread of diameter classes'
-    #         standard_name: 'diameter_spread'
-    #         units: 'mm'
-    #         comment: 'Bin size of each of diameter classes'
-    #     value:
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.125
-    #         - 0.25
-    #         - 0.25
-    #         - 0.25
-    #         - 0.25
-    #         - 0.25
-    #         - 0.5
-    #         - 0.5
-    #         - 0.5
-    #         - 0.5
-    #         - 0.5
-    #         - 1.0
-    #         - 1.0
-    #         - 1.0
-    #         - 1.0
-    #         - 1.0
-    #         - 2.0
-    #         - 2.0
-    #         - 2.0
-    #         - 2.0
-    #         - 2.0
-    #         - 3.0
-    #         - 3.0
+    diameter_spread_classes:
+        dimensions:
+            - diameter_classes
+        dtype: 'f4' 
+        var_attrs:
+            long_name: 'width of diameter spread'
+            standard_name: 'diameter_spread'
+            units: 'mm'
+            comment: 'Bin size of each of diameter classes'
+        value:
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.5
+            - 0.5
+            - 0.5
+            - 0.5
+            - 0.5
+            - 1.0
+            - 1.0
+            - 1.0
+            - 1.0
+            - 1.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 3.0
+            - 3.0
+    diameter_upper_bounds:
+        dimensions:
+            - diameter_classes
+        dtype: 'f4'
+        var_attrs:
+            long_name: 'upper bounds of diameter classes'
+            standard_name: 'diameter_upper_bounds'
+            units: 'mm'
+            comment: 'Predefined diameter classes upper bound'
+        value:
+            - 0.12
+            - 0.25
+            - 0.38
+            - 0.5
+            - 0.62
+            - 0.75
+            - 0.88
+            - 1.0
+            - 1.12
+            - 1.25
+            - 1.5
+            - 1.75
+            - 2.0
+            - 2.25
+            - 2.5
+            - 3.0
+            - 3.5
+            - 4.0
+            - 4.5
+            - 5.0
+            - 6.0
+            - 7.0
+            - 8.0
+            - 9.0
+            - 10.0
+            - 12.0
+            - 14.0
+            - 16.0
+            - 18.0
+            - 20.0
+            - 23.0
+            - 26.0
+    diameter_lower_bounds:
+        dimensions:
+            - diameter_classes
+        dtype: 'f4'
+        var_attrs:
+            long_name: 'lower bounds of diameter classes'
+            standard_name: 'diameter_lower_bounds'
+            units: 'mm'
+            comment: 'Predefined diameter classes lower bound'
+        value:
+            - 0.0
+            - 0.12
+            - 0.25
+            - 0.38
+            - 0.5
+            - 0.62
+            - 0.75
+            - 0.88
+            - 1.0
+            - 1.12
+            - 1.25
+            - 1.5
+            - 1.75
+            - 2.0
+            - 2.25
+            - 2.5
+            - 3.0
+            - 3.5
+            - 4.0
+            - 4.5
+            - 5.0
+            - 6.0
+            - 7.0
+            - 8.0
+            - 9.0
+            - 10.0
+            - 12.0
+            - 14.0
+            - 16.0
+            - 18.0
+            - 20.0
+            - 23.0                 
 telegram_fields:
     '01':
         dimensions:
