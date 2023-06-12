@@ -37,7 +37,7 @@ variables:
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'timestamp'
-    velocity_classes_cent:
+    velocity_classes_center:
         dimensions:
             - velocity_classes
         dtype: 'f8'  # 64bit floating point        
