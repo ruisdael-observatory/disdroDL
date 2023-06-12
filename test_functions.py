@@ -43,7 +43,7 @@ def test_logger():
 def test_config_dict():
     for key in ['dimensions', 'variables', 'telegram_fields', 'station_code', 'port', 'baud', 'script_name', 'data_dir', 'log_dir', 'global_attrs', 'variables']:   
         assert key in config_dict.keys()
-    for variable_key in ['time', 'interval', 'timestamp', 'diameter_classes', 'latitude', 'longitude', 'altitude']:
+    for variable_key in ['time', 'interval', 'timestamp', 'latitude', 'longitude', 'altitude']:
         assert variable_key in config_dict['variables'].keys()
     
 
