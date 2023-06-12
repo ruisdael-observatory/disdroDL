@@ -43,7 +43,6 @@ def test_Telegram_netCDF():
                         logger=logger)         
     # test dimensions
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
-    # TODO: re-enable
     assert set(['time', 'diameter_classes', 'velocity_classes']).issubset(set(rootgrp.dimensions.keys()))
     netCDF_var_velocity = rootgrp.variables['velocity_center_classes']
     netCDF_var_velocity_data = netCDF_var_velocity[:].data
