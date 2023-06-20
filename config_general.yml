@@ -439,14 +439,6 @@ telegram_fields:
             long_name: 'Meteorological Optical Range in precipitation'
             standard_name: 'MOR'
             units: 'm'
-    '09':
-        dimensions:
-            - time
-        dtype: 'i2'            
-        var_attrs:
-            long_name: 'Sample interval'
-            standard_name: 'sample_interval'
-            units: 's'
     '10':
         dimensions:
             - time
