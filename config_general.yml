@@ -168,7 +168,7 @@ variables:
             - velocity_classes
         dtype: 'f4'     
         var_attrs:
-            long_name: 'width of fall velocity interval'
+            long_name: 'width of fall velocity classes'
             standard_name: 'velocity_spread' 
             units: 'm s-1'
             comment: 'Bin size of each velocity interval'
@@ -210,7 +210,7 @@ variables:
             - diameter_classes
         dtype: 'f4'     
         var_attrs:
-            long_name: 'center of diameter classes of precipitation particles'
+            long_name: 'center of diameter classes'
             standard_name: 'diameter_center_classes'
             units: 'mm'
             comment: 'Predefined center of diameter classes'
@@ -252,7 +252,7 @@ variables:
             - diameter_classes
         dtype: 'f4' 
         var_attrs:
-            long_name: 'width of diameter spread'
+            long_name: 'width of diameter classes'
             standard_name: 'diameter_spread'
             units: 'mm'
             comment: 'Bin size of each of diameter classes'
