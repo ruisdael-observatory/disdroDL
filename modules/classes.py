@@ -108,7 +108,7 @@ class Telegram:
         # currentindex: write data to *this* slot(currentindex)
         currentindex = len(netCDF_var_time[:].data) - 1  
         timestamp_var = netCDF_rootgrp.variables['timestamp']
-        timestamp_var[currentindex] = self.timestamp.isoformat() # timestamp str
+        timestamp_var[currentindex] = self.timestamp.strftime('%Y-%m-%dT%H:%M:%S') # timestamp str
         # print(self.telegram_data)
         for key, value in self.telegram_data.items():         
             if key in self.config_dict['telegram_fields'].keys():
