@@ -153,13 +153,21 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
 
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
+
+    # compression method 
+    if one_var_dict['dtype'] != 'S4': # dont compress strings: breaks netCDF
+        compression_method = 'zlib'
+    else:
+        compression_method = ''
+
     if one_var_dict['dimensions'] == None:
         # scalar variables do not use dimensions
         variable = nc_group.createVariable( one_var_dict['var_attrs']['standard_name'], 
                                             one_var_dict['dtype'],
-                                            fill_value=-1 
+                                            fill_value=-1,
+                                            compression=compression_method
                                             )
-
+        
         # variable.assignValue(one_var_dict['value'])
     elif len(one_var_dict['dimensions']) >= 1:
         if 'fill_value' in one_var_dict.keys():
@@ -169,7 +177,10 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
         variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
                                            one_var_dict['dtype'],
                                            tuple([dim for dim in one_var_dict['dimensions']]),
-                                           fill_value=fill_val)
+                                           compression=compression_method,
+                                           fill_value=fill_val,
+                                           )
+
     # fill predefine values
     if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
         # use .assignValue() method for scalar values
