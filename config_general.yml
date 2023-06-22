@@ -431,6 +431,7 @@ telegram_fields:
             standard_name: 'reflectivity'
             units: 'dBz'
             comment: '-9.999 means that the period was dry'
+        fill_value: -10
     '08':
         dimensions:
             - time
