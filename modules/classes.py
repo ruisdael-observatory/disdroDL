@@ -155,17 +155,20 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
 
     # compression method 
-    if one_var_dict['dtype'] != 'S4': # dont compress strings: breaks netCDF
+    if one_var_dict['dtype'] != 'S4': #  can't use compression on variable-length string variables
         compression_method = 'zlib'
+        # compression_method = dict(zlib=True, shuffle=True, complevel=5)
     else:
-        compression_method = ''
-
+        compression_method = None
     if one_var_dict['dimensions'] == None:
         # scalar variables do not use dimensions
         variable = nc_group.createVariable( one_var_dict['var_attrs']['standard_name'], 
                                             one_var_dict['dtype'],
                                             fill_value=-1,
-                                            compression=compression_method
+                                            compression=compression_method,
+                                            complevel=9,
+                                            shuffle=True,
+                                            fletcher32=True #error detection
                                             )
         
         # variable.assignValue(one_var_dict['value'])
