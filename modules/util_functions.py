@@ -1,7 +1,6 @@
 import yaml
 import os
 import sys
-import re
 import serial
 from typing import Dict
 from time import sleep
@@ -25,19 +24,6 @@ def create_dir(path: str):
         created_dir = False
     return created_dir
 
-def capture_telegram_prfx_vars(telegram_line):
-    ''' input: line received from telegram
-        output: line prefix, values
-        Through regex the prefix and values are captures from telegram str
-        Note:  F61 will be an exception since its values are multiline
-    '''
-    prefix_match = re.match(r'(^.{3,4}):(.*?)$', telegram_line.decode('utf-8', errors='replace'))  
-    if prefix_match:
-        prefix = prefix_match.group(1)
-        values = prefix_match.group(2)
-        return prefix, values
-    else:
-        return None, None 
 
 def init_serial(port: str, baud: int, logger):
     try:
@@ -72,10 +58,10 @@ def create_logger(log_dir, script_name, parsivel_name):
 def parsivel_start_sequence(serialconnection, config_dict, logger):
     logger.info(msg="Starting parsivel start sequence commands")
     serialconnection.reset_input_buffer()  # Flushes input buffer
-    parsivel_set_station_name = ('CS/K/' + config_dict['station_name'] + '\r').encode('utf-8')  # Sets the name of the Parsivel, maximum 10 characters
-    serialconnection.write(parsivel_set_station_name)
+    parsivel_set_station_code = ('CS/K/' + config_dict['station_code'] + '\r').encode('utf-8')  # Sets the name of the Parsivel, maximum 10 characters
+    serialconnection.write(parsivel_set_station_code)
     sleep(1)
-    parsivel_set_ID = ('CS/J/' + config_dict['Parsivel_ID'] + '\r').encode('utf-8')  # Sets the ID of the Parsivel, maximum 4 numerical characters
+    parsivel_set_ID = ('CS/J/' + config_dict['global_attrs']['sensor_name'] + '\r').encode('utf-8')  # Sets the ID of the Parsivel, maximum 4 numerical characters
     serialconnection.write(parsivel_set_ID)
     sleep(2)
     parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
@@ -88,7 +74,7 @@ def parsivel_reset(serialconnection, logger, factoryreset):
     logger.info(msg="Reseting Parsivel")
     if factoryreset == True:
         parsivel_reset = 'CS/F/1\r'.encode('utf-8')
-        serialconnection.write(parsivel_restart)
+        serialconnection.write(parsivel_reset)
     else: 
         parsivel_restart = 'CS/Z/1\r'.encode('utf-8')  # restart
         serialconnection.write(parsivel_restart)

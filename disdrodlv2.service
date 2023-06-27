@@ -3,8 +3,8 @@ Description=disdrodlv2
 After=multi-user.target
 
 [Service]
-ExecStart=python3 /usr/local/src/disdrodlv2/capture_disdrometer_data.py
-ExecReload=python3 /usr/local/src/disdrodlv2/capture_disdrometer_data.py
+ExecStart=python3 /usr/local/src/disdrodlv2/main.py -c /usr/local/src/disdrodlv2/config_008_GV.yml
+ExecReload=python3 /usr/local/src/disdrodlv2/main.py -c /usr/local/src/disdrodlv2/config_008_GV.yml
 TimeoutStopSec=10
 Restart=always
 RestartSec=30

@@ -1,7 +1,10 @@
-import csv
 import os
 from datetime  import datetime
-from modules.util_functions import capture_telegram_prfx_vars
+from netCDF4 import Dataset
+from cftime import date2num
+import numpy
+import chardet
+
 
 class NowTime:
     '''
@@ -14,6 +17,7 @@ class NowTime:
         self.utc = datetime.utcnow()
         self.time_list = (self.utc.strftime("%H:%M:%S")).split(":")  # used to be: now_hour_min_secs
         # now_hour_min_secs = now_hour_min_secs.split(":")
+        self.date_strings()
     def date_strings(self):
         '''
         def Converts instantiation time to different format class attributes
@@ -28,97 +32,184 @@ class NowTime:
 
 class Telegram:
     '''
-    Class dedicated to handling the returned telegram lines:
-        storing, processing and writing to CSV
+    Class dedicated to handling the returned the Parsivel telegram lines:
+    * storing, processing and writing telegram to netCDF
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
-    
-    Methods:
-        * create_csv_headers()
-        * capture_prefixes_and_data()
-        * append_data_to_csv()
     '''
-    def __init__(self, telegram_lines, timestamp, data_dir, data_fn_start):
+    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
+        '''
+        initiates variables and methods:
+        * set_netCDF_path
+        * create_netCDF
+        '''
+        self.config_dict = config_dict
         self.telegram_lines = telegram_lines
         self.timestamp = timestamp
-        self.svfs_values = None
-        self.svfs_headers = []
-        self.f90_values = None
-        self.f91_values = None
-        self.f93_values = None
-        self.f61_values = None
-        self.f61_rows = []
-        self.f61_headers = []
         self.delimiter = ';'
         self.data_dir = data_dir  
-        self.data_fn_start = data_fn_start 
-        # data_fn_start shared filename start str, based on date_location_parsivelcode_
-        # ie. 20230221_Delft-GV_PAR008_  *.csv
-
-    def create_csv_headers(self, sfvs_telegram_resquest, config_dict):
-        '''def Creates the headers to CSV of F61 and SVFS
-            config.yml telegram_fields name and unit are used
-            adds them to self.f61_headers & self.svfs_headers variables
-        '''
-        # SVFS
-        headers_numbers = ((sfvs_telegram_resquest.replace('%','')).split(';'))[:-1]
-        headers_names = []
-        for key in headers_numbers:
-            header = f"{config_dict['telegram_fields'][key]['name']}"
-            if 'unit' in config_dict['telegram_fields'][key].keys():
-                header = f"{header} ({config_dict['telegram_fields'][key]['unit']})"
-            headers_names.append(header)
-        self.svfs_headers = ['timestamp'] + headers_names 
-        # F61
-        self.f61_headers = [
-            'timestamp',
-            f"{config_dict['telegram_fields']['61size']['name']} ({config_dict['telegram_fields']['61size']['unit']})",
-            f"{config_dict['telegram_fields']['61speed']['name']} ({config_dict['telegram_fields']['61speed']['unit']})"
-            ]                    
+        self.data_fn_start = data_fn_start
+        self.logger = logger
+        self.path_netCDF = None
+        self.set_netCDF_path()
+        self.create_netCDF()
+        self.telegram_data = {}
 
     def capture_prefixes_and_data(self):
         '''
-        def Captures the prefixes and data returned by telegram
-        and adds data to appropriate (determined by prefix) self.*_values variable.
+        def Captures the telegram prefixes and data stored in self.telegram_lines
+        and adds the data to self.telegram_data dict.
         '''
-        for telegram_line in self.telegram_lines:
-            prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
-            if prefix and len(values) > 1 and prefix == 'F61':  # len(values) > 1 since ";" can be captured without values
-                self.f61_values = join_f61_items(telegram_list=self.telegram_lines)
-                for f61_item in self.f61_values:
-                    f61_item_pair = string2row(timestamp=self.timestamp, valuestr=f61_item, delimiter=self.delimiter, prefix=prefix)
-                    self.f61_rows.append(f61_item_pair) 
-            elif prefix in ['SVFS', 'F90', 'F91', 'F93'] and values:
-                prefix_lcase = prefix.lower()
-                super(Telegram, self).__setattr__(f'{prefix_lcase}_values', 
-                                                  string2row(timestamp=self.timestamp, valuestr=values, delimiter=self.delimiter, prefix=prefix))
-    def append_data_to_csv(self, prefix):
-        '''
-        def Writes headers and appends data from self.*_values to corresponding CSV
-        using the self.data_dir and prefix to construct the path + file name.
-        In cases of multiline values (F61) several rows are written
-        '''
-        prefix_lcase = prefix.lower()
-        fn = f'{self.data_fn_start}_{prefix}.csv'
-        # write headers to csv
-        if f'{prefix_lcase}_headers' in self.__dir__() and not os.path.exists(self.data_dir / fn):
-            # if headers variable exists and file does not exist
-            with open(self.data_dir / fn, "w") as f:
-                writer = csv.writer(f, delimiter=self.delimiter)
-                writer.writerow(self.__dict__[f'{prefix_lcase}_headers'])
-        # write data
-        if prefix == 'F61':
-            data = self.__dict__[f'{prefix_lcase}_rows']
-        else: 
-            data = self.__dict__[f'{prefix_lcase}_values']  # prefix will determine what var will be used
-        if data and len(data) > 0:  # prevent empty data to be written
-            with open(self.data_dir / fn, "a") as f:
-                writer = csv.writer(f, delimiter=self.delimiter)
-                if type(data[0]) == list:
-                    for data_item in data:
-                        writer.writerow(data_item)
-                elif type(data[0]) == str:
-                    writer.writerow(data)
+        for i in  self.telegram_lines:
+            encoding = chardet.detect(i)['encoding']
+            i_str = i.decode(encoding)
+            i_list = i_str.split(":")
+            if len(i_list) > 1 and i_list[1].strip() != self.delimiter:
+                field = i_list[0]
+                value = i_list[1].strip() # strip white space
+                value_list = value.split(self.delimiter)
+                value_list = [v for v in value_list if len(v) > 0]
+                if len(value_list) == 1:
+                    value = value_list[0]
+                else:
+                    value = value_list
+                super(Telegram, self).__setattr__(f'field_{field}_values', value)
+                self.telegram_data[field] = value
 
+
+    def set_netCDF_path(self):
+        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' 
+        # TODO: move var assignment to __init__
+        #TODO: set path self.path_netCDF_f61
+
+    def create_netCDF(self):
+        '''
+        def creates new netCDF file with global attributes, dimensions and variables (defined in yaml) 
+        TODO: create new netCDF for F61 at self.path_netCDF_f61
+
+        '''
+        if not os.path.exists(self.path_netCDF):
+            netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
+            # netCDF_rootgrp.set_fill_on()
+            global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
+            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
+            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, timestamp=self.timestamp,logger=self.logger)
+            netCDF_rootgrp.close()
+    
+    def append_data_to_netCDF(self):
+        '''
+        def appends data to netCDF (path_netCDF)
+        TODO: append data to self.path_netCDF_f61
+        '''
+        netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")        
+        # (time) appending timestamps to var time
+        netCDF_var_time = netCDF_rootgrp.variables['time']
+        time_now_array = date2num([self.timestamp], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
+        netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
+        # currentindex: write data to *this* slot(currentindex)
+        currentindex = len(netCDF_var_time[:].data) - 1  
+        timestamp_var = netCDF_rootgrp.variables['timestamp']
+        timestamp_var[currentindex] = self.timestamp.strftime('%Y-%m-%dT%H:%M:%S') # timestamp str
+        # print(self.telegram_data)
+        for key, value in self.telegram_data.items():         
+            if key in self.config_dict['telegram_fields'].keys():
+                field_dict = self.config_dict['telegram_fields'][key]
+                standard_name = field_dict['var_attrs']['standard_name']
+                netCDF_var = netCDF_rootgrp.variables[standard_name]
+                # print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
+                # print(key, netCDF_var.standard_name, standard_name, value)
+                # print(type(value))
+                if isinstance(value, str): #str
+                    # print(f'str value: {value}')
+                    netCDF_var[currentindex] = value
+                elif isinstance(value, list): #str
+                    # print(f'list value: {value}')
+                    value_np_array = numpy.array(value)
+                    if key == '93':
+                        value_np_array = value_np_array.reshape(32,32)
+                    elif key == '61':
+                        pass
+                        # print('TODO: F61') 
+                        # TODO: F61 write to another file
+                    netCDF_var[currentindex] = value_np_array
+                    pass # handle list fields one by one
+        netCDF_rootgrp.close()
+
+def global_attrs_to_netCDF(nc_rootgrp, config_dict):
+    '''
+    def writes global attributes (metadata) to newly created netCDF
+    '''
+    for key in config_dict['global_attrs'].keys():
+        nc_rootgrp.__setattr__(key, config_dict['global_attrs'][key]) 
+
+
+def netCDF_dimensions(nc_rootgrp, config_dict, logger):
+    '''
+    reads dimensions from yaml config file and writes them to netCDF
+    '''
+    for key in config_dict['dimensions'].keys():
+        logger.info(msg=f'creating netCDF dimension: {key}')
+        nc_rootgrp.createDimension(key, config_dict['dimensions'][key]['size'])
+
+
+def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
+    logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
+
+    # compression method 
+    if one_var_dict['dtype'] != 'S4': #  can't use compression on variable-length string variables
+        compression_method = 'zlib'
+        # compression_method = dict(zlib=True, shuffle=True, complevel=5)
+    else:
+        compression_method = None
+    if one_var_dict['dimensions'] == None:
+        # scalar variables do not use dimensions
+        variable = nc_group.createVariable( one_var_dict['var_attrs']['standard_name'], 
+                                            one_var_dict['dtype'],
+                                            fill_value=-1,
+                                            compression=compression_method,
+                                            complevel=9,
+                                            shuffle=True,
+                                            fletcher32=True #error detection
+                                            )
+        
+        # variable.assignValue(one_var_dict['value'])
+    elif len(one_var_dict['dimensions']) >= 1:
+        if 'fill_value' in one_var_dict.keys():
+            fill_val = one_var_dict['fill_value']
+        else:
+            fill_val = -1 
+        variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
+                                           one_var_dict['dtype'],
+                                           tuple([dim for dim in one_var_dict['dimensions']]),
+                                           compression=compression_method,
+                                           fill_value=fill_val,
+                                           )
+
+    # fill predefine values
+    if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
+        # use .assignValue() method for scalar values
+        variable.assignValue(one_var_dict['value'])  
+    elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
+        variable[:] = one_var_dict['value']
+
+    for var_attr in one_var_dict['var_attrs']:
+        variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
+    if  key == 'time':
+        variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d")} 00:00:00 +00:00')
+    # print('value:', one_var_dict['value'])
+
+
+
+def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
+    '''
+    Reads variables' definition from yaml config file and writes them to netCDF
+    If variable values are set in the yml file def also assigns them their value
+    '''
+    # variables not in telegram
+    for key, var_dict in config_dict['variables'].items():
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
+
+    for key,var_dict in config_dict['telegram_fields'].items():
+        set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 
 def join_f61_items(telegram_list):
     '''
@@ -129,33 +220,19 @@ def join_f61_items(telegram_list):
     Each one of the f61_items will be a row, with 2 columns (3 if we include timestamp).
     '''
     for index, item in enumerate(telegram_list):
-        if 'F61:' in item.decode('utf-8'):
+        if 'F61:' in item.decode('utf-8', errors='replace'):
             f61_items = telegram_list[index:-1]  
-            f61_items = [item.decode('utf-8').replace('\r\n', '').replace('F61:','') for item in f61_items]
+            f61_items = [item.decode('utf-8', errors='replace').replace('\r\n', '').replace('F61:','') for item in f61_items]
             f61_items = f61_items
     return f61_items
 
-def string2row(timestamp, valuestr, delimiter, prefix):
+def string2row(valuestr, delimiter, prefix):
     '''
     Converts a telegram string to a list of values, separated by the delimiter 
     and added timestamp to first item.
-    The output is ready to be written to CSV 
     '''
     values_list = (valuestr.replace(f'{prefix}:', '')).split(delimiter)        
-    values_list = [timestamp] + values_list
     if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
-
-
-
-if __name__ == '__main__':
-    now = NowTime()
-    print(now.__doc__)
-    print(now, now.__dict__, now.utc, now.time_list)
-    print(type(now.utc))
-    now.date_strings()
-    print(now.ymd)
-    print(type(now.iso))
-
 
