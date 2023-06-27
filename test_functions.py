@@ -1,9 +1,13 @@
 import json
 from pathlib import Path
-from  modules.util_functions import yaml2dict, capture_telegram_prfx_vars, create_logger
+from  modules.util_functions import yaml2dict, create_logger
+from pydantic.utils import deep_update
 
 wd = Path(__file__).parent 
-config_dict = yaml2dict(path = wd / 'config.yml')
+config_dict = yaml2dict(path = wd / 'config_general.yml')
+config_dict_site = yaml2dict(path = wd / 'config_008_GV.yml')
+config_dict = deep_update(config_dict, config_dict_site)
+
 telegram_lines=[b'OK\r\n', 
                 b'\n', 
                 b'SVFS:0000.000;0000.00;00;00;   NP;   C;-9.999;20000;00059;12773;00000;012;450994;2.11.6;2.11.1;0.50;24.3;0;14:09:59;16.02.2023;;;0000.00;000;025;013;013;00.000;0000.0;0000.00;-9.99;0000.00;0000.00;00000007;\n', 
@@ -20,33 +24,27 @@ telegram_lines=[b'OK\r\n',
                 b';']
 
 
-def test_capture_telegram_prfx_vars():
-    for n, telegram_line in enumerate(telegram_lines):
-        prefix, values = capture_telegram_prfx_vars(telegram_line=telegram_line)
-        if n == 2:
-            assert prefix == 'SVFS' and values.startswith('0000.000;0000.00')
-        elif n == 3:
-            assert prefix == 'F90' and values.startswith('-9.999;-9.999;-9.999;')
-        elif n == 4:
-            assert prefix == 'F91' and values.startswith('00.000;00.000;')
-        elif n == 5:
-            assert prefix == 'F93' and values.startswith('000;000;000;')
-        elif n == 6:
-            assert prefix == 'F61' and values.startswith('00.502;00.853') 
-            print(prefix, values)
-
 
 def test_logger():
     logger = create_logger(log_dir=Path(config_dict['log_dir']), 
                         script_name=config_dict['script_name'], 
-                        parsivel_name=config_dict['Parsivel_name'])
+                        parsivel_name=config_dict['global_attrs']['sensor_name'])
     logger.info(msg=f"Testing logger in {__file__}")
-    assert logger.name == f"{config_dict['script_name']}: {config_dict['Parsivel_name']}"
+    assert logger.name == f"{config_dict['script_name']}: {config_dict['global_attrs']['sensor_name']}"
 
     log_file = Path(config_dict['log_dir']) / 'log.json'
     with open(log_file, 'r') as log_file_r:
         last_log_line = log_file_r.readlines()[-1]
         last_log_line = (json.loads(last_log_line))
-        assert last_log_line['name'] == f"{config_dict['script_name']}: {config_dict['Parsivel_name']}"
+        assert last_log_line['name'] == f"{config_dict['script_name']}: {config_dict['global_attrs']['sensor_name']}"
         assert last_log_line['msg'] == f"Testing logger in {__file__}"
 
+
+def test_config_dict():
+    for key in ['dimensions', 'variables', 'telegram_fields', 'station_code', 'port', 'baud', 'script_name', 'data_dir', 'log_dir', 'global_attrs', 'variables']:   
+        assert key in config_dict.keys()
+    for variable_key in ['time', 'interval', 'timestamp', 'latitude', 'longitude', 'altitude']:
+        assert variable_key in config_dict['variables'].keys()
+    
+
+#  'velocity_classes_center', 'velocity_upper_bounds', 'velocity_lower_bounds', 'velocity_spread',

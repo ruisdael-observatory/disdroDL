@@ -1,6 +1,11 @@
 prototypes/*
+!prototypes/prototype_f61_netcdf.py
+!prototypes/capture_f93.py
+!prototypes/capture_all_fields.py
 .python-version
 __pycache__
 config.yml
-test_data/
+test_data/*
 .vscode/
+!test_data/classtest.nc
+!test_data/f61_test.nc

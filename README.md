@@ -1,9 +1,11 @@
 # Parsivel disdrometer data logger - version 2
 
-**Data Aquisition Script for Parsifel Disdrometer**
+**Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
 * Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
-* Configuration values: [config.yml](config.yml)
+* Configuration files: 
+    * general: [config_general.yml](config_general.yml) - *should not need editing*
+    * parsivel specific: ie. [config_008_GV.yml](config_008_GV.yml) - **create 1 per parsivel**
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
 
 
@@ -26,7 +28,7 @@
 * monthly data directories, inside parent data directory 
    * monthly data directories naming: `yyyymm`
 * every day new data files created:
-    * data files naming: `yyyymmdd_{station_site}_{station_name}_{Parsivel_ID}_{fields}`
+    * data files naming: `yyyymmdd_{site_name}_{station_code}_{sensor_name}_{fields}`
 
 **Telegram field names and units**
 In accordance to [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) the telegram field names and units are defined in [config.yml](config.yml) `telegram_fields` 
@@ -44,17 +46,20 @@ create data directory with read and write permissions to all users: `sudo mkdir 
 
 run Parsivel [reset script](./reset_parsivel.py): `python reset_parsivel.py`
 
-create symbolic link between the station's config file and config.yml
-`ln config_GV_008.yml config.yml`
+create a station-spefic file and commit it to this repo (see [config_008_GV.yml](./config_008_GV.yml) as an example) 
 
 
 ## Run script
 
 **manually**: 
-* [capture_disdrometer_data.py](./capture_disdrometer_data.py) manually: `python capture_disdrometer_data.py`
+* [main.py](./main.py) manually: `python main.py -c config_NNN_??.yml `
 
 **via service file**: 
-* [disdrodlv2.service](disdrodlv2.service)
+* edit the config file name in [disdrodlv2.service](disdrodlv2.service) to match that of the station
+* create system link between local service file and service files location: `ln disdrodlv2.service /etc/systemd/system/disdrodlv2.service`
+* run: `systemctl enable disdrodlv2.service`
+* run: `systemctl start disdrodlv2.service`
+* check status: `systemctl status disdrodlv2.service`
 
 
 ## Outputs
@@ -81,7 +86,3 @@ with 2 different screens (use tmux multiplexer or 2 different shells)
 terminal one: listen to serial port `tail -f /dev/ttyUSB0`
 
 terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
-
-
-
-
