@@ -382,15 +382,15 @@ telegram_fields:
             units: 'mm/h'
             long_name: 'Rain intensity'
             standard_name: 'rain_intensity'
-    '02':
-        dimensions:
-            - time
-        dtype: 'f4'                 
-        var_attrs:
-            units: 'mm'
-            long_name: 'Rain amount accumulated'
-            standard_name: 'acc_rain_amount'
-            comment: 'accumulated rainfall amount since the last reset'
+    # '02':
+    #     dimensions:
+    #         - time
+    #     dtype: 'f4'                 
+    #     var_attrs:
+    #         units: 'mm'
+    #         long_name: 'Rain amount accumulated'
+    #         standard_name: 'acc_rain_amount'
+    #         comment: 'accumulated rainfall amount since the last reset'
     '03':
         dimensions:
             - time
