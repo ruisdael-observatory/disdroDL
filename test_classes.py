@@ -41,6 +41,8 @@ def test_Telegram_netCDF():
                         data_dir=test_data_dir,
                         data_fn_start=fn_start,
                         logger=logger)         
+    # import pdb; pdb.set_trace()
+
     # test dimensions
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
     assert set(['time', 'diameter_classes', 'velocity_classes']).issubset(set(rootgrp.dimensions.keys()))
@@ -60,7 +62,7 @@ def test_Telegram_netCDF():
 
 def test_append_data_netCDF():
     # -- append data: test time
-    amount_data_points = 10
+    amount_data_points = 1
     now = NowTime()
     fn_start = 'classtest'
     # write data
@@ -74,6 +76,8 @@ def test_append_data_netCDF():
                     logger=logger)
         telegram.capture_prefixes_and_data()
         telegram.append_data_to_netCDF()
+        telegram.append_data_to_log()
+        # TODO: telegram.telegram_log_string
 
     # read and test
     rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf

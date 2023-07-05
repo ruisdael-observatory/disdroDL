@@ -1,4 +1,5 @@
 import os
+import re
 from datetime  import datetime
 from netCDF4 import Dataset
 from cftime import date2num
@@ -44,12 +45,14 @@ class Telegram:
         '''
         self.config_dict = config_dict
         self.telegram_lines = telegram_lines
+        self.telegram_log_string = ''
         self.timestamp = timestamp
         self.delimiter = ';'
         self.data_dir = data_dir  
         self.data_fn_start = data_fn_start
         self.logger = logger
         self.path_netCDF = None
+        self.set_log_path()
         self.set_netCDF_path()
         self.create_netCDF()
         self.telegram_data = {}
@@ -80,6 +83,9 @@ class Telegram:
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' 
         # TODO: move var assignment to __init__
         #TODO: set path self.path_netCDF_f61
+
+    def set_log_path(self):
+        self.path_log = self.data_dir / f'{self.data_fn_start}.log' 
 
     def create_netCDF(self):
         '''
@@ -133,6 +139,44 @@ class Telegram:
                     netCDF_var[currentindex] = value_np_array
                     pass # handle list fields one by one
         netCDF_rootgrp.close()
+
+    def append_data_to_log(self):
+        self.telegram_log_string = telegram_list_2_string(telegram_list= self.telegram_lines[1:], timestamp=self.timestamp)
+        with open(self.path_log, "a") as log_file:
+            log_file.write(self.telegram_log_string)
+
+
+def telegram_list_2_string(telegram_list, timestamp):
+    '''
+    converts the telegram list returned by disdrometer to semi-colon separated string
+    
+    Note:
+    * telegram uses also ; to seperate between values in multi value field 
+    * telegram_list[1:] as value at index 0 is
+    
+    TODO:
+    * TEST: no ;; 
+    '''
+    print(telegram_list)
+    telegram_vals_list  = [('00', timestamp.strftime('%Y%m%d%H%M%S'))] # using tupple to match the rest of the values added
+    for item in telegram_list:
+        match = re.match('(?P<index>\\d\\d):(?P<val>.*)\\r\\n', item.decode('ascii'))
+        if match and match[2] != ';' and match[2] != '' and match[2] != ' ':  # ignore fields w/out values
+            match_dict = match.groupdict()
+
+            # massage values
+            match_dict['val'] = match_dict['val'].replace(' ', '') # remove spaces
+            if match_dict['val'][-1]:  # remove trailing ;  to prevent ;;
+                match_dict['val'] = match_dict['val'][:-1]
+            telegram_vals_list.append((match_dict['index'], match_dict['val'].replace(' ', '')))
+            print('MATCHING:', item, 'index:', match_dict['index'], 'val:', match_dict['val'])
+        else:
+            print('NOT MATCHING:', item)
+
+    telegram_vals_str = (";").join([item[1] for item in telegram_vals_list])
+    print(telegram_vals_str)     
+    return telegram_vals_str
+
 
 def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''

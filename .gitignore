@@ -7,5 +7,4 @@ __pycache__
 config.yml
 test_data/*
 .vscode/
-!test_data/classtest.nc
-!test_data/f61_test.nc
+sample_data/*

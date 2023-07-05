@@ -45,6 +45,7 @@ while True:
         fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
         parsivel.write('CS/PA\r\n'.encode('ascii')) # Output all telegram measurement values
         parsivel_lines = parsivel.readlines()
+        import pdb; pdb.set_trace()
         logger.info(msg=f"parsivel_lines: {parsivel_lines}")
 
         # process telegram into netCDF
@@ -57,6 +58,7 @@ while True:
         logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
         telegram.capture_prefixes_and_data()
         telegram.append_data_to_netCDF()
+        telegram.append_data_to_log()
 
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds == True:
         # once we passed 00secs: reset flag_zero_seconds
