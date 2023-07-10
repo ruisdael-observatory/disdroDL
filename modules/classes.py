@@ -141,7 +141,7 @@ class Telegram:
         netCDF_rootgrp.close()
 
     def append_data_to_log(self):
-        self.telegram_log_string = telegram_list_2_string(telegram_list= self.telegram_lines[1:], timestamp=self.timestamp)
+        self.telegram_log_string = telegram_list_2_string(telegram_list= self.telegram_lines[1:], timestamp=self.timestamp) + '\n'
         with open(self.path_log, "a") as log_file:
             log_file.write(self.telegram_log_string)
 
