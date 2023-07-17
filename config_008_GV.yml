@@ -26,7 +26,7 @@ variables:
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 51.9675917
+            - 51.996068
         var_attrs: 
             units: 'degree_north'
             long_name: 'Latitude of site'
@@ -35,7 +35,7 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 4.927277
+            - 4.378701
         var_attrs: 
             units: 'degree_east'
             long_name: 'Longitude of site'
@@ -49,3 +49,4 @@ variables:
             units: 'm'
             long_name: 'Altitude of site'
             standard_name: 'altitude'
+    
