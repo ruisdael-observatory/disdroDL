@@ -17,7 +17,7 @@ global_attrs:
     site_name: 'TNO Slufter'
     sensor_name: PAR006
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro'
+    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
     sensor_type: 'OTT Hydromet Parsivel2'
     sensor_serial_number: '450906'
 
