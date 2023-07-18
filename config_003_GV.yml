@@ -17,7 +17,7 @@ global_attrs:
     site_name: 'Green_Village'
     sensor_name: PAR003
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro'
+    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
     sensor_type: 'OTT Hydromet Parsivel2'
     sensor_serial_number: '450909'
 
