@@ -2,7 +2,7 @@
 
 **Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
-* Main script: [capture_disdrometer_data.py](capture_disdrometer_data.py)
+* Main script: [main.py](main.py)
 * Configuration files: 
     * general: [config_general.yml](config_general.yml) - *should not need editing*
     * parsivel specific: ie. [config_008_GV.yml](config_008_GV.yml) - **create 1 per parsivel**
@@ -12,7 +12,7 @@
 
 ## Operational Principals
 
-**[capture_disdrometer_data.py](capture_disdrometer_data.py)**
+**[main.py](main.py)**
 * creates the data and log directories 
 * sets up the serial communication with Parsivel 
 * in while loop (every minute):
@@ -63,7 +63,7 @@ create a station-spefic file and commit it to this repo (see [config_008_GV.yml]
 
 
 ## Outputs
-**[capture_disdrometer_data.py](capture_disdrometer_data.py) outputs 4 CSV**
+**[main.py](main.py) outputs 4 CSV**
 * `*_SVFS.csv` stores all single value fields (SVFS). Example: [sample_data/20230221_Delft-GV_PAR008_SVFS.csv](sample_data/20230221_Delft-GV_PAR008_SVFS.csv)
 * `*_F61.csv` stores field 61 values (list of all particles detected between requests, including particle-size and speed ). Example: [sample_data/20230225_Delft-GV_PAR008_F61.csv](sample_data/20230225_Delft-GV_PAR008_F61.csv)
 * `*_F90.csv` stores field 90 values (Field N). Example: [sample_data/20230225_Delft-GV_PAR008_F90.csv](sample_data/20230225_Delft-GV_PAR008_F90.csv)
