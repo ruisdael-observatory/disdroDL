@@ -42,7 +42,7 @@ while True:
             logger.info(msg=f'Created data directory: {data_dir}')
 
         # returned telegram lines  
-        fn_start = filename = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
+        fn_start = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
         parsivel.write('CS/PA\r\n'.encode('ascii')) # Output all telegram measurement values
         parsivel_lines = parsivel.readlines()
         logger.info(msg=f"parsivel_lines: {parsivel_lines}")
