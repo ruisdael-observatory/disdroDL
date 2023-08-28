@@ -14,7 +14,7 @@ global_attrs:
     source: 'surface observation'
     history: '-'
     Conventions: 'CF-1.7'
-    site_name: 'Lutjewad Atmospheric Station'
+    site_name: 'Lutjewad_Atmospheric_Station'
     sensor_name: PAR009
     project_name: 'https://ruisdael-observatory.nl/'
     contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
