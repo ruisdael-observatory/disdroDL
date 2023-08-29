@@ -36,18 +36,14 @@ In accordance to [OTT Parsivel2 official documentation](https://www.ott.com/down
 
 ## Requirements
 
-create and activate a python virtual environment
+create and activate a python virtual environment and:
+* install python dependencies: `pip -r requirements.txt`
+* create log directory with read and write permissions to all users: `sudo mkdir /var/log/disdroDL/; sudo chmod a+rw /var/log/disdroDL` 
+* create data directory with read and write permissions to all users: `sudo mkdir /data/disdroDL/; sudo chmod a+rw /data/disdroDL` 
+* run Parsivel [reset script](./reset_parsivel.py): `python reset_parsivel.py`
+* create a station-specific file and commit it to this repo (see [config_008_GV.yml](./config_008_GV.yml) as an example) 
 
-install python dependencies: `pip -r requirements.txt`
-
-create log directory with read and write permissions to all users: `sudo mkdir /var/log/disdroDL/; sudo chmod a+rw /var/log/disdroDL` 
-
-create data directory with read and write permissions to all users: `sudo mkdir /data/disdroDL/; sudo chmod a+rw /data/disdroDL` 
-
-run Parsivel [reset script](./reset_parsivel.py): `python reset_parsivel.py`
-
-create a station-spefic file and commit it to this repo (see [config_008_GV.yml](./config_008_GV.yml) as an example) 
-
+Install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress netCDFs with `nccopy -d6` in `Telegram.compress_netcdf()` method.
 
 ## Run script
 
