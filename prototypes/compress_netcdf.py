@@ -17,6 +17,5 @@ assert os.path.isfile(nc_path) == True
 assert os.path.isfile(nc_path_tmp) == False
 
 
-# before: 2.7M  20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
-# after: 594K  20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
-# test_data/20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
+# before script: 2.7M  20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
+# after script: 594K  20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
