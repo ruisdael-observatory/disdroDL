@@ -64,7 +64,6 @@ while True:
             logger.debug(msg=f'compression time - last_minute_of_day: {now_utc.last_minute_of_day}. now_utc.utc: {now_utc.utc}. Seconds diff {((now_utc.utc - now_utc.last_minute_of_day).total_seconds()/60.0)}')
             flag_compressed = True
             telegram.compress_netcdf()
-            pass
         else:
             flag_compressed = False 
 
