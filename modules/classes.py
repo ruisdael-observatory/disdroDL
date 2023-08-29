@@ -1,4 +1,5 @@
 import os
+import subprocess
 from datetime  import datetime
 from netCDF4 import Dataset
 from cftime import date2num
@@ -18,6 +19,7 @@ class NowTime:
         self.time_list = (self.utc.strftime("%H:%M:%S")).split(":")  # used to be: now_hour_min_secs
         # now_hour_min_secs = now_hour_min_secs.split(":")
         self.date_strings()
+        self.last_minute_of_day = self.utc.replace(hour=23, minute=59, second=0, microsecond=0)
     def date_strings(self):
         '''
         def Converts instantiation time to different format class attributes
@@ -50,6 +52,7 @@ class Telegram:
         self.data_fn_start = data_fn_start
         self.logger = logger
         self.path_netCDF = None
+        self.path_netCDF_temp = None
         self.set_netCDF_path()
         self.create_netCDF()
         self.telegram_data = {}
@@ -77,7 +80,8 @@ class Telegram:
 
 
     def set_netCDF_path(self):
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc' 
+        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
+        self.path_netCDF_temp = self.data_dir / f'tmp_{self.data_fn_start}.nc'
         # TODO: move var assignment to __init__
         #TODO: set path self.path_netCDF_f61
 
@@ -133,6 +137,12 @@ class Telegram:
                     netCDF_var[currentindex] = value_np_array
                     pass # handle list fields one by one
         netCDF_rootgrp.close()
+    
+    def compress_netcdf(self):        
+        subprocess.run(['nccopy', '-d6', self.path_netCDF, self.path_netCDF_temp])
+        # uncomment later, after seeing both compressed and uncompressed files
+        # os.remove(self.path_netCDF)
+        # os.rename(self.path_netCDF_temp, self.path_netCDF)
 
 def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''
