@@ -140,6 +140,7 @@ class Telegram:
     
     def compress_netcdf(self):        
         subprocess.run(['nccopy', '-d6', self.path_netCDF, self.path_netCDF_temp])
+        self.logger.info(msg=f'Compressed netCDF {self.path_netCDF}')
         # uncomment later, after seeing both compressed and uncompressed files
         # os.remove(self.path_netCDF)
         # os.rename(self.path_netCDF_temp, self.path_netCDF)
