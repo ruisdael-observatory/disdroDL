@@ -59,9 +59,9 @@ while True:
         telegram.capture_prefixes_and_data()
         telegram.append_data_to_netCDF()
         
-        if ((now_utc.utc - now_utc.last_minute_of_day).total_seconds()/60.0) <= 0.0 and flag_compressed == False:
+        if ((now_utc.last_minute_of_day - now_utc.utc).total_seconds()/60.0) <= 0.0 and flag_compressed == False:
             # if now is 23:59 - compress todays netCDF  
-            logger.debug(msg=f'compression time - last_minute_of_day: {now_utc.last_minute_of_day}. Seconds diff {((now_utc.utc - now_utc.last_minute_of_day).total_seconds()/60.0)}')
+            logger.debug(msg=f'compression time - last_minute_of_day: {now_utc.last_minute_of_day}. now_utc.utc: {now_utc.utc}. Seconds diff {((now_utc.utc - now_utc.last_minute_of_day).total_seconds()/60.0)}')
             flag_compressed = True
             telegram.compress_netcdf()
             pass
