@@ -46,7 +46,7 @@ while True:
         fn_start = f"{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-{config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"
         parsivel.write('CS/PA\r\n'.encode('ascii')) # Output all telegram measurement values
         parsivel_lines = parsivel.readlines()
-        logger.info(msg=f"parsivel_lines: {parsivel_lines}")
+        # logger.debug(msg=f"parsivel_lines: {parsivel_lines}")
 
         # process telegram into netCDF
         telegram = Telegram(config_dict=config_dict,
@@ -55,7 +55,7 @@ while True:
                             data_dir=data_dir,
                             data_fn_start=fn_start,
                             logger=logger)    
-        logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
+        # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
         telegram.capture_prefixes_and_data()
         telegram.append_data_to_netCDF()
         
