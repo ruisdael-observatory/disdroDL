@@ -2,6 +2,7 @@ prototypes/*
 !prototypes/prototype_f61_netcdf.py
 !prototypes/capture_f93.py
 !prototypes/capture_all_fields.py
+!prototypes/compress_netcdf.py
 .python-version
 __pycache__
 config.yml
@@ -9,3 +10,5 @@ test_data/*
 .vscode/
 !test_data/classtest.nc
 !test_data/f61_test.nc
+!test_data/20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
+!test_data/20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc.bak
