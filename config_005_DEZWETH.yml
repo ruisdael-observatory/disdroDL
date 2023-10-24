@@ -13,6 +13,7 @@ global_attrs:
     institution: 'Delft University of Technology'
     source: 'surface observation'
     history: '-'
+    netcdf_version: '0.1.0'
     Conventions: 'CF-1.7'
     site_name: 'TNO De Zweth'
     sensor_name: PAR005
