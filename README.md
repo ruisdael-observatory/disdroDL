@@ -60,12 +60,9 @@ Install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress netCDF
 
 
 ## Outputs
-**[main.py](main.py) outputs 4 CSV**
-* `*_SVFS.csv` stores all single value fields (SVFS). Example: [sample_data/20230221_Delft-GV_PAR008_SVFS.csv](sample_data/20230221_Delft-GV_PAR008_SVFS.csv)
-* `*_F61.csv` stores field 61 values (list of all particles detected between requests, including particle-size and speed ). Example: [sample_data/20230225_Delft-GV_PAR008_F61.csv](sample_data/20230225_Delft-GV_PAR008_F61.csv)
-* `*_F90.csv` stores field 90 values (Field N). Example: [sample_data/20230225_Delft-GV_PAR008_F90.csv](sample_data/20230225_Delft-GV_PAR008_F90.csv)
-* `*_F91.csv` stores field 91 values (Field v). Example: [sample_data/20230225_Delft-GV_PAR008_F91.csv](sample_data/20230225_Delft-GV_PAR008_F91.csv)
-* `*_F93.csv` stores field 93 values (Raw data). Example: [sample_data/20230225_Delft-GV_PAR008_F93.csv](sample_data/20230225_Delft-GV_PAR008_F93.csv)
+**[main.py](main.py) netCDF output**
+* [sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc](sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc)
+
 
 
 ## Tests
