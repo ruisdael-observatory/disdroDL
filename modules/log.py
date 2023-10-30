@@ -29,17 +29,3 @@ def log(log_path, log_name):
     logger.setLevel(logging.DEBUG)
     return logger
 
-
-# if __name__ == '__main__':
-#     config_dict = yaml2dict(path = wd / 'config.yml')
-#     wd = Path(__file__).parent 
-#     log_dir = wd / config_dict['log_dir']
-#     if not os.path.exists(log_dir):
-#         os.mkdir(log_dir)
-#     log_file = log_dir / 'log.json'
-
-#     logger = log(log_path=log_file, 
-#                 log_name=f"{config_dict['script_name']}: {config_dict['sensor_name']}")  
-#     logger.info(msg='hello info')
-#     logger.debug(msg='I am debugging')
-#     logger.error(msg='I am an an error')
