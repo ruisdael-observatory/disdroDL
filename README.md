@@ -4,8 +4,8 @@
 
 * Main script: [main.py](main.py)
 * Configuration files: 
-    * general: [config_general.yml](config_general.yml) - *should not need editing*
-    * parsivel specific: ie. [config_008_GV.yml](config_008_GV.yml) - **create 1 per parsivel**
+    * general: [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) - *should not need editing*
+    * parsivel specific: ie. [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - **create 1 per parsivel**
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
 
 
@@ -13,25 +13,26 @@
 ## Operational Principals
 
 **[main.py](main.py)**
+* reads configurations from [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) and target-device config
 * creates the data and log directories 
 * sets up the serial communication with Parsivel 
 * in while loop (every minute):
     * requests user defined telegram to OTT Parsivel
-    * stores received telegram, processed and written to CSV files, though `class Telegram` defined in [modules/classes.py](modules/classes.py)
+    * stores received telegram, processed and written to netCDF file, though `class Telegram` defined in [modules/classes.py](modules/classes.py)
 
 **Auxiliary functions** can are defined in [modules/util_functions.py](modules/util_functions.py)
 
 **Time is set to UTC** 
 
 **Data directories' structure:**
-* parent data directory is defined in [config.yml](config.yml) `data_dir` 
+* parent data directory is defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `data_dir` 
 * monthly data directories, inside parent data directory 
    * monthly data directories naming: `yyyymm`
 * every day new data files created:
     * data files naming: `yyyymmdd_{site_name}_{station_code}_{sensor_name}_{fields}`
 
 **Telegram field names and units**
-In accordance to [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) the telegram field names and units are defined in [config.yml](config.yml) `telegram_fields` 
+In accordance to [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) the telegram field names and units are defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `telegram_fields` 
 
 
 ## Requirements
@@ -41,21 +42,21 @@ create and activate a python virtual environment and:
 * create log directory with read and write permissions to all users: `sudo mkdir /var/log/disdroDL/; sudo chmod a+rw /var/log/disdroDL` 
 * create data directory with read and write permissions to all users: `sudo mkdir /data/disdroDL/; sudo chmod a+rw /data/disdroDL` 
 * run Parsivel [reset script](./reset_parsivel.py): `python reset_parsivel.py`
-* create a station-specific file and commit it to this repo (see [config_008_GV.yml](./config_008_GV.yml) as an example) 
+* create a station-specific file and commit it to this repo (see [configs_netcdf/config_008_GV.yml](./configs_netcdf/config_008_GV.yml) as an example) 
 
 Install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress netCDFs with `nccopy -d6` in `Telegram.compress_netcdf()` method.
 
 ## Run script
 
-**manually**: 
-* [main.py](./main.py) manually: `python main.py -c config_NNN_??.yml `
-
-**via service file**: 
+**As Linux Systemd Service**: 
 * edit the config file name in [disdrodlv2.service](disdrodlv2.service) to match that of the station
 * create system link between local service file and service files location: `ln disdrodlv2.service /etc/systemd/system/disdrodlv2.service`
 * run: `systemctl enable disdrodlv2.service`
 * run: `systemctl start disdrodlv2.service`
 * check status: `systemctl status disdrodlv2.service`
+
+**manually**: 
+* [main.py](./main.py) manually: `python main.py -c configs_netcdf/config_NNN_??.yml `
 
 
 ## Outputs

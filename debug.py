@@ -3,7 +3,7 @@ from time import sleep
 from modules.util_functions import yaml2dict, create_dir, init_serial, parsivel_start_sequence, create_logger
 from modules.classes import NowTime
 wd = Path(__file__).parent 
-config_dict = yaml2dict(path = wd / 'config.yml')
+config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config.yml')
 
 
 logger = create_logger(log_dir=Path(config_dict['log_dir']), 
