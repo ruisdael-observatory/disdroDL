@@ -8,7 +8,7 @@ from modules.classes import NowTime, Telegram
 from modules.util_functions import yaml2dict
 from netCDF4 import Dataset
 from cftime import num2date
-from pydantic.utils import deep_update
+from pydantic.v1.utils import deep_update
 
 
 log_handler = StreamHandler()
