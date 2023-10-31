@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from  modules.util_functions import yaml2dict, create_logger
-from pydantic.utils import deep_update
+from pydantic.v1.utils import deep_update
 
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general.yml')

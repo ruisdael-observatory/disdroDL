@@ -3,7 +3,7 @@ from time import sleep
 from argparse import ArgumentParser
 from modules.util_functions import yaml2dict, create_dir, init_serial, create_logger, parsivel_start_sequence
 from modules.classes import NowTime, Telegram
-from pydantic.utils import deep_update
+from pydantic.v1.utils import deep_update
 
 ######################## BOILER PLATE ##################
 ### Parser ###

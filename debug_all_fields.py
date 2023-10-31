@@ -1,5 +1,5 @@
 from pathlib import Path
-from pydantic.utils import deep_update
+from pydantic.v1.utils import deep_update
 from argparse import ArgumentParser
 
 from modules.util_functions import yaml2dict, create_dir, create_logger
