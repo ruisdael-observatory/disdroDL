@@ -8,7 +8,3 @@ __pycache__
 config.yml
 test_data/*
 .vscode/
-!test_data/classtest.nc
-!test_data/f61_test.nc
-!test_data/20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
-!test_data/20230827_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc.bak

@@ -1,11 +1,11 @@
 import json
 from pathlib import Path
 from  modules.util_functions import yaml2dict, create_logger
-from pydantic.utils import deep_update
+from pydantic.v1.utils import deep_update
 
 wd = Path(__file__).parent 
-config_dict = yaml2dict(path = wd / 'config_general.yml')
-config_dict_site = yaml2dict(path = wd / 'config_008_GV.yml')
+config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general.yml')
+config_dict_site = yaml2dict(path = wd / 'configs_netcdf' / 'config_008_GV.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 
 telegram_lines=[b'OK\r\n', 
