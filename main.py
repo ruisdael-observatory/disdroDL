@@ -48,8 +48,10 @@ while True:
             logger.info(msg=f'Created data directory: {data_dir}')
 
         # returned telegram lines
-        fn_start = f"""{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-\
-            {config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"""
+        site_name = config_dict['global_attrs']['site_name']
+        st_code = config_dict['station_code']
+        sensor_name = config_dict['global_attrs']['sensor_name']
+        fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
         parsivel.write('CS/PA\r\n'.encode('ascii'))  # Output all telegram measurement values
         parsivel_lines = parsivel.readlines()
         # logger.debug(msg=f"parsivel_lines: {parsivel_lines}")
@@ -66,9 +68,7 @@ while True:
         telegram.append_data_to_netCDF()
         if ((now_utc.last_minute_of_day - now_utc.utc).total_seconds() / 60.0) <= 0.0 and flag_compressed is False:
             # if now is 23:59 - compress todays netCDF
-            logger.debug(msg=f'''compression time - last_minute_of_day: {now_utc.last_minute_of_day}.\
-                         now_utc.utc: {now_utc.utc}.\
-                            Seconds diff {((now_utc.utc - now_utc.last_minute_of_day).total_seconds()/60.0)}''')
+            logger.debug(msg=f'compression time  {now_utc.last_minute_of_day}.now_utc.utc: {now_utc.utc}')
             flag_compressed = True
             telegram.compress_netcdf()
         else:
