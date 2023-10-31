@@ -27,7 +27,7 @@ logger = create_logger(log_dir=Path(config_dict['log_dir']),
 # (monthly) data dir
 data_dir = Path(config_dict['data_dir']) / now_utc.ym
 created_data_dir = create_dir(data_dir)  # create if does not exist
-fn_start = filename = f"""{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-
+fn_start = filename = f"""{now_utc.ymd}_{config_dict['global_attrs']['site_name']}-\
 {config_dict['station_code']}_{config_dict['global_attrs']['sensor_name']}"""
 #####################################################
 
