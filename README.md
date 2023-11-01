@@ -56,7 +56,7 @@ Install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress netCDF
 * check status: `systemctl status disdrodlv2.service`
 
 **manually**: 
-* [main.py](./main.py) manually: `python main.py -c configs_netcdf/config_NNN_??.yml `
+* [main.py](./main.py) manually: `python main.py -c configs_netcdf/config_NNN_*.yml`
 
 
 ## Outputs
@@ -64,13 +64,11 @@ Install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress netCDF
 * [sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc](sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc)
 
 
-
 ## Tests
 * [test_functions.py](test_functions.py)
 * [test_classes.py](test_classes.py)
 
 run: `pytest -s`
-
 
 
 ## Debug Serial communication
