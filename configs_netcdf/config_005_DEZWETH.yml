@@ -15,7 +15,7 @@ global_attrs:
     history: '-'
     netcdf_version: '0.1.0'
     Conventions: 'CF-1.7'
-    site_name: 'TNO De Zweth'
+    site_name: 'TNO_De_Zweth'
     sensor_name: PAR005
     project_name: 'https://ruisdael-observatory.nl/'
     contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
