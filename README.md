@@ -1,5 +1,13 @@
 # Parsivel disdrometer data logger - version 2
 
+disdroDLv2 is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer, developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
+
+The software features a main script for setting up a serial connection with the Parsivel, requesting data at regular time intervals, and storing the output in a NetCDF file.
+
+By default, all fields listed on page 29 of the [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) are requested, except for field 61 (List of all particles detected). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
+
+The structure of the NetCDF file depends on two configuration files (general/specific). The general configuration file is applicable to all sites and sensors, while the specific configuration files (1 file per sensor) describe the variable components such as site names, coordinates etc..  
+
 **Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
 * Main script: [main.py](main.py)
@@ -63,6 +71,7 @@ Install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress netCDF
 **[main.py](main.py) netCDF output**
 * [sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc](sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc)
 
+Note that some of the fields sent by the Parsivel are discarded during the creation of the NetCDF file. For example, all the 16bit fields are discarded and only the 32bit values are stored. Rainfall accumulation (field 24) is discarded because it is relative to an unknown starting time and can be re-calculated from the rain rate. Sensor time/date (fields 20-21) are replaced by the actual time (in UTC) of the computer running the logging software. This is more reliable than to use the internal clock of the Parsivel which can drift over time. Sample interval (field 9) is ignored, because it can be inferred from the time difference between successive measurements.
 
 ## Tests
 * [test_functions.py](test_functions.py)
