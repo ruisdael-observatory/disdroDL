@@ -4,6 +4,8 @@ disdroDLv2 is a Python software for acquiring and storing data from the OTT Pars
 
 The software features a main script for setting up a serial connection with the Parsivel, requesting data at regular time intervals, and storing the output in a NetCDF file.
 
+By default, all fields listed on page 29 of the [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) are requested, except for field 61 (List of all particles detected). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
+
 **Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
 * Main script: [main.py](main.py)
