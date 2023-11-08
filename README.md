@@ -71,7 +71,7 @@ Install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress netCDF
 **[main.py](main.py) netCDF output**
 * [sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc](sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc)
 
-Not all the fields provided by the Parsivel are stored in the NetCDF. Redundant or unnecessary information is discarded by the software. For example, all the 16bit fields are discarded and only the 32bit values are stored.
+Not all the fields provided by the Parsivel are stored in the NetCDF. Redundant or unnecessary information is discarded by the software. For example, all the 16bit fields are discarded and only the 32bit values are stored. Rainfall accumulation (field 24) is discarded because it is relative to an unknown starting time and can be re-calculated from the rain rate. Sensor time/date (fields 20-21) are replaced by the time (in UTC) of the computer running the logging software. This is more reliable than to use the internal clock of the Parsivel which can drift over time.
 
 ## Tests
 * [test_functions.py](test_functions.py)
