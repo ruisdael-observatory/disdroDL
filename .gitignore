@@ -1,8 +1,5 @@
 prototypes/*
-!prototypes/prototype_f61_netcdf.py
-!prototypes/capture_f93.py
-!prototypes/capture_all_fields.py
-!prototypes/compress_netcdf.py
+!prototypes/parse_disdro_csv.py
 .python-version
 __pycache__
 config.yml
