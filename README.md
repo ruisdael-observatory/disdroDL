@@ -1,4 +1,4 @@
-# Parsivel disdrometer data logger - version 2
+# Disdrometer data logging software - version 2
 
 disdroDLv2 is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer, developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
 
@@ -10,25 +10,23 @@ The structure of the NetCDF file depends on two configuration files (general/spe
 
 **Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
+## Operational Principals
+
 * Main script: [main.py](main.py)
 * Configuration files: 
     * general: [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) - *should not need editing*
-    * parsivel specific: ie. [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - **create 1 per parsivel**
+    * specific: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - *create 1 per Parsivel*
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
-
-
-
-## Operational Principals
 
 **[main.py](main.py)**
 * reads configurations from [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) and target-device config
 * creates the data and log directories 
-* sets up the serial communication with Parsivel 
-* in while loop (every minute):
-    * requests user defined telegram to OTT Parsivel
-    * stores received telegram, processed and written to netCDF file, though `class Telegram` defined in [modules/classes.py](modules/classes.py)
+* sets up the serial communication with the Parsivel 
+* in a while loop (every minute):
+    * requests user defined telegram from OTT Parsivel2
+    * stores the received telegram, does some processing and writes the output to a NetCDF file, though `class Telegram` defined in [modules/classes.py](modules/classes.py)
 
-**Auxiliary functions** can are defined in [modules/util_functions.py](modules/util_functions.py)
+**Auxiliary functions** defined in [modules/util_functions.py](modules/util_functions.py)
 
 **Time is set to UTC** 
 
