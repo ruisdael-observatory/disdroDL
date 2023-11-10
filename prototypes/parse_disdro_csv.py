@@ -1,8 +1,10 @@
 import yaml
+import numpy
 import pandas as pd
 from pathlib import Path
 from typing import Dict
 from datetime import datetime
+from pprint import pprint
 
 def yaml2dict(path: str) -> Dict:
     with open(path, 'r') as yaml_f:
@@ -13,9 +15,11 @@ def yaml2dict(path: str) -> Dict:
 
 wd = Path(__file__).parent.parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
-telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
+conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
+# import pdb; pdb.set_trace()
 
-
+telegram_str = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%19;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;%90;%91;%93'
+telegram_str = telegram_str.replace('%', '').split(';')  # 38 fields
 b2str = lambda x: x[2:-1]  # because pd resconzines telegram as str that start with b'...'
 
 # str(x).decode('ascii')
@@ -23,7 +27,7 @@ b2str = lambda x: x[2:-1]  # because pd resconzines telegram as str that start w
 df = pd.read_csv('csvs/20231106_PAR007_CabauwTower.csv',
                  sep=';',
                  header=0,
-                 names=['datetime', 'timestamp', 'telegram'],# 'fieldV', 'fieldN', 'raw_data'],
+                 names=['datetime', 'timestamp', 'telegram'],  # 'fieldV', 'fieldN', 'raw_data'],
                  dtype={'datetime': 'string', 'timestamp': 'Float64'},
                  converters={'telegram': b2str},
                  parse_dates=['datetime'])
@@ -32,33 +36,39 @@ telegram_sample = df.at[0, 'telegram']
 # print(telegram_sample, type(telegram_sample))
 
 
-def parse_telegram(telegram: str) -> list:
-    raw_data = telegram[-1]
-    fieldV = telegram[-33:-1]
-    fieldN = telegram[-65:-33]
-    # single_vals = telegram[:-65] # TODO
-    return fieldV, fieldN, raw_data
+def parse_telegram(telegram: list) -> Dict:
+    telegram_dict = {key: None for key in telegram_str}
+    single_vals = telegram[:-65]  # ignore fields 90,91,93. They are handled further down
+    for index, field_n in enumerate(telegram_str[:-3]): # ignore fields 90,91,93
+        telegram_dict[field_n] = telegram[index]
+    telegram_dict['90'] = telegram[-65:-33]
+    telegram_dict['91'] = telegram[-33:-1]
+    telegram_dict['93'] = telegram[-1]
+    return telegram_dict
 
 
 for index, row in df.iterrows():
     telegram = row['telegram']
-    # print(index, telegram)
-    fieldV, fieldN, raw_data = parse_telegram(telegram=telegram)
-    df.loc[index, 'fieldV'] = fieldV
-    df.loc[index, 'fieldN'] = fieldN
-    df.loc[index, 'raw_data'] = raw_data
+    telegram_l = telegram.split(';')
+    telegram_dict = parse_telegram(telegram=telegram_l)
+    for key, value in telegram_dict.items():
+        if key not in ['90', '91']:
+            df.loc[index, key] = value
+        else:
+            df.loc[index, key] = (",").join(value)
 
 df.drop(columns=['telegram'], inplace=True)
-print(df.sample())
+df.to_csv(path_or_buf="tmp.csv", sep=";")
+
+# TODO:  check data in tmp.csv
+# TODO: write df to netCDF
 
 
 '''
-# import pdb; pdb.set_trace()
-telegram_fields_n = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%19;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;%90;%91;%93'
-telegram_fields_n = telegram_fields_n.replace('%', '').split(';')  # 38 fields
 
-print(telegram_fields_n)
-for n, field_n in enumerate(telegram_fields_n):
+
+print(telegram_str)
+for n, field_n in enumerate(telegram_str):
     telegram_field = telegram_fields[field_n]
     if 'dimensions' in telegram_field.keys() and len(telegram_field['dimensions']) > 1:  #multi values?
         print(field_n, telegram_fields[field_n])
