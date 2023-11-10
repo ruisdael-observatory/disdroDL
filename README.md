@@ -1,6 +1,6 @@
-![](docs/20211011_17_crop.JPG)
-
 # Disdrometer data logging software - version 2
+
+![](docs/20211011_17_crop.JPG)
 
 disdroDLv2 is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer, developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
 
