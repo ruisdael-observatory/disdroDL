@@ -13,7 +13,7 @@ The structure of the NetCDF file depends on two configuration files (general/spe
 **Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
 ![](docs/DSD_PAR001_Cabauw_20231021_1300_20231021_1730.png)
-
+The Parsivel2 measures the drop number concentrations for different diameter/velocity bins, with a temporal resolution of 1 minute. These raw spectra can be used to calculate many different state and flux variables, such as liquid water content, rainfall rate, mean drop diameter and kinetic energy. 
 
 ## Operational Principals
 
