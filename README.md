@@ -1,7 +1,5 @@
 # Disdrometer data logging software - version 2
 
-![](docs/20211011_17_crop.JPG)
-
 disdroDLv2 is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer, developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
 
 The software features a main script for setting up a serial connection with the Parsivel, requesting data at regular time intervals, and storing the output in a NetCDF file.
@@ -12,8 +10,11 @@ The structure of the NetCDF file depends on two configuration files (general/spe
 
 **Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
 
+![](docs/20211011_17_crop.JPG)
+Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors.  
+
 ![](docs/DSD_PAR001_Cabauw_20231021_1300_20231021_1730.png)
-The Parsivel2 measures the drop number concentrations for different diameter/velocity bins, with a temporal resolution of 1 minute. These raw spectra can be used to calculate many different state and flux variables, such as liquid water content, rainfall rate, mean drop diameter and kinetic energy. 
+The Parsivel2 measures the drop number concentrations for different diameter/velocity bins, with a temporal resolution of 1 minute. These raw spectra can be used to calculate many different state and flux variables, such as liquid water content, rainfall rate, mean drop diameter, radar reflectivity and kinetic energy. 
 
 ## Operational Principals
 
