@@ -37,7 +37,7 @@ The Parsivel2 measures the drop number concentrations for different diameter/vel
 * The software produces daily NetCDF files
 * the parent data directory is defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `data_dir` 
 * monthly data directories `yyyymm`are used inside parent data directory 
-* every day new, a new file is created, with the naming:
+* every day, a new NetCDF file is created, with the following naming convention:
 `yyyymmdd_{site_name}_{station_code}_{sensor_name}_{fields}`
 * Telegram field names and units can be found in the [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) and defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `telegram_fields` 
 
