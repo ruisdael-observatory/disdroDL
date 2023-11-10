@@ -1,3 +1,5 @@
+![](docs/20211011_17_crop.JPG)
+
 # Disdrometer data logging software - version 2
 
 disdroDLv2 is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer, developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
@@ -9,6 +11,9 @@ By default, all fields listed on page 29 of the [OTT Parsivel2 official document
 The structure of the NetCDF file depends on two configuration files (general/specific). The general configuration file is applicable to all sites and sensors, while the specific configuration files (1 file per sensor) describe the variable components such as site names, coordinates etc..  
 
 **Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
+
+![](docs/DSD_PAR001_Cabauw_20231021_1300_20231021_1730.png)
+
 
 ## Operational Principals
 
