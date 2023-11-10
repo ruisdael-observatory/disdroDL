@@ -14,7 +14,7 @@ _Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation 
 
 ![](docs/DSD_PAR001_Cabauw_20231021_1300_20231021_1730.png)
 
-_The Parsivel2 measures the drop number concentrations for different diameter/velocity bins, with a temporal resolution of 1 minute. These raw spectra can be used to calculate many different state and flux variables, such as liquid water content, rainfall rate, mean drop diameter, radar reflectivity and kinetic energy. _
+_The Parsivel2 measures the drop number concentrations for different diameter/velocity bins, with a temporal resolution of 1 minute. These raw spectra can be used to calculate many different state and flux variables, such as liquid water content, rainfall rate, mean drop diameter, radar reflectivity and kinetic energy._
 
 ## Operational Principals
 
