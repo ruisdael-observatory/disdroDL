@@ -22,6 +22,7 @@ The Parsivel2 measures the drop number concentrations for different diameter/vel
     * general: [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) - *should not need editing*
     * specific: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - *create 1 per Parsivel*
 * Parsivel reset script: [reset_parsivel.py](reset_parsivel.py)
+* Auxiliary functions: defined in [modules/util_functions.py](modules/util_functions.py)
 
 **[main.py](main.py)**
 * reads configurations from [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) and target-device config
@@ -31,19 +32,14 @@ The Parsivel2 measures the drop number concentrations for different diameter/vel
     * requests user defined telegram from OTT Parsivel2
     * stores the received telegram, does some processing and writes the output to a NetCDF file, though `class Telegram` defined in [modules/classes.py](modules/classes.py)
 
-**Auxiliary functions** defined in [modules/util_functions.py](modules/util_functions.py)
 
-**Time is set to UTC** 
-
-**Data directories' structure:**
-* parent data directory is defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `data_dir` 
-* monthly data directories, inside parent data directory 
-   * monthly data directories naming: `yyyymm`
-* every day new data files created:
-    * data files naming: `yyyymmdd_{site_name}_{station_code}_{sensor_name}_{fields}`
-
-**Telegram field names and units**
-In accordance to [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) the telegram field names and units are defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `telegram_fields` 
+## Conventions
+* Time is set to UTC 
+* the parent data directory is defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `data_dir` 
+* monthly data directories `yyyymm`are used inside parent data directory 
+* every day new, a new file is created, with the naming:
+`yyyymmdd_{site_name}_{station_code}_{sensor_name}_{fields}`
+* Telegram field names and units can be found in the [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) and defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `telegram_fields` 
 
 
 ## Requirements
