@@ -23,16 +23,36 @@ b2str = lambda x: x[2:-1]  # because pd resconzines telegram as str that start w
 df = pd.read_csv('csvs/20231106_PAR007_CabauwTower.csv',
                  sep=';',
                  header=0,
-                 names=['datetime', 'timestamp', 'telegram'],
-                 dtype={'datetime': 'string', 'timestamp': 'Float64', 'telegram': 'string'},
+                 names=['datetime', 'timestamp', 'telegram'],# 'fieldV', 'fieldN', 'raw_data'],
+                 dtype={'datetime': 'string', 'timestamp': 'Float64'},
                  converters={'telegram': b2str},
                  parse_dates=['datetime'])
-print(df.sample())
+# print(df.sample())
 telegram_sample = df.at[0, 'telegram']
-print(telegram_sample, type(telegram_sample))
+# print(telegram_sample, type(telegram_sample))
 
-# # [1439 rows x 3 columns]
 
+def parse_telegram(telegram: str) -> list:
+    raw_data = telegram[-1]
+    fieldV = telegram[-33:-1]
+    fieldN = telegram[-65:-33]
+    # single_vals = telegram[:-65] # TODO
+    return fieldV, fieldN, raw_data
+
+
+for index, row in df.iterrows():
+    telegram = row['telegram']
+    # print(index, telegram)
+    fieldV, fieldN, raw_data = parse_telegram(telegram=telegram)
+    df.loc[index, 'fieldV'] = fieldV
+    df.loc[index, 'fieldN'] = fieldN
+    df.loc[index, 'raw_data'] = raw_data
+
+df.drop(columns=['telegram'], inplace=True)
+print(df.sample())
+
+
+'''
 # import pdb; pdb.set_trace()
 telegram_fields_n = '%01;%02;%03;%04;%05;%06;%07;%08;%09;%10;%11;%12;%13;%14;%15;%16;%17;%18;%19;%20;%21;%22;%23;%24;%25;%26;%27;%28;%30;%31;%32;%33;%34;%35;%60;%90;%91;%93'
 telegram_fields_n = telegram_fields_n.replace('%', '').split(';')  # 38 fields
@@ -61,6 +81,7 @@ assert len(fieldN) == 32
 assert len(fieldV) == 32
 assert isinstance(raw_data, str) == 1
 # import pdb; pdb.set_trace()
+'''
 
 '''
 0000.102;0100.87;57;58;-RADZ; RL-;10.681;19588;00060;21513;00059;006;450541;2.11.4;2.11.1;2.21;20.4;0; ;00:01:00;06.11.2023;PAR007;007;010.087;000;020;010;009;00.102;0000.2;0100.87;10.68;0000.41;0000.00;00000062;
