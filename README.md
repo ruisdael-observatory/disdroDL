@@ -8,8 +8,6 @@ By default, all fields listed on page 29 of the [OTT Parsivel2 official document
 
 The structure of the NetCDF file depends on two configuration files (general/specific). The general configuration file is applicable to all sites and sensors, while the specific configuration files (1 file per sensor) describe the variable components such as site names, coordinates etc..  
 
-**Data Logging Script for OTT Parsivel2 Disdrometer** Produces daily netCDF
-
 ![](docs/20211011_17_crop.JPG)
 Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors.  
 
@@ -36,6 +34,7 @@ The Parsivel2 measures the drop number concentrations for different diameter/vel
 
 ## Conventions
 * Time is set to UTC 
+* The software produces daily NetCDF files
 * the parent data directory is defined in [configs_netcdf/config.yml](configs_netcdf/config.yml) `data_dir` 
 * monthly data directories `yyyymm`are used inside parent data directory 
 * every day new, a new file is created, with the naming:
