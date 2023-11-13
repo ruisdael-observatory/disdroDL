@@ -398,7 +398,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'                 
-        include_in_nc: true                    
+        include_in_nc: false                    
         var_attrs:
             units: 'mm'
             long_name: 'Rain amount accumulated'
