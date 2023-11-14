@@ -38,7 +38,7 @@ class Telegram:
     * storing, processing and writing telegram to netCDF
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
     '''
-    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
+    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger, telegram_data={}):
         '''
         initiates variables and methods:
         * set_netCDF_path
@@ -55,8 +55,8 @@ class Telegram:
         self.path_netCDF_temp = None
         self.set_netCDF_path()
         self.create_netCDF()
-        self.telegram_data = {}
-
+        self.telegram_data = telegram_data
+        print(telegram_data)
     def capture_prefixes_and_data(self):
         '''
         def Captures the telegram prefixes and data stored in self.telegram_lines
