@@ -163,49 +163,50 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
 
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
+    print(one_var_dict)
 
-    # compression method 
-    if one_var_dict['dtype'] != 'S4': #  can't use compression on variable-length string variables
-        compression_method = 'zlib'
-        # compression_method = dict(zlib=True, shuffle=True, complevel=5)
-    else:
-        compression_method = None
-    if one_var_dict['dimensions'] == None:
-        # scalar variables do not use dimensions
-        variable = nc_group.createVariable( one_var_dict['var_attrs']['standard_name'], 
-                                            one_var_dict['dtype'],
-                                            fill_value=-1,
-                                            compression=compression_method,
-                                            complevel=9,
-                                            shuffle=True,
-                                            fletcher32=True #error detection
-                                            )
+    if 'include_in_nc' in one_var_dict.keys() and one_var_dict['include_in_nc'] is True:
         
-        # variable.assignValue(one_var_dict['value'])
-    elif len(one_var_dict['dimensions']) >= 1:
-        if 'fill_value' in one_var_dict.keys():
-            fill_val = one_var_dict['fill_value']
+        if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
+            compression_method = 'zlib'
+            # compression_method = dict(zlib=True, shuffle=True, complevel=5)
         else:
-            fill_val = -1 
-        variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
-                                           one_var_dict['dtype'],
-                                           tuple([dim for dim in one_var_dict['dimensions']]),
-                                           compression=compression_method,
-                                           fill_value=fill_val,
-                                           )
+            compression_method = None
 
-    # fill predefine values
-    if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
-        # use .assignValue() method for scalar values
-        variable.assignValue(one_var_dict['value'])  
-    elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
-        variable[:] = one_var_dict['value']
+        if 'dimensions' not in one_var_dict.keys() or one_var_dict['dimensions'] is None:
+            # scalar variables do not use dimensions
+            variable = nc_group.createVariable(
+                one_var_dict['var_attrs']['standard_name'],
+                one_var_dict['dtype'],
+                fill_value=-1,
+                compression=compression_method,
+                complevel=9,
+                shuffle=True,
+                fletcher32=True)
 
-    for var_attr in one_var_dict['var_attrs']:
-        variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
-    if  key == 'time':
-        variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d")} 00:00:00 +00:00')
-    # print('value:', one_var_dict['value'])
+        elif len(one_var_dict['dimensions']) >= 1:
+            if 'fill_value' in one_var_dict.keys():
+                fill_val = one_var_dict['fill_value']
+            else:
+                fill_val = -1 
+            variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
+                                            one_var_dict['dtype'],
+                                            tuple([dim for dim in one_var_dict['dimensions']]),
+                                            compression=compression_method,
+                                            fill_value=fill_val,
+                                            )
+        # fill predefine values
+        if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
+            # use .assignValue() method for scalar values
+            variable.assignValue(one_var_dict['value'])  
+        elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
+            variable[:] = one_var_dict['value']
+
+        for var_attr in one_var_dict['var_attrs']:
+            variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
+        if  key == 'time':
+            variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d")} 00:00:00 +00:00')
+        # print('value:', one_var_dict['value'])
 
 
 
@@ -217,7 +218,7 @@ def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
     # variables not in telegram
     for key, var_dict in config_dict['variables'].items():
         set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
-
+        
     for key,var_dict in config_dict['telegram_fields'].items():
         set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 

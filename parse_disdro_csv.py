@@ -59,7 +59,7 @@ for index, row in df.iterrows():
             df.loc[index, key] = (",").join(value)
 
 df.drop(columns=['telegram'], inplace=True)
-df.to_csv(path_or_buf="tmp.csv", sep=";") # check data in tmp.csv
+df.to_csv(path_or_buf="tmp.csv", sep=";")  # check data in tmp.csv
 # TODO: write df to netCDF
 
 
@@ -75,7 +75,7 @@ for index, row in df.iterrows():
                         data_fn_start='test',  # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
                         logger=logger
                         )
-    telegram.append_data_to_netCDF()
+    # telegram.append_data_to_netCDF()
     # import pdb; pdb.set_trace()
 
 # HOw is time handled?? 
@@ -86,4 +86,8 @@ Traceback (most recent call last):
   File "/home/acastro/Documents/projects/parsivel-distrometer-datalogger/modules/classes.py", line 109, in append_data_to_netCDF
     netCDF_var_time = netCDF_rootgrp.variables['time']
 KeyError: 'time'
+
+why is time not a variable from netCDF_rootgrp
+netCDF_rootgrp.variables['time']
+
 '''
