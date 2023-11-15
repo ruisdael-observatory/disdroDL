@@ -164,9 +164,8 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
     print(one_var_dict)
+    if one_var_dict['include_in_nc'] is True:  # one_var_dict['include_in_nc'] is True:
 
-    if 'include_in_nc' in one_var_dict.keys() and one_var_dict['include_in_nc'] is True:
-        
         if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
             compression_method = 'zlib'
             # compression_method = dict(zlib=True, shuffle=True, complevel=5)
