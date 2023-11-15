@@ -115,9 +115,8 @@ class Telegram:
         timestamp_var[currentindex] = self.timestamp.strftime('%Y-%m-%dT%H:%M:%S') # timestamp str
         # print(self.telegram_data)
         for key, value in self.telegram_data.items():
-            t_fields = self.config_dict['telegram_fields']
-            t_fields_keys = t_fields.keys()
-            if key in t_fields_keys and 'include_in_nc' in t_fields_keys and t_fields['include_in_nc'] is True:
+            if key in self.config_dict['telegram_fields'].keys() and \
+                    self.config_dict['telegram_fields'][key].get('include_in_nc') is True:
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
