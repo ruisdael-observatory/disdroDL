@@ -56,7 +56,7 @@ class Telegram:
         self.set_netCDF_path()
         self.create_netCDF()
         self.telegram_data = telegram_data
-        print(telegram_data)
+        # print(telegram_data)
     def capture_prefixes_and_data(self):
         '''
         def Captures the telegram prefixes and data stored in self.telegram_lines
@@ -114,8 +114,10 @@ class Telegram:
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = self.timestamp.strftime('%Y-%m-%dT%H:%M:%S') # timestamp str
         # print(self.telegram_data)
-        for key, value in self.telegram_data.items():         
-            if key in self.config_dict['telegram_fields'].keys():
+        for key, value in self.telegram_data.items():
+            t_fields = self.config_dict['telegram_fields']
+            t_fields_keys = t_fields.keys()
+            if key in t_fields_keys and 'include_in_nc' in t_fields_keys and t_fields['include_in_nc'] is True:
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
@@ -163,7 +165,7 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
 
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
-    print(one_var_dict)
+    # print(one_var_dict)
     if one_var_dict['include_in_nc'] is True:  # one_var_dict['include_in_nc'] is True:
 
         if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
