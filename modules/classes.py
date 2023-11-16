@@ -133,13 +133,17 @@ class Telegram:
                 # print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
                 # print(key, netCDF_var.standard_name, standard_name, value)
                 # print(type(value))
-                if key == '90':
+                
+                if key == '93' and isinstance(value, str):
+                    value_list = [value[i:i + 3] for i in range(0, len(value), 3)]
                     import pdb; pdb.set_trace()
+                
+
                 if isinstance(value, str):
-                    # print(f'str value: {value}')
                     netCDF_var[currentindex] = value
                 elif isinstance(value, list):
                     # print(f'list value: {value}')
+                    # print(f'telegram key:{key}; index:{currentindex}; str value: {value}')
                     value_np_array = numpy.array(value)
                     if key == '93':
                         value_np_array = value_np_array.reshape(32,32)
@@ -215,7 +219,7 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
             variable[:] = one_var_dict['value']
 
         for var_attr in one_var_dict['var_attrs']:
-            variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
+            variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr]) 
         if  key == 'time':
             variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d")} 00:00:00 +00:00')
         # print('value:', one_var_dict['value'])
@@ -249,6 +253,7 @@ def join_f61_items(telegram_list):
             f61_items = f61_items
     return f61_items
 
+
 def string2row(valuestr, delimiter, prefix):
     '''
     Converts a telegram string to a list of values, separated by the delimiter 
@@ -259,3 +264,7 @@ def string2row(valuestr, delimiter, prefix):
         values_list = values_list[:-1]  
     return values_list
 
+
+def str2list_by_ndigits(input: str, ndigits: int) -> list[str]:
+    output = [input[i:i + ndigits] for i in range(0, len(input), ndigits)]
+    return output

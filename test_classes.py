@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from pprint import pprint
 from pathlib import Path
 from modules.classes import NowTime, Telegram
+from modules.classes import str2list_by_ndigits
 from modules.util_functions import yaml2dict
 from netCDF4 import Dataset
 from cftime import num2date
@@ -116,6 +117,14 @@ def test_append_data_netCDF():
     # assert sample_f61_vals == sample_netCDF_all_particles
 '''
 
+
+def test_str2list_by_ndigits():
+    one_long_str = '0' * 30
+    output = str2list_by_ndigits(input=one_long_str, ndigits=3)
+    assert isinstance(output, list)
+    assert len(output) == 30 / 3
+
+
 def create_test_data_dir(dir):
     if not os.path.exists(path=dir):
         os.mkdir(path=dir)
@@ -124,3 +133,4 @@ def delete_netcdf(fn_start, data_dir):
     test_nc_path = data_dir / f'{fn_start}.nc'
     if os.path.exists(test_nc_path):
         os.remove(test_nc_path)
+
