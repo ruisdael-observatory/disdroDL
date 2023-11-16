@@ -32,9 +32,6 @@ df = pd.read_csv('sample_data/20231106_PAR007_CabauwTower.csv',
                  dtype={'datetime': 'string', 'timestamp': 'Float64'},
                  converters={'telegram': b2str},
                  parse_dates=['datetime'])
-# print(df.sample())
-telegram_sample = df.at[0, 'telegram']
-# print(telegram_sample, type(telegram_sample))
 
 
 def parse_telegram(telegram: list) -> Dict:
@@ -62,7 +59,6 @@ df.drop(columns=['telegram'], inplace=True)
 df.to_csv(path_or_buf="tmp.csv", sep=";")  # check data in tmp.csv
 # TODO: write df to netCDF
 
-
 ## loop through df rows
 # at each row add data to self.telegram_data[field] = value
 for index, row in df.iterrows():
@@ -75,31 +71,13 @@ for index, row in df.iterrows():
                         data_fn_start='test',  # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
                         logger=logger
                         )
+
     telegram.str2list(field='90', separator=',')
     telegram.str2list(field='91', separator=',')
-    # telegram.str2list(field='93', separator=',')
+    telegram.str2list_by_ndigits(field='93', ndigits=3)
 
     telegram.append_data_to_netCDF()
-    # import pdb; pdb.set_trace()
 
-# HOw is time handled?? 
 '''
-Traceback (most recent call last):
-  File "/home/acastro/Documents/projects/parsivel-distrometer-datalogger/parse_disdro_csv.py", line 78, in <module>
-    telegram.append_data_to_netCDF()
-  File "/home/acastro/Documents/projects/parsivel-distrometer-datalogger/modules/classes.py", line 128, in append_data_to_netCDF
-    netCDF_var[currentindex] = value
-  File "src/netCDF4/_netCDF4.pyx", line 5428, in netCDF4._netCDF4.Variable.__setitem__
-ValueError: could not convert string to float: '-9.999,-9.999,01.619,02.578,02.454,02.064,01.848,01.223,01.148,00.821,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999'
-
-Items that are strings that should be converted to lists
-90
-91
-93 (?? is in a list in the main.py?)
-
-Where to convert them?
-* before start using that data
-
-
-
+# HOw is time handled?? 
 '''

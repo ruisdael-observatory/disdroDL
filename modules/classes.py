@@ -65,7 +65,7 @@ class Telegram:
         def Captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
         '''
-        for i in  self.telegram_lines:
+        for i in self.telegram_lines:
             encoding = chardet.detect(i)['encoding']
             i_str = i.decode(encoding)
             i_list = i_str.split(":")
@@ -83,10 +83,23 @@ class Telegram:
 
     def str2list(self, field, separator):
         '''
-        converts telegram_data values from string to list, by splitting at separator
+        converts telegram_data values from string to list, 
+        by splitting at separator
         '''
         str_val = self.telegram_data[field]
         list_val = str_val.split(separator)
+        self.telegram_data[field] = list_val
+
+    def str2list_by_ndigits(self, field: str, ndigits: int):
+        '''
+        converts str (sequence of characters) into a list,
+        with each item being ndigits long.
+        Used only for F93 values, when they are in  '00000000000' (Ruisdael CSVs) 
+        
+        '''
+        str_val = self.telegram_data[field]
+        range_obj = range(0, len(str_val), ndigits)
+        list_val = [str_val[i:i + ndigits] for i in range_obj]
         self.telegram_data[field] = list_val
 
     def set_netCDF_path(self):
@@ -133,11 +146,6 @@ class Telegram:
                 # print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
                 # print(key, netCDF_var.standard_name, standard_name, value)
                 # print(type(value))
-                
-                if key == '93' and isinstance(value, str):
-                    value_list = [value[i:i + 3] for i in range(0, len(value), 3)]
-                    import pdb; pdb.set_trace()
-                
 
                 if isinstance(value, str):
                     netCDF_var[currentindex] = value
@@ -263,8 +271,3 @@ def string2row(valuestr, delimiter, prefix):
     if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
-
-
-def str2list_by_ndigits(input: str, ndigits: int) -> list[str]:
-    output = [input[i:i + ndigits] for i in range(0, len(input), ndigits)]
-    return output
