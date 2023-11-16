@@ -20,6 +20,7 @@ class NowTime:
         # now_hour_min_secs = now_hour_min_secs.split(":")
         self.date_strings()
         self.last_minute_of_day = self.utc.replace(hour=23, minute=59, second=0, microsecond=0)
+
     def date_strings(self):
         '''
         def Converts instantiation time to different format class attributes
@@ -31,6 +32,7 @@ class NowTime:
         self.iso = self.utc.isoformat()
         self.ym = self.utc.strftime("%Y%m")
         self.ymd = self.utc.strftime("%Y%m%d")
+
 
 class Telegram:
     '''
@@ -57,6 +59,7 @@ class Telegram:
         self.create_netCDF()
         self.telegram_data = telegram_data
         # print(telegram_data)
+
     def capture_prefixes_and_data(self):
         '''
         def Captures the telegram prefixes and data stored in self.telegram_lines
@@ -78,6 +81,13 @@ class Telegram:
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
 
+    def str2list(self, field, separator):
+        '''
+        converts telegram_data values from string to list, by splitting at separator
+        '''
+        str_val = self.telegram_data[field]
+        list_val = str_val.split(separator)
+        self.telegram_data[field] = list_val
 
     def set_netCDF_path(self):
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
@@ -123,10 +133,12 @@ class Telegram:
                 # print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
                 # print(key, netCDF_var.standard_name, standard_name, value)
                 # print(type(value))
-                if isinstance(value, str): #str
+                if key == '90':
+                    import pdb; pdb.set_trace()
+                if isinstance(value, str):
                     # print(f'str value: {value}')
                     netCDF_var[currentindex] = value
-                elif isinstance(value, list): #str
+                elif isinstance(value, list):
                     # print(f'list value: {value}')
                     value_np_array = numpy.array(value)
                     if key == '93':

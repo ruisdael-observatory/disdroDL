@@ -75,7 +75,11 @@ for index, row in df.iterrows():
                         data_fn_start='test',  # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
                         logger=logger
                         )
-    # telegram.append_data_to_netCDF()
+    telegram.str2list(field='90', separator=',')
+    telegram.str2list(field='91', separator=',')
+    # telegram.str2list(field='93', separator=',')
+
+    telegram.append_data_to_netCDF()
     # import pdb; pdb.set_trace()
 
 # HOw is time handled?? 
@@ -83,11 +87,19 @@ for index, row in df.iterrows():
 Traceback (most recent call last):
   File "/home/acastro/Documents/projects/parsivel-distrometer-datalogger/parse_disdro_csv.py", line 78, in <module>
     telegram.append_data_to_netCDF()
-  File "/home/acastro/Documents/projects/parsivel-distrometer-datalogger/modules/classes.py", line 109, in append_data_to_netCDF
-    netCDF_var_time = netCDF_rootgrp.variables['time']
-KeyError: 'time'
+  File "/home/acastro/Documents/projects/parsivel-distrometer-datalogger/modules/classes.py", line 128, in append_data_to_netCDF
+    netCDF_var[currentindex] = value
+  File "src/netCDF4/_netCDF4.pyx", line 5428, in netCDF4._netCDF4.Variable.__setitem__
+ValueError: could not convert string to float: '-9.999,-9.999,01.619,02.578,02.454,02.064,01.848,01.223,01.148,00.821,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999'
 
-why is time not a variable from netCDF_rootgrp
-netCDF_rootgrp.variables['time']
+Items that are strings that should be converted to lists
+90
+91
+93 (?? is in a list in the main.py?)
+
+Where to convert them?
+* before start using that data
+
+
 
 '''
