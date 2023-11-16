@@ -1,12 +1,9 @@
-import yaml
 import pandas as pd
 from pathlib import Path
 from typing import Dict
 from modules.classes import Telegram
 from modules.util_functions import yaml2dict, create_logger
 from pydantic.v1.utils import deep_update
-
-
 
 
 wd = Path(__file__).parent
@@ -34,6 +31,18 @@ df = pd.read_csv('sample_data/20231106_PAR007_CabauwTower.csv',
                  parse_dates=['datetime'])
 
 
+def str2list_by_ndigits(input: str, ndigits: int) -> list[str]: 
+    '''
+    converts str (sequence of characters) into a list,
+    with each item being ndigits long.
+    Used only for F93 values, when they are in  '00000000000' (Ruisdael CSVs) 
+    '''
+    range_obj = range(0, len(input), ndigits)
+    list_val = [input[i:i + ndigits] for i in range_obj]
+    return list_val
+    # TODO: test
+
+
 def parse_telegram(telegram: list) -> Dict:
     telegram_dict = {key: None for key in telegram_str}
     for index, field_n in enumerate(telegram_str[:-3]):  # ignore fields 90,91,93
@@ -56,13 +65,12 @@ for index, row in df.iterrows():
             df.loc[index, key] = (",").join(value)
 
 df.drop(columns=['telegram'], inplace=True)
-df.to_csv(path_or_buf="tmp.csv", sep=";")  # check data in tmp.csv
-# TODO: write df to netCDF
+# df.to_csv(path_or_buf="tmp.csv", sep=";")  # check data in tmp.csv
 
 ## loop through df rows
 # at each row add data to self.telegram_data[field] = value
 for index, row in df.iterrows():
-    # 1 telegram instance per row 
+    # 1 telegram instance per row
     telegram = Telegram(config_dict=config_dict,
                         telegram_lines=None,
                         telegram_data=row.to_dict(),
@@ -71,13 +79,11 @@ for index, row in df.iterrows():
                         data_fn_start='test',  # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
                         logger=logger
                         )
-
     telegram.str2list(field='90', separator=',')
     telegram.str2list(field='91', separator=',')
-    telegram.str2list_by_ndigits(field='93', ndigits=3)
-
+    telegram.telegram_data['93'] = str2list_by_ndigits(input=telegram.telegram_data['93'], ndigits=3)
     telegram.append_data_to_netCDF()
 
 '''
-# HOw is time handled?? 
+# HOw is time handled?? check time
 '''

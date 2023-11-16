@@ -90,18 +90,6 @@ class Telegram:
         list_val = str_val.split(separator)
         self.telegram_data[field] = list_val
 
-    def str2list_by_ndigits(self, field: str, ndigits: int):
-        '''
-        converts str (sequence of characters) into a list,
-        with each item being ndigits long.
-        Used only for F93 values, when they are in  '00000000000' (Ruisdael CSVs) 
-        
-        '''
-        str_val = self.telegram_data[field]
-        range_obj = range(0, len(str_val), ndigits)
-        list_val = [str_val[i:i + ndigits] for i in range_obj]
-        self.telegram_data[field] = list_val
-
     def set_netCDF_path(self):
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
         self.path_netCDF_temp = self.data_dir / f'tmp_{self.data_fn_start}.nc'
