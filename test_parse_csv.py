@@ -29,3 +29,5 @@ def test_telegram_list2dict():
 # TODO:
 # def test_csv2df
 # telegram2df_row
+
+# check time handling between CSV and netcdf

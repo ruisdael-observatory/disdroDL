@@ -38,8 +38,10 @@ def telegram_list2dict(telegram: list) -> Dict:
     The telegram list input: ['0000.102', '0100.87', '57', '58', '-RADZ', ' RL-'
     Telegram has the following sequence: 01,02.03...35,60,90,91,93
     '''
-    telegram_dict = {key: None for key in telegram_list}
-    for index, field_n in enumerate(telegram_list[:-3]):  # ignore fields 90,91,93
+    telegram_dict = {key: None for key in telegram}
+    # print(telegram[:-3])
+    for index, field_n in enumerate(telegram[:-3]):  # ignore fields 90,91,93
+        # print(field_n, telegram[index])
         telegram_dict[field_n] = telegram[index]
     telegram_dict['90'] = (",").join(telegram[-65:-33])
     telegram_dict['91'] = (",").join(telegram[-33:-1])
@@ -68,13 +70,14 @@ def telegram2df_row(df: pd.DataFrame, index: int, telegram: str):
     Populate Pandas dataframe row with the telegram values
     '''
     telegram_l = telegram.split(';')
+    print('telegram_l:', telegram_l)
     telegram_dict = telegram_list2dict(telegram=telegram_l)
     for key, value in telegram_dict.items():
         df.loc[index, key] = value
 
 
 if __name__ == '__main__':
-    df = csv2df(csv_path='sample_data/20231106_PAR007_CabauwTower.csv')
+    df = csv2df(csv_path='sample_data/sample_20231106_PAR007_CabauwTower.csv')
 
     for index, csv_row in df.iterrows():
         telegram2df_row(df=df, index=index, telegram=csv_row['telegram'])
@@ -99,4 +102,8 @@ if __name__ == '__main__':
 
 '''
 # HOw is time handled?? check time
+
+
+/home/acastro/Documents/projects/parsivel-distrometer-datalogger/parse_disdro_csv.py:75: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  df.loc[index, key] = value
 '''
