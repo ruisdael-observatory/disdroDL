@@ -29,7 +29,6 @@ def str2list_by_ndigits(input: str, ndigits: int) -> list[str]:
     range_obj = range(0, len(input), ndigits)
     list_val = [input[i:i + ndigits] for i in range_obj]
     return list_val
-    # TODO: test
 
 
 def telegram_list2dict(telegram: list) -> Dict:
@@ -72,34 +71,31 @@ def telegram2df_row(df: pd.DataFrame, index: int, telegram: str):
     telegram_dict = telegram_list2dict(telegram=telegram_l)
     for key, value in telegram_dict.items():
         df.loc[index, key] = value
-        # if key not in ['90', '91']:
-        #     df.loc[index, key] = value
-        # else:
-        #     df.loc[index, key] = (",").join(value)
 
 
-df = csv2df(csv_path='sample_data/20231106_PAR007_CabauwTower.csv')
+if __name__ == '__main__':
+    df = csv2df(csv_path='sample_data/20231106_PAR007_CabauwTower.csv')
 
-for index, csv_row in df.iterrows():
-    telegram2df_row(df=df, index=index, telegram=csv_row['telegram'])
+    for index, csv_row in df.iterrows():
+        telegram2df_row(df=df, index=index, telegram=csv_row['telegram'])
 
-df.drop(columns=['telegram'], inplace=True)  # drop telegram_list cols?
-df.to_csv(path_or_buf="tmp.csv", sep=";")  # check data in tmp.csv # TODO: rm
+    df.drop(columns=['telegram'], inplace=True)  # drop telegram_list cols?
+    df.to_csv(path_or_buf="tmp.csv", sep=";")  # check data in tmp.csv # TODO: rm
 
-# loop through df rows, creating a Telegram class instance at each row
-for index, row in df.iterrows():
-    telegram = Telegram(config_dict=config_dict,
-                        telegram_lines=None,
-                        telegram_data=row.to_dict(),
-                        timestamp=row['datetime'],
-                        data_dir=wd / 'sample_data',  # change
-                        data_fn_start='test',  # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
-                        logger=logger
-                        )
-    telegram.str2list(field='90', separator=',')
-    telegram.str2list(field='91', separator=',')
-    telegram.telegram_data['93'] = str2list_by_ndigits(input=telegram.telegram_data['93'], ndigits=3)
-    telegram.append_data_to_netCDF()
+    # loop through df rows, creating a Telegram class instance at each row
+    for index, row in df.iterrows():
+        telegram = Telegram(config_dict=config_dict,
+                            telegram_lines=None,
+                            telegram_data=row.to_dict(),
+                            timestamp=row['datetime'],
+                            data_dir=wd / 'sample_data',  # change
+                            data_fn_start='test',  # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
+                            logger=logger
+                            )
+        telegram.str2list(field='90', separator=',')
+        telegram.str2list(field='91', separator=',')
+        telegram.telegram_data['93'] = str2list_by_ndigits(input=telegram.telegram_data['93'], ndigits=3)
+        telegram.append_data_to_netCDF()
 
 '''
 # HOw is time handled?? check time
