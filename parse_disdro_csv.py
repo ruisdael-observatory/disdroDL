@@ -76,8 +76,9 @@ def telegram2dict(telegram: str, dt: datetime, ts: float, ) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    df = csv2df(csv_path='sample_data/20231106_PAR007_CabauwTower.csv')
+    df = csv2df(csv_path='sample_data/sample_20231106_PAR007_CabauwTower.csv')
     for index, csv_row in df.iterrows():
+        print(index)
         telegram_dict = telegram2dict(telegram=csv_row['telegram'],
                                       dt=csv_row['datetime'],
                                       ts=csv_row['timestamp'], )
@@ -96,4 +97,7 @@ if __name__ == '__main__':
 
 '''
 # HOw is time handled?? check time
+* time tests CSV vs netCDF
+* cmd args: input, date, config, (output file, print)
+* field 93 error handling: what happens when \x is present 
 '''

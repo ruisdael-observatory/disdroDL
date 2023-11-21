@@ -5,3 +5,6 @@ __pycache__
 config.yml
 test_data/*
 .vscode/
+sample_data/*
+!sample_data/sample.csv
+!sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
