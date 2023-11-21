@@ -80,7 +80,10 @@ def test_append_data_netCDF():
     netCDF_var_time = rootgrp.variables['time']
     netCDF_var_time_data = netCDF_var_time[:].data
     assert len(netCDF_var_time_data) == amount_data_points
-    first_time_item = num2date(netCDF_var_time_data[0], units=f'hours since {now.utc.strftime("%Y-%m-%d")} 00:00:00 +00:00')
+    first_time_item = num2date(
+        netCDF_var_time_data[0],
+        units=f'hours since {now.utc.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
+    )
     assert first_time_item.strftime("%Y-%m-%mT%H:%M:%S") == now.utc.strftime("%Y-%m-%mT%H:%M:%S")
 
     netCDF_var_MOR = rootgrp.variables['MOR']
@@ -99,7 +102,7 @@ def test_append_data_netCDF():
     netCDF_var_data_raw = rootgrp.variables['data_raw']
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
-    print(netCDF_var_data_raw_shape)
+    # print(netCDF_var_data_raw_shape)
     assert netCDF_var_data_raw_shape == (amount_data_points, 32, 32)
 '''    
     # TODO: F61

@@ -80,10 +80,10 @@ def delete_netcdf():
     if os.path.exists(nc_path):
         os.remove(nc_path)
 
+
 @pytest.fixture
 def csv2nc(delete_netcdf):
     df = csv2df(csv_path='sample_data/sample.csv')
-    print(df)
     for index, csv_row in df.iterrows():
         telegram_dict = telegram2dict(telegram=csv_row['telegram'],
                                       dt=csv_row['datetime'],
@@ -112,10 +112,8 @@ def read_nc():
 def test_nc_time(csv2nc, read_nc):
     df = csv2nc
     rootgrp = read_nc
-    print(df)
     netCDF_var_time = rootgrp.variables['time']
     netCDF_var_time_data = netCDF_var_time[:].data
-    # print(netCDF_var_time_data)
     error_msg = 'different amount of time variable data points in sample_data/sample.nc and sample_data/sample.csv'
     assert len(netCDF_var_time_data) == len(df.index), error_msg
     for index, nc_ts_float in enumerate(netCDF_var_time_data):
@@ -128,13 +126,8 @@ def test_nc_time(csv2nc, read_nc):
         assert df_dt_str == df_ts_str, error_msg
         nc_cftime = num2date(
             netCDF_var_time_data[index],
-            units='hours since 2023-11-06 00:00:00 +00:00'
+            units=netCDF_var_time.units
         )
         nc_cftime_str = nc_cftime.strftime("%Y-%m-%m %H:%M:%S")
-        # print(df_dt.strftime("%Y-%m-%m %H:%M:%S"), df_ts_dt.strftime("%Y-%m-%m %H:%M:%S"))
-        # print(nc_ts_float, type(nc_ts_float))
-        # print(nc_cftime.strftime("%Y-%m-%m %H:%M:%S"))
-        # print(nc_cftime, type(nc_cftime))
-        # print(df_dt, df_ts_float, df_ts_dt)
         error_msg = f'The CSV value for datetime: {df_dt_str} does not match netCDFs timestamp: {nc_cftime_str}'
         assert df_dt_str == nc_cftime_str, error_msg

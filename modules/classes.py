@@ -216,10 +216,8 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
 
         for var_attr in one_var_dict['var_attrs']:
             variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr]) 
-        if  key == 'time':
-            variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d")} 00:00:00 +00:00')
-        # print('value:', one_var_dict['value'])
-
+        if key == 'time':
+            variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d %H:%M:%S")} +00:00')
 
 
 def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
