@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
 '''
 # HOw is time handled?? check time
-* time tests CSV vs netCDF
-* cmd args: input, date, config, (output file, print)
-* field 93 error handling: what happens when \x is present 
+# * time tests CSV vs netCDF
+# * cmd args: input, date, config, (output file, print)
+# * field 93 error handling: what happens when x is present 
 '''
