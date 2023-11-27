@@ -84,7 +84,7 @@ def test_append_data_netCDF():
         netCDF_var_time_data[0],
         units=f'hours since {now.utc.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
     )
-    assert first_time_item.strftime("%Y-%m-%mT%H:%M:%S") == now.utc.strftime("%Y-%m-%mT%H:%M:%S")
+    assert first_time_item.strftime("%Y-%m-%dT%H:%M:%S") == now.utc.strftime("%Y-%m-%dT%H:%M:%S")
 
     netCDF_var_MOR = rootgrp.variables['MOR']
     netCDF_var_MOR_data = netCDF_var_MOR[:].data

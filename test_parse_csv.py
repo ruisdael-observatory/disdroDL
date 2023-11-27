@@ -117,17 +117,17 @@ def test_nc_time(csv2nc, read_nc):
     error_msg = 'different amount of time variable data points in sample_data/sample.nc and sample_data/sample.csv'
     assert len(netCDF_var_time_data) == len(df.index), error_msg
     for index, nc_ts_float in enumerate(netCDF_var_time_data):
+        # time in (csv) dataframe
         df_dt = df['datetime'][index]
-        df_dt_str = df_dt.strftime("%Y-%m-%m %H:%M:%S")
+        df_dt_str = df_dt.strftime("%Y-%m-%d %H:%M:%S")
         df_ts_float = df['timestamp'][index]
         df_ts_dt = datetime.datetime.fromtimestamp(df_ts_float)
-        df_ts_str = df_ts_dt.strftime("%Y-%m-%m %H:%M:%S")
+        df_ts_str = df_ts_dt.strftime("%Y-%m-%d %H:%M:%S")
         error_msg = f'The CSV value for datetime: {df_dt_str} and timestamp: {df_ts_str} do not match'
         assert df_dt_str == df_ts_str, error_msg
-        nc_cftime = num2date(
-            netCDF_var_time_data[index],
-            units=netCDF_var_time.units
-        )
-        nc_cftime_str = nc_cftime.strftime("%Y-%m-%m %H:%M:%S")
+        # time in netCDF, using nc_ts_float and  
+        nc_cftime = num2date(nc_ts_float, units=netCDF_var_time.units)
+        nc_cftime_str = nc_cftime.strftime("%Y-%m-%d %H:%M:%S")
+        print(f'DT: {df_dt_str} SAME AS .nc: ({nc_ts_float} since {netCDF_var_time.units}) {nc_cftime_str}')
         error_msg = f'The CSV value for datetime: {df_dt_str} does not match netCDFs timestamp: {nc_cftime_str}'
         assert df_dt_str == nc_cftime_str, error_msg

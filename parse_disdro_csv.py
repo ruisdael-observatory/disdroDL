@@ -121,5 +121,4 @@ if __name__ == '__main__':
 
 # * field 93 error handling: what happens when x is present 
 # * time: unit - start see: `def test_nc_time`
-# * log location
 '''
