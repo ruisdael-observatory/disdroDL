@@ -8,3 +8,4 @@ test_data/*
 sample_data/*
 !sample_data/sample.csv
 !sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
+!sample_data/20231106_PAR007_CabauwTower.csv

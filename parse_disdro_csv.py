@@ -2,20 +2,11 @@ import pandas as pd
 from pathlib import Path
 from typing import Dict
 from datetime import datetime
+from argparse import ArgumentParser
 from modules.classes import Telegram
 from modules.util_functions import yaml2dict, create_logger
 from pydantic.v1.utils import deep_update
 
-
-wd = Path(__file__).parent
-config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
-config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_007_CABAUW.yml') 
-config_dict = deep_update(config_dict, config_dict_site)
-conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
-
-logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                       script_name=config_dict['script_name'],
-                       parsivel_name=config_dict['global_attrs']['sensor_name'])
 
 
 def str2list_by_ndigits(input: str, ndigits: int) -> list[str]: 
@@ -76,9 +67,41 @@ def telegram2dict(telegram: str, dt: datetime, ts: float, ) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    df = csv2df(csv_path='sample_data/sample_20231106_PAR007_CabauwTower.csv')
+    ## Parser
+    parser = ArgumentParser(
+        description="Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF. \
+            Run: python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml\
+                -i sample_data/20231106_PAR007_CabauwTower.csv \
+            Output netCDF: store in same directory as input file"
+        )
+    parser.add_argument(
+        '-c',
+        '--config',
+        required=True,
+        help='Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml')
+    parser.add_argument(
+        '-i',
+        '--input',
+        required=True,
+        help='Path to input CSV file. ie. -i sample_data/20231106_PAR007_CabauwTower.csv')
+    args = parser.parse_args()
+    input_path = Path(args.input)
+    output_path = input_path.parent / f'{input_path.stem}.nc'
+    ## Config
+    wd = Path(__file__).parent
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
+    config_dict_site = yaml2dict(path=wd / args.config)
+    config_dict = deep_update(config_dict, config_dict_site)
+    conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
+    # print(conf_telegram_fields)
+    ## Logger
+    # TODO: change log location - same as main.py
+    logger = create_logger(log_dir=Path(config_dict['log_dir']),
+                        script_name=config_dict['script_name'],
+                        parsivel_name=config_dict['global_attrs']['sensor_name'])
+    # CSV processing    
+    df = csv2df(csv_path=str(input_path))
     for index, csv_row in df.iterrows():
-        print(index)
         telegram_dict = telegram2dict(telegram=csv_row['telegram'],
                                       dt=csv_row['datetime'],
                                       ts=csv_row['timestamp'], )
@@ -86,8 +109,8 @@ if __name__ == '__main__':
                             telegram_lines=None,
                             telegram_data=telegram_dict,
                             timestamp=telegram_dict['datetime'],
-                            data_dir=wd / 'sample_data',  # change
-                            data_fn_start='test',  # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
+                            data_dir=output_path.parent, 
+                            data_fn_start=output_path.stem, # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
                             logger=logger
                             )
         telegram.str2list(field='90', separator=',')
@@ -97,6 +120,8 @@ if __name__ == '__main__':
 
 '''
 
-# * cmd args: input, date, config, (output file, print)
 # * field 93 error handling: what happens when x is present 
+# * time: unit - start see: `def test_nc_time`
+# log location
+
 '''

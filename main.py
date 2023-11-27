@@ -18,7 +18,7 @@ args = parser.parse_args()
 ### Config files ###
 wd = Path(__file__).parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
-config_dict_site = yaml2dict(path=wd / args.config)  # TODO: come from cli
+config_dict_site = yaml2dict(path=wd / args.config)
 config_dict = deep_update(config_dict, config_dict_site)
 ### Log ###
 logger = create_logger(log_dir=Path(config_dict['log_dir']),
