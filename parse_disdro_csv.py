@@ -8,7 +8,6 @@ from modules.util_functions import yaml2dict, create_logger
 from pydantic.v1.utils import deep_update
 
 
-
 def str2list_by_ndigits(input: str, ndigits: int) -> list[str]: 
     '''
     converts str (sequence of characters) into a list,
@@ -95,10 +94,10 @@ if __name__ == '__main__':
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
     # print(conf_telegram_fields)
     ## Logger
-    # TODO: change log location - same as main.py
+    # import pdb; pdb.set_trace()
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                        script_name=config_dict['script_name'],
-                        parsivel_name=config_dict['global_attrs']['sensor_name'])
+                           script_name=Path(__file__).name,
+                           parsivel_name=config_dict['global_attrs']['sensor_name'])
     # CSV processing    
     df = csv2df(csv_path=str(input_path))
     for index, csv_row in df.iterrows():

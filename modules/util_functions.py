@@ -49,9 +49,9 @@ def interruptHandler(serial_connection, logger):
     
 def create_logger(log_dir, script_name, parsivel_name):
     create_dir(log_dir)
-    log_file = log_dir / 'log.json'
-    logger = log(log_path=log_file, 
-                log_name=f"{script_name}: {parsivel_name}")  
+    log_file = log_dir / f'log_{script_name}.json'
+    logger = log(log_path=log_file,
+                 log_name=f"{script_name}: {parsivel_name}")
     logger.info(msg=f"Starting {script_name} for {parsivel_name}")
     return logger
 
