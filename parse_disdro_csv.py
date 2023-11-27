@@ -110,7 +110,7 @@ if __name__ == '__main__':
                             telegram_data=telegram_dict,
                             timestamp=telegram_dict['datetime'],
                             data_dir=output_path.parent, 
-                            data_fn_start=output_path.stem, # TODO: fn_start = f"{now_utc.ymd}_{site_name}-{st_code}_{sensor_name}"
+                            data_fn_start=output_path.stem,
                             logger=logger
                             )
         telegram.str2list(field='90', separator=',')
@@ -122,6 +122,5 @@ if __name__ == '__main__':
 
 # * field 93 error handling: what happens when x is present 
 # * time: unit - start see: `def test_nc_time`
-# log location
-
+# * log location
 '''
