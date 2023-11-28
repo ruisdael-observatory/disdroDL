@@ -2,7 +2,7 @@
 
 [[_TOC_]]
 
-disdroDLv2 is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer, developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
+disdroDL is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer, developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
 
 The software features a main script ([main.py](./main.py)) for setting up a serial connection with the Parsivel, requesting data at regular time intervals, and storing the output in a NetCDF file.
 
@@ -99,7 +99,7 @@ terminal one: listen to serial port `tail -f /dev/ttyUSB0`
 terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
 # Authors
-DisdroDLv2 is developed in the context of the [Ruisdael Observatory](https://ruisdael-observatory.nl/) by
+disdroDL is developed in the context of the [Ruisdael Observatory](https://ruisdael-observatory.nl/) by
 
 * Marc Schleiss (Principal Investigator)
 * Andre Castro
