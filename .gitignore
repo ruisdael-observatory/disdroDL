@@ -1,10 +1,11 @@
 prototypes/*
-!prototypes/prototype_f61_netcdf.py
-!prototypes/capture_f93.py
-!prototypes/capture_all_fields.py
-!prototypes/compress_netcdf.py
+!prototypes/parse_disdro_csv.py
 .python-version
 __pycache__
 config.yml
 test_data/*
 .vscode/
+sample_data/*
+!sample_data/sample.csv
+!sample_data/20231029_Lutjewad_Atmospheric_Station-LUTJEWAD_PAR009.nc
+!sample_data/20231106_PAR007_CabauwTower.csv
