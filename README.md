@@ -85,14 +85,20 @@ No quality control is applied to the output.
 
 The NetCDF files are automatically compressed.
 
-## Tests
+# Auxiliary scripts
+## [parse_disdro_csv.py](parse_disdro_csv.py)
+*Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF*
+
+Run: `python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml -i sample_data/20231106_PAR007_CabauwTower.csv`
+
+# Tests
 * [test_functions.py](test_functions.py)
 * [test_classes.py](test_classes.py)
 
 run: `pytest -s`
 
 
-## Debug Serial communication
+# Debugging Serial communication
 
 with 2 different screens (use tmux multiplexer or 2 different shells)
 

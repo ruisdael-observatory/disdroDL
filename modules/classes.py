@@ -20,6 +20,7 @@ class NowTime:
         # now_hour_min_secs = now_hour_min_secs.split(":")
         self.date_strings()
         self.last_minute_of_day = self.utc.replace(hour=23, minute=59, second=0, microsecond=0)
+
     def date_strings(self):
         '''
         def Converts instantiation time to different format class attributes
@@ -32,13 +33,14 @@ class NowTime:
         self.ym = self.utc.strftime("%Y%m")
         self.ymd = self.utc.strftime("%Y%m%d")
 
+
 class Telegram:
     '''
     Class dedicated to handling the returned the Parsivel telegram lines:
     * storing, processing and writing telegram to netCDF
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
     '''
-    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger):
+    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger, telegram_data={}):
         '''
         initiates variables and methods:
         * set_netCDF_path
@@ -55,14 +57,15 @@ class Telegram:
         self.path_netCDF_temp = None
         self.set_netCDF_path()
         self.create_netCDF()
-        self.telegram_data = {}
+        self.telegram_data = telegram_data
+        # print(telegram_data)
 
     def capture_prefixes_and_data(self):
         '''
         def Captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
         '''
-        for i in  self.telegram_lines:
+        for i in self.telegram_lines:
             encoding = chardet.detect(i)['encoding']
             i_str = i.decode(encoding)
             i_list = i_str.split(":")
@@ -78,6 +81,14 @@ class Telegram:
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
 
+    def str2list(self, field, separator):
+        '''
+        converts telegram_data values from string to list, 
+        by splitting at separator
+        '''
+        str_val = self.telegram_data[field]
+        list_val = str_val.split(separator)
+        self.telegram_data[field] = list_val
 
     def set_netCDF_path(self):
         self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
@@ -114,19 +125,21 @@ class Telegram:
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = self.timestamp.strftime('%Y-%m-%dT%H:%M:%S') # timestamp str
         # print(self.telegram_data)
-        for key, value in self.telegram_data.items():         
-            if key in self.config_dict['telegram_fields'].keys():
+        for key, value in self.telegram_data.items():
+            if key in self.config_dict['telegram_fields'].keys() and \
+                    self.config_dict['telegram_fields'][key].get('include_in_nc') is True:
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
                 # print(key,  '-- IN config_dict[telegram_fields] --',netCDF_var.standard_name )
                 # print(key, netCDF_var.standard_name, standard_name, value)
                 # print(type(value))
-                if isinstance(value, str): #str
-                    # print(f'str value: {value}')
+
+                if isinstance(value, str):
                     netCDF_var[currentindex] = value
-                elif isinstance(value, list): #str
+                elif isinstance(value, list):
                     # print(f'list value: {value}')
+                    # print(f'telegram key:{key}; index:{currentindex}; str value: {value}')
                     value_np_array = numpy.array(value)
                     if key == '93':
                         value_np_array = value_np_array.reshape(32,32)
@@ -163,50 +176,48 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
 
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
+    # print(one_var_dict)
+    if one_var_dict['include_in_nc'] is True:  # one_var_dict['include_in_nc'] is True:
 
-    # compression method 
-    if one_var_dict['dtype'] != 'S4': #  can't use compression on variable-length string variables
-        compression_method = 'zlib'
-        # compression_method = dict(zlib=True, shuffle=True, complevel=5)
-    else:
-        compression_method = None
-    if one_var_dict['dimensions'] == None:
-        # scalar variables do not use dimensions
-        variable = nc_group.createVariable( one_var_dict['var_attrs']['standard_name'], 
-                                            one_var_dict['dtype'],
-                                            fill_value=-1,
-                                            compression=compression_method,
-                                            complevel=9,
-                                            shuffle=True,
-                                            fletcher32=True #error detection
-                                            )
-        
-        # variable.assignValue(one_var_dict['value'])
-    elif len(one_var_dict['dimensions']) >= 1:
-        if 'fill_value' in one_var_dict.keys():
-            fill_val = one_var_dict['fill_value']
+        if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
+            compression_method = 'zlib'
+            # compression_method = dict(zlib=True, shuffle=True, complevel=5)
         else:
-            fill_val = -1 
-        variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
-                                           one_var_dict['dtype'],
-                                           tuple([dim for dim in one_var_dict['dimensions']]),
-                                           compression=compression_method,
-                                           fill_value=fill_val,
-                                           )
+            compression_method = None
 
-    # fill predefine values
-    if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
-        # use .assignValue() method for scalar values
-        variable.assignValue(one_var_dict['value'])  
-    elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
-        variable[:] = one_var_dict['value']
+        if 'dimensions' not in one_var_dict.keys() or one_var_dict['dimensions'] is None:
+            # scalar variables do not use dimensions
+            variable = nc_group.createVariable(
+                one_var_dict['var_attrs']['standard_name'],
+                one_var_dict['dtype'],
+                fill_value=-1,
+                compression=compression_method,
+                complevel=9,
+                shuffle=True,
+                fletcher32=True)
 
-    for var_attr in one_var_dict['var_attrs']:
-        variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
-    if  key == 'time':
-        variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d")} 00:00:00 +00:00')
-    # print('value:', one_var_dict['value'])
+        elif len(one_var_dict['dimensions']) >= 1:
+            if 'fill_value' in one_var_dict.keys():
+                fill_val = one_var_dict['fill_value']
+            else:
+                fill_val = -1 
+            variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
+                                            one_var_dict['dtype'],
+                                            tuple([dim for dim in one_var_dict['dimensions']]),
+                                            compression=compression_method,
+                                            fill_value=fill_val,
+                                            )
+        # fill predefine values
+        if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
+            # use .assignValue() method for scalar values
+            variable.assignValue(one_var_dict['value'])  
+        elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
+            variable[:] = one_var_dict['value']
 
+        for var_attr in one_var_dict['var_attrs']:
+            variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr]) 
+        if key == 'time':
+            variable.__setattr__('units', f'hours since {timestamp.strftime("%Y-%m-%d %H:%M:%S")} +00:00')
 
 
 def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
@@ -217,7 +228,7 @@ def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
     # variables not in telegram
     for key, var_dict in config_dict['variables'].items():
         set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
-
+        
     for key,var_dict in config_dict['telegram_fields'].items():
         set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 
@@ -236,6 +247,7 @@ def join_f61_items(telegram_list):
             f61_items = f61_items
     return f61_items
 
+
 def string2row(valuestr, delimiter, prefix):
     '''
     Converts a telegram string to a list of values, separated by the delimiter 
@@ -245,4 +257,3 @@ def string2row(valuestr, delimiter, prefix):
     if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
-
