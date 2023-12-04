@@ -5,7 +5,7 @@ from pydantic.v1.utils import deep_update
 
 wd = Path(__file__).parent 
 config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general.yml')
-config_dict_site = yaml2dict(path = wd / 'configs_netcdf' / 'config_008_GV.yml')
+config_dict_site = yaml2dict(path = wd / 'configs_netcdf' / 'config_007_CABAUW.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 
 telegram_lines=[b'OK\r\n', 
@@ -24,19 +24,19 @@ telegram_lines=[b'OK\r\n',
                 b';']
 
 
-
 def test_logger():
-    logger = create_logger(log_dir=Path(config_dict['log_dir']), 
-                        script_name=config_dict['script_name'], 
-                        parsivel_name=config_dict['global_attrs']['sensor_name'])
+    logger = create_logger(
+        log_dir=Path(config_dict['log_dir']),
+        script_name=Path(__file__).name,
+        parsivel_name=config_dict['global_attrs']['sensor_name']
+    )
     logger.info(msg=f"Testing logger in {__file__}")
-    assert logger.name == f"{config_dict['script_name']}: {config_dict['global_attrs']['sensor_name']}"
-
-    log_file = Path(config_dict['log_dir']) / 'log.json'
+    assert logger.name == f"{Path(__file__).name}: {config_dict['global_attrs']['sensor_name']}"
+    log_file = Path(config_dict['log_dir']) / f'log_{Path(__file__).name}.json'
     with open(log_file, 'r') as log_file_r:
         last_log_line = log_file_r.readlines()[-1]
         last_log_line = (json.loads(last_log_line))
-        assert last_log_line['name'] == f"{config_dict['script_name']}: {config_dict['global_attrs']['sensor_name']}"
+        assert last_log_line['name'] == f"{Path(__file__).name}: {config_dict['global_attrs']['sensor_name']}"
         assert last_log_line['msg'] == f"Testing logger in {__file__}"
 
 
