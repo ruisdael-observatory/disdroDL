@@ -85,7 +85,7 @@ if __name__ == '__main__':
         help='Path to input CSV file. ie. -i sample_data/20231106_PAR007_CabauwTower.csv')
     args = parser.parse_args()
     input_path = Path(args.input)
-    output_path = input_path.parent / f'{input_path.stem}.nc'
+
     ## Config
     wd = Path(__file__).parent
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
@@ -98,6 +98,13 @@ if __name__ == '__main__':
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name=Path(__file__).name,
                            parsivel_name=config_dict['global_attrs']['sensor_name'])
+    # output file
+    site_name = config_dict['global_attrs']['site_name']
+    st_code = config_dict['station_code']
+    sensor_name = config_dict['global_attrs']['sensor_name']
+    output_fn = f"{input_path.stem}_{site_name}-{st_code}_{sensor_name}.nc"
+    output_path = input_path.parent / output_fn
+
     # CSV processing    
     df = csv2df(csv_path=str(input_path))
     for index, csv_row in df.iterrows():
