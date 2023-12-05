@@ -63,17 +63,9 @@ while True:
                             data_dir=data_dir,
                             data_fn_start=fn_start,
                             logger=logger)
-        # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
+        logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
         telegram.capture_prefixes_and_data()
         telegram.append_data_to_netCDF()
-        if ((now_utc.last_minute_of_day - now_utc.utc).total_seconds() / 60.0) <= 0.0 and flag_compressed is False:
-            # if now is 23:59 - compress todays netCDF
-            logger.debug(msg=f'compression time  {now_utc.last_minute_of_day}.now_utc.utc: {now_utc.utc}')
-            flag_compressed = True
-            telegram.compress_netcdf()
-        else:
-            flag_compressed = False
-
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds is True:
         # once we passed 00secs: reset flag_zero_seconds
         flag_zero_seconds = False
