@@ -91,14 +91,17 @@ class Telegram:
         '''
         self.telegram_data_strs = {}
         for key, val in self.telegram_data.items():
+            new_key = f'f_{key}'
             if isinstance(val, list):
                 if len(val) == 0:
-                    self.telegram_data_strs[key] = None
+                    self.telegram_data_strs[new_key] = None
                 else:
-                    self.telegram_data_strs[key] = (";").join(self.telegram_data[key])
+                    self.telegram_data_strs[new_key] = (";").join(self.telegram_data[key])
             elif isinstance(val, str):
                 if len(val) == 0:
-                    self.telegram_data_strs[key] = None
+                    self.telegram_data_strs[new_key] = None
+                else:
+                    self.telegram_data_strs[new_key] = val
 
 
     def str2list(self, field, separator):
