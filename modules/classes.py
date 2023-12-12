@@ -71,7 +71,7 @@ class Telegram:
             i_list = i_str.split(":")
             if len(i_list) > 1 and i_list[1].strip() != self.delimiter:
                 field = i_list[0]
-                value = i_list[1].strip() # strip white space
+                value = i_list[1].strip()  # strip white space
                 value_list = value.split(self.delimiter)
                 value_list = [v for v in value_list if len(v) > 0]
                 if len(value_list) == 1:
@@ -80,6 +80,26 @@ class Telegram:
                     value = value_list
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
+
+    def prep_telegram_data4db(self):
+        '''
+        transforms self.telegram_data into self.telegram_data_strs 
+        so that it can be easily inserted to SQL DB
+        * convert to None: empty lists, empty strings
+        * convert to strings with ?space? separator: lists
+        TODO: write test
+        '''
+        self.telegram_data_strs = {}
+        for key, val in self.telegram_data.items():
+            if isinstance(val, list):
+                if len(val) == 0:
+                    self.telegram_data_strs[key] = None
+                else:
+                    self.telegram_data_strs[key] = (";").join(self.telegram_data[key])
+            elif isinstance(val, str):
+                if len(val) == 0:
+                    self.telegram_data_strs[key] = None
+
 
     def str2list(self, field, separator):
         '''

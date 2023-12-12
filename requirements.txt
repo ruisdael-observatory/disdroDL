@@ -4,3 +4,4 @@ pytest
 netCDF4
 pydantic
 chardet
+sqlalchemy
