@@ -15,12 +15,11 @@ def create_db(dbpath):
     with Table: disdrodl 
     with columns id, timestamp, parsivel_id, telegram 
     '''  
-    print(connect_db.__annotations__)
     con, cur = connect_db(dbpath=str(dbpath))
     cur.execute("""
                 CREATE TABLE IF NOT EXISTS disdrodl
                 (
-                    id INTEGER,
+                    id INTEGER PRIMARY KEY,
                     timestamp REAL,
                     datetime TEXT,
                     parsivel_id TEXT,

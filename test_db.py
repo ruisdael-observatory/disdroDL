@@ -5,8 +5,9 @@ import logging
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from logging import StreamHandler
+from datetime import datetime
 
-from modules.sqldb import create_db
+from modules.sqldb import create_db, connect_db
 from modules.util_functions import yaml2dict
 from modules.classes import NowTime, Telegram
 
@@ -37,8 +38,7 @@ def create_db_():
 
 
 def test_db_schema(create_db_):
-    con = sqlite3.connect(str(db_file))
-    cur = con.cursor()
+    con, cur = connect_db(dbpath=db_file)
     table_info = cur.execute("PRAGMA table_info('disdrodl');")
     table_info_res = table_info.fetchall()
     table_cols = ['id', 'timestamp', 'datetime', 'parsivel_id', 'telegram']
@@ -47,20 +47,42 @@ def test_db_schema(create_db_):
         print(col)
         assert col[1] == table_cols[i]
         assert col[2] == table_cols_dt[i]
-
+    cur.close()
+    con.close()
 
 def test_db_insert(create_db_):
+    con, cur = connect_db(dbpath=db_file)
     telegram = Telegram(config_dict=config_dict,
                         telegram_lines=parsivel_lines,
-                        timestamp=now,
+                        timestamp=now.utc,
                         data_dir=test_data_dir,  # also not needed
                         data_fn_start='test',  # arg not needed
+                        db_cursor=cur,
                         logger=logger)
     telegram.capture_prefixes_and_data()
-    telegram.prep_telegram_data4db() 
-    print(telegram.telegram_data_str)
+    # testing Telegram method prep_telegram_data4db() argument telegram.telegram_data_str 
+    telegram.prep_telegram_data4db()
+    # print(telegram.telegram_data_str)
     assert isinstance(telegram.telegram_data_str, str) is True
     assert telegram.telegram_data_str.count(';') == len(telegram.telegram_data) - 1
+    # testing Telegram method insert2db
+    assert isinstance(telegram.db_cursor, sqlite3.Cursor) is True
+    telegram.insert2db()
+    con.commit()
+    res = cur.execute("SELECT id, timestamp, datetime, parsivel_id, telegram FROM disdrodl")
+    for i in res.fetchall():
+        assert isinstance(telegram.telegram_data_str, str) is True
+        id, timestamp, datetime_, parsivel_id, telegram = i
+        assert isinstance(id, int) is True
+        assert isinstance(timestamp, float) is True
+        assert datetime.fromtimestamp(timestamp) == now.utc
+        assert isinstance(datetime_, str) is True
+        assert parsivel_id == config_dict['global_attrs']['sensor_name']
+
+        assert isinstance(telegram, str) is True
+
+    cur.close()
+    con.close()
 
 # TODO: insert data to  db
 

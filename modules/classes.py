@@ -40,7 +40,7 @@ class Telegram:
     * storing, processing and writing telegram to netCDF
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
     '''
-    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, logger, telegram_data={}):
+    def __init__(self, config_dict, telegram_lines, timestamp, data_dir, data_fn_start, db_cursor, logger, telegram_data={}):
         '''
         initiates variables and methods:
         * set_netCDF_path
@@ -58,6 +58,7 @@ class Telegram:
         self.set_netCDF_path()
         self.create_netCDF()
         self.telegram_data = telegram_data
+        self.db_cursor = db_cursor 
         # print(telegram_data)
 
     def capture_prefixes_and_data(self):
@@ -109,11 +110,14 @@ class Telegram:
             self.telegram_data_str += '; '
         self.telegram_data_str = self.telegram_data_str[:-2] # remove last '; '
 
-
-    # def insert2db(self):
+    def insert2db(self):
+        self.prep_telegram_data4db()
+        print(self.timestamp.isoformat())
+        timestamp_str = self.timestamp.isoformat()  
+        insert_str = f"INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES ({self.timestamp.timestamp()}, '{timestamp_str}',  '{self.config_dict['global_attrs']['sensor_name']}', '{self.telegram_data_str}')"
+        self.db_cursor.execute(insert_str)
 
     # def unpack_db_telegram(self):
-
 
 
     def str2list(self, field, separator):
