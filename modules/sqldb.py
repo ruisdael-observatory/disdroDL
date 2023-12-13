@@ -1,9 +1,12 @@
 import sqlite3
-# from sqlalchemy import FLOAT, Table, Column, Integer, String
-# from sqlalchemy.orm import declarative_base
-# from sqlalchemy import create_engine
-
+from typing import Tuple
 # telegram_fields = config_dict['telegram_fields'].keys()
+
+
+def connect_db(dbpath: str) -> Tuple[sqlite3.Connection, sqlite3.Cursor]:
+    con = sqlite3.connect(dbpath)
+    cur = con.cursor()
+    return con, cur
 
 
 def create_db(dbpath):
@@ -11,9 +14,9 @@ def create_db(dbpath):
     create disdrodl.db
     with Table: disdrodl 
     with columns id, timestamp, parsivel_id, telegram 
-    '''    
-    con = sqlite3.connect(str(dbpath))
-    cur = con.cursor()
+    '''  
+    print(connect_db.__annotations__)
+    con, cur = connect_db(dbpath=str(dbpath))
     cur.execute("""
                 CREATE TABLE IF NOT EXISTS disdrodl
                 (
@@ -25,29 +28,3 @@ def create_db(dbpath):
                 )
                 """)
     con.commit()
-
-
-# def create_db(dbpath, telegram_fields):
-#     '''
-#     create disdrodl.db
-#     with Table: disdrodl 
-#     where telegram fields become columns 
-#     extra columns: id, timestamp, parsivel_id are included 
-#     '''
-
-#     Base = declarative_base()
-#     disdrodl_table = Table(
-#         "disdrodl",
-#         Base.metadata,
-#         *(Column(f'f_{column_name}', String, primary_key=False)
-#         for column_name in telegram_fields)
-#     )
-#     disdrodl_table.append_column(Column('id', Integer,primary_key=True, autoincrement=True) )
-#     disdrodl_table.append_column(Column('timestamp', FLOAT ) )
-#     disdrodl_table.append_column(Column('datetime', String ) )
-#     disdrodl_table.append_column(Column('parsivel_id', String))
-#     print(disdrodl_table._columns)
-
-#     engine = create_engine(f'sqlite:///{dbpath}', echo=False)
-#     Base.metadata.create_all(engine)
-

@@ -83,25 +83,37 @@ class Telegram:
 
     def prep_telegram_data4db(self):
         '''
-        transforms self.telegram_data into self.telegram_data_strs 
+        transforms self.telegram_data items into self.telegram_data_str
         so that it can be easily inserted to SQL DB
-        * convert to None: empty lists, empty strings
-        * convert to strings with ?space? separator: lists
-        TODO: write test
+        * key precedes value NN:val
+        * key:value pair, seperated by '; '
+        * list: converted to str with '|' separator between values
+        * empty lists, empty strings: converted to 'None'
+        Example: 19:None; 20:10; 21:25.05.2023;
+        51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
         '''
-        self.telegram_data_strs = {}
+        self.telegram_data_str = ''
         for key, val in self.telegram_data.items():
-            new_key = f'f_{key}'
+            dt_str = f'{key}:'
             if isinstance(val, list):
                 if len(val) == 0:
-                    self.telegram_data_strs[new_key] = None
+                    dt_str += 'None'
                 else:
-                    self.telegram_data_strs[new_key] = (";").join(self.telegram_data[key])
+                    dt_str += ('|').join(val)
             elif isinstance(val, str):
                 if len(val) == 0:
-                    self.telegram_data_strs[new_key] = None
+                    dt_str += 'None'
                 else:
-                    self.telegram_data_strs[new_key] = val
+                    dt_str += val
+            self.telegram_data_str += dt_str
+            self.telegram_data_str += '; '
+        self.telegram_data_str = self.telegram_data_str[:-2] # remove last '; '
+
+
+    # def insert2db(self):
+
+    # def unpack_db_telegram(self):
+
 
 
     def str2list(self, field, separator):
