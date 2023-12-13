@@ -1,10 +1,11 @@
 import os
 import subprocess
-from datetime  import datetime
+from datetime  import datetime, timedelta
 from netCDF4 import Dataset
 from cftime import date2num
 import numpy
 import chardet
+from typing import Dict
 
 
 class NowTime:
@@ -117,8 +118,17 @@ class Telegram:
         insert_str = f"INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES ({self.timestamp.timestamp()}, '{timestamp_str}',  '{self.config_dict['global_attrs']['sensor_name']}', '{self.telegram_data_str}')"
         self.db_cursor.execute(insert_str)
 
-    # def unpack_db_telegram(self):
-
+    def query_db(self, start_dt, end_dt):
+        print(start_dt, end_dt)
+        q_select = 'SELECT id, timestamp, datetime, parsivel_id, telegram'
+        q_from = 'FROM disdrodl'
+        q_where = f'WHERE timestamp >= {start_dt.timestamp()} AND timestamp < {end_dt.timestamp()}'
+        select = f'{q_select} {q_from} {q_where}'
+        res = self.db_cursor.execute(select)
+        for i in res.fetchall():
+            id, timestamp, datetime, parsivel_id, telegram_ = i
+            print(id, timestamp, datetime)
+            unpack_telegram_from_db(telegram_str=telegram_)
 
     def str2list(self, field, separator):
         '''
@@ -296,3 +306,25 @@ def string2row(valuestr, delimiter, prefix):
     if values_list[-1] == '' or values_list[-1] == '\n':
         values_list = values_list[:-1]  
     return values_list
+
+
+def unpack_telegram_from_db(telegram_str):
+    '''
+    unpacks  telegram from sqlite DB
+    
+    * key precedes value NN:val
+    * key:value pair, seperated by '; '
+    * list: converted to str with '|' separator between values
+    * empty lists, empty strings: converted to 'None'
+    Example: 19:None; 20:10; 21:25.05.2023;
+    51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
+    '''
+    for telegram_item in telegram_str.split():
+        key, val = telegram_item.split(':')
+        if '|' in val: 
+            val = val.split('|')
+            # list
+        print(key, val, type(val))
+        # FIND DTYPE WHICH ARE USED TO INSERT TO NETCDF
+        # can the val items be strs? How do they get converted to int|float before be inserred to netcdf?
+

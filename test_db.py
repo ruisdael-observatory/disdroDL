@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from logging import StreamHandler
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from modules.sqldb import create_db, connect_db
 from modules.util_functions import yaml2dict
@@ -72,18 +72,19 @@ def test_db_insert(create_db_):
     res = cur.execute("SELECT id, timestamp, datetime, parsivel_id, telegram FROM disdrodl")
     for i in res.fetchall():
         assert isinstance(telegram.telegram_data_str, str) is True
-        id, timestamp, datetime_, parsivel_id, telegram = i
+        id, timestamp, datetime_, parsivel_id, telegram_str = i
         assert isinstance(id, int) is True
         assert isinstance(timestamp, float) is True
         assert datetime.fromtimestamp(timestamp) == now.utc
         assert isinstance(datetime_, str) is True
         assert parsivel_id == config_dict['global_attrs']['sensor_name']
-
-        assert isinstance(telegram, str) is True
-
+        assert isinstance(telegram_str, str) is True
+    telegram.query_db(start_dt=telegram.timestamp, 
+                      end_dt=telegram.timestamp + timedelta(hours=24))
     cur.close()
     con.close()
-
+    import pdb; pdb.set_trace()
+    print(telegram.telegram_lines)
 # TODO: insert data to  db
 
 
