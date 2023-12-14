@@ -109,7 +109,7 @@ class Telegram:
         self.prep_telegram_data4db()
         print('inserting to DB', self.timestamp.isoformat())
         timestamp_str = self.timestamp.isoformat()  
-        insert_str = f"INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES ({self.timestamp.timestamp()}, '{timestamp_str}',  '{self.config_dict['global_attrs']['sensor_name']}', '{self.telegram_data_str}')"
+        insert_str = f"INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES ({self.timestamp.timestamp()}, '{timestamp_str}',  '{self.config_dict['global_attrs']['sensor_name']}', '{self.telegram_data_str}');"
         print(insert_str)
         self.db_cursor.execute(insert_str)
 

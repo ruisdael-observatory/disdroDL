@@ -67,3 +67,6 @@ while True:
         # once we passed 00secs: reset flag_zero_seconds
         flag_zero_seconds = False
     sleep(1)
+
+
+# TODO: why is insert2db inserting data in DB?
