@@ -5,7 +5,7 @@ from netCDF4 import Dataset
 from cftime import date2num
 import numpy
 import chardet
-from typing import Dict
+from typing import Dict, Union
 
 
 class NowTime:
@@ -89,7 +89,7 @@ class Telegram:
         so that it can be easily inserted to SQL DB
         * key precedes value NN:val
         * key:value pair, seperated by '; '
-        * list: converted to str with '|' separator between values
+        * list: converted to str with ',' separator between values
         * empty lists, empty strings: converted to 'None'
         Example: 19:None; 20:10; 21:25.05.2023;
         51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
@@ -101,7 +101,7 @@ class Telegram:
                 if len(val) == 0:
                     dt_str += 'None'
                 else:
-                    dt_str += ('|').join(val)
+                    dt_str += (',').join(val)
             elif isinstance(val, str):
                 if len(val) == 0:
                     dt_str += 'None'
@@ -119,16 +119,22 @@ class Telegram:
         self.db_cursor.execute(insert_str)
 
     def query_db(self, start_dt, end_dt):
-        print(start_dt, end_dt)
         q_select = 'SELECT id, timestamp, datetime, parsivel_id, telegram'
         q_from = 'FROM disdrodl'
         q_where = f'WHERE timestamp >= {start_dt.timestamp()} AND timestamp < {end_dt.timestamp()}'
         select = f'{q_select} {q_from} {q_where}'
         res = self.db_cursor.execute(select)
-        for i in res.fetchall():
-            id, timestamp, datetime, parsivel_id, telegram_ = i
-            print(id, timestamp, datetime)
-            unpack_telegram_from_db(telegram_str=telegram_)
+        for row in res.fetchall():
+            id, timestamp, datetime, parsivel_id, telegram_ = row
+            row_dict = unpack_telegram_from_db(telegram_str=telegram_)
+            # TODO: continue when writing the 24h-rows to netCDF 
+            # for the moment will append to tmp var self.db
+
+            # print(row_dict)
+            # assert there is no ; in values
+            # import pdb; pdb.set_trace()
+
+        # incomplete    
 
     def str2list(self, field, separator):
         '''
@@ -308,23 +314,27 @@ def string2row(valuestr, delimiter, prefix):
     return values_list
 
 
-def unpack_telegram_from_db(telegram_str):
+def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     '''
-    unpacks  telegram from sqlite DB
+    unpacks telegram string from sqlite DB row into a dictionary
     
     * key precedes value NN:val
     * key:value pair, seperated by '; '
-    * list: converted to str with '|' separator between values
+    * list: converted to str with ',' separator between values
     * empty lists, empty strings: converted to 'None'
-    Example: 19:None; 20:10; 21:25.05.2023;
-    51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
+    Example Input: '19:None; 20:10; 21:25.05.2023;
+    51:000140; 90:-9.999,-9.999,-9.999,-9.999,-9.999 ...'
+    Example Output:  {'60': '00000062', '90': '-9.999,-9.999,01.619,...'}
     '''
-    for telegram_item in telegram_str.split():
+    telegram_dict = {}
+    telegram_list = telegram_str.split('; ')
+    for telegram_item in telegram_list:
         key, val = telegram_item.split(':')
-        if '|' in val: 
-            val = val.split('|')
-            # list
-        print(key, val, type(val))
+        if val == 'None':
+            val = None
+        telegram_dict[key] = val
+    return telegram_dict
+    # TODO: handle str to float|int conversion: if there is no A-z letter, and only numbers and . it is number
         # FIND DTYPE WHICH ARE USED TO INSERT TO NETCDF
         # can the val items be strs? How do they get converted to int|float before be inserred to netcdf?
 
