@@ -115,8 +115,7 @@ if __name__ == '__main__':
                             telegram_lines=None,
                             telegram_data=telegram_dict,
                             timestamp=telegram_dict['datetime'],
-                            data_dir=output_path.parent, 
-                            data_fn_start=output_path.stem,
+                            db_cursor=None,
                             logger=logger
                             )
         telegram.str2list(field='90', separator=',')

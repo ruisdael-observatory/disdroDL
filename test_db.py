@@ -55,8 +55,6 @@ def test_db_insert(create_db_):
     telegram = Telegram(config_dict=config_dict,
                         telegram_lines=parsivel_lines,
                         timestamp=now.utc,
-                        data_dir=test_data_dir,  # also not needed
-                        data_fn_start='test',  # arg not needed
                         db_cursor=cur,
                         logger=logger)
     telegram.capture_prefixes_and_data()
@@ -109,8 +107,6 @@ def test_db_insert_multiple():
         telegram = Telegram(config_dict=config_dict,
                             telegram_lines=parsivel_lines,
                             timestamp=new_time,
-                            data_dir=test_data_dir,  # also not needed
-                            data_fn_start=None,  # arg not needed
                             db_cursor=cur,
                             logger=logger)
         telegram.capture_prefixes_and_data()

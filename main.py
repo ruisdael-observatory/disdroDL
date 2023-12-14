@@ -54,9 +54,7 @@ while True:
         telegram = Telegram(config_dict=config_dict,
                             telegram_lines=parsivel_lines,
                             timestamp=now_utc.utc,
-                            data_dir=None, # TODO: remove
-                            data_fn_start=None, # TODO: remove
-                            db_cursor= cur,
+                            db_cursor=cur,
                             logger=logger)
         # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
         telegram.capture_prefixes_and_data()
