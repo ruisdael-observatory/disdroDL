@@ -27,4 +27,3 @@ def create_db(dbpath):
                 )
                 """)
     con.commit()
-    return con, cur

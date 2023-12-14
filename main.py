@@ -3,7 +3,7 @@ from time import sleep
 from argparse import ArgumentParser
 from modules.util_functions import yaml2dict, create_dir, init_serial, create_logger, parsivel_start_sequence
 from modules.classes import NowTime, Telegram
-from modules.sqldb import create_db
+from modules.sqldb import create_db, connect_db
 from pydantic.v1.utils import deep_update
 
 ######################## BOILER PLATE ##################
@@ -38,11 +38,13 @@ db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
 
 flag_zero_seconds = False
 flag_compressed = False
-# try:
+
+create_db(dbpath=str(db_path))
+
 while True:
     now_utc = NowTime()
     if int(now_utc.time_list[2]) == 0 and flag_zero_seconds is False:
-        con, cur = create_db(dbpath=str(db_path))
+        con, cur = connect_db(dbpath=str(db_path))
         flag_zero_seconds = True
         print('time to write:', now_utc.time_list, now_utc.utc)
 
