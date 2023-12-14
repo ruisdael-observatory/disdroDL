@@ -125,16 +125,16 @@ class Telegram:
         select = f'{q_select} {q_from} {q_where}'
         res = self.db_cursor.execute(select)
         for row in res.fetchall():
-            id, timestamp, datetime, parsivel_id, telegram_ = row
+            id, timestamp, dt, parsivel_id, telegram_ = row
             row_dict = unpack_telegram_from_db(telegram_str=telegram_)
             # TODO: continue when writing the 24h-rows to netCDF 
             # for the moment will append to tmp var self.db
 
-            # print(row_dict)
+            print(id, dt)
             # assert there is no ; in values
             # import pdb; pdb.set_trace()
-
-        # incomplete    
+        # TODO: move query DB to another class
+    
 
     def str2list(self, field, separator):
         '''
