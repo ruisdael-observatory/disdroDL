@@ -61,6 +61,7 @@ while True:
         telegram.capture_prefixes_and_data()
         telegram.prep_telegram_data4db()
         telegram.insert2db()
+        con.commit()
         cur.close()
         con.close()
     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds is True:

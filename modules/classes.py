@@ -103,7 +103,7 @@ class Telegram:
                     dt_str += val
             self.telegram_data_str += dt_str
             self.telegram_data_str += '; '
-        self.telegram_data_str = self.telegram_data_str[:-2] # remove last '; '
+        self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
 
     def insert2db(self):
         self.prep_telegram_data4db()
