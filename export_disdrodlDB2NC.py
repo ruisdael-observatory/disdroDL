@@ -4,6 +4,7 @@ from datetime import datetime, date, timedelta
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, create_dir, create_logger
+from modules.classes import ExportDisdroData
 from modules.sqldb import create_db, connect_db
 
 
@@ -50,8 +51,13 @@ if __name__ == '__main__':
     sql_query = f"SELECT * FROM disdrodl WHERE timestamp >= {start_ts} AND timestamp < {end_ts}"
     logger.debug(sql_query)
     df_disdro_data = pd.read_sql_query(sql_query, con)
+    disdro_data = ExportDisdroData(
+        config_dict=config_dict,
+        logger=logger,
+        df=df_disdro_data)
+    disdro_data.parse_telegram_col()
     #  TODO: parse telegram col
     #  TODO: Create netCDF
-    print(df_disdro_data)
+    print(disdro_data.df)
     cur.close()
     con.close()

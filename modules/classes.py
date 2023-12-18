@@ -77,6 +77,19 @@ class Telegram:
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
 
+    def parse_from_df(self):
+        '''
+        def parsers telegram string from dataframe telegram columns
+        '''
+        for keyval in self.telegram_lines.split('; '):
+            keyval_list =keyval.split(':')
+            if len(keyval_list) > 1 and keyval_list[1].strip() != self.delimiter:
+                field = keyval_list[0]
+                value = keyval_list[1].strip()  # strip white space
+                value_list = value.split(self.delimiter)
+                value_list = [v for v in value_list if len(v) > 0]
+                print(f'key:{field}', f'val:{value_list}')
+
     def prep_telegram_data4db(self):
         '''
         transforms self.telegram_data items into self.telegram_data_str
@@ -130,7 +143,6 @@ class Telegram:
             # import pdb; pdb.set_trace()
         # TODO: move query DB to another class
     
-
     def str2list(self, field, separator):
         '''
         converts telegram_data values from string to list, 
@@ -333,3 +345,41 @@ def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
         # FIND DTYPE WHICH ARE USED TO INSERT TO NETCDF
         # can the val items be strs? How do they get converted to int|float before be inserred to netcdf?
 
+
+class ExportDisdroData:
+    '''
+    Class dedicated to handling 24hours of Parsivel data
+    '''
+    def __init__(self, config_dict, logger, df):
+        '''
+        initiates variables and methods:
+        * set_netCDF_path
+        * create_netCDF
+        '''
+        self.config_dict = config_dict
+        self.df = df
+        self.logger = logger
+    
+    def parse_telegram_col(self):
+        # expand df with telegram fields
+        telegram_fields = list(self.config_dict['telegram_fields'].keys())
+        print(telegram_fields)
+        self.df[telegram_fields] = None
+        # self.df.at[0, '01'] = 'xxx'
+
+        for row in self.df.itertuples():
+            print('row:', row)  # <class 'pandas.core.frame.Pandas'>
+            row_telegram = Telegram(
+                config_dict=self.config_dict,
+                telegram_lines=row.telegram,
+                timestamp=datetime.fromtimestamp(row.timestamp),
+                db_cursor=None,
+                logger=self.logger,
+                telegram_data=None)
+            print(row_telegram)
+            row_telegram.parse_from_df()
+            # import pdb; pdb.set_trace()
+            # print(row_telegram.telegram_data)
+        # # split the Name column into two columns
+        # df[['First Name', 'Last Name']] = df['Name'].str.split(' ', expand=True)
+        
