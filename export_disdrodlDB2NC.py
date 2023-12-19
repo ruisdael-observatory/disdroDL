@@ -62,6 +62,7 @@ if __name__ == '__main__':
     logger.debug(query_str)
     telegram_objs = []
     for row in sql_query_gen(con=con, query=query_str):
+        print(row)
         row_telegram = Telegram(
             config_dict=config_dict,
             telegram_lines=row.get('telegram'),
