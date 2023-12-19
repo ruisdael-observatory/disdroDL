@@ -1,6 +1,5 @@
 import os
 import subprocess
-import pandas as pd
 from datetime  import datetime, timedelta
 from netCDF4 import Dataset
 from cftime import date2num
