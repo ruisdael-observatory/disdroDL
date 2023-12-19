@@ -1,3 +1,4 @@
+from ctypes import Union
 import sqlite3
 from typing import Tuple
 # telegram_fields = config_dict['telegram_fields'].keys()
@@ -27,3 +28,14 @@ def create_db(dbpath):
                 )
                 """)
     con.commit()
+
+
+def dict_factory(cursor, row):
+    fields = [column[0] for column in cursor.description]
+    return {key: value for key, value in zip(fields, row)}
+
+
+def sql_query_gen(con, query):
+    con.row_factory = dict_factory
+    for row in con.execute(query):
+        yield row
