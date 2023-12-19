@@ -83,9 +83,9 @@ class Telegram:
         def parsers telegram string from SQL telegram field
         '''
         for keyval in self.telegram_lines.split('; '):
-            keyval_list =keyval.split(':')
-            print(keyval_list)
-            if keyval_list[0] in self.config_dict['telegram_fields'].keys() and len(keyval_list) > 1 and keyval_list[1].strip() != self.delimiter:
+            keyval_list = keyval.split(':')
+            if keyval_list[0] in self.config_dict['telegram_fields'].keys() and \
+               len(keyval_list) > 1 and keyval_list[1].strip() != self.delimiter:
                 field = keyval_list[0]
                 value = keyval_list[1].strip()  # strip white space
                 value_list = value.split(self.delimiter)
@@ -94,9 +94,7 @@ class Telegram:
                     value = value_list[0]
                 else:
                     value = value_list
-                print(value)
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
-                print('self.telegram_data', self.telegram_data)
                 self.telegram_data[field] = value
 
     def prep_telegram_data4db(self):

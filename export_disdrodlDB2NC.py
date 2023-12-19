@@ -11,6 +11,17 @@ date_today = date.today()
 date_yest = date_today - timedelta(days=1)
 
 
+def str2list_by_ndigits(input: str, ndigits: int) -> list[str]: 
+    '''
+    converts str (sequence of characters) into a list,
+    with each item being ndigits long.
+    Used only for F93 values, when they are in  '00000000000' (Ruisdael CSVs) 
+    '''
+    range_obj = range(0, len(input), ndigits)
+    list_val = [input[i:i + ndigits] for i in range_obj]
+    return list_val
+
+
 if __name__ == '__main__':
     parser = ArgumentParser(
         description="Export 1 day of parsivel data from DB to NetCDF.\
@@ -58,14 +69,35 @@ if __name__ == '__main__':
             db_cursor=None,
             logger=logger,
             telegram_data={})
-        # print(row_telegram)
         row_telegram.parse_telegram_row()
+        row_telegram.str2list(field='90', separator=',')
+        row_telegram.str2list(field='91', separator=',')
+        row_telegram.str2list(field='93', separator=',')
+
+        assert len(row_telegram.telegram_data['90']) == 32
+        for i in row_telegram.telegram_data['90']:
+            assert len(i) in [4, 5,6,7] and ',' not in i
+        assert len(row_telegram.telegram_data['91']) == 32
+        for i in row_telegram.telegram_data['91']:
+            # print('f91:', i)
+            assert len(i) == 6 and ',' not in i
+        assert len(row_telegram.telegram_data['93']) == 1024
+        for i in row_telegram.telegram_data['93']:
+            # print('f93:', i)
+            assert len(i) == 3
+            for l in i:
+                assert int(l) in list(range(10))
+
+
+
+        # row_telegram.telegram_data['93'] = str2list_by_ndigits(input=row_telegram.telegram_data['93'], ndigits=3)
+
         telegram_objs.append(row_telegram)
 
     # import pdb; pdb.set_trace()
 
     telegram_objs[0].timestamp
-    telegram_objs[0].telegram_data
+    # print(telegram_objs[0].telegram_data)
 
     #  TODO: Create netCDF
     cur.close()
