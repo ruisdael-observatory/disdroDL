@@ -4,6 +4,8 @@ import sys
 import serial
 from typing import Dict
 from time import sleep
+from pathlib import Path
+
 if __name__ == '__main__': 
     from log import log 
 else:
@@ -15,10 +17,9 @@ def yaml2dict(path: str) -> Dict:
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
 
-def create_dir(path: str):
+def create_dir(path: Path):
     if not os.path.exists(path):
-        path.mkdir(parents=True)
-        # os.mkdir(path)
+        Path.mkdir(path, parents=True)
         created_dir = True
     else:
         created_dir = False

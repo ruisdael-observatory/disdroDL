@@ -3,32 +3,19 @@ from datetime import datetime, date, timedelta
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, create_dir, create_logger
-from modules.classes import Telegram
+from modules.classes import Telegram, NetCDF
 from modules.sqldb import create_db, connect_db, sql_query_gen
 
 
 date_today = date.today()
 date_yest = date_today - timedelta(days=1)
 
-
-def str2list_by_ndigits(input: str, ndigits: int) -> list[str]: 
-    '''
-    converts str (sequence of characters) into a list,
-    with each item being ndigits long.
-    Used only for F93 values, when they are in  '00000000000' (Ruisdael CSVs) 
-    '''
-    range_obj = range(0, len(input), ndigits)
-    list_val = [input[i:i + ndigits] for i in range_obj]
-    return list_val
-
-
 if __name__ == '__main__':
     parser = ArgumentParser(
         description="Export 1 day of parsivel data from DB to NetCDF.\
             Run: python export_daily_netcdf.py -c configs_netcdf/config_007_CABAUW.yml\
                 -d 2023-12-17 \
-            Output netCDF: store in same directory as input file"
-        )
+            Output netCDF: store in same directory as input file")
     parser.add_argument(
         '-c',
         '--config',
@@ -41,28 +28,36 @@ if __name__ == '__main__':
         help='Date string for files to be captured. Format: YYYY-mm-dd')
 
     args = parser.parse_args()
-
+    date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
     config_dict_site = yaml2dict(path=wd / args.config)
     config_dict = deep_update(config_dict, config_dict_site)
+    site_name = config_dict['global_attrs']['site_name']
+    st_code = config_dict['station_code']
+    sensor_name = config_dict['global_attrs']['sensor_name']
+    fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
     db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
-
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                        script_name=config_dict['script_name'],
-                        parsivel_name=config_dict['global_attrs']['sensor_name'])
-    logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}")
-
+                           script_name=config_dict['script_name'],
+                           parsivel_name=config_dict['global_attrs']['sensor_name'])
+    logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}") 
+    # Monthly Data dir
+    data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+    created_data_dir = create_dir(path=data_dir)  # create if does not exist
+    if created_data_dir:
+        logger.info(msg=f'Created data directory: {data_dir}')
+    # DB query
     con, cur = connect_db(dbpath=str(db_path))
-    start_dt = datetime.strptime(args.date, '%Y-%m-%d').replace(hour=0, minute=0, second=10)
+    start_dt = date_dt.replace(hour=0, minute=0, second=10)
     start_ts = start_dt.timestamp()
-    end_dt = datetime.strptime(args.date, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+    end_dt = date_dt.replace(hour=23, minute=59, second=59)
     end_ts = end_dt.timestamp()
     query_str = f"SELECT * FROM disdrodl WHERE timestamp >= {start_ts} AND timestamp < {end_ts}"
     logger.debug(query_str)
+    # Append each SQL response row as Telegram instance to telegram_objs var 
     telegram_objs = []
     for row in sql_query_gen(con=con, query=query_str):
-        print(row)
         row_telegram = Telegram(
             config_dict=config_dict,
             telegram_lines=row.get('telegram'),
@@ -74,39 +69,23 @@ if __name__ == '__main__':
         row_telegram.str2list(field='90', separator=',')
         row_telegram.str2list(field='91', separator=',')
         row_telegram.str2list(field='93', separator=',')
-
-        assert len(row_telegram.telegram_data['90']) == 32
-        for i in row_telegram.telegram_data['90']:
-            assert len(i) in [4, 5,6,7] and ',' not in i
-        assert len(row_telegram.telegram_data['91']) == 32
-        for i in row_telegram.telegram_data['91']:
-            # print('f91:', i)
-            assert len(i) == 6 and ',' not in i
-        assert len(row_telegram.telegram_data['93']) == 1024
-        for i in row_telegram.telegram_data['93']:
-            # print('f93:', i)
-            assert len(i) == 3
-            for l in i:
-                assert int(l) in list(range(10))
-
-
-
-        # row_telegram.telegram_data['93'] = str2list_by_ndigits(input=row_telegram.telegram_data['93'], ndigits=3)
-
         telegram_objs.append(row_telegram)
-
-    # import pdb; pdb.set_trace()
-
-    telegram_objs[0].timestamp
-    # print(telegram_objs[0].telegram_data)
-
-    #  TODO: Create netCDF
     cur.close()
     con.close()
 
+    print(telegram_objs[0].telegram_data)
+    nc = NetCDF(logger=logger,
+                config_dict=config_dict,
+                data_dir=data_dir,
+                fn_start=fn_start,
+                telegram_objs=telegram_objs,
+                date=date_dt)
+    nc.create_netCDF()
+    #  TODO: Create netCDF
+
 '''
 {'id': 63, 
-'timestamp': 1702893180.045758, 
+'timestamp': 1702893180.045758, '
 'datetime': '2023-12-18T09:53:00.045758', 
 'parsivel_id': 'PAR008', 
 'telegram': 'VERSION:2.11.6; BUILD:2112151; 01:0000.000; 02:0000.00; 03:00; 04:00; 05:NP; 06:C; 07:-9.999; 08:20000; 09:00059; 10:11423; 11:00000; 12:008; 13:450994; 14:2.11.6; 15:2.11.1; 16:2.00; 17:24.2; 18:0; 19:None; 20:09; 21:18.12.2023; 22:GV; 23:None; 24:0000.00; 25:000; 26:021; 27:010; 28:010; 29:000.014; 30:00.000; 31:0000.0; 32:0000.00; 34:0000.00; 35:0000.00; 40:20000; 41:20000; 50:00000000; 51:000140; 90:-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999; 91:00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000; 93:000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000; 94:0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000; 95:0.00,0.00,0.00,0.00,0.00,0.00,0.00; 96:0000000,0000000,0000000,0000000,0000000,0000000,0000000'}

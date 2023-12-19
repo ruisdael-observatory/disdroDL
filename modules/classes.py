@@ -6,7 +6,7 @@ from netCDF4 import Dataset
 from cftime import date2num
 import numpy
 import chardet
-from typing import Dict, Union
+from typing import List, Dict, Union
 
 
 class NowTime:
@@ -159,26 +159,34 @@ class Telegram:
         list_val = str_val.split(separator)
         self.telegram_data[field] = list_val
 
+
+class NetCDF:
+    def __init__(self, logger, config_dict, data_dir, fn_start, 
+                 telegram_objs: List[Dict],
+                 date: datetime) -> None:
+        self.logger = logger
+        self.config_dict = config_dict
+        self.data_dir = data_dir
+        self.fn_start = fn_start
+        self.date = date
+
     def set_netCDF_path(self):
-        self.path_netCDF = self.data_dir / f'{self.data_fn_start}.nc'
-        self.path_netCDF_temp = self.data_dir / f'tmp_{self.data_fn_start}.nc'
-        # TODO: move var assignment to __init__
-        #TODO: set path self.path_netCDF_f61
+        self.path_netCDF = self.data_dir / f'{self.fn_start}.nc'
+        self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc'
 
     def create_netCDF(self):
         '''
-        def creates new netCDF file with global attributes, dimensions and variables (defined in yaml) 
-        TODO: create new netCDF for F61 at self.path_netCDF_f61
-
+        def creates new netCDF file with global attributes, dimensions and variables (defined in yaml)
         '''
-        if not os.path.exists(self.path_netCDF):
-            netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
-            # netCDF_rootgrp.set_fill_on()
-            global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
-            netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
-            netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, timestamp=self.timestamp,logger=self.logger)
-            netCDF_rootgrp.close()
-    
+        self.set_netCDF_path()
+        netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
+        # netCDF_rootgrp.set_fill_on()
+        global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
+        netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
+        # TODO: edit netCDF_variables 
+        # netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, timestamp=self.timestamp, logger=self.logger)
+        netCDF_rootgrp.close()
+
     def append_data_to_netCDF(self):
         '''
         def appends data to netCDF (path_netCDF)
@@ -225,6 +233,7 @@ class Telegram:
         self.logger.info(msg=f'Compressed netCDF {self.path_netCDF}')
         os.remove(self.path_netCDF)
         os.rename(self.path_netCDF_temp, self.path_netCDF)
+
 
 def global_attrs_to_netCDF(nc_rootgrp, config_dict):
     '''
