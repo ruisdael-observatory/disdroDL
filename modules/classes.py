@@ -127,7 +127,7 @@ class Telegram:
     def insert2db(self):
         self.prep_telegram_data4db()
         self.logger.info('inserting to DB', self.timestamp.isoformat())
-        timestamp_str = self.timestamp.isoformat()  
+        timestamp_str = self.timestamp.isoformat()
         insert_str = f"INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES ({self.timestamp.timestamp()}, '{timestamp_str}',  '{self.config_dict['global_attrs']['sensor_name']}', '{self.telegram_data_str}');"
         self.logger.debug(insert_str)
         self.db_cursor.execute(insert_str)
@@ -179,10 +179,22 @@ class NetCDF:
         self.set_netCDF_path()
         netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
         # netCDF_rootgrp.set_fill_on()
-        global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict)
-        netCDF_dimensions(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, logger=self.logger)
+        global_attrs_to_netCDF(
+            nc_rootgrp=netCDF_rootgrp, 
+            config_dict=self.config_dict
+        )
+        netCDF_dimensions(
+            nc_rootgrp=netCDF_rootgrp,
+            config_dict=self.config_dict,
+            logger=self.logger
+        )
         # TODO: edit netCDF_variables 
-        # netCDF_variables(nc_rootgrp=netCDF_rootgrp, config_dict=self.config_dict, timestamp=self.timestamp, logger=self.logger)
+        netCDF_variables(
+            nc_rootgrp=netCDF_rootgrp, 
+            config_dict=self.config_dict, 
+            timestamp=self.timestamp,
+            logger=self.logger
+        )
         netCDF_rootgrp.close()
 
     def append_data_to_netCDF(self):
@@ -252,9 +264,7 @@ def netCDF_dimensions(nc_rootgrp, config_dict, logger):
 
 def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
     logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
-    # print(one_var_dict)
-    if one_var_dict['include_in_nc'] is True:  # one_var_dict['include_in_nc'] is True:
-
+    if one_var_dict['include_in_nc'] is True:
         if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
             compression_method = 'zlib'
             # compression_method = dict(zlib=True, shuffle=True, complevel=5)
@@ -271,25 +281,25 @@ def set_netcdf_variable(key, one_var_dict, nc_group, timestamp, logger):
                 complevel=9,
                 shuffle=True,
                 fletcher32=True)
-
         elif len(one_var_dict['dimensions']) >= 1:
             if 'fill_value' in one_var_dict.keys():
                 fill_val = one_var_dict['fill_value']
             else:
                 fill_val = -1 
-            variable = nc_group.createVariable(one_var_dict['var_attrs']['standard_name'], 
-                                            one_var_dict['dtype'],
-                                            tuple([dim for dim in one_var_dict['dimensions']]),
-                                            compression=compression_method,
-                                            fill_value=fill_val,
-                                            )
-        # fill predefine values
+            variable = nc_group.createVariable(
+                one_var_dict['var_attrs']['standard_name'],
+                one_var_dict['dtype'],
+                tuple([dim for dim in one_var_dict['dimensions']]),
+                compression=compression_method,
+                fill_value=fill_val,
+            )
+        # fill (some) NetCDF variables' with predefine values
         if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
             # use .assignValue() method for scalar values
             variable.assignValue(one_var_dict['value'])  
         elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
             variable[:] = one_var_dict['value']
-
+        # set NetCDF variables' attributes: units, comments, etc
         for var_attr in one_var_dict['var_attrs']:
             variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr]) 
         if key == 'time':

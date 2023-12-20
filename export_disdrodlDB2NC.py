@@ -72,8 +72,10 @@ if __name__ == '__main__':
         telegram_objs.append(row_telegram)
     cur.close()
     con.close()
-
-    print(telegram_objs[0].telegram_data)
+    print('len telegram_objs:', len(telegram_objs))
+    # print(telegram_objs[0].telegram_data)
+    
+    # TODO: what happens if telegram_objs is empty?
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
                 data_dir=data_dir,
