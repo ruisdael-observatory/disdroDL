@@ -167,6 +167,8 @@ class NetCDF:
         self.data_dir = data_dir
         self.fn_start = fn_start
         self.date_dt = date
+        self.telegram_objs = telegram_objs
+
     def set_netCDF_path(self):
         self.path_netCDF = self.data_dir / f'{self.fn_start}.nc'
         self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc'
@@ -199,15 +201,22 @@ class NetCDF:
     def append_data_to_netCDF(self):
         '''
         def appends data to netCDF (path_netCDF)
-        TODO: append data to self.path_netCDF_f61
         '''
-        netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")        
+        netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")     
         # (time) appending timestamps to var time
         netCDF_var_time = netCDF_rootgrp.variables['time']
-        time_now_array = date2num([self.timestamp], units=netCDF_var_time.units,calendar=netCDF_var_time.calendar)
+
+        time_now_array = date2num([self.timestamp],
+                                  units=netCDF_var_time.units,
+                                  calendar=netCDF_var_time.calendar
+                                  )
+        
+        
         netCDF_var_time[:] = numpy.concatenate([netCDF_var_time[:].data, time_now_array])
         # currentindex: write data to *this* slot(currentindex)
-        currentindex = len(netCDF_var_time[:].data) - 1  
+
+        currentindex = len(netCDF_var_time[:].data) - 1  # DEPRECATED
+        
         timestamp_var = netCDF_rootgrp.variables['timestamp']
         timestamp_var[currentindex] = self.timestamp.strftime('%Y-%m-%dT%H:%M:%S') # timestamp str
         # print(self.telegram_data)
