@@ -126,10 +126,10 @@ class Telegram:
 
     def insert2db(self):
         self.prep_telegram_data4db()
-        print('inserting to DB', self.timestamp.isoformat())
+        self.logger.info('inserting to DB', self.timestamp.isoformat())
         timestamp_str = self.timestamp.isoformat()  
         insert_str = f"INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES ({self.timestamp.timestamp()}, '{timestamp_str}',  '{self.config_dict['global_attrs']['sensor_name']}', '{self.telegram_data_str}');"
-        print(insert_str)
+        self.logger.debug(insert_str)
         self.db_cursor.execute(insert_str)
 
     def query_db(self, start_dt, end_dt):
@@ -144,7 +144,6 @@ class Telegram:
             # TODO: continue when writing the 24h-rows to netCDF 
             # for the moment will append to tmp var self.db
 
-            print(id, dt)
             # assert there is no ; in values
             # import pdb; pdb.set_trace()
         # TODO: move query DB to another class

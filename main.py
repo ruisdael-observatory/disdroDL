@@ -46,7 +46,7 @@ while True:
     if int(now_utc.time_list[2]) == 0 and flag_zero_seconds is False:
         con, cur = connect_db(dbpath=str(db_path))
         flag_zero_seconds = True
-        print('time to write:', now_utc.time_list, now_utc.utc)
+        logger.debug('writing Telegram to DB on:', now_utc.time_list, now_utc.utc)
 
         parsivel.write('CS/PA\r\n'.encode('ascii'))  # Output all telegram measurement values
         parsivel_lines = parsivel.readlines()
