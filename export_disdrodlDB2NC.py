@@ -29,6 +29,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     date_dt = datetime.strptime(args.date, '%Y-%m-%d')
+    # NOTE:  since date_dt is a datetime instance
+    #        but not time data is provided
+    #        it gets set 00:00:00 midnight
     wd = Path(__file__).parent
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
     config_dict_site = yaml2dict(path=wd / args.config)
@@ -41,7 +44,14 @@ if __name__ == '__main__':
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name=config_dict['script_name'],
                            parsivel_name=config_dict['global_attrs']['sensor_name'])
-    logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}") 
+
+    msg_conf = f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}"
+    logger.info(msg=msg_conf)
+    print(msg_conf)
+    msg_date = f'Exporting data from {date_dt} to {date_dt.replace(hour=23, minute=59, second=59)}' 
+    logger.info(msg=msg_date)
+    print(msg_date)
+
     # Monthly Data dir
     data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
     created_data_dir = create_dir(path=data_dir)  # create if does not exist
@@ -49,7 +59,7 @@ if __name__ == '__main__':
         logger.info(msg=f'Created data directory: {data_dir}')
     # DB query
     con, cur = connect_db(dbpath=str(db_path))
-    start_dt = date_dt.replace(hour=0, minute=0, second=10)
+    start_dt = date_dt.replace(hour=0, minute=0, second=0)  # redundant replace
     start_ts = start_dt.timestamp()
     end_dt = date_dt.replace(hour=23, minute=59, second=59)
     end_ts = end_dt.timestamp()
@@ -72,7 +82,7 @@ if __name__ == '__main__':
         telegram_objs.append(row_telegram)
     cur.close()
     con.close()
-    print('len telegram_objs:', len(telegram_objs))
+    # print('len telegram_objs:', len(telegram_objs))
     # print(telegram_objs[0].telegram_data)
     
     # TODO: what happens if telegram_objs is empty?

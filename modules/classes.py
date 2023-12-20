@@ -166,8 +166,7 @@ class NetCDF:
         self.config_dict = config_dict
         self.data_dir = data_dir
         self.fn_start = fn_start
-        self.date = date
-
+        self.date_dt = date
     def set_netCDF_path(self):
         self.path_netCDF = self.data_dir / f'{self.fn_start}.nc'
         self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc'
@@ -188,11 +187,11 @@ class NetCDF:
             config_dict=self.config_dict,
             logger=self.logger
         )
-        # TODO: edit netCDF_variables 
+        # TODO: edit netCDF_variables
         netCDF_variables(
-            nc_rootgrp=netCDF_rootgrp, 
-            config_dict=self.config_dict, 
-            timestamp=self.timestamp,
+            nc_rootgrp=netCDF_rootgrp,
+            config_dict=self.config_dict,
+            timestamp=self.date_dt.replace(hour=0, minute=0, second=0),
             logger=self.logger
         )
         netCDF_rootgrp.close()
@@ -315,7 +314,7 @@ def netCDF_variables(nc_rootgrp, config_dict, timestamp, logger):
     for key, var_dict in config_dict['variables'].items():
         set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
         
-    for key,var_dict in config_dict['telegram_fields'].items():
+    for key, var_dict in config_dict['telegram_fields'].items():
         set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp, timestamp=timestamp, logger=logger)
 
 def join_f61_items(telegram_list):
