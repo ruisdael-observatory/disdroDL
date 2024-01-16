@@ -1,5 +1,17 @@
 
-######### NETCDF ###########
+######### NETCDF General Config ###########
+# OTT Parsivel2 Netcdf file structure - defined in YAML 
+#
+# NOTE: Before editing this file, double check if you need to. 
+#       All metadata related to station's location, IDs, PIs, etc must be described in the
+#       config_NNN_LOCATION.yml files and NOT ON config_general.yml
+#
+# CONFIG GENERAL STRUCTURE:
+#     dimensions: NetCDF dimensions' definitions
+#     variables:  NetCDF variable definitions for the **variables NOT present** in OTT Parsivel Telegram. 
+#                 Usually for variables with predefined values
+#     telegram_fields: NetCDF variable definitions for the **variables present** in OTT Parsivel Telegram
+##########################################
 dimensions:
     time:
         size: #None: to create an unlimited dimension (a dimension that can be appended to), the size value is set to None or 0.
@@ -32,14 +44,14 @@ variables:
             units: s
             long_name: 'Length of measurement interval'
             standard_name: 'time_interval'
-    timestamp:
+    datetime:
         dimensions:
             - time
         dtype: 'S4'  # string
         include_in_nc: true                    
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
-            standard_name: 'timestamp'
+            standard_name: 'datetime'
     velocity_classes_center:
         dimensions:
             - velocity_classes
@@ -725,3 +737,5 @@ telegram_fields:
             long_name: 'Raw data as a function of particle diameter and velocity'
             standard_name: 'data_raw'
             units: '1'
+            comment: 'Value range: 0 ... 999. -99 means that an error was encountered in data_raw 3d-array'
+

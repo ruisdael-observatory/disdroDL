@@ -1,131 +1,90 @@
 import os
 import logging
 from logging import StreamHandler
-from datetime import datetime, timedelta
-from pprint import pprint
+from datetime import datetime, timezone
 from pathlib import Path
 from modules.classes import NowTime, Telegram
 from modules.util_functions import yaml2dict
-from netCDF4 import Dataset
-from cftime import num2date
 from pydantic.v1.utils import deep_update
 
 
 log_handler = StreamHandler()
 logger = logging.getLogger('testlog')
 logger.addHandler(log_handler)
-wd = Path(__file__).parent 
+wd = Path(__file__).parent
 test_data_dir = wd / 'test_data'
-config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general.yml')
-config_dict_site = yaml2dict(path = wd / 'configs_netcdf' / 'config_008_GV.yml')
+config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
+config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 
 parsivel_lines = [b'TYP OP4A\r\n', b'01:0000.000\r\n', b'02:0000.00\r\n', b'03:00\r\n', b'04:00\r\n', b'05:   NP\r\n', b'06:   C\r\n', b'07:-9.999\r\n', b'08:20000\r\n', b'09:00043\r\n', b'10:13894\r\n', b'11:00000\r\n', b'12:021\r\n', b'13:450994\r\n', b'14:2.11.6\r\n', b'15:2.11.1\r\n', b'16:0.50\r\n', b'17:24.3\r\n', b'18:0\r\n', b'19: \r\n', b'20:10:13:21\r\n', b'21:25.05.2023\r\n', b'22:\r\n', b'23:\r\n', b'24:0000.00\r\n', b'25:000\r\n', b'26:032\r\n', b'27:022\r\n', b'28:022\r\n', b'29:000.041\r\n', b'30:00.000\r\n', b'31:0000.0\r\n', b'32:0000.00\r\n', b'34:0000.00\r\n', b'35:0000.00\r\n', b'40:20000\r\n', b'41:20000\r\n', b'50:00000000\r\n', b'51:000140\r\n', b'90:-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;\r\n', b'91:00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;\r\n', b'93:000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;\r\n', b'94:0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;\r\n', b'95:0.00;0.00;0.00;0.00;0.00;0.00;0.00;\r\n', b'96:0000000;0000000;0000000;0000000;0000000;0000000;0000000;\r\n', b'97:;\r\n', b'98:;\r\n', b'99:;\r\n', b'\x03']
 
+
 def test_NowTime():
     now = NowTime()
-    test_time_list = datetime.utcnow().strftime("%H:%M:%S").split(":") 
-    assert type(now.time_list) == list
-    assert now.time_list[0] == test_time_list[0] and now.time_list[1] == test_time_list[1] and now.time_list[2] == test_time_list[2]
-    # assert: the following attributes are only created after method: date_strings()
-    assert type(now.iso) == str and type(now.ym) == str and type(now.ymd) == str  
+    test_time_list = datetime.utcnow().strftime("%H:%M:%S").split(":")
+    assert isinstance(now.time_list, list) is True
+    assert now.time_list[0] == test_time_list[0]
+    assert now.time_list[1] == test_time_list[1]
+    assert now.time_list[2] == test_time_list[2]
+    # assert: the following attributes are only created after method: __date_strings()
+    assert isinstance(now.iso, str) is True
+    assert isinstance(now.ym, str) is True
+    assert isinstance(now.ymd, str) is True
 
-def test_Telegram_netCDF():
+
+def test_timestamp():
     now = NowTime()
-    fn_start = 'classtest'
-    create_test_data_dir(dir=test_data_dir)
-    delete_netcdf(fn_start='classtest', data_dir=test_data_dir,)  # delete old netCDF
-    telegram = Telegram(config_dict=config_dict,
-                        telegram_lines=parsivel_lines, 
-                        timestamp=now.utc, 
-                        data_dir=test_data_dir,
-                        data_fn_start=fn_start,
-                        logger=logger)         
-    # test dimensions
-    rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
-    assert set(['time', 'diameter_classes', 'velocity_classes']).issubset(set(rootgrp.dimensions.keys()))
-    netCDF_var_velocity = rootgrp.variables['velocity_center_classes']
-    netCDF_var_velocity_data = netCDF_var_velocity[:].data
-    assert len(netCDF_var_velocity_data) == rootgrp.dimensions['velocity_classes'].size
-    netCDF_var_diameter = rootgrp.variables['diameter_center_classes']
-    netCDF_var_diameter_data = netCDF_var_diameter[:].data
-    assert len(netCDF_var_diameter_data) == rootgrp.dimensions['diameter_classes'].size
-    # test global attributes
-    assert rootgrp.title == config_dict['global_attrs']['title']
-    assert rootgrp.contributors == config_dict['global_attrs']['contributors']    
-    pprint(rootgrp.__dict__)
-    rootgrp.close()
+    print('now.utc', now.utc)
+    print('now.utc (iso)', now.utc.isoformat())
+    ts = now.utc.timestamp()
+    ts_no_tz = datetime.fromtimestamp(ts)
+    ts_tz = datetime.fromtimestamp(ts, tz=timezone.utc)
+    assert ts_tz.isoformat() == now.utc.isoformat()
+    assert ts_no_tz.isoformat() != now.utc.isoformat()  # no tz aware date will differ from tzaware
+    # print('now.utc.timestamp', ts)
+    # print('ts_no_tz', ts_no_tz)
+    # print('utcfromtimestamp', datetime.utcfromtimestamp(ts))
+    # print('ts_tz', ts_tz)
+
+# Python docs: fromtimestamp(timestamp, tz=None)¶ on timezones
+# Return the local date and time corresponding to the POSIX timestamp, such as is returned by time.time().
+# If optional argument tz is None or not specified, the timestamp is converted to the platform’s local date and time,
+# and the returned datetime object is naive.
 
 
-
-def test_append_data_netCDF():
-    # -- append data: test time
-    amount_data_points = 10
-    now = NowTime()
-    fn_start = 'classtest'
-    # write data
-    for i in range(amount_data_points):
-        new_time = now.utc + (i*timedelta(minutes=1)) # time offset: by 1 minute
-        telegram = Telegram(config_dict=config_dict,
-                    telegram_lines=parsivel_lines, 
-                    timestamp=new_time, 
-                    data_dir=test_data_dir,
-                    data_fn_start=fn_start,
-                    logger=logger)
-        telegram.capture_prefixes_and_data()
-        telegram.append_data_to_netCDF()
-
-    # read and test
-    rootgrp = Dataset(f'{test_data_dir/fn_start}.nc', 'r', format="NETCDF4")  # read netcdf
-    netCDF_var_time = rootgrp.variables['time']
-    netCDF_var_time_data = netCDF_var_time[:].data
-    assert len(netCDF_var_time_data) == amount_data_points
-    first_time_item = num2date(
-        netCDF_var_time_data[0],
-        units=f'hours since {now.utc.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
-    )
-    assert first_time_item.strftime("%Y-%m-%dT%H:%M:%S") == now.utc.strftime("%Y-%m-%dT%H:%M:%S")
-
-    netCDF_var_MOR = rootgrp.variables['MOR']
-    netCDF_var_MOR_data = netCDF_var_MOR[:].data
-    assert netCDF_var_MOR_data[0] == float(20000.0)
-    netCDF_var_amp = rootgrp.variables['amplitude']
-    netCDF_var_amp_data = netCDF_var_amp[:].data
-    assert netCDF_var_amp_data[0] == 13894
-    netCDF_var_temp_l_sensor = rootgrp.variables['T_L_sensor_head']
-    netCDF_var_temp_l_sensor_data = netCDF_var_temp_l_sensor[:].data
-    netCDF_var_temp_r_sensor = rootgrp.variables['T_R_sensor_head']
-    netCDF_var_temp_r_sensor_data = netCDF_var_temp_r_sensor[:].data
-    assert netCDF_var_temp_r_sensor_data[0] == netCDF_var_temp_l_sensor_data[0] # same temp on L & R sensors: only valid for current data
-
-    # F93: data_raw - test shape is 32x32 ndarry for each data point
-    netCDF_var_data_raw = rootgrp.variables['data_raw']
-    netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
-    netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
-    # print(netCDF_var_data_raw_shape)
-    assert netCDF_var_data_raw_shape == (amount_data_points, 32, 32)
-'''    
-    # TODO: F61
-    # # all_particles (f61)
-    # netCDF_var_all_particles = rootgrp.variables['all_particles']
-    # netCDF_var_all_particles_data = netCDF_var_all_particles[:].data
-    # netCDF_var_all_particles_shape = netCDF_var_all_particles_data.shape  
-    # # testing shape: should always be (number of data points, number of particles, 2) 
-    # assert netCDF_var_all_particles_shape == (amount_data_points, len(telegram.f61_rows), 2)
-    # # getting all_particles val from netCDF and telegram.f61_rows, rounding them to 4 decimal places and testing ==
-    # sample_f61_vals = [round(float(i),4) for i in telegram.f61_rows[0]]
-    # sample_netCDF_all_particles = netCDF_var_all_particles_data[0][0].tolist()
-    # sample_netCDF_all_particles = [round(i,4) for i in sample_netCDF_all_particles]
-    # assert sample_f61_vals == sample_netCDF_all_particles
-'''
+def test_Telegram_row():
+    row = {'id': 65, 'timestamp': 1702893300.577833, 'datetime': '2023-12-18T09:55:00.577833', 'parsivel_id': 'PAR008', 'telegram': 'VERSION:2.11.6; BUILD:2112151; 01:0000.000; 02:0000.00; 03:00; 04:00; 05:NP; 06:C; 07:-9.999; 08:20000; 09:00060; 10:11424; 11:00000; 12:008; 13:450994; 14:2.11.6; 15:2.11.1; 16:2.00; 17:24.2; 18:0; 19:None; 20:09; 21:18.12.2023; 22:GV; 23:None; 24:0000.00; 25:000; 26:021; 27:010; 28:010; 29:000.013; 30:00.000; 31:0000.0; 32:0000.00; 34:0000.00; 35:0000.00; 40:20000; 41:20000; 50:00000000; 51:000139; 90:-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999; 91:00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000; 93:000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000; 94:0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000; 95:0.00,0.00,0.00,0.00,0.00,0.00,0.00; 96:0000000,0000000,0000000,0000000,0000000,0000000,0000000'}
+    row_ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
+    row_telegram = Telegram(
+        config_dict=config_dict,
+        telegram_lines=row.get('telegram'),
+        timestamp=row_ts_dt,
+        db_cursor=None,
+        telegram_data={},
+        logger=logger)
+    row_telegram.parse_telegram_row()
+    # time
+    assert row_ts_dt == row_telegram.timestamp
+    assert row.get('timestamp') == row_telegram.timestamp.timestamp()
+    # matrix fields (2D, 3D)
+    assert len(row_telegram.telegram_data['90']) == 32
+    for i in row_telegram.telegram_data['90']:
+        assert len(i) >= 4 and len(i) < 7 and ',' not in i
+    assert len(row_telegram.telegram_data['91']) == 32
+    for i in row_telegram.telegram_data['91']:
+        # print('f91:', i)
+        assert len(i) == 6 and ',' not in i
+    assert len(row_telegram.telegram_data['93']) == 1024
+    for i in row_telegram.telegram_data['93']:
+        # print('f93:', i)
+        assert len(i) == 3
+        for letter in i:
+            assert int(letter) in list(range(10))
+    for key in row_telegram.telegram_data.keys():
+        assert key in config_dict['telegram_fields']
 
 
 def create_test_data_dir(dir):
     if not os.path.exists(path=dir):
         os.mkdir(path=dir)
-
-def delete_netcdf(fn_start, data_dir):
-    test_nc_path = data_dir / f'{fn_start}.nc'
-    if os.path.exists(test_nc_path):
-        os.remove(test_nc_path)
-
