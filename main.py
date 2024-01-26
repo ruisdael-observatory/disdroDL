@@ -32,7 +32,7 @@ parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logge
 parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
 sleep(2)
 ### DB ###
-db_path = Path(config_dict['data_dir']) / 'disdrodl.db's
+db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
 create_db(dbpath=str(db_path))
 
 #########################################################
