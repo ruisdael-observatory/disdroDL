@@ -1,0 +1,7 @@
+Version 0.2.1 
+* comit: 73f0e873b3c3ccd449d025eb34568a6ab6e4244b
+* changes: fixed typo
+
+Version 0.2.0 
+* comit:cd4f4d3616e0d66bb4fbe71822feb00286138424
+* changes: writing telegram to slqlite and exporting once to netcdf
