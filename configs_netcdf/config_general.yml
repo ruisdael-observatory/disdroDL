@@ -1,0 +1,741 @@
+
+######### NETCDF General Config ###########
+# OTT Parsivel2 Netcdf file structure - defined in YAML 
+#
+# NOTE: Before editing this file, double check if you need to. 
+#       All metadata related to station's location, IDs, PIs, etc must be described in the
+#       config_NNN_LOCATION.yml files and NOT ON config_general.yml
+#
+# CONFIG GENERAL STRUCTURE:
+#     dimensions: NetCDF dimensions' definitions
+#     variables:  NetCDF variable definitions for the **variables NOT present** in OTT Parsivel Telegram. 
+#                 Usually for variables with predefined values
+#     telegram_fields: NetCDF variable definitions for the **variables present** in OTT Parsivel Telegram
+##########################################
+dimensions:
+    time:
+        size: #None: to create an unlimited dimension (a dimension that can be appended to), the size value is set to None or 0.
+    diameter_classes:
+        size: 32
+    velocity_classes:
+        size: 32
+    # diameter:
+    #     size:
+    # velocity:
+    #     size:
+variables:
+    time:
+        dimensions:
+            - time
+        dtype: 'f4'         
+        include_in_nc: true                    
+        var_attrs:
+            long_name: "Time UTC"
+            standard_name: "time"
+            axis: "T"
+            calendar: "standard"
+    interval:
+        dimensions:  # empty for scalar variables
+        dtype: 'i4'            
+        value:
+            - 60
+        include_in_nc: true                    
+        var_attrs:
+            units: s
+            long_name: 'Length of measurement interval'
+            standard_name: 'time_interval'
+    datetime:
+        dimensions:
+            - time
+        dtype: 'S4'  # string
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
+            standard_name: 'datetime'
+    velocity_classes_center:
+        dimensions:
+            - velocity_classes
+        dtype: 'f4'        
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'center fall velocity of precipitation particles'
+            standard_name: 'velocity_center_classes'  # error when changed
+            units: 'm s-1'
+            comment: 'Predefined center of fall velocity classes'
+        value: 
+            - 0.05
+            - 0.15
+            - 0.25
+            - 0.35
+            - 0.45
+            - 0.55
+            - 0.65
+            - 0.75
+            - 0.85
+            - 0.95
+            - 1.1
+            - 1.3
+            - 1.5
+            - 1.7
+            - 1.9
+            - 2.2
+            - 2.6
+            - 3
+            - 3.4
+            - 3.8
+            - 4.4
+            - 5.2
+            - 6
+            - 6.8
+            - 7.6
+            - 8.8
+            - 10.4
+            - 12
+            - 13.6
+            - 15.2
+            - 17.6
+            - 20.8  
+    velocity_upper_bounds:
+        dimensions:
+            - velocity_classes
+        dtype: 'f4'        
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'upper bounds of fall velocity classes'
+            standard_name: 'velocity_upper_bounds'
+            units: 'm s-1'
+            comment: 'Predefined velocity classes upper bound'
+        value: 
+            - 0.1
+            - 0.2
+            - 0.3
+            - 0.4
+            - 0.5
+            - 0.6
+            - 0.7
+            - 0.8
+            - 0.9
+            - 1.0
+            - 1.2
+            - 1.4
+            - 1.6
+            - 1.8
+            - 2.0
+            - 2.4
+            - 2.8
+            - 3.2
+            - 3.6
+            - 4.0
+            - 4.8
+            - 5.6
+            - 6.4
+            - 7.2
+            - 8.0
+            - 9.6
+            - 11.2
+            - 12.8
+            - 14.4
+            - 16.0
+            - 19.2
+            - 22.4
+    velocity_lower_bounds:
+        dimensions:
+            - velocity_classes
+        dtype: 'f4'        
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'lower bounds of fall velocity classes'
+            standard_name: 'velocity_lower_bounds'
+            units: 'm s-1'
+            comment: 'Predefined velocity classes lower bound'
+        value: 
+            - 0.0
+            - 0.1
+            - 0.2
+            - 0.3
+            - 0.4
+            - 0.5
+            - 0.6
+            - 0.7
+            - 0.8
+            - 0.9
+            - 1.0
+            - 1.2
+            - 1.4
+            - 1.6
+            - 1.8
+            - 2.0
+            - 2.4
+            - 2.8
+            - 3.2
+            - 3.6
+            - 4.0
+            - 4.8
+            - 5.6
+            - 6.4
+            - 7.2
+            - 8.0
+            - 9.6
+            - 11.2
+            - 12.8
+            - 14.4
+            - 16.0
+            - 19.2
+    velocity_spread: 
+        dimensions:
+            - velocity_classes
+        dtype: 'f4'     
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'width of fall velocity classes'
+            standard_name: 'velocity_spread' 
+            units: 'm s-1'
+            comment: 'Bin size of each velocity interval'
+        value:
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.1
+            - 0.2
+            - 0.2
+            - 0.2
+            - 0.2
+            - 0.2
+            - 0.4
+            - 0.4
+            - 0.4
+            - 0.4
+            - 0.4
+            - 0.8
+            - 0.8
+            - 0.8
+            - 0.8
+            - 0.8
+            - 1.6
+            - 1.6
+            - 1.6
+            - 1.6
+            - 1.6
+            - 3.2
+            - 3.2        
+    diameter_classes_center:
+        dimensions:
+            - diameter_classes
+        dtype: 'f4'     
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'center of diameter classes'
+            standard_name: 'diameter_center_classes'
+            units: 'mm'
+            comment: 'Predefined center of diameter classes'
+        value:
+            - 0.0625
+            - 0.1875
+            - 0.3125
+            - 0.4375
+            - 0.5625
+            - 0.6875
+            - 0.8125
+            - 0.9375
+            - 1.0625
+            - 1.1875
+            - 1.375
+            - 1.625
+            - 1.875
+            - 2.125
+            - 2.375
+            - 2.75
+            - 3.25
+            - 3.75
+            - 4.25
+            - 4.75
+            - 5.5
+            - 6.5
+            - 7.5
+            - 8.5
+            - 9.5
+            - 11.0
+            - 13.0
+            - 15.0
+            - 17.0
+            - 19.0
+            - 21.5
+            - 24.5
+    diameter_spread_classes:
+        dimensions:
+            - diameter_classes
+        dtype: 'f4' 
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'width of diameter classes'
+            standard_name: 'diameter_spread'
+            units: 'mm'
+            comment: 'Bin size of each of diameter classes'
+        value:
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.125
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.25
+            - 0.5
+            - 0.5
+            - 0.5
+            - 0.5
+            - 0.5
+            - 1.0
+            - 1.0
+            - 1.0
+            - 1.0
+            - 1.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 2.0
+            - 3.0
+            - 3.0
+    diameter_upper_bounds:
+        dimensions:
+            - diameter_classes
+        dtype: 'f4'
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'upper bounds of diameter classes'
+            standard_name: 'diameter_upper_bounds'
+            units: 'mm'
+            comment: 'Predefined diameter classes upper bound'
+        value:
+            - 0.12
+            - 0.25
+            - 0.38
+            - 0.5
+            - 0.62
+            - 0.75
+            - 0.88
+            - 1.0
+            - 1.12
+            - 1.25
+            - 1.5
+            - 1.75
+            - 2.0
+            - 2.25
+            - 2.5
+            - 3.0
+            - 3.5
+            - 4.0
+            - 4.5
+            - 5.0
+            - 6.0
+            - 7.0
+            - 8.0
+            - 9.0
+            - 10.0
+            - 12.0
+            - 14.0
+            - 16.0
+            - 18.0
+            - 20.0
+            - 23.0
+            - 26.0
+    diameter_lower_bounds:
+        dimensions:
+            - diameter_classes
+        dtype: 'f4'
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'lower bounds of diameter classes'
+            standard_name: 'diameter_lower_bounds'
+            units: 'mm'
+            comment: 'Predefined diameter classes lower bound'
+        value:
+            - 0.0
+            - 0.12
+            - 0.25
+            - 0.38
+            - 0.5
+            - 0.62
+            - 0.75
+            - 0.88
+            - 1.0
+            - 1.12
+            - 1.25
+            - 1.5
+            - 1.75
+            - 2.0
+            - 2.25
+            - 2.5
+            - 3.0
+            - 3.5
+            - 4.0
+            - 4.5
+            - 5.0
+            - 6.0
+            - 7.0
+            - 8.0
+            - 9.0
+            - 10.0
+            - 12.0
+            - 14.0
+            - 16.0
+            - 18.0
+            - 20.0
+            - 23.0                 
+telegram_fields:
+    '01':
+        dimensions:
+            - time
+        dtype: 'f4'  # 32bit floating point                
+        include_in_nc: true                    
+        var_attrs:
+            units: 'mm/h'
+            long_name: 'Rain intensity'
+            standard_name: 'rain_intensity'
+    '02':
+        dimensions:
+            - time
+        dtype: 'f4'                 
+        include_in_nc: false                    
+        var_attrs:
+            units: 'mm'
+            long_name: 'Rain amount accumulated'
+            standard_name: 'acc_rain_amount'
+            comment: 'accumulated rainfall amount since the last reset'
+    '03':
+        dimensions:
+            - time
+        dtype: 'i2'  # 16-bit signed integer               
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Weather code to SYNOP wawa'
+            standard_name: 'code_4680'
+    '04':
+        dimensions:
+            - time
+        dtype: 'i2'  # 16-bit signed integer                
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Weather code to SYNOP ww'
+            standard_name: 'code_4677'
+    '05':
+        dimensions:
+            - time
+        dtype: 'S4'  # string            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Weather code METAR/SPECI'
+            standard_name: 'code_4678'
+            comment: 'Possible values in OTT Parsivel documentation: Table 4678'
+    '06':
+        dimensions:
+            - time
+        dtype: 'S4'  # string            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Weather code according to NWS'
+            standard_name: 'code_NWS'
+            comment: 'Possible values in OTT Parsivel documentation: Table NWS'
+    '07':
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Radar reflectivity'
+            standard_name: 'reflectivity'
+            units: 'dBz'
+            comment: '-9.999 means that the period was dry'
+        fill_value: -10
+    '08':
+        dimensions:
+            - time
+        dtype: 'i4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Meteorological Optical Range in precipitation'
+            standard_name: 'MOR'
+            units: 'm'
+    '09':
+        dimensions:
+            - time
+        dtype: 'i4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'sample interval'
+            standard_name: 'sample_interval'
+            units: '1'
+    '10':
+        dimensions:
+            - time
+        dtype: 'i4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Signal amplitude of the laser strip'
+            standard_name: 'amplitude'
+            units: '1'
+    '11':
+        dimensions:
+            - time
+        dtype: 'i4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Number of particles detected and validated'
+            standard_name: 'n_particles'
+            units: '1'
+            comment: 'validated particles'
+    '12': # issue with values
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Temperature in the sensor housing'
+            standard_name: 'T_sensor'
+            units: '°C'  
+    '13':   
+        dtype: 'i4'   
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Sensor serial number'
+            standard_name: 'serial_number'
+            units: '1'  
+    '14':   
+        dtype: 'S4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Firmware IOP version number'
+            standard_name: 'IOPversion'
+            units: '1'  
+    '15':   
+        dtype: 'S4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Firmware DSP version number'
+            standard_name: 'DSPversion'
+            units: '1'  
+    '16': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Sensor head heating current'
+            standard_name: 'I_heating'
+            units: 'A'
+    '17': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Power supply voltage'
+            standard_name: 'V_power_supply'
+            units: 'V'
+    '18': 
+        dimensions:
+            - time
+        dtype: 'i2'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Sensor status'
+            standard_name: 'state_sensor'
+            comment: '0=OK, 1=Dirty, 2=No measurement possible'
+    '19':   
+        dtype: 'S4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'date-time measuring start'
+            standard_name: 'measuring_start'
+            units: '1'              
+    '20':
+        dtype: 'S4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'sensor time'
+            standard_name: 'sensor_time'
+            units: '1'              
+    '21':
+        dtype: 'S4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'sensor date'
+            standard_name: 'sensor_date'
+            units: '1'              
+    '22':
+        dtype: 'S4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'sensor name'
+            standard_name: 'sensor_name'
+            units: '1'              
+    '23':
+        dtype: 'S4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'sensor number'
+            standard_name: 'sensor_number'
+            units: '1'                       
+    '24': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Rain amount absolute'
+            standard_name: 'absolute_rain_amount'
+            units: 'mm' 
+    '25': 
+        dimensions:
+            - time
+        dtype: 'i2'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Error code'
+            standard_name: 'error_code'
+            units: '1'
+            comment: '0=OK, 1=Screens are dirty; 2=Screens are dirty (no measurements possible), 3=Laser damaged'
+    '26': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Temperature PCB'
+            standard_name: 'T_pcb'
+            units: '°C'            
+    '27': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Temperature left sensor head'
+            standard_name: 'T_L_sensor_head'
+    '28': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Temperature right sensor head'
+            standard_name: 'T_R_sensor_head'
+            units: '°C'
+    '30':
+        dtype: 'f4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Rain intensity max 30.000 mm/h'
+            standard_name: 'rain_intensity_max30'
+            units: 'mm/h'           
+    '31':
+        dtype: 'f4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Rain intensity max 1200.0 mm/h'
+            standard_name: 'rain_intensity_max1200'
+            units: 'mm/h'           
+    '32':
+        dtype: 'f4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Rain amount accumulated'
+            standard_name: 'rain_accumulated'
+            units: 'mm'     
+    '33':
+        dtype: 'f4'
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Radar reflectivity'
+            standard_name: 'radar_reflectivity'
+            units: 'dBz'      
+    '34': 
+        dimensions:
+            - time
+        dtype: 'f4'
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Kinetic energy'
+            standard_name: 'kinetic_energy'
+            units: 'J/(m^2*h)' 
+    '35': 
+        dimensions:
+            - time
+        dtype: 'f4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Snow depth intensity'
+            standard_name: 'snowfall_intensity'
+            units: 'mm/h'
+            comment: 'volume equivalent snow depth intensity'
+    '60': 
+        dimensions:
+            - time
+        dtype: 'f4'  
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'Number of all particles detected'
+            standard_name: 'n_particles'
+            units: '1'
+            comment: 'not validated'
+    '61': 
+        dimensions:
+            - time
+            - diameter
+            - velocity
+        dtype: 'f4'            
+        include_in_nc: false                    
+        var_attrs:
+            long_name: 'List of all particles detected between previous and current measurement'
+            standard_name: 'all_particles'
+            comment: 'Each particle is registered as value pair: particle-diameter, particle-velocity. The exact time at which the particle crossed the beam cannot be retrieved due to hardware limitation.'
+    '90':
+        dimensions:
+            - time
+            - diameter_classes
+        dtype: 'f4'
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Number of particles per diameter class'
+            standard_name: 'fieldN'
+            units: 'log10()'  # log 10
+            comment: 'This is a processed summary of the raw_data matrix where some particles were removed based on an unknown particle size-velocity filter created by the manufacturer.'
+            # Jülich netCDF uses variable name: number_concentration
+    '91':
+        dimensions:
+            - time
+            - diameter_classes
+        dtype: 'f4'
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Average particle velocity per diameter class'
+            standard_name: 'fieldV'
+            comment: 'This is a processed summary of the raw_data matrix where some particles were removed based on an unknown particle size-velocity filter created by the manufacturer.' 
+            #'Jülich netCDF uses variable name: fall_velocity'
+    '93': 
+        dimensions:
+            - time
+            - diameter_classes
+            - velocity_classes
+        dtype: 'i4'            
+        include_in_nc: true                    
+        var_attrs:
+            long_name: 'Raw data as a function of particle diameter and velocity'
+            standard_name: 'data_raw'
+            units: '1'
+            comment: 'Value range: 0 ... 999. -99 means that an error was encountered in data_raw 3d-array'
+

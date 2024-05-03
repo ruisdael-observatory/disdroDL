@@ -1,0 +1,13 @@
+[Unit]
+Description=disdrodlv2
+After=multi-user.target
+
+[Service]
+ExecStart=python /usr/local/src/disdrodlv2/main.py -c /usr/local/src/disdrodlv2/configs_netcdf/config_008_GV.yml
+ExecReload=python /usr/local/src/disdrodlv2/main.py -c /usr/local/src/disdrodlv2/configs_netcdf/config_008_GV.yml
+TimeoutStopSec=10
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target
