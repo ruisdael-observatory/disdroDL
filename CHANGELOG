@@ -1,0 +1,8 @@
+Version 0.2.2
+* changes: fixed logger message with bad formatting
+
+Version 0.2.1 
+* changes: fixed typo
+
+Version 0.2.0 
+* changes: writing telegram to slqlite and exporting once to netcdf
