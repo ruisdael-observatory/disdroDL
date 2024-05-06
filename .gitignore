@@ -12,3 +12,4 @@ sample_data/*
 !sample_data/20231106_PAR007_CabauwTower.csv
 *.fixtures
 export_24Dec2023_db2nc.sh
+.idea
