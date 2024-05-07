@@ -138,7 +138,6 @@ class Telegram:
         self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
 
     def insert2db(self):
-        self.prep_telegram_data4db()
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
         timestamp_str = self.timestamp.isoformat()
