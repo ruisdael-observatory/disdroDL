@@ -30,14 +30,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
     date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
+
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
     config_dict_site = yaml2dict(path=wd / args.config)
     config_dict = deep_update(config_dict, config_dict_site)
+
     site_name = config_dict['global_attrs']['site_name']
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
     db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+    
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
                            parsivel_name=config_dict['global_attrs']['sensor_name'])
@@ -46,11 +49,13 @@ if __name__ == '__main__':
     logger.info(msg=msg_conf)
     msg_date = f'Exporting data from {date_dt} to {date_dt.replace(hour=23, minute=59, second=59)}'
     logger.info(msg=msg_date)
+
     # -- Monthly Data dir
     data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
     created_data_dir = create_dir(path=data_dir)  # create if does not exist
     if created_data_dir:
         logger.info(msg=f'Created data directory: {data_dir}')
+
     # -- DB rows -> Telegram instances
     telegram_objs = []
     cur, con = connect_db(dbpath=str(db_path))
@@ -64,13 +69,16 @@ if __name__ == '__main__':
             db_cursor=None,
             telegram_data={},
             logger=logger)
+            
         telegram_instance.parse_telegram_row()
+
         # check if telegram_instance has data organized by keys(fields)
         if "90" in telegram_instance.telegram_data.keys():
             telegram_objs.append(telegram_instance)
 
     con.close()
     cur.close()
+
     # -- NetCDF creation
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
