@@ -1,6 +1,6 @@
 # Agenda Week 3 - TA Meeting
 
-## 07-05-2024
+## 08-05-2024
 
 ## Chairman: Vasil Chirov
 ## Minute taker: Jesse Vleeschdraager
