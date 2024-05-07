@@ -42,41 +42,6 @@ create_db(dbpath=str(db_path))
 
 #########################################################
 
-# flag_zero_seconds = False
-# flag_compressed = False
-# while True:
-#     now_utc = NowTime()
-#     if int(now_utc.time_list[2]) == 0 and flag_zero_seconds is False:
-#         con, cur = connect_db(dbpath=str(db_path))
-#         flag_zero_seconds = True
-#         logger.debug(msg=f'writing Telegram to DB on: {now_utc.time_list}, {now_utc.utc}')
-
-#         parsivel.write('CS/PA\r\n'.encode('ascii'))  # Output all telegram measurement values
-#         parsivel_lines = parsivel.readlines()
-#         try:
-#             parsivel_lines[0]
-#         except IndexError:
-#             logger.error(msg="parsivel_lines is EMPTY")
-#         # logger.debug(msg=f"parsivel_lines: {parsivel_lines}")
-#         # insert telegram to db
-#         telegram = Telegram(config_dict=config_dict,
-#                             telegram_lines=parsivel_lines,
-#                             timestamp=now_utc.utc,
-#                             db_cursor=cur,
-#                             telegram_data={},
-#                             logger=logger)
-#         # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
-#         telegram.capture_prefixes_and_data()
-#         telegram.prep_telegram_data4db()
-#         telegram.insert2db()
-#         con.commit()
-#         cur.close()
-#         con.close()
-#     elif int(now_utc.time_list[2]) != 0 and flag_zero_seconds is True:
-#         # once we passed 00secs: reset flag_zero_seconds
-#         flag_zero_seconds = False
-#     sleep(1)
-
 while True:
     now_utc = NowTime()
 
