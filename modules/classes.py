@@ -6,6 +6,9 @@ from netCDF4 import Dataset
 from cftime import date2num
 import numpy
 import chardet
+from sqlite3 import Cursor
+from logging import Logger
+from pathlib import Path
 from typing import List, Dict, Union
 
 
@@ -16,6 +19,7 @@ class NowTime:
         utc : datetime object representing class instance time of instantiation
         time_list : list of hour,minutes,seconds of time of instantiation time
     '''
+
     def __init__(self):
         self.utc = datetime.now(timezone.utc)
         self.time_list = (self.utc.strftime("%H:%M:%S")).split(":")  # used to be: now_hour_min_secs
@@ -40,12 +44,11 @@ class Telegram:
     Class dedicated to handling the returned the Parsivel telegram lines:
     * storing, processing and writing telegram to netCDF
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
-
-    def __init__(self, config_dict: dict, telegram_lines: Union[str, bytes],
-                 timestamp: float, datetime: datetime, db_cursor: Union[Cursor, None],
-                 logger: Logger, telegram_data={}):
     '''
-    def __init__(self, config_dict, telegram_lines, timestamp: datetime, db_cursor, logger, telegram_data: Dict, db_row_id=None):
+
+    def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
+                 timestamp: datetime, db_cursor: Union[Cursor, None],
+                 logger: Logger, telegram_data: Dict, db_row_id=None):
         '''
         initiates variables and methods:
         * set_netCDF_path
@@ -65,19 +68,22 @@ class Telegram:
         def Captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
         '''
-        for i in self.telegram_lines:
-            encoding = chardet.detect(i)['encoding']
-            i_str = i.decode(encoding)
-            i_list = i_str.split(":")
-            if len(i_list) > 1 and i_list[1].strip() != self.delimiter:
-                field = i_list[0]
-                value = i_list[1].strip()  # strip white space
+        for line in self.telegram_lines:
+            encoding = chardet.detect(line)['encoding']
+            line_str = line.decode(encoding)
+            line_list = line_str.split(":")
+
+            if len(line_list) > 1 and line_list[1].strip() != self.delimiter:
+                field = line_list[0]
+                value = line_list[1].strip()  # strip white space
                 value_list = value.split(self.delimiter)
                 value_list = [v for v in value_list if len(v) > 0]
+
                 if len(value_list) == 1:
                     value = value_list[0]
                 else:
                     value = value_list
+
                 super(Telegram, self).__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
 
@@ -87,24 +93,30 @@ class Telegram:
         '''
 
         telegram_lines_list = self.telegram_lines.split('; ')
+
         try:
             telegram_lines_list[1]
         except IndexError:
             logger.error(msg=f"self.telegram_lines is EMPTY. self.telegram_lines: {self.telegram_lines}")
             return
+
         for keyval in telegram_lines_list:
             keyval_list = keyval.split(':')
+
             if keyval_list[0] in self.config_dict['telegram_fields'].keys() and \
                len(keyval_list) > 1 and keyval_list[1].strip() != self.delimiter:
                 field = keyval_list[0]
                 value = keyval_list[1].strip()  # strip white space
                 value_list = value.split(self.delimiter)
                 value_list = [v for v in value_list if len(v) > 0]
+
                 if len(value_list) == 1:
                     value = value_list[0]
                 else:
                     value = value_list
+                    
                 self.telegram_data[field] = value
+
         self.__str2list(field='90', separator=',')
         self.__str2list(field='91', separator=',')
         self.__str2list(field='93', separator=',')
@@ -121,8 +133,10 @@ class Telegram:
         51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
         '''
         self.telegram_data_str = ''
+
         for key, val in self.telegram_data.items():
             dt_str = f'{key}:'
+
             if isinstance(val, list):
                 if len(val) == 0:
                     dt_str += 'None'
@@ -133,18 +147,23 @@ class Telegram:
                     dt_str += 'None'
                 else:
                     dt_str += val
+
             self.telegram_data_str += dt_str
             self.telegram_data_str += '; '
+
         self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
 
     def insert2db(self):
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
+        
         timestamp_str = self.timestamp.isoformat()
         ts = self.timestamp.timestamp()
         sensor = self.config_dict['global_attrs']['sensor_name']
         t_str = self.telegram_data_str
+        
         insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{t_str}');"
+
         self.logger.debug(msg=insert_str)
         self.db_cursor.execute(insert_str)
 
@@ -159,7 +178,7 @@ class Telegram:
 
 
 class NetCDF:
-    def __init__(self, logger, config_dict, data_dir, fn_start,
+    def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str,
                  telegram_objs: List[Dict],
                  date: datetime) -> None:
         self.logger = logger
@@ -188,16 +207,20 @@ class NetCDF:
         def writes data to netCDF
         '''
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
+
         # --- NetCDF variables NOT in telegram_data ---
+
         # var: time - appending timestamps to var time
         netCDF_var_time = netCDF_rootgrp.variables['time']
         value_list_dt = [telegram_obj.timestamp for telegram_obj in self.telegram_objs]
         time_value_list = [date2num(timestamp_val, units=netCDF_var_time.units, calendar=netCDF_var_time.calendar)
                            for timestamp_val in value_list_dt]
         netCDF_var_time[:] = time_value_list  # numpy.concatenate([netCDF_var_time[:].data, time_now_array])
+
         # NetCDF var: datetime (iso str values)
         netCDF_var_datetime = netCDF_rootgrp.variables['datetime']
         self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var_datetime, var_key_='timestamp')
+
         # --- NetCDF variables in telegram_data ---
         for key in self.telegram_objs[0].telegram_data.keys():
             if key in self.config_dict['telegram_fields'].keys() and \
@@ -205,9 +228,12 @@ class NetCDF:
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
+
                 # import pdb; pdb.set_trace()
+
                 nc_details = f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name}, {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen}, dims: {netCDF_var._getdims()}'
                 logger.debug(msg=nc_details)
+
                 if netCDF_var.dtype == str:  # S4
                     # assuming S4 vars are only 1D - that's the case for parsivel
                     self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
@@ -218,6 +244,7 @@ class NetCDF:
                         netCDF_var[:] = all_items_val
                     elif len(netCDF_var._getdims()) > 2 and key == '93':
                         all_f93_items_val = []
+
                         for telegram_obj in self.telegram_objs:
                             try:
                                 assert len(telegram_obj.telegram_data[key]) == 1024, 'telegram_obj.telegram_data["93"] len != 1024'
@@ -229,7 +256,9 @@ class NetCDF:
                                 reshaped_f93 = numpy.array(telegram_obj.telegram_data[key]).reshape(32, 32)
                                 all_f93_items_val.append(reshaped_f93)
                                 self.logger.debug(msg=f'F93 values from DB item {telegram_obj.db_row_id} from {telegram_obj.timestamp} successfully reshaped')
+
                         netCDF_var[:] = all_f93_items_val
+
         netCDF_rootgrp.close()
         self.logger.info(msg='class NetCDF executed write_data_to_netCDF()')
 
@@ -243,6 +272,7 @@ class NetCDF:
         else:
             logger.info(msg=f'Compressed netCDF {self.path_netCDF} successfully')
             print(f'compressed: {self.path_netCDF} ')
+
             # remove uncompressed and rename tmp to original filename
             os.remove(self.path_netCDF)
             os.rename(self.path_netCDF_temp, self.path_netCDF)
@@ -305,6 +335,7 @@ class NetCDF:
                     fill_val = one_var_dict['fill_value']
                 else:
                     fill_val = -1
+
                 variable = nc_group.createVariable(
                     one_var_dict['var_attrs']['standard_name'],
                     one_var_dict['dtype'],
@@ -312,15 +343,18 @@ class NetCDF:
                     compression=compression_method,
                     fill_value=fill_val,
                 )
+
             # fill (some) NetCDF variables' with predefine values
             if 'value' in one_var_dict.keys() and len(one_var_dict['value']) == 1:
                 # use .assignValue() method for scalar values
                 variable.assignValue(one_var_dict['value'])
             elif 'value' in one_var_dict.keys() and len(one_var_dict['value']) > 1:
                 variable[:] = one_var_dict['value']
+
             # set NetCDF variables' attributes: units, comments, etc
             for var_attr in one_var_dict['var_attrs']:
                 variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr])
+                
             if key == 'time':
                 _start_dt = self.date_dt.replace(hour=0, minute=0, second=0).strftime("%Y-%m-%d %H:%M:%S")
                 variable.__setattr__('units', f'hours since {_start_dt} +00:00')
@@ -355,9 +389,11 @@ def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     '''
     telegram_dict = {}
     telegram_list = telegram_str.split('; ')
+
     for telegram_item in telegram_list:
         key, val = telegram_item.split(':')
         if val == 'None':
             val = None
         telegram_dict[key] = val
+
     return telegram_dict

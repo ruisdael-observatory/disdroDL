@@ -45,7 +45,7 @@ create_db(dbpath=str(db_path))
 while True:
     now_utc = NowTime()
 
-    # continue if the seconds are not 0 and sleep for 1 second
+    # if the seconds are not 0, sleep for 1 second and then continue
     if int(now_utc.time_list[2]) != 0:
         sleep(1)
         continue
