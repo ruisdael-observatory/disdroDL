@@ -2,7 +2,8 @@ from pathlib import Path
 from time import sleep
 from argparse import ArgumentParser
 from modules.util_functions import yaml2dict, create_dir, init_serial, create_logger, parsivel_start_sequence
-from modules.classes import NowTime, Telegram
+from modules.telegram import Telegram
+from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
 from pydantic.v1.utils import deep_update
 

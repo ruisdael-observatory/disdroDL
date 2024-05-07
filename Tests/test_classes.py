@@ -3,7 +3,8 @@ import logging
 from logging import StreamHandler
 from datetime import datetime, timezone
 from pathlib import Path
-from modules.classes import NowTime, Telegram
+from modules.now_time import NowTime
+from modules.telegram import Telegram
 from modules.util_functions import yaml2dict
 from pydantic.v1.utils import deep_update
 

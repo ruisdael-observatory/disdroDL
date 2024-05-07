@@ -105,9 +105,9 @@ The NetCDF files are automatically compressed.
 Run: `python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml -i sample_data/20231106_PAR007_CabauwTower.csv`
 
 # Tests
-* [test_functions.py](test_functions.py)
-* [test_db.py](test_db.py)
-* [test_classes.py](test_classes.py)
+* [test_functions.py](Tests/test_functions.py)
+* [test_db.py](Tests/test_db.py)
+* [test_classes.py](Tests/test_classes.py)
 
 
 run: `pytest -s`

@@ -3,7 +3,8 @@ from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, create_dir, create_logger
-from modules.classes import Telegram, NetCDF
+from modules.telegram import Telegram
+from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
 
 

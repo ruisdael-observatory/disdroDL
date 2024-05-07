@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Dict
 from datetime import datetime, timezone
 from argparse import ArgumentParser
-from modules.classes import Telegram
+from modules.telegram import Telegram
 from modules.util_functions import yaml2dict, create_logger
 from pydantic.v1.utils import deep_update
 from pprint import pprint
