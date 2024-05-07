@@ -1,10 +1,9 @@
-# Minutes Week 2
+# Minutes Week 2 - Client Meeting
 
 ## 30-04-2024
 
 ## Chairman: Noky Soekarman
 ## Minutetaker: Mels Lutgerink
-
 
 - Repo
 	- Fork existing DisdroDL repository 
