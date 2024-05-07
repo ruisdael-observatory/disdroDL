@@ -1,4 +1,10 @@
-# Minutes TA Meeting Week 2 
+# Minutes Week 2 - TA Meeting
+
+## 03-05-2024
+
+## Chairman: Mels Lutgerink
+## Minutetaker: Vasil Chirov
+
 - push the client for more requirements (e.g. user interface)
 - if client refuses, text in mattermost
 - #should haves >= #must haves
