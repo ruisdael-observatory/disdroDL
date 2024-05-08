@@ -16,7 +16,7 @@ parser.add_argument(
     '-c',
     '--config',
     required=True,
-    help='Path to site config file. ie. -c configs_netcdf/config_008_GV.yml')
+    help='Path to site config file. ie. -c configs_netcdf/config_008_GV_THIES.yml')
 args = parser.parse_args()
 
 ### Config files ###
@@ -38,7 +38,7 @@ parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logg
 sleep(2)
 
 ### DB ###
-db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+db_path = Path(config_dict['data_dir']) / 'disdrodl-thies.db'
 create_db(dbpath=str(db_path))
 
 #########################################################
