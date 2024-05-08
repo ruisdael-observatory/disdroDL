@@ -2,9 +2,9 @@ import yaml
 import os
 import sys
 import serial
-from typing import Dict
 from time import sleep
 from pathlib import Path
+from typing import Dict, Union
 
 if __name__ == '__main__':
     from log import log
@@ -90,3 +90,25 @@ def parsivel_reset(serialconnection, logger, factoryreset):
         parsivel_restart = 'CS/Z/1\r'.encode('utf-8')  # restart
         serialconnection.write(parsivel_restart)
     sleep(5)
+
+def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
+    '''
+    unpacks telegram string from sqlite DB row into a dictionary
+
+    * key precedes value NN:val
+    * key:value pair, seperated by '; '
+    * list: converted to str with ',' separator between values
+    * empty lists, empty strings: converted to 'None'
+    Example Input: '19:None; 20:10; 21:25.05.2023;
+    51:000140; 90:-9.999,-9.999,-9.999,-9.999,-9.999 ...'
+    Example Output:  {'60': '00000062', '90': '-9.999,-9.999,01.619,...'}
+    '''
+    telegram_dict = {}
+    telegram_list = telegram_str.split('; ')
+    for telegram_item in telegram_list:
+        key, val = telegram_item.split(':')
+        if val == 'None':
+            val = None
+        telegram_dict[key] = val
+    return telegram_dict
+
