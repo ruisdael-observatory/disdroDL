@@ -1,6 +1,3 @@
-"""
-export telegrams from db to netCDF
-"""
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
@@ -44,7 +41,7 @@ if __name__ == '__main__':
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
     db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
-
+    
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
                            parsivel_name=config_dict['global_attrs']['sensor_name'])
@@ -73,7 +70,7 @@ if __name__ == '__main__':
             db_cursor=None,
             telegram_data={},
             logger=logger)
-
+            
         telegram_instance.parse_telegram_row()
 
         # check if telegram_instance has data organized by keys(fields)
