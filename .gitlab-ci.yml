@@ -4,6 +4,7 @@ default:
        - apt-get update
        - apt-get install -y python3-pip netcdf-bin
        - pip install -r requirements.txt
+       - pip install pylint
 stages:
     - test
     - Static Analysis
