@@ -1,4 +1,10 @@
-# Client meeting week 3
+# Minutes Week 3 - Client Meeting
+
+## 07-05-2024
+
+## Chairman: Ella Milinovic
+## Minutetaker: Noky Soekarman
+
 ## New requirements
 - Data quality control can be expended
 	- SEPARATE PIECE OF SOFTWARE FROM THE MAIN LOGGER
