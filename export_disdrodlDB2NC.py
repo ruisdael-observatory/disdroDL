@@ -36,13 +36,15 @@ if __name__ == '__main__':
 
     # Use the general config file which corresponds to the sensor type 
     if config_dict_site['global_attrs']['sensor_type'] == 'OTT Hydromet Parsivel2':
+        site_name = 'Green Village'
         config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
     else:
-        logger.error(msg="sensor type is not supported")
+        site_name = 'Blue Village'
+        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
 
     config_dict = deep_update(config_dict, config_dict_site)
 
-    site_name = config_dict['global_attrs']['site_name']
+    # site_name = config_dict['global_attrs']['site_name']
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
