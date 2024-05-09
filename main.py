@@ -1,6 +1,10 @@
-'''
-Module with the main loop to log data once every minute
-'''
+"""
+This module contains the main loop to log data once every minute.
+
+After setting up the logger and the connection with the database,
+the code enters a permanent while loop where each time the seconds are 0,
+data gets logged to the database.
+"""
 
 from pathlib import Path
 from time import sleep
