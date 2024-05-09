@@ -1,14 +1,19 @@
+"""
+This module is used to create a logger object that logs to a file.
+"""
 import logging
-import os
 import json
 import time
 from logging.handlers import TimedRotatingFileHandler
-from pathlib import Path
-from datetime import datetime
-
 
 
 def log(log_path, log_name):
+    """
+    This function creates a logger object that logs to a file.
+    :param log_path: the path to the log file
+    :param log_name: the name of the logger
+    :return: logger object
+    """
     logger = logging.getLogger(log_name)
     logging.Formatter.converter = time.gmtime  # set log time to utc/gmt
     log_format = logging.Formatter(
@@ -28,4 +33,3 @@ def log(log_path, log_name):
     logger.addHandler(log_handler)
     logger.setLevel(logging.DEBUG)
     return logger
-

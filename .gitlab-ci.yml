@@ -7,7 +7,7 @@ default:
        - pip install pylint
 stages:
     - test
-    - Static Analysis
+    - static analysis
 test:
   script:
     - pytest
@@ -16,10 +16,10 @@ test:
 
 
 pylint:
-  stage: Static Analysis
+  stage: static analysis
   allow_failure: true
   script:
-    - pylint --fail-under=8 *.py
+    - pylint --fail-under=8 pylint **/*.py *.py
   artifacts:
     when: always
     reports:
