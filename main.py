@@ -1,11 +1,15 @@
+'''
+Module with the main loop to log data once every minute
+'''
+
 from pathlib import Path
 from time import sleep
 from argparse import ArgumentParser
-from modules.util_functions import yaml2dict, create_dir, init_serial, create_logger, parsivel_start_sequence
+from pydantic.v1.utils import deep_update
+from modules.util_functions import yaml2dict, init_serial, create_logger, parsivel_start_sequence
 from modules.telegram import Telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
-from pydantic.v1.utils import deep_update
 
 ######################## BOILER PLATE ##################
 
@@ -63,7 +67,7 @@ while True:
         parsivel_lines[0]
     except IndexError:
         logger.error(msg="parsivel_lines is EMPTY")
-        
+
     # logger.debug(msg=f"parsivel_lines: {parsivel_lines}")
 
     # insert telegram to db
@@ -75,7 +79,7 @@ while True:
                         logger=logger)
 
     # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
-    
+
     telegram.capture_prefixes_and_data()
     telegram.prep_telegram_data4db()
     telegram.insert2db()
