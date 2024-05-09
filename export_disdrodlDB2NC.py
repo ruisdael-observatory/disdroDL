@@ -32,8 +32,15 @@ if __name__ == '__main__':
     date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
 
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
     config_dict_site = yaml2dict(path=wd / args.config)
+
+    # Use the general config file which corresponds to the sensor type 
+    match config_dict_site['sensor_type']:
+        case 'OTT Hydromet Parsivel2':
+            config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
+        case _:
+            logger.error(msg="sensor type is not supported")
+
     config_dict = deep_update(config_dict, config_dict_site)
 
     site_name = config_dict['global_attrs']['site_name']
