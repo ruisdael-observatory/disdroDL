@@ -57,8 +57,7 @@ def sql_query_gen(con, query):
     TBD
     '''
     con.row_factory = dict_factory
-    for row in con.execute(query):
-        yield row
+    yield from con.execute(query)
 
 
 def query_db_rows_gen(con, date_dt, logger):
@@ -75,5 +74,4 @@ def query_db_rows_gen(con, date_dt, logger):
     logger.debug(msg=query_str)
     # Append each SQL response row as Telegram instance to telegram_objs var
     con.row_factory = dict_factory
-    for row in con.execute(query_str):
-        yield row
+    yield from con.execute(query_str)
