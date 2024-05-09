@@ -116,7 +116,6 @@ def thies_start_sequence(serialconnection, config_dict, logger, thies_id):
     
     Currently I'm not sure what is being used to log data from the thies on other locations
     '''
-    
 
 
 def parsivel_reset(serialconnection, logger, factoryreset):
