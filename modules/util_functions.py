@@ -5,6 +5,7 @@ import serial
 from time import sleep
 from pathlib import Path
 from typing import Dict, Union
+from modules.now_time import NowTime
 
 if __name__ == '__main__':
     from log import log
@@ -81,6 +82,24 @@ def parsivel_start_sequence(serialconnection, config_dict, logger):
     serialconnection.write(parsivel_user_telegram)
 
 
+def thies_start_sequence(serialconnection, config_dict, logger, thies_id):
+    logger.info(msg="Starting thies start sequence commands")
+    serialconnection.reset_input_buffer()  # Flushes input buffer
+
+    #Place thies in cofig mode
+    thies_config_mode = ('\r' + thies_id + 'KY1\r').encode('utf-8')
+    serialconnection.write(thies_config_mode)
+
+    #Set current time on thies
+    thies_set_seconds = ('\r' + thies_id + 'ZS' + NowTime().time_list[2] + '\r').encode('utf-8')
+    serialconnection.write(thies_set_seconds)
+    thies_set_minutes = ('\r' + thies_id + 'ZM' + NowTime().time_list[1] + '\r').encode('utf-8')
+    serialconnection.write(thies_set_minutes)
+    thies_set_hours = ('\r' + thies_id + 'ZH' + NowTime().time_list[0] + '\r').encode('utf-8')
+    serialconnection.write(thies_set_hours)
+    
+
+
 def parsivel_reset(serialconnection, logger, factoryreset):
     logger.info(msg="Reseting Parsivel")
     if factoryreset is True:
@@ -90,6 +109,7 @@ def parsivel_reset(serialconnection, logger, factoryreset):
         parsivel_restart = 'CS/Z/1\r'.encode('utf-8')  # restart
         serialconnection.write(parsivel_restart)
     sleep(5)
+
 
 def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     '''
@@ -111,4 +131,3 @@ def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
             val = None
         telegram_dict[key] = val
     return telegram_dict
-
