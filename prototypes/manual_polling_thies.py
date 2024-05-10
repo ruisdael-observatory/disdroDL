@@ -35,14 +35,22 @@ thies = serial.Serial(port=thies_port, baudrate=thies_baud)
 thies.reset_input_buffer()
 print(thies)
 
-thies.write(('\r' + thies_id + 'KY1\r').encode('utf-8')) # place in config mode
+thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
 sleep(1)
 
-thies.write(('\r' + thies_id + 'TM0\r').encode('utf-8')) # turn of automatic mode
+thies.write(('\r' + thies_id + 'TM00000\r').encode('utf-8')) # turn of automatic mode
 sleep(1)
 
-thies.write(('\r' + thies_id + 'KY0\r').encode('utf-8')) # place out of config mode
+thies.write(('\r' + thies_id + 'KY00000\r').encode('utf-8')) # place out of config mode
 sleep(1)
+
+thies.write(('\r' + thies_id + 'ZH000' + NowTime().time_list[0] + '\r').encode('utf-8')) # set hour
+sleep(1)
+
+thies.write(('\r' + thies_id + 'ZM000' + NowTime().time_list[1] + '\r').encode('utf-8')) # set minutes
+sleep(1)
+
+thies.write(('\r' + thies_id + 'ZS000' + NowTime().time_list[2] + '\r').encode('utf-8')) # set seconds
 
 while True:
     now_time = NowTime()
