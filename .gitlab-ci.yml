@@ -20,7 +20,7 @@ pylint:
   stage: static analysis
   allow_failure: true
   script:
-    - pylint --fail-under=8 pylint */*.py *.py
+    - pylint --fail-under=8 */*.py *.py
   artifacts:
     when: always
     reports:
