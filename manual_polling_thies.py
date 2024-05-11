@@ -24,6 +24,13 @@ if __name__ == '__main__':
     thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
     sleep(1)
 
+    thies.write(('\r' + thies_id + 'RS00001\r').encode('utf-8')) # restart sensor
+    print("restarting")
+    sleep(20)
+
+    thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
+    sleep(1)
+
     thies.write(('\r' + thies_id + 'TM00000\r').encode('utf-8')) # turn of automatic mode
     sleep(1)
 
