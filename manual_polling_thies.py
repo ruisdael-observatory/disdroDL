@@ -17,19 +17,20 @@ if __name__ == '__main__':
     thies_port = '/dev/ttyACM0'
     thies_baud = 9600
     thies_id = '06'
-    thies = serial.Serial(port=thies_port, baudrate=thies_baud)
+    thies = serial.Serial(port=thies_port, baudrate=thies_baud, timeout=10)
     thies.reset_input_buffer()
+    thies.reset_output_buffer()
     print(thies)
 
     thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
     sleep(1)
 
-    thies.write(('\r' + thies_id + 'RS00001\r').encode('utf-8')) # restart sensor
-    print("restarting")
-    sleep(20)
-
-    thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
-    sleep(1)
+    # thies.write(('\r' + thies_id + 'RS00001\r').encode('utf-8')) # restart sensor
+    # print("restarting")
+    # sleep(20)
+    #
+    # thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
+    # sleep(1)
 
     thies.write(('\r' + thies_id + 'TM00000\r').encode('utf-8')) # turn of automatic mode
     sleep(1)
