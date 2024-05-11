@@ -1,6 +1,8 @@
 PyYAML
 pyserial
 pytest
+pylint
+coverage
 netCDF4
 pydantic
 chardet

@@ -4,15 +4,16 @@ default:
        - apt-get update
        - apt-get install -y python3-pip netcdf-bin
        - pip install -r requirements.txt
-       - pip install pylint
 stages:
-    - test
     - static analysis
+    - test
 test:
   script:
     - pytest
     - ls -lh sample_data/*.nc
     - find -name "*.nc"
+    - coverage run -m pytest
+    - coverage report --omit=test_*.py **/*.py *.py
 
 
 pylint:
