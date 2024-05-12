@@ -71,7 +71,7 @@ class NetCDF:
 
                 nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
                               f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},' # pylint: disable=protected-access
-                              f' dims: {netCDF_var._getdims()}')
+                              f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
                 logger.debug(msg=nc_details)
 
                 if netCDF_var.dtype == str:  # S4

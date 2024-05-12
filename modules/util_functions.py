@@ -52,7 +52,7 @@ def init_serial(port: str, baud: int, logger):
     try:
         parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
         logger.info(msg=f'Connected to parsivel, via: {parsivel}')
-    except Exception as e: # pylint: disable=broad-exception-caught
+    except Exception as e:  # pylint: disable= W0703
         logger.error(msg=e)
         # print(e)
         sys.exit()

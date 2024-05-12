@@ -47,3 +47,6 @@ max-line-length=120
 [SIMILARITIES]
 # Minimum lines number of a similarity.
 min-similarity-lines=10
+
+[TYPECHECK]
+disable=bad-option-value
