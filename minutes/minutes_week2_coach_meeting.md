@@ -1,4 +1,10 @@
-# Minutes Coach Meeting Week 2 
+# Minutes Week 2 - Coach Meeting
+
+## 02-05-2024
+
+## Chairman: Jesse Vleeschdraager
+## Minutetaker: Ella Milinovic
+
 - some concerns about the project being too small
 - discuss test coverage with the client (80% line/branch coverage, other types of testing, etc.)
 - will we/how will we simulate the output for testing
