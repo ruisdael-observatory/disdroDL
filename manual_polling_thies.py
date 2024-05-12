@@ -7,13 +7,16 @@ from modules.util_functions import yaml2dict
 from modules.now_time import NowTime
 
 if __name__ == '__main__':
-    
+
+    # -- Config files --
     wd = Path(__file__).parent
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
 
+    # -- DB --
     db_path = Path(config_dict['data_dir']) / 'disdrodl-thies.db'
     create_db(dbpath=str(db_path))
 
+    # -- Serial connection --
     thies_port = '/dev/ttyACM0'
     thies_baud = 9600
     thies_id = '06'
@@ -57,6 +60,7 @@ if __name__ == '__main__':
 
         con, cur = connect_db(dbpath=str(db_path))
 
+        # Send request to get the latest telegram
         thies.write(('\r' + thies_id + 'TR00005\r').encode('utf-8'))
         output = thies.readline()
         decoded_bytes = str(output[0:len(output)-2].decode("utf-8"))
@@ -67,6 +71,7 @@ if __name__ == '__main__':
         ts = now_time.utc.timestamp()
         sensor = config_dict['global_attrs']['sensor_name']
 
+        # Insert telegram into db
         insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{decoded_bytes}');"
 
         cur.execute(insert_str)
