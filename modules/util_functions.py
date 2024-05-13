@@ -82,40 +82,31 @@ def parsivel_start_sequence(serialconnection, config_dict, logger):
     serialconnection.write(parsivel_user_telegram)
 
 
-def thies_start_sequence(serialconnection, config_dict, logger, thies_id):
-    logger.info(msg="Starting thies start sequence commands")
-    serialconnection.reset_input_buffer()  # Flushes input buffer
+def thies_start_sequence(serial_connection, thies_id):
 
-    #Place thies in cofig mode
-    thies_config_mode = ('\r' + thies_id + 'KY1\r').encode('utf-8')
-    serialconnection.write(thies_config_mode)
-    sleep(1)
+    serial_connection.reset_input_buffer()
+    serial_connection.reset_output_buffer()
 
-    #Set current time on thies
-    thies_set_seconds = ('\r' + thies_id + 'ZS' + NowTime().time_list[2] + '\r').encode('utf-8')
-    serialconnection.write(thies_set_seconds)
-    sleep(1)
-    thies_set_minutes = ('\r' + thies_id + 'ZM' + NowTime().time_list[1] + '\r').encode('utf-8')
-    serialconnection.write(thies_set_minutes)
-    sleep(1)
-    thies_set_hours = ('\r' + thies_id + 'ZH' + NowTime().time_list[0] + '\r').encode('utf-8')
-    serialconnection.write(thies_set_hours)
+    serial_connection.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
     sleep(1)
 
-    #Turn of automatic mode
-    thies_auto_mode = ('\r' + thies_id + 'TM0\r').encode('utf-8')
-    serialconnection.write(thies_auto_mode)
+    serial_connection.write(('\r' + thies_id + 'TM00000\r').encode('utf-8')) # turn of automatic mode
     sleep(1)
 
-    '''
-    From what I understand from the manual, page 31 to be precise, the disdromter has 2 modes
-    1. Automatic mode
-    2. Manual mode
-    Where in automatic mode the sensor will send a telegram each minute
-    In manual mode the sensor will only send a telegram when the user requests it
-    
-    Currently I'm not sure what is being used to log data from the thies on other locations
-    '''
+    serial_connection.write(('\r' + thies_id + 'ZH000' + NowTime().time_list[0] + '\r').encode('utf-8')) # set hour
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'ZM000' + NowTime().time_list[1] + '\r').encode('utf-8')) # set minutes
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'ZS000' + NowTime().time_list[2] + '\r').encode('utf-8')) # set seconds
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'KY00000\r').encode('utf-8')) # place out of config mode
+    sleep(1)
+
+    serial_connection.reset_input_buffer()
+    serial_connection.reset_output_buffer()
 
 
 def parsivel_reset(serialconnection, logger, factoryreset):

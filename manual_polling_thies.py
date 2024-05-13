@@ -3,7 +3,7 @@ from pathlib import Path
 import serial
 
 from modules.sqldb import create_db, connect_db
-from modules.util_functions import yaml2dict
+from modules.util_functions import yaml2dict, thies_start_sequence
 from modules.now_time import NowTime
 
 if __name__ == '__main__':
@@ -21,34 +21,8 @@ if __name__ == '__main__':
     thies_baud = 9600
     thies_id = '06'
     thies = serial.Serial(port=thies_port, baudrate=thies_baud, timeout=10)
-    thies.reset_input_buffer()
-    thies.reset_output_buffer()
-    print(thies)
 
-    thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
-    sleep(1)
-
-    # thies.write(('\r' + thies_id + 'RS00001\r').encode('utf-8')) # restart sensor
-    # print("restarting")
-    # sleep(20)
-    #
-    # thies.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
-    # sleep(1)
-
-    thies.write(('\r' + thies_id + 'TM00000\r').encode('utf-8')) # turn of automatic mode
-    sleep(1)
-
-    thies.write(('\r' + thies_id + 'ZH000' + NowTime().time_list[0] + '\r').encode('utf-8')) # set hour
-    sleep(1)
-
-    thies.write(('\r' + thies_id + 'ZM000' + NowTime().time_list[1] + '\r').encode('utf-8')) # set minutes
-    sleep(1)
-
-    thies.write(('\r' + thies_id + 'ZS000' + NowTime().time_list[2] + '\r').encode('utf-8')) # set seconds
-    sleep(1)
-
-    thies.write(('\r' + thies_id + 'KY00000\r').encode('utf-8')) # place out of config mode
-    sleep(1)
+    thies_start_sequence(thies, thies_id)
 
     while True:
         now_time = NowTime()
