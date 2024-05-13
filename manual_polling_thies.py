@@ -61,6 +61,7 @@ if __name__ == '__main__':
         con, cur = connect_db(dbpath=str(db_path))
 
         # Send request to get the latest telegram
+        sleep(2) # Give sensor some time to create the telegram
         thies.write(('\r' + thies_id + 'TR00005\r').encode('utf-8'))
         output = thies.readline()
         decoded_bytes = str(output[0:len(output)-2].decode("utf-8"))
