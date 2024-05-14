@@ -6,14 +6,15 @@ import sys
 from time import sleep
 from pathlib import Path
 from typing import Dict, Union
-from modules.now_time import NowTime
 import serial
 import yaml
+from modules.now_time import NowTime # pylint: disable=import-error
+
 
 if __name__ == '__main__':
     from log import log # pylint: disable=import-error
 else:
-    from modules.log import log # pylint: disable=import-error
+    from modules.log import log # pylint: disable=import-error, ungrouped-imports
 
 
 def yaml2dict(path: Path) -> Dict:
@@ -125,6 +126,13 @@ def parsivel_start_sequence(serialconnection, config_dict, logger):
 
 
 def thies_start_sequence(serial_connection, thies_id):
+    '''
+    This function sends the start sequence commands to the Thies disdrometer.
+    It sets the sensor in config mode, place sensor in manual mode,
+    changes the time to the current time and sets the sensor back to normal mode.
+    :param serial_connection: Connection of the thies
+    :param thies_id: id of the thies
+    '''
 
     serial_connection.reset_input_buffer()
     serial_connection.reset_output_buffer()
