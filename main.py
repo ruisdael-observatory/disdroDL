@@ -3,7 +3,7 @@ from time import sleep
 from argparse import ArgumentParser
 
 from modules.sensors import Parsivel
-from modules.util_functions import yaml2dict, create_dir, init_serial, create_logger, parsivel_start_sequence
+from modules.util_functions import yaml2dict, create_logger
 from modules.telegram import Telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
@@ -36,12 +36,12 @@ print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 ### Serial connection ###
 parsivel = Parsivel()
-parsivel.init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
-parsivel.sensor_start_sequence(serial_connection=parsivel.get_sensor(), config_dict=config_dict, logger=logger)
+parsivel.init_serial_connection(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
+parsivel.sensor_start_sequence(config_dict=config_dict, logger=logger)
 sleep(2)
 
 ### DB ###
-db_path = Path(config_dict['data_dir']) / 'disdrodl-test.db'
+db_path = Path(config_dict['data_dir']) / 'disdrodl-test.db' # change the db name
 create_db(dbpath=str(db_path))
 
 #########################################################
