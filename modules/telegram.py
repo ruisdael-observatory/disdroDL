@@ -1,9 +1,11 @@
+"""""TBD"""
 from datetime import datetime
-from venv import logger
-import chardet
+from venv import logger as telegram_logger
 from sqlite3 import Cursor
 from logging import Logger
 from typing import Dict, Union
+import chardet
+
 
 class Telegram:
     '''
@@ -14,7 +16,7 @@ class Telegram:
 
     def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
                  timestamp: datetime, db_cursor: Union[Cursor, None],
-                 logger: Logger, telegram_data: Dict, db_row_id=None):
+                 logger: Logger, telegram_data: Dict, db_row_id=None,telegram_data_str= None):
         '''
         initiates variables and methods:
         * set_netCDF_path
@@ -28,6 +30,7 @@ class Telegram:
         self.telegram_data = telegram_data
         self.db_cursor = db_cursor
         self.db_row_id = db_row_id
+        self.telegram_data_str = telegram_data_str
 
     def capture_prefixes_and_data(self):
         '''
@@ -50,7 +53,7 @@ class Telegram:
                 else:
                     value = value_list
 
-                super(Telegram, self).__setattr__(f'field_{field}_values', value)
+                super().__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
 
     def parse_telegram_row(self):
@@ -63,7 +66,7 @@ class Telegram:
         try:
             telegram_lines_list[1]
         except IndexError:
-            logger.error(msg=f"self.telegram_lines is EMPTY. self.telegram_lines: {self.telegram_lines}")
+            telegram_logger.error(msg=f"self.telegram_lines is EMPTY. self.telegram_lines: {self.telegram_lines}")
             return
 
         for keyval in telegram_lines_list:
@@ -120,6 +123,7 @@ class Telegram:
         self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
 
     def insert2db(self):
+        """"TBD"""
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
 
