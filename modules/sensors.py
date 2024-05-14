@@ -70,6 +70,10 @@ class Sensor(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_sensor(self):
+        pass
+
 
 class Parsivel(Sensor):
     """
@@ -157,3 +161,6 @@ class Parsivel(Sensor):
         :return:
         """
         return self.sensor_type.value
+
+    def get_sensor(self):
+        return self.sensor
