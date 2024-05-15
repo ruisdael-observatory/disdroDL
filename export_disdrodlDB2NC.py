@@ -42,13 +42,20 @@ if __name__ == '__main__':
     else:
         raise Exception("unsupported sensor type")
 
+    # Combine the site specific config file and the sensor type specific config file into one
     config_dict = deep_update(config_dict, config_dict_site)
 
+    # Combine the site name, station code and sensor name into the start of the file name
     site_name = config_dict['global_attrs']['site_name']
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
-    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+
+    # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
+    if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        db_path = Path("sample_data/disdrodl-thies.db")
+    else:
+        db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
     
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
@@ -60,7 +67,12 @@ if __name__ == '__main__':
     logger.info(msg=msg_date)
 
     # -- Monthly Data dir
-    data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+    # Put the netCDF in sample_data if the provided site config file is from the Thies
+    if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        data_dir = Path('sample_data/')
+    else:
+        data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+
     created_data_dir = create_dir(path=data_dir)  # create if does not exist
     if created_data_dir:
         logger.info(msg=f'Created data directory: {data_dir}')
