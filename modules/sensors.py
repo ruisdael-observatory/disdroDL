@@ -27,7 +27,7 @@ class Sensor(ABC):
         self.sensor_type = sensor_type
 
     @abstractmethod
-    def init_serial_connection(self, port: int, baud: int, logger):
+    def init_serial_connection(self, port: str, baud: int, logger):
         """
         Abstract function for initializing
         the serial connection with the sensor
@@ -94,7 +94,7 @@ class Parsivel(Sensor):
         self.serial_connection: serial.Serial = None
 
     # has to be deleted from util_functionalities.py
-    def init_serial_connection(self, port: int, baud: int, logger):
+    def init_serial_connection(self, port: str, baud: int, logger):
         """
         Initializes the serial connection with the sensor
         :param port:
