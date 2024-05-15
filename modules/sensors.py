@@ -5,6 +5,8 @@ from time import sleep
 
 import serial
 
+from modules.now_time import NowTime
+
 
 class SensorType(Enum):
     """
@@ -19,6 +21,7 @@ class Sensor(ABC):
     Abstract class for outlining the commonly
     used functionality for different types of sensors
     """
+
     def __init__(self, sensor_type: SensorType):
         """
         Constructor for sensors
@@ -80,6 +83,7 @@ class Parsivel(Sensor):
     Class inheriting Sensor and representing
     the parsivel type serial_connection
     """
+
     def __init__(self, sensor_type=SensorType.PARSIVEL):
         """
         Constructor for the parsivel type serial_connection
@@ -167,4 +171,110 @@ class Parsivel(Sensor):
         return self.sensor_type.value
 
     def get_serial_connection(self):
+        return self.serial_connection
+
+
+class Thies(Sensor):
+    """
+    Class inheriting Sensor and representing the thies sensor
+    """
+
+    def __init__(self, sensor_type=SensorType.THIES, thies_id='00'):
+        """
+        Constructor for the thies type serial_connection
+        :param sensor_type: type of the serial_connection (enum)
+        """
+        super().__init__(sensor_type)
+        self.serial_connection: serial.Serial = None
+        self.thies_id = thies_id
+
+    def init_serial_connection(self, port, baud, logger):
+        """
+        Initializes the serial connection for the thies sensor
+        :param port: the port where the thies is connected to
+        :param baud: the baudrate of the thies
+        :param logger: the logger object
+        """
+        try:
+            thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
+            logger.info(msg=f'Connected to parsivel, via: {thies}')
+        except Exception as e:
+            logger.error(msg=e)
+            sys.exit()
+        self.serial_connection = thies
+
+    def sensor_start_sequence(self, config_dict, logger):
+        """
+        Send the serial commands to the thies that changes the necessary parameters
+        :param config_dict: the configuration dictionary
+        :param logger: the logger object
+        """
+        self.serial_connection.reset_input_buffer()
+        self.serial_connection.reset_output_buffer()
+
+        logger.info(msg="Starting thies start sequence commands")
+
+        thies_config_mode_enable = ('\r' + self.thies_id + 'KY00001\r').encode('utf-8')
+        self.write(thies_config_mode_enable, logger)  # place in config mode
+        sleep(1)
+
+        thies_automatic_mode_on = ('\r' + self.thies_id + 'TM00000\r').encode('utf-8')
+        self.write(thies_automatic_mode_on, logger)  # turn of automatic mode
+        sleep(1)
+
+        thies_set_hours = ('\r' + self.thies_id + 'ZH000' + NowTime().time_list[0] + '\r').encode('utf-8')
+        self.write(thies_set_hours, logger)  # set hour
+        sleep(1)
+
+        thies_set_minutes = ('\r' + self.thies_id + 'ZM000' + NowTime().time_list[1] + '\r').encode('utf-8')
+        self.write(thies_set_minutes, logger)  # set minutes
+        sleep(1)
+
+        thies_set_seconds = ('\r' + self.thies_id + 'ZS000' + NowTime().time_list[2] + '\r').encode('utf-8')
+        self.write(thies_set_seconds, logger)  # set seconds
+        sleep(1)
+
+        thies_config_mode_disable = ('\r' + self.thies_id + 'KY00000\r').encode('utf-8')
+        self.write(thies_config_mode_disable, logger)  # place out of config mode
+        sleep(1)
+
+        self.serial_connection.reset_input_buffer()
+        self.serial_connection.reset_output_buffer()
+
+    def write(self, msg, logger):
+        """
+        Writes the message to the serial connection
+        :param msg: The message to send over the serial connection
+        :param logger: the logger object
+        """
+        if self.serial_connection is None:
+            logger.error(msg="serial_connection not initialized")
+        else:
+            self.serial_connection.write(msg)
+
+    def read(self, logger):
+        """
+        Reads the data sent by the thies sensor
+        :param logger: the logger object
+        :return: the read line from the thies sensor
+        """
+        if self.serial_connection is None:
+            logger.error(msg="serial_connection not initialized")
+            return None
+
+        sleep(2)  # Give sensor some time to create the telegram
+        return self.serial_connection.readline()
+
+    def get_type(self):
+        """
+        Returns the type of the serial_connection
+        :return: the type of the serial_connection
+        """
+        return self.sensor_type
+
+    def get_serial_connection(self):
+        """
+        Returns the serial connection
+        :return: the serial connection object
+        """
         return self.serial_connection
