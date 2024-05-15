@@ -161,7 +161,7 @@ class NetCDF:
 
     def __set_netcdf_variable(self, key, one_var_dict, nc_group):
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
-        # TODO: add include_in_nc to variables in thies .yml file 
+        # TODO: add include_in_nc to variables in thies .yml file # pylint: disable=fixme
         if self.config_dict['global_attrs']['sensor_type'] == 'Thies Clima' or one_var_dict['include_in_nc'] is True:
             if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
                 compression_method = 'zlib'

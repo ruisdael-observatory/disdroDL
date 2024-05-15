@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     config_dict_site = yaml2dict(path=wd / args.config)
 
-    # Use the general config file which corresponds to the sensor type 
+    # Use the general config file which corresponds to the sensor type
     config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])
 
     # Combine the site specific config file and the sensor type specific config file into one
@@ -54,7 +54,7 @@ if __name__ == '__main__':
         db_path = Path("sample_data/disdrodl-thies.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
-    
+
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
                            parsivel_name=config_dict['global_attrs']['sensor_name'])
