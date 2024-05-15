@@ -1,3 +1,6 @@
+"""
+Imports
+"""
 from time import sleep
 from pathlib import Path
 import serial
