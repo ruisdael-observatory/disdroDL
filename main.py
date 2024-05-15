@@ -41,7 +41,7 @@ parsivel.sensor_start_sequence(config_dict=config_dict, logger=logger)
 sleep(2)
 
 ### DB ###
-db_path = Path(config_dict['data_dir']) / 'disdrodl-test.db' # change the db name
+db_path = Path(config_dict['data_dir']) / 'disdrodl-test1.db' # change the db name
 create_db(dbpath=str(db_path))
 
 #########################################################

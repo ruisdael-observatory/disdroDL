@@ -1,3 +1,8 @@
+"""
+Module containing the abstract class for sensors,
+and the implementations of different sensor
+classes inheriting this class
+"""
 import sys
 from abc import abstractmethod, ABC
 from enum import Enum
@@ -35,16 +40,18 @@ class Sensor(ABC):
         :param baud:
         :param logger:
         """
-        pass
 
     @abstractmethod
     def sensor_start_sequence(self, config_dict, logger):
         """
-
-        :param config_dict:
-        :param logger:
+        Abstract function for executing the startup sequence for a sensor.
+        This function performs the necessary initialization steps to configure a
+        sensor with specific settings provided in the `config_dict`. It
+        logs each step of the process using the provided `logger` object.
+        :param config_dict: Dictionary containing configuration parameters
+                            for the sensor.
+        :param logger: Logger for logging information and errors
         """
-        pass
 
     @abstractmethod
     def write(self, msg, logger):
@@ -54,7 +61,6 @@ class Sensor(ABC):
         :param msg: message for the sensor
         :param logger: logger for errors
         """
-        pass
 
     @abstractmethod
     def read(self, logger):
@@ -63,21 +69,18 @@ class Sensor(ABC):
         lines from the sensor
         :param logger: logger for errors
         """
-        pass
 
     @abstractmethod
     def get_type(self) -> str:
         """
         Returns the type of the sensor as a string
         """
-        pass
 
     @abstractmethod
     def get_serial_connection(self):
         """
         Getter for serial_connection
         """
-        pass
 
 
 class Parsivel(Sensor):
@@ -93,7 +96,6 @@ class Parsivel(Sensor):
         super().__init__(sensor_type)
         self.serial_connection: serial.Serial = None
 
-    # has to be deleted from util_functionalities.py
     def init_serial_connection(self, port: str, baud: int, logger):
         """
         Initializes the serial connection with the sensor
@@ -104,17 +106,20 @@ class Parsivel(Sensor):
         try:
             parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {parsivel}')
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             logger.error(msg=e)
             sys.exit()
         self.serial_connection = parsivel
 
-    # has to be deleted from util_functionalities.py
     def sensor_start_sequence(self, config_dict, logger):
         """
-
-        :param config_dict:
-        :param logger:
+        Executes the startup sequence for the Parsivel sensor.
+        This function performs the necessary initialization steps to configure the
+        Parsivel sensor with specific settings provided in the `config_dict`. It
+        logs each step of the process using the provided `logger` object.
+        :param config_dict: Dictionary containing configuration parameters
+                            for the sensor.
+        :param logger: Logger for logging information and errors
         """
         logger.info(msg="Starting parsivel start sequence commands")
         self.serial_connection.reset_input_buffer()  # Flushes input buffer
@@ -125,8 +130,10 @@ class Parsivel(Sensor):
         sleep(1)
 
         # Sets the ID of the Parsivel, maximum 4 numerical characters
-        parsivel_set_ID = ('CS/J/' + config_dict['global_attrs']['sensor_name'] + '\r').encode('utf-8')
-        self.write(parsivel_set_ID, logger)
+        parsivel_set_id = ('CS/J/'
+                           + config_dict['global_attrs']['sensor_name']
+                           + '\r').encode('utf-8')
+        self.write(parsivel_set_id, logger)
         sleep(2)
 
         parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
@@ -150,9 +157,8 @@ class Parsivel(Sensor):
         if self.serial_connection is not None:
             self.serial_connection.write(msg)
             return None
-        else:
-            logger.error(msg="serial_connection not initialized")
-            return None
+        logger.error(msg="serial_connection not initialized")
+        return None
 
     def read(self, logger):
         """
@@ -164,9 +170,8 @@ class Parsivel(Sensor):
         """
         if self.serial_connection is not None:
             return self.serial_connection.readlines()
-        else:
-            logger.error(msg="serial_connection not initialized")
-            return None
+        logger.error(msg="serial_connection not initialized")
+        return None
 
     def get_type(self) -> str:
         """
