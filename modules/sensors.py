@@ -30,7 +30,7 @@ class Sensor(ABC):
         self.sensor_type = sensor_type
 
     @abstractmethod
-    def init_serial_connection(self, port: int, baud: int, logger):
+    def init_serial_connection(self, port: str, baud: int, logger):
         """
 
         :param port:
@@ -198,10 +198,11 @@ class Thies(Sensor):
         try:
             thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {thies}')
+            self.serial_connection = thies
         except Exception as e:
             logger.error(msg=e)
             sys.exit()
-        self.serial_connection = thies
+
 
     def sensor_start_sequence(self, config_dict, logger):
         """
