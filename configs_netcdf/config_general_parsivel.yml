@@ -397,7 +397,7 @@ variables:
             - 20.0
             - 23.0                 
 telegram_fields:
-    '01':
+    '1':
         dimensions:
             - time
         dtype: 'f4'  # 32bit floating point                
@@ -406,7 +406,7 @@ telegram_fields:
             units: 'mm/h'
             long_name: 'Rain intensity'
             standard_name: 'rain_intensity'
-    '02':
+    '2':
         dimensions:
             - time
         dtype: 'f4'                 
@@ -416,7 +416,7 @@ telegram_fields:
             long_name: 'Rain amount accumulated'
             standard_name: 'acc_rain_amount'
             comment: 'accumulated rainfall amount since the last reset'
-    '03':
+    '3':
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer               
@@ -424,7 +424,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Weather code to SYNOP wawa'
             standard_name: 'code_4680'
-    '04':
+    '4':
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer                
@@ -432,7 +432,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Weather code to SYNOP ww'
             standard_name: 'code_4677'
-    '05':
+    '5':
         dimensions:
             - time
         dtype: 'S4'  # string            
@@ -441,7 +441,7 @@ telegram_fields:
             long_name: 'Weather code METAR/SPECI'
             standard_name: 'code_4678'
             comment: 'Possible values in OTT Parsivel documentation: Table 4678'
-    '06':
+    '6':
         dimensions:
             - time
         dtype: 'S4'  # string            
@@ -450,7 +450,7 @@ telegram_fields:
             long_name: 'Weather code according to NWS'
             standard_name: 'code_NWS'
             comment: 'Possible values in OTT Parsivel documentation: Table NWS'
-    '07':
+    '7':
         dimensions:
             - time
         dtype: 'f4'            
@@ -461,7 +461,7 @@ telegram_fields:
             units: 'dBz'
             comment: '-9.999 means that the period was dry'
         fill_value: -10
-    '08':
+    '8':
         dimensions:
             - time
         dtype: 'i4'            
@@ -470,7 +470,7 @@ telegram_fields:
             long_name: 'Meteorological Optical Range in precipitation'
             standard_name: 'MOR'
             units: 'm'
-    '09':
+    '9':
         dimensions:
             - time
         dtype: 'i4'
