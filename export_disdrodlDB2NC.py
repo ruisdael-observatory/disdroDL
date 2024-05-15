@@ -67,6 +67,7 @@ if __name__ == '__main__':
 
     # -- DB rows -> Telegram instances
     telegram_objs = []
+    # Testing - Replaced dp_path with hardcoded path to db in sample data
     cur, con = connect_db(dbpath='sample_data/disdrodlthies.db')
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
