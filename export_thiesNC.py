@@ -38,8 +38,9 @@ if __name__ == '__main__':
         dict = yaml.safe_load(f)
    #     print(dict)
     config_dict = dict
+    config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
    # config_dict_site = yaml2dict(path=wd / args.config)
-   # config_dict = deep_update(config_dict, config_dict_site)
+    config_dict = deep_update(config_dict, config_dict_site)
     site_name = "green_village"
     st_code = "006"
     sensor_name = "ThIES"

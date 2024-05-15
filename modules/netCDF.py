@@ -145,7 +145,7 @@ class NetCDF:
 
     def __set_netcdf_variable(self, key, one_var_dict, nc_group):
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
-        if one_var_dict['include_in_nc'] is True:
+        if True:
             if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
                 compression_method = 'zlib'
                 # compression_method = dict(zlib=True, shuffle=True, complevel=5)
