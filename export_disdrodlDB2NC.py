@@ -1,3 +1,6 @@
+"""
+a
+"""
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
@@ -85,7 +88,7 @@ if __name__ == '__main__':
             db_cursor=None,
             telegram_data={},
             logger=logger)
-            
+
         telegram_instance.parse_telegram_row()
 
         # check if telegram_instance has data organized by keys(fields)
