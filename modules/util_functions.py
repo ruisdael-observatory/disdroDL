@@ -8,11 +8,13 @@ from pathlib import Path
 from typing import Dict, Union
 import serial
 import yaml
+from modules.now_time import NowTime # pylint: disable=import-error
+
 
 if __name__ == '__main__':
     from log import log # pylint: disable=import-error
 else:
-    from modules.log import log # pylint: disable=import-error
+    from modules.log import log # pylint: disable=import-error, ungrouped-imports
 
 
 def yaml2dict(path: Path) -> Dict:
@@ -123,6 +125,40 @@ def parsivel_start_sequence(serialconnection, config_dict, logger):
     serialconnection.write(parsivel_user_telegram)
 
 
+def thies_start_sequence(serial_connection, thies_id):
+    '''
+    This function sends the start sequence commands to the Thies disdrometer.
+    It sets the sensor in config mode, place sensor in manual mode,
+    changes the time to the current time and sets the sensor back to normal mode.
+    :param serial_connection: Connection of the thies
+    :param thies_id: id of the thies
+    '''
+
+    serial_connection.reset_input_buffer()
+    serial_connection.reset_output_buffer()
+
+    serial_connection.write(('\r' + thies_id + 'KY00001\r').encode('utf-8')) # place in config mode
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'TM00000\r').encode('utf-8')) # turn of automatic mode
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'ZH000' + NowTime().time_list[0] + '\r').encode('utf-8')) # set hour
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'ZM000' + NowTime().time_list[1] + '\r').encode('utf-8')) # set minutes
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'ZS000' + NowTime().time_list[2] + '\r').encode('utf-8')) # set seconds
+    sleep(1)
+
+    serial_connection.write(('\r' + thies_id + 'KY00000\r').encode('utf-8')) # place out of config mode
+    sleep(1)
+
+    serial_connection.reset_input_buffer()
+    serial_connection.reset_output_buffer()
+
+
 def parsivel_reset(serialconnection, logger, factoryreset):
     """
     This function resets the parsivel disdrometer.
@@ -138,6 +174,7 @@ def parsivel_reset(serialconnection, logger, factoryreset):
         parsivel_restart = 'CS/Z/1\r'.encode('utf-8')  # restart
         serialconnection.write(parsivel_restart)
     sleep(5)
+
 
 def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     '''
