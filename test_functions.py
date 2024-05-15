@@ -4,7 +4,7 @@ from  modules.util_functions import yaml2dict, create_logger
 from pydantic.v1.utils import deep_update
 
 wd = Path(__file__).parent 
-config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general.yml')
+config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 config_dict_site = yaml2dict(path = wd / 'configs_netcdf' / 'config_007_CABAUW.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 

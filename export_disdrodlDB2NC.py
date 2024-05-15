@@ -32,7 +32,7 @@ if __name__ == '__main__':
     date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
 
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
     config_dict_site = yaml2dict(path=wd / args.config)
     config_dict = deep_update(config_dict, config_dict_site)
 
