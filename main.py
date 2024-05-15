@@ -9,9 +9,8 @@ data gets logged to the database.
 from pathlib import Path
 from time import sleep
 from argparse import ArgumentParser
-from modules.util_functions import yaml2dict, create_logger
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, init_serial, create_logger, parsivel_start_sequence
+from modules.util_functions import yaml2dict, create_logger
 from modules.sensors import Parsivel
 from modules.telegram import Telegram
 from modules.now_time import NowTime

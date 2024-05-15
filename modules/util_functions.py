@@ -2,11 +2,9 @@
 Imports
 """
 import os
-import sys
 from time import sleep
 from pathlib import Path
 from typing import Dict, Union
-import serial
 import yaml
 from modules.now_time import NowTime # pylint: disable=import-error
 
