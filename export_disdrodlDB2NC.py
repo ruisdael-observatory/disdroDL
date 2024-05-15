@@ -48,8 +48,7 @@ if __name__ == '__main__':
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
-    #db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
-    db_path = Path("C:/Users/jesse/disdrodl-thies.db")
+    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
     
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
@@ -68,7 +67,7 @@ if __name__ == '__main__':
 
     # -- DB rows -> Telegram instances
     telegram_objs = []
-    cur, con = connect_db(dbpath=str(db_path))
+    cur, con = connect_db(dbpath='sample_data/disdrodl-thies.db')
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
         telegram_instance = Telegram(
