@@ -7,8 +7,12 @@
 
 ### Approval of the agenda
 - summary of agenda points
+    - update on progress
+    - plan for this week
     - SQLite vs mySQL
     - .yml file
+    - contact via gitlab
+    - midterm meeting
 
 ### Discussion points:
 - update on progress so far
@@ -31,4 +35,41 @@
     - do we then also meet in week 6 (there's a meeting planned for that day at 10:00)
 
 ### Any other business
-    - 
+- coding language for auxiliary quality control and GUI software
+    - would you prefer us to use a specific coding language for those pieces of software?
+
+
+# Minutes
+
+- update on progress so far
+    - updated them on problem with thies throwing an error, abstract class idea, start and end flag bytes problem
+    - currently an old script is used for the thies
+- plan for this week
+    - we want to have a prototype (working for both sensors) this week, and finish the testing next week
+    - we want to create a sensor class with subclasses
+- should we rework the database from SQLite to mySQL?
+    - Andre's idea, Marc has no clear reason
+    - Probably functionalities that MySQL offers, and SQLite doesn't
+    - We can leave the question for next week when Andre is here
+- what should the .yml file for the Thies include?
+    - 82-519 fields are missing, but this is the most important information
+    - The parsivel does log it
+    - In the netCDF it should be converted to a matrix
+    - We could be able to specify which fields we want
+- contact via gitlab
+    - Make an issue and tag them in the description
+    - Tag Andre for samller code related questions, and Marc for bigger project questions
+- midterm meeting date
+    - 28-05-2024 at 2pm
+    - scrap the regular meeting plan
+- coding language for auxiliary quality control and GUI software
+    - Marc doesn't really like Java, he would prefer to see Python
+    - it is also a much better choice for this field
+    - some people working with R
+    - python would be also better for potential future studying purposes.
+    - for python try not to use many external dependencies (only use the most common ones)
+- other
+    - could be useful to have a schematic view of the dataflow, class structure etc. in the README
+    - we can still readjust the requirements or some other things about the project if needed
+    - don't hesitate to justify our choices
+    - send the new requirements to Marc and Andre by email (the overlief link)   
