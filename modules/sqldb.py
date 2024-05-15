@@ -47,9 +47,9 @@ def query_db_rows_gen(con, date_dt, logger):
     between 00:00:00 and 23:59:59
     Returning a row_factory generator
     '''
-    start_dt = date_dt.replace(hour=0, minute=0, second=0, tzinfo=timezone.utc)  # redundant replace
+    start_dt = date_dt.replace(hour=14, minute=0, second=0, tzinfo=timezone.utc)  # redundant replace
     start_ts = start_dt.timestamp()
-    end_dt = date_dt.replace(hour=23, minute=59, second=59, tzinfo=timezone.utc)
+    end_dt = date_dt.replace(hour=14, minute=59, second=59, tzinfo=timezone.utc)
     end_ts = end_dt.timestamp()
     query_str = f"SELECT * FROM disdrodl WHERE timestamp >= {start_ts} AND timestamp < {end_ts}"
     logger.debug(msg=query_str)

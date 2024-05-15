@@ -48,7 +48,8 @@ if __name__ == '__main__':
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
-    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+    #db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+    db_path = Path("C:/Users/jesse/disdrodl-thies.db")
     
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
