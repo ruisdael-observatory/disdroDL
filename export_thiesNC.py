@@ -36,7 +36,7 @@ if __name__ == '__main__':
     wd = Path(__file__).parent
     with open('configs_netcdf/config_general_thies.yml',encoding="utf8") as f:
         dict = yaml.safe_load(f)
-        print(dict)
+   #     print(dict)
     config_dict = dict
    # config_dict_site = yaml2dict(path=wd / args.config)
    # config_dict = deep_update(config_dict, config_dict_site)
