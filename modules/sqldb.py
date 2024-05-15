@@ -17,9 +17,8 @@ def create_db(dbpath):
     with columns id, timestamp, parsivel_id, telegram 
     '''  
     con, cur = connect_db(dbpath=str(dbpath))
-    # Testing - Replaced disdrodl with disdrodlthies
     cur.execute("""
-                CREATE TABLE IF NOT EXISTS disdrodlthies
+                CREATE TABLE IF NOT EXISTS disdrodl
                 (
                     id INTEGER PRIMARY KEY,
                     timestamp REAL,
@@ -48,12 +47,11 @@ def query_db_rows_gen(con, date_dt, logger):
     between 00:00:00 and 23:59:59
     Returning a row_factory generator
     '''
-    start_dt = date_dt.replace(hour=14, minute=0, second=0, tzinfo=timezone.utc)  # redundant replace
+    start_dt = date_dt.replace(hour=0, minute=0, second=0, tzinfo=timezone.utc)  # redundant replace
     start_ts = start_dt.timestamp()
-    end_dt = date_dt.replace(hour=14, minute=59, second=59, tzinfo=timezone.utc)
+    end_dt = date_dt.replace(hour=23, minute=59, second=59, tzinfo=timezone.utc)
     end_ts = end_dt.timestamp()
-    # Testing - Replaced disdrodl with disdrodlthies
-    query_str = f"SELECT * FROM disdrodlthies WHERE timestamp >= {start_ts} AND timestamp < {end_ts}"
+    query_str = f"SELECT * FROM disdrodl WHERE timestamp >= {start_ts} AND timestamp < {end_ts}"
     logger.debug(msg=query_str)
     # Append each SQL response row as Telegram instance to telegram_objs var 
     con.row_factory = dict_factory
