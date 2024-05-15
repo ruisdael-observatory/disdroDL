@@ -14,38 +14,44 @@ date_today = date.today()
 date_yest = date_today - timedelta(days=1)
 
 if __name__ == '__main__':
-    # parser = ArgumentParser(
-    #     description="Export 1 day of parsivel data from DB to NetCDF.\
-    #         Run: python export_daily_netcdf.py -c configs_netcdf/config_007_CABAUW.yml\
-    #             -d 2023-12-17 \
-    #         Output netCDF: store in same directory as input file")
-    # parser.add_argument(
-    #     '-c',
-    #     '--config',
-    #     required=True,
-    #     help='Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml')
-    # parser.add_argument(
-    #     '-d',
-    #     '--date',
-    #     default=date_yest.strftime('%Y-%m-%d'),
-    #     help='Date string for files to be captured. Format: YYYY-mm-dd')
+    parser = ArgumentParser(
+        description="Export 1 day of parsivel data from DB to NetCDF.\
+            Run: python export_daily_netcdf.py -c configs_netcdf/config_007_CABAUW.yml\
+                -d 2023-12-17 \
+            Output netCDF: store in same directory as input file")
+    parser.add_argument(
+        '-c',
+        '--config',
+        required=True,
+        help='Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml')
+    parser.add_argument(
+        '-d',
+        '--date',
+        default=date_yest.strftime('%Y-%m-%d'),
+        help='Date string for files to be captured. Format: YYYY-mm-dd')
 
-    # args = parser.parse_args()
-    date = "2024-05-14"
-    date_dt = datetime.strptime(date, '%Y-%m-%d')
+    args = parser.parse_args()
+    date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
-    with open('configs_netcdf/config_general_thies.yml',encoding="utf8") as f:
-        dict = yaml.safe_load(f)
-   #     print(dict)
-    config_dict = dict
-    config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
-   # config_dict_site = yaml2dict(path=wd / args.config)
+
+    config_dict_site = yaml2dict(path=wd / args.config)
+
+    # Use the general config file which corresponds to the sensor type 
+    if config_dict_site['global_attrs']['sensor_type'] == 'OTT Hydromet Parsivel2':
+        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
+    elif config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
+    else:
+        raise Exception("unsupported sensor type")
+
     config_dict = deep_update(config_dict, config_dict_site)
-    site_name = "green_village"
-    st_code = "006"
-    sensor_name = "ThIES"
-    fn_start = f"{date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
+    
+    site_name = config_dict['global_attrs']['site_name']
+    st_code = config_dict['station_code']
+    sensor_name = config_dict['global_attrs']['sensor_name']
+    fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
     db_path = Path("C:/Users/jesse/disdrodl-thies.db")
+
     logger = create_logger(log_dir=Path('/var/log/disdroDL/'),
                            script_name='disdro_db2nc',
                            parsivel_name='THIES006')
