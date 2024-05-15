@@ -36,7 +36,9 @@ if __name__ == '__main__':
 
     # Use the general config file which corresponds to the sensor type 
     if config_dict_site['global_attrs']['sensor_type'] == 'OTT Hydromet Parsivel2':
-        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
+        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
+    elif config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
     else:
         raise Exception("unsupported sensor type")
 
