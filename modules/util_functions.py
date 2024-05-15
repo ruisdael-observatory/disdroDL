@@ -29,17 +29,6 @@ def create_dir(path: Path):
     return created_dir
 
 
-def init_serial(port: str, baud: int, logger):
-    try:
-        parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
-        logger.info(msg=f'Connected to parsivel, via: {parsivel}')
-    except Exception as e:
-        logger.error(msg=e)
-        # print(e)
-        sys.exit()
-    return parsivel
-
-
 def resetSerialBuffers(serial_connection):
     serial_connection.reset_input_buffer()
     sleep(1)
@@ -61,25 +50,6 @@ def create_logger(log_dir, script_name, parsivel_name):
                  log_name=f"{script_name}: {parsivel_name}")
     logger.info(msg=f"Starting {script_name} for {parsivel_name}")
     return logger
-
-
-def parsivel_start_sequence(serialconnection, config_dict, logger):
-    logger.info(msg="Starting parsivel start sequence commands")
-    serialconnection.reset_input_buffer()  # Flushes input buffer
-    # Sets the name of the Parsivel, maximum 10 characters
-    parsivel_set_station_code = ('CS/K/' + config_dict['station_code'] + '\r').encode('utf-8')
-    serialconnection.write(parsivel_set_station_code)
-    sleep(1)
-    # Sets the ID of the Parsivel, maximum 4 numerical characters
-    parsivel_set_ID = ('CS/J/' + config_dict['global_attrs']['sensor_name'] + '\r').encode('utf-8')
-    serialconnection.write(parsivel_set_ID)
-    sleep(2)
-    parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
-    serialconnection.write(parsivel_restart)  # resets rain amount
-    sleep(10)
-    # The Parsivel broadcasts the user defined telegram.
-    parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')
-    serialconnection.write(parsivel_user_telegram)
 
 
 def thies_start_sequence(serial_connection, thies_id):
