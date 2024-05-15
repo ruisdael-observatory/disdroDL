@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, create_dir, create_logger
+from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
 from modules.telegram import Telegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
@@ -35,12 +35,7 @@ if __name__ == '__main__':
     config_dict_site = yaml2dict(path=wd / args.config)
 
     # Use the general config file which corresponds to the sensor type 
-    if config_dict_site['global_attrs']['sensor_type'] == 'OTT Hydromet Parsivel2':
-        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
-    elif config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
-        config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
-    else:
-        raise Exception("unsupported sensor type")
+    config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])
 
     # Combine the site specific config file and the sensor type specific config file into one
     config_dict = deep_update(config_dict, config_dict_site)

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
-from  modules.util_functions import yaml2dict, create_logger
+import unittest
+from modules.util_functions import yaml2dict, get_general_config, create_logger
 from pydantic.v1.utils import deep_update
 
 wd = Path(__file__).parent 
@@ -46,5 +47,24 @@ def test_config_dict():
     for variable_key in ['time', 'interval', 'datetime', 'latitude', 'longitude', 'altitude']:
         assert variable_key in config_dict['variables'].keys()
     
-
 #  'velocity_classes_center', 'velocity_upper_bounds', 'velocity_lower_bounds', 'velocity_spread',
+
+def test_get_general_config():
+    wd = Path(__file__).parent
+
+    config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
+    config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])
+    assert config_dict['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
+
+    config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_THIES006_GV.yml')
+    config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])   
+    assert config_dict['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number' 
+
+class ExceptionTests(unittest.TestCase):
+
+    def test_unsupported_site_config(self):
+        wd = Path(__file__).parent
+
+        config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_BADTEST.yml')
+        with self.assertRaises(Exception):
+                config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])
