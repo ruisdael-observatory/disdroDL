@@ -6,7 +6,7 @@ classes inheriting this class
 import sys
 from abc import abstractmethod, ABC
 from enum import Enum
-from time import sleep
+import time
 
 import serial
 
@@ -76,12 +76,6 @@ class Sensor(ABC):
         Returns the type of the sensor as a string
         """
 
-    @abstractmethod
-    def get_serial_connection(self):
-        """
-        Getter for serial_connection
-        """
-
 
 class Parsivel(Sensor):
     """
@@ -127,18 +121,18 @@ class Parsivel(Sensor):
         # Sets the name of the Parsivel, maximum 10 characters
         parsivel_set_station_code = ('CS/K/' + config_dict['station_code'] + '\r').encode('utf-8')
         self.write(parsivel_set_station_code, logger)
-        sleep(1)
+        time.sleep(1)
 
         # Sets the ID of the Parsivel, maximum 4 numerical characters
         parsivel_set_id = ('CS/J/'
                            + config_dict['global_attrs']['sensor_name']
                            + '\r').encode('utf-8')
         self.write(parsivel_set_id, logger)
-        sleep(2)
+        time.sleep(2)
 
         parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
         self.write(parsivel_restart, logger)  # resets rain amount
-        sleep(10)
+        time.sleep(10)
 
         # The Parsivel broadcasts the user defined telegram.
         parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')
@@ -169,7 +163,8 @@ class Parsivel(Sensor):
         :return: list of lines or None
         """
         if self.serial_connection is not None:
-            return self.serial_connection.readlines()
+            parsivel_lines = self.serial_connection.readlines()
+            return parsivel_lines
         logger.error(msg="serial_connection not initialized")
         return None
 
@@ -179,10 +174,3 @@ class Parsivel(Sensor):
         :return: type of the serial as a string
         """
         return self.sensor_type.value
-
-    def get_serial_connection(self):
-        """
-        Getter for serial_connection
-        :return: serial connection variable
-        """
-        return self.serial_connection
