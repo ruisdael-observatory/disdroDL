@@ -40,9 +40,9 @@ if __name__ == '__main__':
     date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
     
-    if (version == 'full'):
+    if (args.version == 'full'):
         full_version = True
-    elif (version == 'light'):
+    elif (args.version == 'light'):
         full_version = False
     else:
         raise Exception("version was not 'full' or 'light'")
