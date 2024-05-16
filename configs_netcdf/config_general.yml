@@ -420,7 +420,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer               
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Weather code to SYNOP wawa'
             standard_name: 'code_4680'
@@ -428,7 +428,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer                
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Weather code to SYNOP ww'
             standard_name: 'code_4677'
@@ -436,7 +436,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'  # string            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Weather code METAR/SPECI'
             standard_name: 'code_4678'
@@ -445,7 +445,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'  # string            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Weather code according to NWS'
             standard_name: 'code_NWS'
@@ -454,7 +454,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Radar reflectivity'
             standard_name: 'reflectivity'
@@ -465,7 +465,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i4'            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Meteorological Optical Range in precipitation'
             standard_name: 'MOR'
@@ -483,7 +483,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i4'            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Signal amplitude of the laser strip'
             standard_name: 'amplitude'
@@ -492,7 +492,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i4'            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Number of particles detected and validated'
             standard_name: 'n_particles'
@@ -502,7 +502,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Temperature in the sensor housing'
             standard_name: 'T_sensor'
@@ -532,7 +532,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'light'                   
+        include_in_nc: 'full'                    
         var_attrs:
             long_name: 'Sensor head heating current'
             standard_name: 'I_heating'
