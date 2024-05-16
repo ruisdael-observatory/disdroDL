@@ -203,7 +203,6 @@ class Thies(Sensor):
             logger.error(msg=e)
             sys.exit()
 
-
     def sensor_start_sequence(self, config_dict, logger):
         """
         Send the serial commands to the thies that changes the necessary parameters
