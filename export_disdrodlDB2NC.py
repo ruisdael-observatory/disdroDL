@@ -55,6 +55,10 @@ if __name__ == '__main__':
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
+
+    if (full_version is False):
+        fn_start = f"{fn_start}_light"
+
     db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
 
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
