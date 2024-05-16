@@ -28,7 +28,7 @@ variables:
         dtype: 'f4'  # 32bit floating point
         value: 
             - 51.933496
-        include_in_nc: True                    
+        include_in_nc: true                    
         var_attrs: 
             units: 'degree_north'
             long_name: 'Latitude of site'
@@ -38,7 +38,7 @@ variables:
         dtype: 'f4'  # 32bit floating point
         value: 
             - 3.999849
-        include_in_nc: True                    
+        include_in_nc: true                    
         var_attrs: 
             units: 'degree_east'
             long_name: 'Longitude of site'
@@ -48,7 +48,7 @@ variables:
         dtype: 'f4'  # 32bit floating point
         value: 
             - 3
-        include_in_nc: True                    
+        include_in_nc: true                    
         var_attrs: 
             units: 'm'
             long_name: 'Altitude of site'
