@@ -163,6 +163,7 @@ class NetCDF:
 
     def __set_netcdf_variable(self, key, one_var_dict, nc_group):
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
+        print(self.config_dict['telegram_fields'][key].get('include_in_nc'))
         if ((self.full_version is True and self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never') or
             (self.full_version is False and self.config_dict['telegram_fields'][key].get('include_in_nc') == 'full')):
             if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
