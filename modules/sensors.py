@@ -6,7 +6,7 @@ classes inheriting this class
 import sys
 from abc import abstractmethod, ABC
 from enum import Enum
-import time
+from time import sleep
 
 import serial
 
@@ -121,18 +121,18 @@ class Parsivel(Sensor):
         # Sets the name of the Parsivel, maximum 10 characters
         parsivel_set_station_code = ('CS/K/' + config_dict['station_code'] + '\r').encode('utf-8')
         self.write(parsivel_set_station_code, logger)
-        time.sleep(1)
+        sleep(1)
 
         # Sets the ID of the Parsivel, maximum 4 numerical characters
         parsivel_set_id = ('CS/J/'
                            + config_dict['global_attrs']['sensor_name']
                            + '\r').encode('utf-8')
         self.write(parsivel_set_id, logger)
-        time.sleep(2)
+        sleep(2)
 
         parsivel_restart = 'CS/Z/1\r'.encode('utf-8')
         self.write(parsivel_restart, logger)  # resets rain amount
-        time.sleep(10)
+        sleep(10)
 
         # The Parsivel broadcasts the user defined telegram.
         parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')

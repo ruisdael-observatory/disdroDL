@@ -56,7 +56,7 @@ class TestParsivel(unittest.TestCase):
             mock_logger.error.assert_called_once()
             mock_exit.assert_called_once()
 
-    @patch('time.sleep', return_value=None)
+    @patch('modules.sensors.sleep', return_value=None)
     def test_sensor_start_sequence(self, mock_sleep):
         """
         Test for the sensor_start_sequence function
