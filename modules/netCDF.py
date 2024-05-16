@@ -16,7 +16,7 @@ class NetCDF:
     """
     class containing the netCDF export functionality
     """
-    def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str, # pylint: disable=redefined-outer-name
+    def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str, full_version, # pylint: disable=redefined-outer-name
                  telegram_objs: List[Dict],
                  date: datetime) -> None:
         self.logger = logger
@@ -25,6 +25,7 @@ class NetCDF:
         self.fn_start = fn_start
         self.date_dt = date
         self.telegram_objs = telegram_objs
+        self.full_version = full_version
         logger.debug(msg="NetCDF class is initialized")
 
 
