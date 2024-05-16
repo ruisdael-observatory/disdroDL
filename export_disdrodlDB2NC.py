@@ -6,7 +6,7 @@ from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
-from modules.telegram import ParsivelTelegram
+from modules.telegram import ParsivelTelegram, ThiesTelegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
 

@@ -5,7 +5,7 @@ from typing import Dict
 from datetime import datetime, timezone
 from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
-from modules.telegram import ParsivelTelegram
+from modules.telegram import ParsivelTelegram, ThiesTelegram
 #from pprint import pprint
 from modules.util_functions import yaml2dict, create_logger
 
@@ -51,6 +51,19 @@ def telegram2dict(telegram: str, dt: datetime, ts: float, ):
     # '31', '32', '33', '34', '35', '60', '90', '91', '93']
     telegram_dict = telegram_list2dict(telegram_indeces=telegram_indeces,  # pylint: disable=W0621
                                        telegram=telegram.split(';'))
+    telegram_dict['datetime'] = dt
+    telegram_dict['timestamp'] = ts
+    return telegram_dict
+
+def thies_telegram_to_dict(telegram: str, dt: datetime, ts: float, ):
+    '''
+    Creates 1 dict from a dataframe row, with the telegram values
+    '''
+    telegram_indices = [str(i) for i in range(1, 524)]
+    telegram_list = telegram.split(';')
+    telegram_dict = {key: None for key in telegram_indices}  # pylint: disable=W0621
+    for index, field_n in enumerate(telegram_indices):
+        telegram_dict[field_n] = telegram_list[index]
     telegram_dict['datetime'] = dt
     telegram_dict['timestamp'] = ts
     return telegram_dict
