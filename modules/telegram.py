@@ -1,4 +1,4 @@
-"""""TBD"""
+""""Class for handling telegrams received from the sensors"""
 from abc import abstractmethod, ABC
 from datetime import datetime
 from venv import logger as telegram_logger
@@ -10,7 +10,7 @@ import chardet
 
 class Telegram(ABC):
     '''
-       Class dedicated to handling the returned the Parsivel telegram lines:
+       Abstract class dedicated to handling the returned  telegram lines:
        * storing, processing and writing telegram to netCDF
        Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
        '''
@@ -18,11 +18,17 @@ class Telegram(ABC):
     def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
                  timestamp: datetime, db_cursor: Union[Cursor, None],
                  logger: Logger, telegram_data: Dict, db_row_id=None, telegram_data_str=None):
-        '''
-        initiates variables and methods:
-        * set_netCDF_path
-        * create_netCDF
-        '''
+        """
+        Constructor for telegram class
+        :param config_dict: dictionary for later exporting into netcdf
+        :param telegram_lines: lines of the telegram received from a sensor
+        :param timestamp: the time
+        :param db_cursor: database cursor
+        :param logger: logger logging data from a sensor
+        :param telegram_data: data from the telegram sent by a sensor
+        :param db_row_id: row id from the database
+        :param telegram_data_str: telegram data string
+        """
         self.config_dict = config_dict
         self.telegram_lines = telegram_lines
         self.timestamp = timestamp  # <class 'datetime.datetime'> 2024-01-01 23:59:00+00:00
@@ -36,20 +42,20 @@ class Telegram(ABC):
     @abstractmethod
     def capture_prefixes_and_data(self):
         '''
-        def Captures the telegram prefixes and data stored in self.telegram_lines
+        Abstract method that captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
         '''
 
     @abstractmethod
     def parse_telegram_row(self):
         '''
-        def parsers telegram string from SQL telegram field
+        Abstract method that parsers telegram string from SQL telegram field
         '''
 
     @abstractmethod
     def prep_telegram_data4db(self):
         '''
-        transforms self.telegram_data items into self.telegram_data_str
+        Abstract method that transforms self.telegram_data items into self.telegram_data_str
         so that it can be easily inserted to SQL DB
         * key precedes value NN:val
         * key:value pair, seperated by '; '
@@ -62,7 +68,9 @@ class Telegram(ABC):
 
     @abstractmethod
     def insert2db(self):
-        """"TBD"""
+        """
+        Abstract class for inserting telegram strings into the database
+        """
 
 
 class ParsivelTelegram(Telegram):
@@ -71,14 +79,6 @@ class ParsivelTelegram(Telegram):
     * storing, processing and writing telegram to netCDF
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
     '''
-
-    def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
-                 timestamp: datetime, db_cursor: Union[Cursor, None],
-                 logger: Logger, telegram_data: Dict, db_row_id=None, telegram_data_str=None):
-
-        super().__init__(config_dict,telegram_lines,timestamp, db_cursor, logger, telegram_data,
-                         db_row_id, telegram_data_str)
-
 
     def capture_prefixes_and_data(self):
         '''
@@ -171,7 +171,9 @@ class ParsivelTelegram(Telegram):
         self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
 
     def insert2db(self):
-        """"TBD"""
+        """"
+        Method for passing telegrams strings into the database
+        """
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
 
