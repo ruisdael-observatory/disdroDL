@@ -5,8 +5,8 @@ from modules.now_time import NowTime
 from modules.sensors import Thies, SensorType
 
 
-@mock.patch('serial.Serial')
-@mock.patch('sys.exit')
+@mock.patch('modules.sensors.serial.Serial')
+@mock.patch('modules.sensors.sys.exit')
 def test_init_serial_connection_exception(mock_sys_exit, mock_serial):
     sensor = Thies()
     logger = mock.MagicMock()
@@ -18,7 +18,7 @@ def test_init_serial_connection_exception(mock_sys_exit, mock_serial):
     mock_sys_exit.assert_called_once()
 
 
-@mock.patch('serial.Serial')
+@mock.patch('modules.sensors.serial.Serial')
 def test_init_serial_connection(mock_serial):
     thies = Thies()
     logger = mock.MagicMock()
@@ -26,10 +26,10 @@ def test_init_serial_connection(mock_serial):
     mock_serial.assert_called_once_with('/dev/ttyACM0', 9600, timeout=1)
 
 
-@mock.patch('time.sleep', return_value=None)
-@mock.patch('serial.Serial')
-def test_sensor_start_sequence(mock_serial, mock_sleep):
-
+@mock.patch('modules.sensors.NowTime')
+@mock.patch('modules.sensors.sleep', return_value=None)
+@mock.patch('modules.sensors.serial.Serial')
+def test_sensor_start_sequence(mock_serial, mock_sleep, mock_now_time):
 
     thies = Thies()
     thies.thies_id = '06'
@@ -37,8 +37,12 @@ def test_sensor_start_sequence(mock_serial, mock_sleep):
 
     logger = mock.MagicMock()
     mock_sleep.return_value = None
-    with mock.patch('modules.now_time.NowTime.time_list', ['10', '20', '30']):
-        thies.sensor_start_sequence(config_dict={}, logger=logger)
+
+    now_time_instance = mock.MagicMock()
+    now_time_instance.time_list = ['10', '20', '30']
+    mock_now_time.return_value = now_time_instance
+
+    thies.sensor_start_sequence(config_dict={}, logger=logger)
 
     logger.info.assert_called_once()
     calls = [
@@ -46,9 +50,9 @@ def test_sensor_start_sequence(mock_serial, mock_sleep):
         mock.call.reset_output_buffer(),
         mock.call.write('\r06KY00001\r'.encode('utf-8')),
         mock.call.write('\r06TM00000\r'.encode('utf-8')),
-        mock.call.write(f'\r06ZH000{10}\r'.encode('utf-8')),
-        mock.call.write(f'\r06ZM000{20}\r'.encode('utf-8')),
-        mock.call.write(f'\r06ZS000{30}\r'.encode('utf-8')),
+        mock.call.write(f'\r06ZH000{now_time_instance.time_list[0]}\r'.encode('utf-8')),
+        mock.call.write(f'\r06ZM000{now_time_instance.time_list[1]}\r'.encode('utf-8')),
+        mock.call.write(f'\r06ZS000{now_time_instance.time_list[2]}\r'.encode('utf-8')),
         mock.call.write('\r06KY00000\r'.encode('utf-8')),
         mock.call.reset_input_buffer(),
         mock.call.reset_output_buffer()
