@@ -64,7 +64,7 @@ class NetCDF:
         for key in self.telegram_objs[0].telegram_data.keys(): # pylint: disable=too-many-nested-blocks
             if key in self.config_dict['telegram_fields'].keys() and \
                     ((self.full_version is True and self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never') or
-                    self.full_version is False and self.config_dict['telegram_fields'][key].get('include_in_nc') == 'full'):
+                    (self.full_version is False and self.config_dict['telegram_fields'][key].get('include_in_nc') == 'full')):
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
@@ -164,7 +164,7 @@ class NetCDF:
     def __set_netcdf_variable(self, key, one_var_dict, nc_group):
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
         if ((self.full_version is True and self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never') or
-            self.full_version is False and self.config_dict['telegram_fields'][key].get('include_in_nc') == 'full'):
+            (self.full_version is False and self.config_dict['telegram_fields'][key].get('include_in_nc') == 'full')):
             if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
                 compression_method = 'zlib'
                 # compression_method = dict(zlib=True, shuffle=True, complevel=5)
