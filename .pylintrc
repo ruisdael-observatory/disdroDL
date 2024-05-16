@@ -1,0 +1,52 @@
+[MASTER]
+#init-hook="from pylint.config import find_pylintrc; import os, sys; sys.path.append(os.path.dirname(find_pylintrc()))"
+
+[MESSAGES CONTROL]
+
+# Disable the message, report, category or checker with the given id(s). You
+# can either give multiple identifier separated by comma (,) or put this option
+# multiple time (only on the command line, not in the configuration file where
+# it should appear only once).
+disable=C0103
+
+[DESIGN]
+
+# Maximum number of arguments for function / method
+max-args=10
+
+# Maximum number of attributes for a class (see R0902).
+max-attributes=10
+
+# Maximum number of boolean expressions in a if statement
+max-bool-expr=5
+
+# Maximum number of branch for function / method body
+max-branches=12
+
+# Maximum number of locals for function / method body
+max-locals=25
+
+# Maximum number of parents for a class (see R0901).
+max-parents=7
+
+# Maximum number of public methods for a class (see R0904).
+max-public-methods=10
+
+# Maximum number of return / yield for function / method body
+max-returns=10
+
+# Maximum number of statements in function / method body
+max-statements=50
+
+# Minimum number of public methods for a class (see R0903).
+min-public-methods=0
+
+# Maximum number of characters in a line
+max-line-length=120
+
+[SIMILARITIES]
+# Minimum lines number of a similarity.
+min-similarity-lines=10
+
+[TYPECHECK]
+disable=bad-option-value

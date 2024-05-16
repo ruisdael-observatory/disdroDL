@@ -1,7 +1,10 @@
+"""
+TBC
+"""
 from pathlib import Path
-from modules.util_functions import create_logger, yaml2dict, init_serial, parsivel_reset
 from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
+from modules.util_functions import create_logger, yaml2dict, init_serial, parsivel_reset # pylint: disable=import-error
 
 
 parser = ArgumentParser(description="Ruisdael: OTT Disdrometer reset. Run: python reset_parsivel.py -c config_*.yml")

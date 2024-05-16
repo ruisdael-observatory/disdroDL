@@ -1,3 +1,4 @@
+"""documentation"""
 import serial
 
 com_port2 = '/dev/ttyACM0'
@@ -7,5 +8,3 @@ print(listener)
 while True:
     serial_out = listener.readline()
     print(serial_out)
-
-
