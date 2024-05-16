@@ -1,4 +1,5 @@
 """""TBD"""
+from abc import abstractmethod, ABC
 from datetime import datetime
 from venv import logger as telegram_logger
 from sqlite3 import Cursor
@@ -7,16 +8,16 @@ from typing import Dict, Union
 import chardet
 
 
-class Telegram:
+class Telegram(ABC):
     '''
-    Class dedicated to handling the returned the Parsivel telegram lines:
-    * storing, processing and writing telegram to netCDF
-    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
-    '''
+       Class dedicated to handling the returned the Parsivel telegram lines:
+       * storing, processing and writing telegram to netCDF
+       Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
+       '''
 
     def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
                  timestamp: datetime, db_cursor: Union[Cursor, None],
-                 logger: Logger, telegram_data: Dict, db_row_id=None,telegram_data_str= None):
+                 logger: Logger, telegram_data: Dict, db_row_id=None, telegram_data_str=None):
         '''
         initiates variables and methods:
         * set_netCDF_path
@@ -31,6 +32,53 @@ class Telegram:
         self.db_cursor = db_cursor
         self.db_row_id = db_row_id
         self.telegram_data_str = telegram_data_str
+
+    @abstractmethod
+    def capture_prefixes_and_data(self):
+        '''
+        def Captures the telegram prefixes and data stored in self.telegram_lines
+        and adds the data to self.telegram_data dict.
+        '''
+
+    @abstractmethod
+    def parse_telegram_row(self):
+        '''
+        def parsers telegram string from SQL telegram field
+        '''
+
+    @abstractmethod
+    def prep_telegram_data4db(self):
+        '''
+        transforms self.telegram_data items into self.telegram_data_str
+        so that it can be easily inserted to SQL DB
+        * key precedes value NN:val
+        * key:value pair, seperated by '; '
+        * list: converted to str with ',' separator between values
+        * empty lists, empty strings: converted to 'None'
+        Example: 19:None; 20:10; 21:25.05.2023;
+        51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
+        '''
+
+
+    @abstractmethod
+    def insert2db(self):
+        """"TBD"""
+
+
+class ParsivelTelegram(Telegram):
+    '''
+    Class dedicated to handling the returned the Parsivel telegram lines:
+    * storing, processing and writing telegram to netCDF
+    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
+    '''
+
+    def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
+                 timestamp: datetime, db_cursor: Union[Cursor, None],
+                 logger: Logger, telegram_data: Dict, db_row_id=None, telegram_data_str=None):
+
+        super().__init__(config_dict,telegram_lines,timestamp, db_cursor, logger, telegram_data,
+                         db_row_id, telegram_data_str)
+
 
     def capture_prefixes_and_data(self):
         '''

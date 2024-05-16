@@ -5,7 +5,7 @@ from typing import Dict
 from datetime import datetime, timezone
 from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
-from modules.telegram import Telegram
+from modules.telegram import ParsivelTelegram
 #from pprint import pprint
 from modules.util_functions import yaml2dict, create_logger
 
@@ -105,7 +105,7 @@ if __name__ == '__main__':
                                           dt=datetime.strptime(dt_str, '%Y%m%d-%H%M%S'),
                                           ts=float(ts_str))
             ts_dt = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
-            row_telegram = Telegram(
+            row_telegram = ParsivelTelegram(
                 config_dict=config_dict,
                 telegram_lines=None,
                 timestamp=ts_dt,
@@ -138,7 +138,7 @@ if __name__ == '__main__':
 #         telegram_dict = telegram2dict(telegram=csv_row['telegram'],
 #                                       dt=csv_row['datetime'],
 #                                       ts=csv_row['timestamp'], )
-#         telegram = Telegram(config_dict=config_dict,
+#         telegram = ParsivelTelegram(config_dict=config_dict,
 #                             telegram_lines=None,
 #                             telegram_data=telegram_dict,
 #                             timestamp=telegram_dict['datetime'],

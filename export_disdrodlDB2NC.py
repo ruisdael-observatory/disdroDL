@@ -6,7 +6,7 @@ from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
-from modules.telegram import Telegram
+from modules.telegram import ParsivelTelegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     cur, con = connect_db(dbpath=str(db_path))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-        telegram_instance = Telegram(
+        telegram_instance = ParsivelTelegram(
             config_dict=config_dict,
             telegram_lines=row.get('telegram'),
             db_row_id=row.get('id'),
