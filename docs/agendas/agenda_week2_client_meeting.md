@@ -15,3 +15,24 @@
   -	In the existing repository, there is a yaml schema defined for the Parsivel sensor. Do we have to create this file ourselves for the Thies sensor, or is such a file already available?
 - Forking the repo
   -	As mentioned earlier in the mail, there are still some issues with forking the repository, are these problems solvable or do we have to settle for just copying the existing files? To reiterate, the current problem is that our TA cannot fork the repository even since she was added as a maintainer to the project.
+
+# Minutes
+
+- Repo
+	- Fork existing DisdroDL repository 
+	- **Dont** want deep copy of existing repository
+	- Later merge back into disdroDL repository
+
+- discuss project plan
+	- we mention that the requirements for the project are not extensive
+	- project plan can be extended with more concrete steps
+	- we need to look at the past/existing Software Project to get a better understanding of what. why and how
+	
+- challenge
+	- experiment with raspberryPi 
+	- start disdroDl main.py
+    - export NetCDFs for 2024.04.29 and 2024.04.28
+
+- discuss existing software
+	- Rubber ducking
+	- important classes can be found in the modules folder

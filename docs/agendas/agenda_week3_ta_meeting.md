@@ -1,9 +1,16 @@
-# Minutes Week 3 - TA Meeting
+# Agenda Week 3 - TA Meeting
 
 ## 08-05-2024
 
 ## Chairman: Vasil Chirov
-## Minutetaker: Jesse Vleeschdraager
+## Minute taker: Jesse Vleeschdraager
+
+- discuss the updated requirements
+- create a protected dev branch
+- clarify what we should do with the pipeline
+- show refactored code on the PI
+
+# Minutes
 
 - updated requirements
     - netCDF QC software in should haves, GUI software in could haves (6 must, 11 should, 10 could)
