@@ -10,7 +10,7 @@ from time import sleep
 
 import serial
 
-from modules.now_time import NowTime # pylint: disable=import-error
+from modules.now_time import NowTime  # pylint: disable=import-error
 
 
 class SensorType(Enum):
@@ -39,9 +39,9 @@ class Sensor(ABC):
         """
         Abstract function for initializing
         the serial connection with the sensor
-        :param port:
-        :param baud:
-        :param logger:
+        :param port: the port where the sensor is connected to
+        :param baud: the baudrate of the sensor
+        :param logger: Logger for logging information and errors
         """
 
     @abstractmethod
@@ -111,9 +111,9 @@ class Parsivel(Sensor):
     def init_serial_connection(self, port: str, baud: int, logger):
         """
         Initializes the serial connection with the sensor
-        :param port:
-        :param baud:
-        :param logger:
+        :param port: the port where the parsivel sensors is connected to
+        :param baud: the baudrate of the parsivel sensor
+        :param logger: Logger for logging information and errors
         """
         try:
             parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
@@ -241,7 +241,7 @@ class Thies(Sensor):
             thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {thies}')
             self.serial_connection = thies
-        except Exception as e: # pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-exception-caught
             logger.error(msg=e)
             sys.exit()
 
@@ -282,7 +282,6 @@ class Thies(Sensor):
 
         self.serial_connection.reset_input_buffer()
         self.serial_connection.reset_output_buffer()
-
 
     def reset_sensor(self, logger, factory_reset: bool):
         """
@@ -344,7 +343,7 @@ class Thies(Sensor):
 
         sleep(2)  # Give sensor some time to create the telegram
         output = self.serial_connection.readline()
-        decoded = str(output[0:len(output)-2].decode("utf-8"))
+        decoded = str(output[0:len(output) - 2].decode("utf-8"))
         return decoded
 
     def get_type(self):
