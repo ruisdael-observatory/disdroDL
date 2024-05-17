@@ -19,7 +19,7 @@ class TestParsivel(unittest.TestCase):
         assert parsivel.serial_connection is None
         assert parsivel.get_type() == "parsivel"
 
-    @patch('serial.Serial')
+    @patch('modules.sensors.serial.Serial')
     def test_init_serial_connection_success(self, mock_serial):
         """
         Good weather test for the init_serial_connection_success function
@@ -35,8 +35,8 @@ class TestParsivel(unittest.TestCase):
 
         assert parsivel_obj.serial_connection is not None
 
-    @patch('serial.Serial', side_effect=Exception('Test'))
-    @patch('sys.exit', side_effect=Exception('Exit'))
+    @patch('modules.sensors.serial.Serial', side_effect=Exception('Test'))
+    @patch('modules.sensors.sys.exit', side_effect=Exception('Exit'))
     def test_init_serial_connection_exception(self, mock_serial, mock_exit):
         """
         Bad weather test for the init_serial_connection_success function
