@@ -9,9 +9,9 @@ data gets logged to the database.
 from pathlib import Path
 from time import sleep
 from argparse import ArgumentParser
-
-from modules.sensors import Parsivel
+from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, create_logger
+from modules.sensors import Parsivel
 from modules.telegram import Telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
@@ -48,7 +48,7 @@ parsivel.sensor_start_sequence(config_dict=config_dict, logger=logger)
 sleep(2)
 
 ### DB ###
-db_path = Path(config_dict['data_dir']) / 'disdrodl-test.db' # change the db name
+db_path = Path(config_dict['data_dir']) / 'disdrodl-test1.db' # change the db name
 create_db(dbpath=str(db_path))
 
 #########################################################
