@@ -199,6 +199,7 @@ def test_query_db(db_insert_24h): # pylint: disable=unused-argument,redefined-ou
                 config_dict=config_dict,
                 data_dir=data_dir,
                 fn_start='test',
+                full_version=True,
                 telegram_objs=telegram_objs,
                 date=start_dt)
     nc.create_netCDF()
@@ -324,6 +325,7 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps): # pylint: disable=unused-argument,
                 config_dict=config_dict,
                 data_dir=data_dir,
                 fn_start='test_w_gaps',
+                full_version=True,
                 telegram_objs=telegram_objs,
                 date=start_dt)
     nc.create_netCDF()

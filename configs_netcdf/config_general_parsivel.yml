@@ -28,7 +28,7 @@ variables:
         dimensions:
             - time
         dtype: 'f4'         
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: "Time UTC"
             standard_name: "time"
@@ -39,7 +39,7 @@ variables:
         dtype: 'i4'            
         value:
             - 60
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             units: s
             long_name: 'Length of measurement interval'
@@ -48,7 +48,7 @@ variables:
         dimensions:
             - time
         dtype: 'S4'  # string
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'datetime'
@@ -56,7 +56,7 @@ variables:
         dimensions:
             - velocity_classes
         dtype: 'f4'        
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'center fall velocity of precipitation particles'
             standard_name: 'velocity_center_classes'  # error when changed
@@ -99,7 +99,7 @@ variables:
         dimensions:
             - velocity_classes
         dtype: 'f4'        
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'upper bounds of fall velocity classes'
             standard_name: 'velocity_upper_bounds'
@@ -142,7 +142,7 @@ variables:
         dimensions:
             - velocity_classes
         dtype: 'f4'        
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'lower bounds of fall velocity classes'
             standard_name: 'velocity_lower_bounds'
@@ -185,7 +185,7 @@ variables:
         dimensions:
             - velocity_classes
         dtype: 'f4'     
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'width of fall velocity classes'
             standard_name: 'velocity_spread' 
@@ -228,7 +228,7 @@ variables:
         dimensions:
             - diameter_classes
         dtype: 'f4'     
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'center of diameter classes'
             standard_name: 'diameter_center_classes'
@@ -271,7 +271,7 @@ variables:
         dimensions:
             - diameter_classes
         dtype: 'f4' 
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'width of diameter classes'
             standard_name: 'diameter_spread'
@@ -314,7 +314,7 @@ variables:
         dimensions:
             - diameter_classes
         dtype: 'f4'
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'upper bounds of diameter classes'
             standard_name: 'diameter_upper_bounds'
@@ -357,7 +357,7 @@ variables:
         dimensions:
             - diameter_classes
         dtype: 'f4'
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'lower bounds of diameter classes'
             standard_name: 'diameter_lower_bounds'
@@ -401,7 +401,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'  # 32bit floating point                
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             units: 'mm/h'
             long_name: 'Rain intensity'
@@ -420,7 +420,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer               
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Weather code to SYNOP wawa'
             standard_name: 'code_4680'
@@ -428,7 +428,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i2'  # 16-bit signed integer                
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Weather code to SYNOP ww'
             standard_name: 'code_4677'
@@ -436,7 +436,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'  # string            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Weather code METAR/SPECI'
             standard_name: 'code_4678'
@@ -445,7 +445,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'  # string            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Weather code according to NWS'
             standard_name: 'code_NWS'
@@ -454,7 +454,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Radar reflectivity'
             standard_name: 'reflectivity'
@@ -465,7 +465,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Meteorological Optical Range in precipitation'
             standard_name: 'MOR'
@@ -483,7 +483,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Signal amplitude of the laser strip'
             standard_name: 'amplitude'
@@ -492,7 +492,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles detected and validated'
             standard_name: 'n_particles'
@@ -502,7 +502,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Temperature in the sensor housing'
             standard_name: 'T_sensor'
@@ -532,7 +532,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Sensor head heating current'
             standard_name: 'I_heating'
@@ -541,7 +541,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Power supply voltage'
             standard_name: 'V_power_supply'
@@ -550,7 +550,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i2'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Sensor status'
             standard_name: 'state_sensor'
@@ -594,7 +594,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Rain amount absolute'
             standard_name: 'absolute_rain_amount'
@@ -603,7 +603,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'i2'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Error code'
             standard_name: 'error_code'
@@ -613,7 +613,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Temperature PCB'
             standard_name: 'T_pcb'
@@ -622,7 +622,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Temperature left sensor head'
             standard_name: 'T_L_sensor_head'
@@ -630,7 +630,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Temperature right sensor head'
             standard_name: 'T_R_sensor_head'
@@ -667,7 +667,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Kinetic energy'
             standard_name: 'kinetic_energy'
@@ -676,7 +676,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Snow depth intensity'
             standard_name: 'snowfall_intensity'
@@ -708,7 +708,7 @@ telegram_fields:
             - time
             - diameter_classes
         dtype: 'f4'
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles per diameter class'
             standard_name: 'fieldN'
@@ -720,7 +720,7 @@ telegram_fields:
             - time
             - diameter_classes
         dtype: 'f4'
-        include_in_nc: 'full'                    
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Average particle velocity per diameter class'
             standard_name: 'fieldV'
@@ -732,7 +732,7 @@ telegram_fields:
             - diameter_classes
             - velocity_classes
         dtype: 'i4'            
-        include_in_nc: 'full'                    
+        include_in_nc: 'only_full'                    
         var_attrs:
             long_name: 'Raw data as a function of particle diameter and velocity'
             standard_name: 'data_raw'
