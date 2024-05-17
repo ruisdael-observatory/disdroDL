@@ -39,8 +39,8 @@ def get_general_config(path: Path, sensor_type: str) -> Dict:
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_parsivel.yml')
     if sensor_type == 'Thies Clima':
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_thies.yml')
-
-    raise Exception("unsupported sensor type")
+    else:
+        raise Exception("unsupported sensor type")
 
 def create_dir(path: Path):
     """
