@@ -13,9 +13,8 @@ Functions:
 import json
 from pathlib import Path
 import unittest
-from modules.util_functions import yaml2dict, get_general_config, create_logger
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, create_logger # pylint: disable=import-error
+from modules.util_functions import yaml2dict, get_general_config, create_logger # pylint: disable=import-error
 
 wd = Path(__file__).parent
 config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general_parsivel.yml')
@@ -74,21 +73,25 @@ def test_config_dict():
 #  'velocity_classes_center', 'velocity_upper_bounds', 'velocity_lower_bounds', 'velocity_spread',
 
 def test_get_general_config():
-    wd = Path(__file__).parent
+    """
+    This function tests whether for exporting the correct general config file is chosen based on the site config file.
+    """
+    config_dict_par008 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
+    config_dict_general = get_general_config(wd, config_dict_par008['global_attrs']['sensor_type'])
+    assert config_dict_general['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
 
-    config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
-    config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])
-    assert config_dict['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
-
-    config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_THIES006_GV.yml')
-    config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])   
-    assert config_dict['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number' 
+    config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_THIES006_GV.yml')
+    config_dict_general = get_general_config(wd, config_dict_thies006['global_attrs']['sensor_type'])
+    assert config_dict_general['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number'
 
 class ExceptionTests(unittest.TestCase):
+    """
+    Class to make testing exceptions possible
+    """
 
     def test_unsupported_site_config(self):
-        wd = Path(__file__).parent
-
-        config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_BADTEST.yml')
+        """
+        This function varifies that a site config file with an unsupported sensor type will cause an error to be thrown.
+        """
         with self.assertRaises(Exception):
-                config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])
+            get_general_config(wd, 'unsupported_sensor_type')
