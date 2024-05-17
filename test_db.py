@@ -255,9 +255,9 @@ class ExceptionTests(unittest.TestCase):
     Class to make testing exceptions possible
     """
 
-    def test_netCDF_versions(self):
+    def test_netCDF_include_in_nc(self):
         """
-        test netCDF versons
+        test include_in_nc for both full and light netCDF versions
         :param self:
         """
         # Create an array of all Telegram objects
@@ -304,15 +304,26 @@ class ExceptionTests(unittest.TestCase):
         rootgrp_full = Dataset(data_dir / 'test_full.nc', 'r', format="NETCDF4")
         rootgrp_light = Dataset(data_dir / 'test_light.nc', 'r', format="NETCDF4")
 
-        # Test that the full netCDF does have 'data_raw'
+        # Test that both the full and light netCDFs include the field 'rain_intensity' (include_in_nc: 'always')
+        try:
+            rootgrp_full.variables['rain_intensity']
+            rootgrp_light.variables['rain_intensity']
+        except KeyError:
+            self.fail("getting 'rain_intensity' from full or light netCDF raised KeyError unexpectedly!")
+
+        # Test that the full netCDF does include the field 'data_raw', but the light netCDF does not (include_in_nc: 'only_full')
         try:
             rootgrp_full.variables['data_raw']
         except KeyError:
             self.fail("getting 'data_raw' from full netCDF raised KeyError unexpectedly!")
 
-        # Assert that the light netCDF does not have 'data_raw'
         with self.assertRaises(KeyError):
             rootgrp_light.variables['data_raw'] # pylint: disable=pointless-statement
+
+        # Test that both the full and light netCDFs include the fields 'acc_rain_amount' (include_in_nc: 'never')
+        with self.assertRaises(KeyError):
+            rootgrp_full.variables['acc_rain_amount'] # pylint: disable=pointless-statement  
+            rootgrp_light.variables['acc_rain_amount'] # pylint: disable=pointless-statement        
 
 def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
     """
