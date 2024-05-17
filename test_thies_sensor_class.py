@@ -131,21 +131,3 @@ def test_get_type():
     """
     thies = Thies()
     assert thies.get_type() == SensorType.THIES
-
-
-def test_get_serial_connection_is_none():
-    """
-    Test if the get_serial_connection function returns None when the serial connection is not initialized
-    """
-    thies = Thies()
-    assert thies.get_serial_connection() is None
-
-
-def test_get_serial_connection():
-    """
-    Test if the get_serial_connection function returns the serial connection
-    """
-    thies = Thies()
-    mock_serial = mock.MagicMock()
-    thies.serial_connection = mock_serial
-    assert thies.get_serial_connection() == mock_serial

@@ -10,7 +10,7 @@ from time import sleep
 
 import serial
 
-from modules.now_time import NowTime
+from modules.now_time import NowTime # pylint: disable=import-error
 
 
 class SensorType(Enum):
@@ -179,9 +179,6 @@ class Parsivel(Sensor):
         """
         return self.sensor_type.value
 
-    def get_serial_connection(self):
-        return self.serial_connection
-
 
 class Thies(Sensor):
     """
@@ -208,7 +205,7 @@ class Thies(Sensor):
             thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {thies}')
             self.serial_connection = thies
-        except Exception as e:
+        except Exception as e: # pylint: disable=broad-exception-caught
             logger.error(msg=e)
             sys.exit()
 
@@ -280,10 +277,3 @@ class Thies(Sensor):
         :return: the type of the serial_connection
         """
         return self.sensor_type
-
-    def get_serial_connection(self):
-        """
-        Returns the serial connection
-        :return: the serial connection object
-        """
-        return self.serial_connection
