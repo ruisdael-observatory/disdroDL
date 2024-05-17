@@ -79,7 +79,7 @@ if __name__ == '__main__':
 
     ## Config
     wd = Path(__file__).parent
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
     config_dict_site = yaml2dict(path=wd / args.config)
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension

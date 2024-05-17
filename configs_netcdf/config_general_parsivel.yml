@@ -4,7 +4,7 @@
 #
 # NOTE: Before editing this file, double check if you need to. 
 #       All metadata related to station's location, IDs, PIs, etc must be described in the
-#       config_NNN_LOCATION.yml files and NOT ON config_general.yml
+#       config_NNN_LOCATION.yml files and NOT ON config_general_parsivel.yml
 #
 # CONFIG GENERAL STRUCTURE:
 #     dimensions: NetCDF dimensions' definitions
