@@ -269,7 +269,9 @@ class Thies(Sensor):
             return None
 
         sleep(2)  # Give sensor some time to create the telegram
-        return self.serial_connection.readline()
+        output = self.serial_connection.readline()
+        decoded = str(output[0:len(output)-2].decode("utf-8"))
+        return decoded
 
     def get_type(self):
         """

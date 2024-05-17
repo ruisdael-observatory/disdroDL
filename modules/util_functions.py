@@ -64,19 +64,19 @@ def interruptHandler(serial_connection, logger):
     serial_connection.close()
 
 
-def create_logger(log_dir, script_name, parsivel_name):
+def create_logger(log_dir, script_name, sensor_name):
     """
     This function creates a logger object that logs to a file.
     :param log_dir: directory of the log file
     :param script_name: name of the script
-    :param parsivel_name: name of the disdrometer
+    :param sensor_name: name of the disdrometer
     :return: the logger object
     """
     create_dir(log_dir)
     log_file = log_dir / f'log_{script_name}.json'
     logger = log(log_path=log_file,
-                 log_name=f"{script_name}: {parsivel_name}")
-    logger.info(msg=f"Starting {script_name} for {parsivel_name}")
+                 log_name=f"{script_name}: {sensor_name}")
+    logger.info(msg=f"Starting {script_name} for {sensor_name}")
     return logger
 
 

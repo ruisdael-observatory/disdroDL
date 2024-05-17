@@ -37,7 +37,7 @@ config_dict = deep_update(config_dict, config_dict_site)
 ### Log ###
 logger = create_logger(log_dir=Path(config_dict['log_dir']),
                        script_name=config_dict['script_name'],
-                       parsivel_name=config_dict['global_attrs']['sensor_name'])
+                       sensor_name=config_dict['global_attrs']['sensor_name'])
 logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}")
 print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 

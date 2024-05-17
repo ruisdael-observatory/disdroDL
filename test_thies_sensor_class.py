@@ -117,7 +117,7 @@ def test_read_successful():
     thies = Thies()
     logger = mock.MagicMock()
     mock_serial = mock.MagicMock()
-    mock_serial.readline.return_value = "telegram"
+    mock_serial.readline.return_value = "telegram".encode('utf-8')
     thies.serial_connection = mock_serial
     return_value = thies.read(logger)
     thies.serial_connection.readline.assert_called_once()
