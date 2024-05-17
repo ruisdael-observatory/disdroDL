@@ -65,6 +65,12 @@ class Sensor(ABC):
         """
 
     @abstractmethod
+    def close_serial_connection(self):
+        """
+        Abstract function for closing the serial connection
+        """
+
+    @abstractmethod
     def write(self, msg, logger):
         """
         Abstract function for sending
@@ -164,6 +170,13 @@ class Parsivel(Sensor):
             parsivel_restart = 'CS/Z/1\r'.encode('utf-8')  # restart
             self.write(parsivel_restart, logger)
         sleep(5)
+
+    def close_serial_connection(self):
+        """
+        Closes the serial connection
+        """
+        if self.serial_connection is not None:
+            self.serial_connection.close()
 
     def write(self, msg, logger):
         """
@@ -269,6 +282,44 @@ class Thies(Sensor):
 
         self.serial_connection.reset_input_buffer()
         self.serial_connection.reset_output_buffer()
+
+
+    def reset_sensor(self, logger, factory_reset: bool):
+        """
+        Resets the thies sensor
+        :param logger: the logger object
+        :param factory_reset: whether the factory reset should be performed
+        """
+        logger.info(msg="Resetting Thies")
+
+        # place in config mode
+        self.write(f'\r{self.thies_id}KY00001\r'.encode('utf-8'), logger)
+        sleep(1)
+
+        # Restart the sensor
+        self.write(f'\r{self.thies_id}RS00001\r'.encode('utf-8'), logger)
+        sleep(60)
+
+        # Reset error counters
+        self.write(f'\r{self.thies_id}RF00001\r'.encode('utf-8'), logger)
+        sleep(1)
+
+        # Reset precipitation quantity and duration of quantity measurement
+        self.write(f'\r{self.thies_id}RA00001\r'.encode('utf-8'), logger)
+        sleep(1)
+
+        # Place out of config mode
+        self.write(f'\r{self.thies_id}KY00000\r'.encode('utf-8'), logger)
+        sleep(1)
+
+        logger.info(msg="Thies reset complete")
+
+    def close_serial_connection(self):
+        """
+        Closes the serial connection
+        """
+        if self.serial_connection is not None:
+            self.serial_connection.close()
 
     def write(self, msg, logger):
         """

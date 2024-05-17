@@ -76,6 +76,36 @@ def test_sensor_start_sequence(mock_serial, mock_sleep, mock_now_time): # pylint
     mock_serial.assert_has_calls(calls, any_order=False)
 
 
+@mock.patch('modules.sensors.serial.Serial')
+@mock.patch('modules.sensors.sleep', return_value=None)
+def test_reset_sensor(mock_sleep, mock_serial):
+    """
+    Test if the reset_sensor function resets the sensor correctly
+    :param mock_sleep: temporary argument for now
+    :param mock_serial: the mocked Serial object
+    """
+    thies = Thies()
+    thies.thies_id = '06'
+    thies.serial_connection = mock.MagicMock()
+    logger = mock.MagicMock()
+    thies.reset_sensor(logger, True)
+    logger_calls = [
+        mock.call.info(msg='Resetting Thies'),
+        mock.call.info(msg='Thies reset complete')
+    ]
+
+    serial_calls = [
+        mock.call.write('\r06KY00001\r'.encode('utf-8')),
+        mock.call.write('\r06RS00001\r'.encode('utf-8')),
+        mock.call.write('\r06RF00001\r'.encode('utf-8')),
+        mock.call.write('\r06RA00001\r'.encode('utf-8')),
+        mock.call.write('\r06KY00000\r'.encode('utf-8'))
+    ]
+
+    logger.assert_has_calls(logger_calls)
+    thies.serial_connection.assert_has_calls(serial_calls, any_order=False)
+
+
 def test_write_fail():
     """
     Test if the logger writes an error when there is an exception in the write function
