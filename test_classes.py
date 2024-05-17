@@ -15,7 +15,7 @@ logger = logging.getLogger('testlog')
 logger.addHandler(log_handler)
 wd = Path(__file__).parent
 test_data_dir = wd / 'test_data'
-config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general.yml')
+config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 

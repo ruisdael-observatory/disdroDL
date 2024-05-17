@@ -15,8 +15,8 @@ from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, create_logger # pylint: disable=import-error
 
-wd = Path(__file__).parent
-config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general.yml')
+wd = Path(__file__).parent 
+config_dict = yaml2dict(path = wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 config_dict_site = yaml2dict(path = wd / 'configs_netcdf' / 'config_007_CABAUW.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 

@@ -114,23 +114,6 @@ def thies_start_sequence(serial_connection, thies_id):
     serial_connection.reset_output_buffer()
 
 
-def parsivel_reset(serialconnection, logger, factoryreset):
-    """
-    This function resets the parsivel disdrometer.
-    :param serialconnection: the serial connection object
-    :param logger: the logger object
-    :param factoryreset: if the factory reset should be performed
-    """
-    logger.info(msg="Reseting Parsivel")
-    if factoryreset is True:
-        parsivel_reset_code = 'CS/F/1\r'.encode('utf-8')
-        serialconnection.write(parsivel_reset_code)
-    else:
-        parsivel_restart = 'CS/Z/1\r'.encode('utf-8')  # restart
-        serialconnection.write(parsivel_restart)
-    sleep(5)
-
-
 def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     '''
     unpacks telegram string from sqlite DB row into a dictionary
