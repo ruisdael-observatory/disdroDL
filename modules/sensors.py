@@ -24,6 +24,7 @@ class Sensor(ABC):
     Abstract class for outlining the commonly
     used functionality for different types of sensors
     """
+
     def __init__(self, sensor_type: SensorType):
         """
         Constructor for sensors
@@ -54,12 +55,20 @@ class Sensor(ABC):
         """
 
     @abstractmethod
+    def reset_sensor(self, logger, factory_reset: bool):
+        """
+        Abstract function for reseting a sensor.
+        :param logger: Logger for logging information
+        :param factory_reset: Whether the factory reset should be performed
+        """
+
+    @abstractmethod
     def write(self, msg, logger):
         """
         Abstract function for sending
         a message to the sensor
-        :param msg: message for the sensor
-        :param logger: logger for errors
+        :param msg: Message for the sensor
+        :param logger: Logger for errors
         """
 
     @abstractmethod
@@ -67,7 +76,7 @@ class Sensor(ABC):
         """
         Abstract function for reading
         lines from the sensor
-        :param logger: logger for errors
+        :param logger: Logger for errors
         """
 
     @abstractmethod
@@ -82,6 +91,7 @@ class Parsivel(Sensor):
     Class inheriting Sensor and representing
     the parsivel type sensor
     """
+
     def __init__(self, sensor_type=SensorType.PARSIVEL):
         """
         Constructor for the parsivel type sensor
@@ -138,14 +148,29 @@ class Parsivel(Sensor):
         parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')
         self.write(parsivel_user_telegram, logger)
 
+    def reset_sensor(self, logger, factory_reset: bool):
+        """
+        Abstract function for reseting a sensor.
+        :param logger: Logger for logging information
+        :param factory_reset: Whether the factory reset should be performed
+        """
+        logger.info(msg="Reseting Parsivel")
+        if factory_reset:
+            parsivel_reset_code = 'CS/F/1\r'.encode('utf-8')
+            self.write(parsivel_reset_code, logger)
+        else:
+            parsivel_restart = 'CS/Z/1\r'.encode('utf-8')  # restart
+            self.write(parsivel_restart, logger)
+        sleep(5)
+
     def write(self, msg, logger):
         """
         If the serial connection is initialized ->
         executes the write function for the
         serial connection with the respective message,
         else -> sends an error through the logger
-        :param msg: message for the sensor
-        :param logger: logger for errors
+        :param msg: Message for the sensor
+        :param logger: Logger for errors
         :return: None
         """
         if self.serial_connection is not None:
@@ -160,7 +185,7 @@ class Parsivel(Sensor):
         read and return a list lines from the sensor
         else -> write an error through the logger
         :param logger: logger for errors
-        :return: list of lines or None
+        :return: List of lines or None
         """
         if self.serial_connection is not None:
             parsivel_lines = self.serial_connection.readlines()
@@ -171,6 +196,6 @@ class Parsivel(Sensor):
     def get_type(self) -> str:
         """
         Returns the type of the sensor
-        :return: type of the serial as a string
+        :return: Type of the serial as a string
         """
         return self.sensor_type.value

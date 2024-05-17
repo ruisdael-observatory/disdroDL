@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch, call
 from modules.sensors import Parsivel
 
 
-class TestParsivel(unittest.TestCase):
+class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """
     Class for testing the Parsivel class
     """
@@ -96,6 +96,42 @@ class TestParsivel(unittest.TestCase):
         ]
 
         mock_sleep.assert_has_calls(expected_calls_sleep)
+
+    @patch('modules.sensors.sleep', return_value=None)
+    def test_reset_sensor_success(self, mock_sleep):
+        """
+        Good weather test for the reset_sensor function
+        :param mock_sleep: Mock of the time.sleep call
+        """
+        mock_serial_connection = Mock()
+        parsivel_obj = Parsivel()
+        parsivel_obj.serial_connection = mock_serial_connection
+        parsivel_obj.write = Mock()
+        mock_logger = Mock()
+
+        parsivel_obj.reset_sensor(mock_logger, True)
+
+        mock_logger.info.assert_called_once_with(msg="Reseting Parsivel")
+        parsivel_obj.write.assert_called_once_with(b'CS/F/1\r', mock_logger)
+        mock_sleep.assert_called_once_with(5)
+
+    @patch('modules.sensors.sleep', return_value=None)
+    def test_reset_sensor_fail(self, mock_sleep):
+        """
+        Basd weather test for the test_sensor function
+        :param mock_sleep: Mock of the time.sleep call
+        """
+        mock_serial_connection = Mock()
+        parsivel_obj = Parsivel()
+        parsivel_obj.serial_connection = mock_serial_connection
+        parsivel_obj.write = Mock()
+        mock_logger = Mock()
+
+        parsivel_obj.reset_sensor(mock_logger, False)
+
+        mock_logger.info.assert_called_once_with(msg="Reseting Parsivel")
+        parsivel_obj.write.assert_called_once_with(b'CS/Z/1\r', mock_logger)
+        mock_sleep.assert_called_once_with(5)
 
     def test_write_success(self):
         """
