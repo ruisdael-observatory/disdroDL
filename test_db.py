@@ -7,6 +7,7 @@ import logging
 from pathlib import Path
 from logging import StreamHandler
 from datetime import datetime, timedelta, timezone
+import unittest
 from netCDF4 import Dataset # pylint: disable=no-name-in-module
 from cftime import num2date
 from pydantic.v1.utils import deep_update
@@ -199,6 +200,7 @@ def test_query_db(db_insert_24h): # pylint: disable=unused-argument,redefined-ou
                 config_dict=config_dict,
                 data_dir=data_dir,
                 fn_start='test',
+                full_version=True,
                 telegram_objs=telegram_objs,
                 date=start_dt)
     nc.create_netCDF()
@@ -248,6 +250,80 @@ def test_NetCDF():
     # print(netCDF_var_data_raw_shape)
     assert netCDF_var_data_raw_shape == (data_points_24h, 32, 32)
 
+class ExceptionTests(unittest.TestCase):
+    """
+    Class to make testing exceptions possible
+    """
+
+    def test_netCDF_include_in_nc(self):
+        """
+        test include_in_nc for both full and light netCDF versions
+        :param self:
+        """
+        # Create an array of all Telegram objects
+        telegram_objs = []
+        con, cur = connect_db(dbpath=str(db_path))
+        for i, row in enumerate(query_db_rows_gen(con=con, date_dt=start_dt, logger=logger)): # pylint: disable=unused-variable
+            ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
+            row_telegram = Telegram(
+                config_dict=config_dict,
+                telegram_lines=row.get('telegram'),
+                timestamp=ts_dt,
+                db_cursor=None,
+                telegram_data={},
+                logger=logger)
+            row_telegram.parse_telegram_row()
+            telegram_objs.append(row_telegram)
+        cur.close()
+        con.close()
+
+        # Create a full netCDF with the Telegram objects
+        nc_full = NetCDF(logger=logger,
+                    config_dict=config_dict,
+                    data_dir=data_dir,
+                    fn_start='test_full',
+                    full_version=True,
+                    telegram_objs=telegram_objs,
+                    date=start_dt)
+        nc_full.create_netCDF()
+        nc_full.write_data_to_netCDF()
+        nc_full.compress()
+
+        # Create a light netCDF with the Telegram objects
+        nc_light = NetCDF(logger=logger,
+                    config_dict=config_dict,
+                    data_dir=data_dir,
+                    fn_start='test_light',
+                    full_version=False,
+                    telegram_objs=telegram_objs,
+                    date=start_dt)
+        nc_light.create_netCDF()
+        nc_light.write_data_to_netCDF()
+        nc_light.compress()
+
+        rootgrp_full = Dataset(data_dir / 'test_full.nc', 'r', format="NETCDF4")
+        rootgrp_light = Dataset(data_dir / 'test_light.nc', 'r', format="NETCDF4")
+
+        # Test that both the full and light netCDFs include the field 'rain_intensity' (include_in_nc: 'always')
+        try:
+            rootgrp_full.variables['rain_intensity']
+            rootgrp_light.variables['rain_intensity']
+        except KeyError:
+            self.fail("getting 'rain_intensity' from full or light netCDF raised KeyError unexpectedly!")
+
+        # Test that the full netCDF does include the field 'data_raw', but the light netCDF does not (include_in_nc: 'only_full')
+        try:
+            rootgrp_full.variables['data_raw']
+        except KeyError:
+            self.fail("getting 'data_raw' from full netCDF raised KeyError unexpectedly!")
+
+        with self.assertRaises(KeyError):
+            rootgrp_light.variables['data_raw'] # pylint: disable=pointless-statement
+
+        # Test that both the full and light netCDFs include the fields 'acc_rain_amount' (include_in_nc: 'never')
+        with self.assertRaises(KeyError):
+            rootgrp_full.variables['acc_rain_amount'] # pylint: disable=pointless-statement  
+            rootgrp_light.variables['acc_rain_amount'] # pylint: disable=pointless-statement        
 
 def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
     """
@@ -324,6 +400,7 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps): # pylint: disable=unused-argument,
                 config_dict=config_dict,
                 data_dir=data_dir,
                 fn_start='test_w_gaps',
+                full_version=True,
                 telegram_objs=telegram_objs,
                 date=start_dt)
     nc.create_netCDF()

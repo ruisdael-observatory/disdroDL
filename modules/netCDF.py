@@ -16,7 +16,7 @@ class NetCDF:
     """
     class containing the netCDF export functionality
     """
-    def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str, # pylint: disable=redefined-outer-name
+    def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str, full_version, # pylint: disable=redefined-outer-name
                  telegram_objs: List[Dict],
                  date: datetime) -> None:
         self.logger = logger
@@ -25,6 +25,7 @@ class NetCDF:
         self.fn_start = fn_start
         self.date_dt = date
         self.telegram_objs = telegram_objs
+        self.full_version = full_version
         logger.debug(msg="NetCDF class is initialized")
 
 
@@ -62,7 +63,10 @@ class NetCDF:
         # --- NetCDF variables in telegram_data ---
         for key in self.telegram_objs[0].telegram_data.keys(): # pylint: disable=too-many-nested-blocks
             if key in self.config_dict['telegram_fields'].keys() and \
-                    self.config_dict['telegram_fields'][key].get('include_in_nc') is True:
+                    ((self.full_version is True and
+                      self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never') or
+                    (self.full_version is False and
+                      self.config_dict['telegram_fields'][key].get('include_in_nc') == 'always')):
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
@@ -161,7 +165,8 @@ class NetCDF:
 
     def __set_netcdf_variable(self, key, one_var_dict, nc_group):
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
-        if one_var_dict['include_in_nc'] is True:
+        if ((self.full_version is True and one_var_dict['include_in_nc'] != 'never') or
+            (self.full_version is False and one_var_dict['include_in_nc'] == 'always')):
             if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
                 compression_method = 'zlib'
                 # compression_method = dict(zlib=True, shuffle=True, complevel=5)
