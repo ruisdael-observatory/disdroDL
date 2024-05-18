@@ -60,9 +60,9 @@ class NetCDF:
         self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var_datetime, var_key_='timestamp')
 
         # --- NetCDF variables in telegram_data ---
-        for key in self.telegram_objs[0].telegram_data.keys(): # pylint: disable=too-many-nested-blocks
+        for key in self.telegram_objs[0].telegram_data.keys():  # pylint: disable=too-many-nested-blocks
             if key in self.config_dict['telegram_fields'].keys() and \
-                    self.config_dict['telegram_fields'][key].get('include_in_nc') is True:
+                    self.config_dict['telegram_fields'][key].get('include_in_nc') == 'always':
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
@@ -70,7 +70,7 @@ class NetCDF:
                 # import pdb; pdb.set_trace()
 
                 nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
-                              f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},' # pylint: disable=protected-access
+                              f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
                               f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
                 logger.debug(msg=nc_details)
 
@@ -78,16 +78,16 @@ class NetCDF:
                     # assuming S4 vars are only 1D - that's the case for parsivel
                     self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
                                                   var_key_=key)
-                else:
-                    if len(netCDF_var._getdims()) <= 2: # pylint: disable=protected-access
+                elif netCDF_var.dtype == 'f4':
+                    if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
                         all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
                         netCDF_var[:] = all_items_val
-                    elif len(netCDF_var._getdims()) > 2 and key == '93': # pylint: disable=protected-access
+                    elif len(netCDF_var._getdims()) > 2 and key == '93' and False:  # pylint: disable=protected-access
                         all_f93_items_val = []
 
                         for telegram_obj in self.telegram_objs:
                             try:
-                                assert len(telegram_obj.telegram_data[key]) == 1024,\
+                                assert len(telegram_obj.telegram_data[key]) == 1024, \
                                     'telegram_obj.telegram_data["93"] len != 1024'
                             except AssertionError as error:
                                 self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
@@ -106,6 +106,73 @@ class NetCDF:
 
         netCDF_rootgrp.close()
         self.logger.info(msg='class NetCDF executed write_data_to_netCDF()')
+
+    # def write_data_to_netCDF(self):
+    #     '''
+    #     def writes data to netCDF
+    #     '''
+    #     netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
+    #
+    #     # --- NetCDF variables NOT in telegram_data ---
+    #
+    #     # var: time - appending timestamps to var time
+    #     netCDF_var_time = netCDF_rootgrp.variables['time']
+    #     value_list_dt = [telegram_obj.timestamp for telegram_obj in self.telegram_objs]
+    #     time_value_list = [date2num(timestamp_val, units=netCDF_var_time.units, calendar=netCDF_var_time.calendar)
+    #                        for timestamp_val in value_list_dt]
+    #     netCDF_var_time[:] = time_value_list  # numpy.concatenate([netCDF_var_time[:].data, time_now_array])
+    #
+    #     # NetCDF var: datetime (iso str values)
+    #     netCDF_var_datetime = netCDF_rootgrp.variables['datetime']
+    #     self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var_datetime, var_key_='timestamp')
+    #
+    #     # --- NetCDF variables in telegram_data ---
+    #     for key in self.telegram_objs[0].telegram_data.keys(): # pylint: disable=too-many-nested-blocks
+    #         if key in self.config_dict['telegram_fields'].keys() and \
+    #                 self.config_dict['telegram_fields'][key].get('include_in_nc') == 'always':
+    #             field_dict = self.config_dict['telegram_fields'][key]
+    #             standard_name = field_dict['var_attrs']['standard_name']
+    #             netCDF_var = netCDF_rootgrp.variables[standard_name]
+    #
+    #             # import pdb; pdb.set_trace()
+    #
+    #             nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
+    #                           f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},' # pylint: disable=protected-access
+    #                           f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
+    #             logger.debug(msg=nc_details)
+    #
+    #             if netCDF_var.dtype == str and False:  # S4
+    #                 # assuming S4 vars are only 1D - that's the case for parsivel
+    #                 self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
+    #                                               var_key_=key)
+    #             elif netCDF_var.dtype == 'f4':
+    #                 if len(netCDF_var._getdims()) <= 2: # pylint: disable=protected-access
+    #                     all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
+    #                     netCDF_var[:] = all_items_val
+    #                 elif len(netCDF_var._getdims()) > 2 and key == '93': # pylint: disable=protected-access
+    #                     all_f93_items_val = []
+    #
+    #                     for telegram_obj in self.telegram_objs:
+    #                         try:
+    #                             assert len(telegram_obj.telegram_data[key]) == 1024,\
+    #                                 'telegram_obj.telegram_data["93"] len != 1024'
+    #                         except AssertionError as error:
+    #                             self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
+    #                                                   f' from {telegram_obj.timestamp} {error}'
+    #                                                   f'. 32x32 ndarray with (error value)'
+    #                                                   f' -9.999 will be added instead')
+    #                             error_f93 = numpy.full(shape=(32, 32), fill_value='-9999', dtype='<U3')
+    #                             all_f93_items_val.append(error_f93)
+    #                         else:
+    #                             reshaped_f93 = numpy.array(telegram_obj.telegram_data[key]).reshape(32, 32)
+    #                             all_f93_items_val.append(reshaped_f93)
+    #                             self.logger.debug(msg=f'F93 values from DB item {telegram_obj.db_row_id}'
+    #                                                   f' from {telegram_obj.timestamp} successfully reshaped')
+    #
+    #                     netCDF_var[:] = all_f93_items_val
+    #
+    #     netCDF_rootgrp.close()
+    #     self.logger.info(msg='class NetCDF executed write_data_to_netCDF()')
 
     def compress(self):
         """
@@ -138,7 +205,9 @@ class NetCDF:
         '''
         if var_key_ in self.telegram_objs[0].telegram_data.keys():  # var in telegram
             for i, telegram_obj in enumerate(self.telegram_objs):
-                netCDF_var_[i] = telegram_obj.telegram_data[var_key_]
+                print(var_key_)
+                print(telegram_obj.telegram_data[var_key_])
+                netCDF_var_[i] = telegram_obj.telegram_data[var_key_].encode('utf-8')
         else:  # var NOT in telegram
             if netCDF_var_.standard_name == 'datetime':
                 for i, telegram_obj in enumerate(self.telegram_objs):
@@ -237,7 +306,8 @@ def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     Example Output:  {'60': '00000062', '90': '-9.999,-9.999,01.619,...'}
     '''
     telegram_dict = {}
-    telegram_list = telegram_str.split('; ')
+
+    telegram_list = telegram_str.split(';')
 
     for telegram_item in telegram_list:
         key, val = telegram_item.split(':')

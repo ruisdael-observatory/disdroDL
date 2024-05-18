@@ -59,7 +59,7 @@ def thies_telegram_to_dict(telegram: str, dt: datetime, ts: float, ):
     '''
     Creates 1 dict from a dataframe row, with the telegram values
     '''
-    telegram_indices = [str(i) for i in range(1, 524)]
+    telegram_indices = [str(i) for i in range(1, 528)]
     telegram_list = telegram.split(';')
     telegram_dict = {key: None for key in telegram_indices}  # pylint: disable=W0621
     for index, field_n in enumerate(telegram_indices):

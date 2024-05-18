@@ -108,7 +108,6 @@ class ParsivelTelegram(Telegram):
         '''
         def parsers telegram string from SQL telegram field
         '''
-
         telegram_lines_list = self.telegram_lines.split('; ')
 
         try:
@@ -134,9 +133,9 @@ class ParsivelTelegram(Telegram):
 
                 self.telegram_data[field] = value
 
-        self.__str2list(field='90', separator=',')
-        self.__str2list(field='91', separator=',')
-        self.__str2list(field='93', separator=',')
+    #    self.__str2list(field='90', separator=',')
+    #    self.__str2list(field='91', separator=',')
+    #    self.__str2list(field='93', separator=',')
 
     def prep_telegram_data4db(self):
         '''

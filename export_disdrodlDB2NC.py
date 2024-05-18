@@ -79,10 +79,18 @@ if __name__ == '__main__':
     telegram_objs = []
     cur, con = connect_db(dbpath=str(db_path))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
+        # Step 1: Split the original string by the delimiter ';'
+        telegram_list = row.get('telegram').split(';')
+
+        # Step 2: Create a new list with elements in the format "index:value"
+        formatted_telegrams = [f" {index + 1}:{value}" for index, value in enumerate(telegram_list)]
+        # Step 3: Join the formatted elements with '; ' as the delimiter
+        telegram_str = ';'.join(formatted_telegrams)
+        print(telegram_str)
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
         telegram_instance = ParsivelTelegram(
             config_dict=config_dict,
-            telegram_lines=row.get('telegram'),
+            telegram_lines=telegram_str,
             db_row_id=row.get('id'),
             timestamp=ts_dt,
             db_cursor=None,
@@ -90,10 +98,11 @@ if __name__ == '__main__':
             logger=logger)
 
         telegram_instance.parse_telegram_row()
-
+        if "17" in telegram_instance.telegram_data.keys():
+            print(telegram_instance.telegram_data)
         # check if telegram_instance has data organized by keys(fields)
-        if "90" in telegram_instance.telegram_data.keys():
-            telegram_objs.append(telegram_instance)
+        if "11" in telegram_instance.telegram_data.keys():
+          telegram_objs.append(telegram_instance)
 
     con.close()
     cur.close()
