@@ -43,7 +43,7 @@ def test_logger():
     logger = create_logger(
         log_dir=Path(config_dict['log_dir']),
         script_name=Path(__file__).name,
-        parsivel_name=config_dict['global_attrs']['sensor_name']
+        sensor_name=config_dict['global_attrs']['sensor_name']
     )
     logger.info(msg=f"Testing logger in {__file__}")
     assert logger.name == f"{Path(__file__).name}: {config_dict['global_attrs']['sensor_name']}"

@@ -23,4 +23,4 @@ logger = create_logger(log_dir=Path(config_dict['log_dir']),
 parsivel = Parsivel()
 parsivel.init_serial_connection(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
 parsivel.reset_sensor(logger=logger, factory_reset=False)
-parsivel.serial_connection.close()
+parsivel.close_serial_connection()
