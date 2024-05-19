@@ -133,9 +133,9 @@ class ParsivelTelegram(Telegram):
 
                 self.telegram_data[field] = value
 
-    #    self.__str2list(field='90', separator=',')
-    #    self.__str2list(field='91', separator=',')
-    #    self.__str2list(field='93', separator=',')
+        self.__str2list(field='90', separator=',')
+        self.__str2list(field='91', separator=',')
+        self.__str2list(field='93', separator=',')
 
     def prep_telegram_data4db(self):
         '''
@@ -257,9 +257,7 @@ class ThiesTelegram(Telegram):
 
                 self.telegram_data[field] = value
 
-        #self.__str2list(field='90', separator=',')
-        #self.__str2list(field='91', separator=',')
-        #self.__str2list(field='93', separator=',')
+        self.__str2list(field='81', separator=',')
 
     def prep_telegram_data4db(self):
         '''

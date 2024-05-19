@@ -79,30 +79,52 @@ if __name__ == '__main__':
     telegram_objs = []
     cur, con = connect_db(dbpath=str(db_path))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
-        # Step 1: Split the original string by the delimiter ';'
-        telegram_list = row.get('telegram').split(';')
+        #TODO needs to be removed once the data is written to database as " key:value"
+        if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+            telegram_list = row.get('telegram').split(';')
+            list_len = len(telegram_list)
+            formatted_telegrams = []
+            for index, value in enumerate(telegram_list):
+                if(index == 80 ):
+                    formatted_telegrams.append(f" {81}:{value},")
+                elif(index>80 and index<519):
+                    formatted_telegrams.append(f"{value},")
+                elif(index == 519):
+                    formatted_telegrams.append(f"{value};")
+                elif(index == list_len-1):
+                    formatted_telegrams.append(f" {index + 1}:{value}")
+                else:
+                    formatted_telegrams.append(f" {index + 1}:{value};")
+            telegram_str = ''.join(formatted_telegrams)
 
-        # Step 2: Create a new list with elements in the format "index:value"
-        formatted_telegrams = [f" {index + 1}:{value}" for index, value in enumerate(telegram_list)]
-        # Step 3: Join the formatted elements with '; ' as the delimiter
-        telegram_str = ';'.join(formatted_telegrams)
-        print(telegram_str)
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-        telegram_instance = ParsivelTelegram(
-            config_dict=config_dict,
-            telegram_lines=telegram_str,
-            db_row_id=row.get('id'),
-            timestamp=ts_dt,
-            db_cursor=None,
-            telegram_data={},
-            logger=logger)
+        if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+            telegram_instance = ThiesTelegram(
+                config_dict=config_dict,
+                telegram_lines=telegram_str,
+                db_row_id=row.get('id'),
+                timestamp=ts_dt,
+                db_cursor=None,
+                telegram_data={},
+                logger=logger
+            )
+        else:
+            telegram_instance = ParsivelTelegram(
+                config_dict=config_dict,
+                telegram_lines=telegram_str,
+                db_row_id=row.get('id'),
+                timestamp=ts_dt,
+                db_cursor=None,
+                telegram_data={},
+                logger=logger)
 
         telegram_instance.parse_telegram_row()
-        if "17" in telegram_instance.telegram_data.keys():
-            print(telegram_instance.telegram_data)
-        # check if telegram_instance has data organized by keys(fields)
-        if "11" in telegram_instance.telegram_data.keys():
-          telegram_objs.append(telegram_instance)
+        # check if Thies telegram_instance has data organized by keys(fields)
+        if "11" in telegram_instance.telegram_data.keys() and config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+            telegram_objs.append(telegram_instance)
+        # check if Parsivel telegram_instance has data organized by keys(fields)
+        elif "90" in telegram_instance.telegram_data.keys():
+            telegram_objs.append(telegram_instance)
 
     con.close()
     cur.close()
@@ -114,6 +136,10 @@ if __name__ == '__main__':
                 fn_start=fn_start,
                 telegram_objs=telegram_objs,
                 date=date_dt)
+
     nc.create_netCDF()
-    nc.write_data_to_netCDF()
+    if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        nc.write_data_to_netCDF_thies()
+    else:
+        nc.write_data_to_netCDF_parsivel()
     nc.compress()

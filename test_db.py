@@ -202,7 +202,7 @@ def test_query_db(db_insert_24h): # pylint: disable=unused-argument,redefined-ou
                 telegram_objs=telegram_objs,
                 date=start_dt)
     nc.create_netCDF()
-    nc.write_data_to_netCDF()
+    nc.write_data_to_netCDF_parsivel()
     nc.compress()
 
 
@@ -327,7 +327,7 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps): # pylint: disable=unused-argument,
                 telegram_objs=telegram_objs,
                 date=start_dt)
     nc.create_netCDF()
-    nc.write_data_to_netCDF()
+    nc.write_data_to_netCDF_parsivel()
     nc.compress()
     # test netCDF content
     rootgrp = Dataset(data_dir / 'test_w_gaps.nc', 'r', format="NETCDF4")

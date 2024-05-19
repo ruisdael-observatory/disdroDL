@@ -96,7 +96,6 @@ if __name__ == '__main__':
     config_dict_site = yaml2dict(path=wd / args.config)
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
-    # print(conf_telegram_fields)
     ## Logger
     # import pdb; pdb.set_trace()
     logger = create_logger(log_dir=Path(config_dict['log_dir']),

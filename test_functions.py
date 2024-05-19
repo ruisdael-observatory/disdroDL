@@ -80,7 +80,7 @@ def test_get_general_config():
     config_dict_general = get_general_config(wd, config_dict_par008['global_attrs']['sensor_type'])
     assert config_dict_general['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
 
-    config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_THIES006_GV.yml')
+    config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
     config_dict_general = get_general_config(wd, config_dict_thies006['global_attrs']['sensor_type'])
     assert config_dict_general['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number'
 
