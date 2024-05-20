@@ -330,7 +330,7 @@ telegram_fields:
     '6': # I do not think we need this value, as in any case it's wrong.
         dimensions:
             - time
-        dtype: 'f4'  # string
+        dtype: 'S4'  # string
         include_in_nc: 'never'                    
         var_attrs:
             long_name: 'Time of the sensor'
@@ -338,7 +338,7 @@ telegram_fields:
     '7':
         dimensions:
             - time
-        dtype: 'f4'  # string
+        dtype: 'S4'  # string
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '5M SYNOP Tab.4677'
@@ -1029,11 +1029,11 @@ telegram_fields:
         var_attrs:
             long_name: 'Checksum'
             standard_name: 'checksum'
-    '526-527': # or 522-523 without “<id>TM00005”
-        dimensions:
-           - time
-        dtype: 'S4'
-        include_in_nc: 'never'
-        var_attrs:
-           long_name: 'CRLF + ETX (End identifier)'
-           standard_name: 'end_identifier'
+#    '526-527': # or 522-523 without “<id>TM00005”
+#        dimensions:
+#           - time
+#        dtype: 'S4'
+#        include_in_nc: 'never'
+#        var_attrs:
+#           long_name: 'CRLF + ETX (End identifier)'
+#           standard_name: 'end_identifier'

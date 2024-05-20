@@ -61,8 +61,8 @@ class NetCDF:
 
         # --- NetCDF variables in telegram_data ---
         for key in self.telegram_objs[0].telegram_data.keys():  # pylint: disable=too-many-nested-blocks
-            if key in self.config_dict['telegram_fields'].keys() and \
-                    self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never':
+            if key in self.config_dict['telegram_fields'].keys(): #and \
+                    #self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never':
                 field_dict = self.config_dict['telegram_fields'][key]
                 standard_name = field_dict['var_attrs']['standard_name']
                 netCDF_var = netCDF_rootgrp.variables[standard_name]
@@ -101,7 +101,7 @@ class NetCDF:
                                 #telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int, sep=',')
                                 reshaped_f81 = numpy.array(telegram_obj.telegram_data[key]).reshape(22, 20)
                                 all_f81_items_val.append(reshaped_f81)
-                                self.logger.debug(msg=f'F93 values from DB item {telegram_obj.db_row_id}'
+                                self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
                                                       f' from {telegram_obj.timestamp} successfully reshaped')
 
                         netCDF_var[:] = all_f81_items_val
