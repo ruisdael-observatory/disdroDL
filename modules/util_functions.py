@@ -26,6 +26,19 @@ def yaml2dict(path: Path) -> Dict:
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
 
+def get_general_config(path: Path, sensor_type: str) -> Dict:
+    """
+    This function returns a general config file based on the provided sensor type.
+    :param path: the path to the directory
+    :param sensor_type: a string indicating the sensor type
+    :return: dict of the respective general config file
+    """
+    if sensor_type == 'OTT Hydromet Parsivel2':
+        return yaml2dict(path=path / 'configs_netcdf' / 'config_general_parsivel.yml')
+    if sensor_type == 'Thies Clima':
+        return yaml2dict(path=path / 'configs_netcdf' / 'config_general_thies.yml')
+    else:
+        raise Exception("unsupported sensor type")
 
 def create_dir(path: Path):
     """

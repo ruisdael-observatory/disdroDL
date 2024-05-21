@@ -13,7 +13,7 @@ args = parser.parse_args()
 
 wd = Path(__file__).parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
-config_dict_site = yaml2dict(path=wd / args.config)  # TODO: come from cli
+config_dict_site = yaml2dict(path=wd / args.config)  # TODO: come from cli # pylint: disable=fixme
 config_dict = deep_update(config_dict, config_dict_site)
 
 logger = create_logger(log_dir=Path(config_dict['log_dir']),

@@ -41,7 +41,7 @@ class NetCDF:
         netCDF_rootgrp.close()
         self.logger.info(msg='class NetCDF executed create_netCDF()')
 
-    def write_data_to_netCDF(self):
+    def write_data_to_netCDF_thies(self):
         '''
         def writes data to netCDF
         '''
@@ -61,7 +61,77 @@ class NetCDF:
         self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var_datetime, var_key_='timestamp')
 
         # --- NetCDF variables in telegram_data ---
-        for key in self.telegram_objs[0].telegram_data.keys(): # pylint: disable=too-many-nested-blocks
+        for key in self.telegram_objs[0].telegram_data.keys():  # pylint: disable=too-many-nested-blocks
+            if not (key in self.config_dict['telegram_fields'].keys()) or \
+                    self.config_dict['telegram_fields'][key].get('include_in_nc') == 'never':
+                continue
+            field_dict = self.config_dict['telegram_fields'][key]
+            standard_name = field_dict['var_attrs']['standard_name']
+            netCDF_var = netCDF_rootgrp.variables[standard_name]
+
+            # import pdb; pdb.set_trace()
+
+            nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
+                          f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
+                          f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
+            logger.debug(msg=nc_details)
+
+            if netCDF_var.dtype == str:  # S4
+                # assuming S4 vars are only 1D
+                self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
+                                              var_key_=key)
+            else:
+                if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
+                    all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
+                    netCDF_var[:] = all_items_val
+                elif len(netCDF_var._getdims()) > 2 and key == '81':  # pylint: disable=protected-access
+                    all_f81_items_val = []
+
+                    for telegram_obj in self.telegram_objs:
+                        try:
+                            assert len(telegram_obj.telegram_data[key]) == 440, \
+                                'telegram_obj.telegram_data["81"] len == 440'
+                        except AssertionError as error:
+                            self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
+                                                  f' from {telegram_obj.timestamp} {error}'
+                                                  f'. 22x20 ndarray with (error value)'
+                                                  f' -9.999 will be added instead')
+                            error_f81 = numpy.full(shape=(22, 20), fill_value='-9999', dtype='<U3')
+                            all_f81_items_val.append(error_f81)
+                        else:
+                            #print(telegram_obj.telegram_data[key])
+                            #telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int, sep=',')
+                            reshaped_f81 = numpy.array(telegram_obj.telegram_data[key]).reshape(22, 20)
+                            all_f81_items_val.append(reshaped_f81)
+                            self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
+                                                  f' from {telegram_obj.timestamp} successfully reshaped')
+
+                    netCDF_var[:] = all_f81_items_val
+
+        netCDF_rootgrp.close()
+        self.logger.info(msg='class NetCDF executed write_data_to_netCDF()')
+
+    def write_data_to_netCDF_parsivel(self):
+        '''
+        def writes data to netCDF
+        '''
+        netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
+
+        # --- NetCDF variables NOT in telegram_data ---
+
+        # var: time - appending timestamps to var time
+        netCDF_var_time = netCDF_rootgrp.variables['time']
+        value_list_dt = [telegram_obj.timestamp for telegram_obj in self.telegram_objs]
+        time_value_list = [date2num(timestamp_val, units=netCDF_var_time.units, calendar=netCDF_var_time.calendar)
+                           for timestamp_val in value_list_dt]
+        netCDF_var_time[:] = time_value_list  # numpy.concatenate([netCDF_var_time[:].data, time_now_array])
+
+        # NetCDF var: datetime (iso str values)
+        netCDF_var_datetime = netCDF_rootgrp.variables['datetime']
+        self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var_datetime, var_key_='timestamp')
+
+        # --- NetCDF variables in telegram_data ---
+        for key in self.telegram_objs[0].telegram_data.keys():  # pylint: disable=too-many-nested-blocks
             if key in self.config_dict['telegram_fields'].keys() and \
                     ((self.full_version is True and
                       self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never') or
@@ -74,7 +144,7 @@ class NetCDF:
                 # import pdb; pdb.set_trace()
 
                 nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
-                              f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},' # pylint: disable=protected-access
+                              f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
                               f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
                 logger.debug(msg=nc_details)
 
@@ -83,15 +153,15 @@ class NetCDF:
                     self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
                                                   var_key_=key)
                 else:
-                    if len(netCDF_var._getdims()) <= 2: # pylint: disable=protected-access
+                    if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
                         all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
                         netCDF_var[:] = all_items_val
-                    elif len(netCDF_var._getdims()) > 2 and key == '93': # pylint: disable=protected-access
+                    elif len(netCDF_var._getdims()) > 2 and key == '93':  # pylint: disable=protected-access
                         all_f93_items_val = []
 
                         for telegram_obj in self.telegram_objs:
                             try:
-                                assert len(telegram_obj.telegram_data[key]) == 1024,\
+                                assert len(telegram_obj.telegram_data[key]) == 1024, \
                                     'telegram_obj.telegram_data["93"] len != 1024'
                             except AssertionError as error:
                                 self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
@@ -130,8 +200,8 @@ class NetCDF:
             os.rename(self.path_netCDF_temp, self.path_netCDF)
 
     def __set_netCDF_path(self):
-        self.path_netCDF = self.data_dir / f'{self.fn_start}.nc' # pylint: disable=attribute-defined-outside-init
-        self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc' # pylint: disable=attribute-defined-outside-init
+        self.path_netCDF = self.data_dir / f'{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
+        self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
 
     def __netcdf_populate_s4_var(self, netCDF_var_, var_key_):
         '''
@@ -207,10 +277,12 @@ class NetCDF:
 
             # set NetCDF variables' attributes: units, comments, etc
             for var_attr in one_var_dict['var_attrs']:
-                variable.__setattr__(var_attr, one_var_dict['var_attrs'][var_attr]) # pylint: disable=unnecessary-dunder-call
+                variable.__setattr__(var_attr,
+                                     one_var_dict['var_attrs'][var_attr])  # pylint: disable=unnecessary-dunder-call
             if key == 'time':
                 _start_dt = self.date_dt.replace(hour=0, minute=0, second=0).strftime("%Y-%m-%d %H:%M:%S")
-                variable.__setattr__('units', f'hours since {_start_dt} +00:00') # pylint: disable=unnecessary-dunder-call
+                variable.__setattr__('units',
+                                     f'hours since {_start_dt} +00:00')  # pylint: disable=unnecessary-dunder-call
 
     def __netCDF_dimensions(self, nc_rootgrp):
         '''
@@ -225,7 +297,8 @@ class NetCDF:
         def writes global attributes (metadata) to newly created netCDF
         '''
         for key in self.config_dict['global_attrs'].keys():
-            nc_rootgrp.__setattr__(key, self.config_dict['global_attrs'][key]) # pylint: disable=unnecessary-dunder-call
+            nc_rootgrp.__setattr__(key,
+                                   self.config_dict['global_attrs'][key])  # pylint: disable=unnecessary-dunder-call
 
 
 def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
@@ -250,3 +323,4 @@ def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
         telegram_dict[key] = val
 
     return telegram_dict
+

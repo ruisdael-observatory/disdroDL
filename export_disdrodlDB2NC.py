@@ -5,8 +5,8 @@ from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, create_dir, create_logger
-from modules.telegram import Telegram
+from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
+from modules.telegram import ParsivelTelegram, ThiesTelegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
 
@@ -47,23 +47,34 @@ if __name__ == '__main__':
     else:
         raise Exception("version was not 'full' or 'light'")
 
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
+
+    #config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
+
     config_dict_site = yaml2dict(path=wd / args.config)
+    sensor_type = config_dict_site['global_attrs']['sensor_type']
+    # Use the general config file which corresponds to the sensor type
+    config_dict = get_general_config(wd, sensor_type)
+
+    # Combine the site specific config file and the sensor type specific config file into one
     config_dict = deep_update(config_dict, config_dict_site)
 
+    # Combine the site name, station code and sensor name into the start of the file name
     site_name = config_dict['global_attrs']['site_name']
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
-
+    # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
+    if sensor_type == 'Thies Clima':
+        db_path = Path("sample_data/disdrodl-thies.db")
+    else:
+        db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+        
     if (full_version is False):
         fn_start = f"{fn_start}_light"
 
-    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
-
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
-                           parsivel_name=config_dict['global_attrs']['sensor_name'])
+                           sensor_name=config_dict['global_attrs']['sensor_name'])
 
     msg_conf = f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}"
     logger.info(msg=msg_conf)
@@ -71,7 +82,12 @@ if __name__ == '__main__':
     logger.info(msg=msg_date)
 
     # -- Monthly Data dir
-    data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+    # Put the netCDF in sample_data if the provided site config file is from the Thies
+    if sensor_type == 'Thies Clima':
+        data_dir = Path('sample_data/')
+    else:
+        data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+
     created_data_dir = create_dir(path=data_dir)  # create if does not exist
     if created_data_dir:
         logger.info(msg=f'Created data directory: {data_dir}')
@@ -80,20 +96,58 @@ if __name__ == '__main__':
     telegram_objs = []
     cur, con = connect_db(dbpath=str(db_path))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
+        #TODO needs to be removed once the data is written to database as " key:value"
+        if sensor_type == 'Thies Clima':
+            print(row.get('telegram'))
+            telegram_list = row.get('telegram').split(';')
+            telegram_list.insert(0,'')
+            # telegram_list_stx_and_address = telegram_list[0]
+            # telegram_list_address = telegram_list_stx_and_address[-2:]
+            # telegram_list_stx = telegram_list_stx_and_address[:-2]
+            # correct_telegram_list = list(telegram_list_stx) + list(telegram_list_stx) + telegram_list[1:]
+            print(telegram_list[0])
+            list_len = len(telegram_list)
+            formatted_telegrams = []
+            for index, value in enumerate(telegram_list[:-1]):
+                if(index == 80 ):
+                    formatted_telegrams.append(f" {81}:{value},")
+                elif(index>80 and index<519):
+                    formatted_telegrams.append(f"{value},")
+                elif(index == 519):
+                    formatted_telegrams.append(f"{value};")
+                elif(index == list_len-1):
+                    formatted_telegrams.append(f" {index + 1}:{value}")
+                else:
+                    formatted_telegrams.append(f" {index + 1}:{value};")
+            telegram_str = ''.join(formatted_telegrams)
+
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-        telegram_instance = Telegram(
-            config_dict=config_dict,
-            telegram_lines=row.get('telegram'),
-            db_row_id=row.get('id'),
-            timestamp=ts_dt,
-            db_cursor=None,
-            telegram_data={},
-            logger=logger)
-
+        if sensor_type == 'Thies Clima':
+            telegram_instance = ThiesTelegram(
+                config_dict=config_dict,
+                telegram_lines=telegram_str,
+                db_row_id=row.get('id'),
+                timestamp=ts_dt,
+                db_cursor=None,
+                telegram_data={},
+                logger=logger
+            )
+        else:
+            telegram_instance = ParsivelTelegram(
+                config_dict=config_dict,
+                telegram_lines=telegram_str,
+                db_row_id=row.get('id'),
+                timestamp=ts_dt,
+                db_cursor=None,
+                telegram_data={},
+                logger=logger)
+        print(telegram_str)
         telegram_instance.parse_telegram_row()
-
-        # check if telegram_instance has data organized by keys(fields)
-        if "90" in telegram_instance.telegram_data.keys():
+        # check if Thies telegram_instance has data organized by keys(fields)
+        if "11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima':
+            telegram_objs.append(telegram_instance)
+        # check if Parsivel telegram_instance has data organized by keys(fields)
+        elif "90" in telegram_instance.telegram_data.keys() and sensor_type == 'OTT Hydromet Parsivel2':
             telegram_objs.append(telegram_instance)
 
     con.close()
@@ -107,6 +161,10 @@ if __name__ == '__main__':
                 full_version=full_version,
                 telegram_objs=telegram_objs,
                 date=date_dt)
+
     nc.create_netCDF()
-    nc.write_data_to_netCDF()
+    if sensor_type == 'Thies Clima':
+        nc.write_data_to_netCDF_thies()
+    else:
+        nc.write_data_to_netCDF_parsivel()
     nc.compress()

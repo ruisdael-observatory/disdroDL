@@ -5,7 +5,7 @@ from typing import Dict
 from datetime import datetime, timezone
 from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
-from modules.telegram import Telegram
+from modules.telegram import ParsivelTelegram, ThiesTelegram
 #from pprint import pprint
 from modules.util_functions import yaml2dict, create_logger
 
@@ -55,6 +55,19 @@ def telegram2dict(telegram: str, dt: datetime, ts: float, ):
     telegram_dict['timestamp'] = ts
     return telegram_dict
 
+def thies_telegram_to_dict(telegram: str, dt: datetime, ts: float, ):
+    '''
+    Creates 1 dict from a dataframe row, with the telegram values
+    '''
+    telegram_indices = [str(i) for i in range(1, 528)]
+    telegram_list = telegram.split(';')
+    telegram_dict = {key: None for key in telegram_indices}  # pylint: disable=W0621
+    for index, field_n in enumerate(telegram_indices):
+        telegram_dict[field_n] = telegram_list[index]
+    telegram_dict['datetime'] = dt
+    telegram_dict['timestamp'] = ts
+    return telegram_dict
+
 
 if __name__ == '__main__':
     ## Parser
@@ -83,7 +96,6 @@ if __name__ == '__main__':
     config_dict_site = yaml2dict(path=wd / args.config)
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
-    # print(conf_telegram_fields)
     ## Logger
     # import pdb; pdb.set_trace()
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
@@ -105,7 +117,7 @@ if __name__ == '__main__':
                                           dt=datetime.strptime(dt_str, '%Y%m%d-%H%M%S'),
                                           ts=float(ts_str))
             ts_dt = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
-            row_telegram = Telegram(
+            row_telegram = ParsivelTelegram(
                 config_dict=config_dict,
                 telegram_lines=None,
                 timestamp=ts_dt,
@@ -138,7 +150,7 @@ if __name__ == '__main__':
 #         telegram_dict = telegram2dict(telegram=csv_row['telegram'],
 #                                       dt=csv_row['datetime'],
 #                                       ts=csv_row['timestamp'], )
-#         telegram = Telegram(config_dict=config_dict,
+#         telegram = ParsivelTelegram(config_dict=config_dict,
 #                             telegram_lines=None,
 #                             telegram_data=telegram_dict,
 #                             timestamp=telegram_dict['datetime'],
