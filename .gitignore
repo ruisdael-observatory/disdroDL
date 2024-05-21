@@ -2,6 +2,7 @@ prototypes/*
 !prototypes/parse_disdro_csv.py
 !prototypes/serial_sniffer_parsivel.py
 !prototypes/serial_sniffer_thies.py
+!prototypes/manual_polling_thies.py
 .python-version
 __pycache__
 config.yml

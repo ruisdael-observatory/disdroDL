@@ -1,3 +1,10 @@
+"""
+This module contains a class for getting the current time.
+
+Functions:
+- date_strings: Sets the string fields of the class to the respective string representations of the current time.
+"""
+
 from datetime import datetime, timezone
 
 class NowTime:
