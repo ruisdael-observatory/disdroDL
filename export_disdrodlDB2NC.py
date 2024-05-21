@@ -51,9 +51,9 @@ if __name__ == '__main__':
     #config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 
     config_dict_site = yaml2dict(path=wd / args.config)
-
+    sensor_type = config_dict_site['global_attrs']['sensor_type']
     # Use the general config file which corresponds to the sensor type
-    config_dict = get_general_config(wd, config_dict_site['global_attrs']['sensor_type'])
+    config_dict = get_general_config(wd, sensor_type)
 
     # Combine the site specific config file and the sensor type specific config file into one
     config_dict = deep_update(config_dict, config_dict_site)
@@ -63,9 +63,8 @@ if __name__ == '__main__':
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
-
     # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
-    if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+    if sensor_type == 'Thies Clima':
         db_path = Path("sample_data/disdrodl-thies.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
@@ -84,7 +83,7 @@ if __name__ == '__main__':
 
     # -- Monthly Data dir
     # Put the netCDF in sample_data if the provided site config file is from the Thies
-    if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+    if sensor_type == 'Thies Clima':
         data_dir = Path('sample_data/')
     else:
         data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
@@ -98,7 +97,7 @@ if __name__ == '__main__':
     cur, con = connect_db(dbpath=str(db_path))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         #TODO needs to be removed once the data is written to database as " key:value"
-        if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        if sensor_type == 'Thies Clima':
             print(row.get('telegram'))
             telegram_list = row.get('telegram').split(';')
             telegram_list.insert(0,'')
@@ -123,7 +122,7 @@ if __name__ == '__main__':
             telegram_str = ''.join(formatted_telegrams)
 
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-        if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        if sensor_type == 'Thies Clima':
             telegram_instance = ThiesTelegram(
                 config_dict=config_dict,
                 telegram_lines=telegram_str,
@@ -145,10 +144,10 @@ if __name__ == '__main__':
         print(telegram_str)
         telegram_instance.parse_telegram_row()
         # check if Thies telegram_instance has data organized by keys(fields)
-        if "11" in telegram_instance.telegram_data.keys() and config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+        if "11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima':
             telegram_objs.append(telegram_instance)
         # check if Parsivel telegram_instance has data organized by keys(fields)
-        elif "90" in telegram_instance.telegram_data.keys():
+        elif "90" in telegram_instance.telegram_data.keys() and sensor_type == 'OTT Hydromet Parsivel2':
             telegram_objs.append(telegram_instance)
 
     con.close()
@@ -164,7 +163,7 @@ if __name__ == '__main__':
                 date=date_dt)
 
     nc.create_netCDF()
-    if config_dict_site['global_attrs']['sensor_type'] == 'Thies Clima':
+    if sensor_type == 'Thies Clima':
         nc.write_data_to_netCDF_thies()
     else:
         nc.write_data_to_netCDF_parsivel()
