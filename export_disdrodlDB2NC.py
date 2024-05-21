@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
-                           parsivel_name=config_dict['global_attrs']['sensor_name'])
+                           sensor_name=config_dict['global_attrs']['sensor_name'])
 
     msg_conf = f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}"
     logger.info(msg=msg_conf)

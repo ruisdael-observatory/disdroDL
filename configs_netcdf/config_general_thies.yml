@@ -293,15 +293,24 @@ variables:
             - 8.000
 telegram_fields:
 
-    '1-2':
+    '1':
         dimensions:
             - time
         dtype: 'S4'
         include_in_nc: 'never'
         var_attrs:
             units: None
-            long_name: 'start identifer + device adress'
+            long_name: 'start identifer'
             standard_name: 'STX'
+    '2':
+        dimensions:
+            - time
+        dtype: 'S4'
+        include_in_nc: 'always'
+        var_attrs:
+            units: None
+            long_name: 'device address'
+            standard_name: 'device_address'
     '3':
         dimensions:
             - time
@@ -323,7 +332,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'never'                    
+        include_in_nc: 'always'
         var_attrs:
             long_name: 'Date of the sensor'
             standard_name: 'sensor_date'
@@ -331,7 +340,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'  # string
-        include_in_nc: 'never'                    
+        include_in_nc: 'always'
         var_attrs:
             long_name: 'Time of the sensor'
             standard_name: 'sensor_time'
@@ -1013,10 +1022,10 @@ telegram_fields:
            standard_name: 'wind_speed'
            units: 'm/s'
     '524':
-       dimensions:
+        dimensions:
            - time
-       dtype: 'f4'
-       include_in_nc: 'always'                    
+        dtype: 'f4'
+        include_in_nc: 'always'
         var_attrs:
            long_name: 'Wind direction [°]'
            standard_name: 'wind_direction'
@@ -1025,7 +1034,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'never'
+        include_in_nc: 'always'
         var_attrs:
             long_name: 'Checksum'
             standard_name: 'checksum'

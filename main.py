@@ -15,6 +15,7 @@ from modules.telegram import ParsivelTelegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
 
+
 ######################## BOILER PLATE ##################
 
 ### Parser ###

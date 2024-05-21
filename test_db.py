@@ -265,7 +265,7 @@ class ExceptionTests(unittest.TestCase):
         con, cur = connect_db(dbpath=str(db_path))
         for i, row in enumerate(query_db_rows_gen(con=con, date_dt=start_dt, logger=logger)): # pylint: disable=unused-variable
             ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-            row_telegram = Telegram(
+            row_telegram = ParsivelTelegram(
                 config_dict=config_dict,
                 telegram_lines=row.get('telegram'),
                 timestamp=ts_dt,
@@ -286,7 +286,7 @@ class ExceptionTests(unittest.TestCase):
                     telegram_objs=telegram_objs,
                     date=start_dt)
         nc_full.create_netCDF()
-        nc_full.write_data_to_netCDF()
+        nc_full.write_data_to_netCDF_parsivel()
         nc_full.compress()
 
         # Create a light netCDF with the Telegram objects
@@ -298,7 +298,7 @@ class ExceptionTests(unittest.TestCase):
                     telegram_objs=telegram_objs,
                     date=start_dt)
         nc_light.create_netCDF()
-        nc_light.write_data_to_netCDF()
+        nc_light.write_data_to_netCDF_parsivel()
         nc_light.compress()
 
         rootgrp_full = Dataset(data_dir / 'test_full.nc', 'r', format="NETCDF4")
