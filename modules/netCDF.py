@@ -62,50 +62,51 @@ class NetCDF:
 
         # --- NetCDF variables in telegram_data ---
         for key in self.telegram_objs[0].telegram_data.keys():  # pylint: disable=too-many-nested-blocks
-            if key in self.config_dict['telegram_fields'].keys() and \
-                    self.config_dict['telegram_fields'][key].get('include_in_nc') != 'never':
-                field_dict = self.config_dict['telegram_fields'][key]
-                standard_name = field_dict['var_attrs']['standard_name']
-                netCDF_var = netCDF_rootgrp.variables[standard_name]
+            if not (key in self.config_dict['telegram_fields'].keys()) or \
+                    self.config_dict['telegram_fields'][key].get('include_in_nc') == 'never':
+                continue
+            field_dict = self.config_dict['telegram_fields'][key]
+            standard_name = field_dict['var_attrs']['standard_name']
+            netCDF_var = netCDF_rootgrp.variables[standard_name]
 
-                # import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
 
-                nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
-                              f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
-                              f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
-                logger.debug(msg=nc_details)
+            nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
+                          f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
+                          f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
+            logger.debug(msg=nc_details)
 
-                if netCDF_var.dtype == str:  # S4
-                    # assuming S4 vars are only 1D
-                    self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
-                                                  var_key_=key)
-                else:
-                    if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
-                        all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
-                        netCDF_var[:] = all_items_val
-                    elif len(netCDF_var._getdims()) > 2 and key == '81':  # pylint: disable=protected-access
-                        all_f81_items_val = []
+            if netCDF_var.dtype == str:  # S4
+                # assuming S4 vars are only 1D
+                self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
+                                              var_key_=key)
+            else:
+                if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
+                    all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
+                    netCDF_var[:] = all_items_val
+                elif len(netCDF_var._getdims()) > 2 and key == '81':  # pylint: disable=protected-access
+                    all_f81_items_val = []
 
-                        for telegram_obj in self.telegram_objs:
-                            try:
-                                assert len(telegram_obj.telegram_data[key]) == 440, \
-                                    'telegram_obj.telegram_data["81"] len == 440'
-                            except AssertionError as error:
-                                self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
-                                                      f' from {telegram_obj.timestamp} {error}'
-                                                      f'. 22x20 ndarray with (error value)'
-                                                      f' -9.999 will be added instead')
-                                error_f81 = numpy.full(shape=(22, 20), fill_value='-9999', dtype='<U3')
-                                all_f81_items_val.append(error_f81)
-                            else:
-                                #print(telegram_obj.telegram_data[key])
-                                #telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int, sep=',')
-                                reshaped_f81 = numpy.array(telegram_obj.telegram_data[key]).reshape(22, 20)
-                                all_f81_items_val.append(reshaped_f81)
-                                self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
-                                                      f' from {telegram_obj.timestamp} successfully reshaped')
+                    for telegram_obj in self.telegram_objs:
+                        try:
+                            assert len(telegram_obj.telegram_data[key]) == 440, \
+                                'telegram_obj.telegram_data["81"] len == 440'
+                        except AssertionError as error:
+                            self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
+                                                  f' from {telegram_obj.timestamp} {error}'
+                                                  f'. 22x20 ndarray with (error value)'
+                                                  f' -9.999 will be added instead')
+                            error_f81 = numpy.full(shape=(22, 20), fill_value='-9999', dtype='<U3')
+                            all_f81_items_val.append(error_f81)
+                        else:
+                            #print(telegram_obj.telegram_data[key])
+                            #telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int, sep=',')
+                            reshaped_f81 = numpy.array(telegram_obj.telegram_data[key]).reshape(22, 20)
+                            all_f81_items_val.append(reshaped_f81)
+                            self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
+                                                  f' from {telegram_obj.timestamp} successfully reshaped')
 
-                        netCDF_var[:] = all_f81_items_val
+                    netCDF_var[:] = all_f81_items_val
 
         netCDF_rootgrp.close()
         self.logger.info(msg='class NetCDF executed write_data_to_netCDF()')

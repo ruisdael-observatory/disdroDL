@@ -213,19 +213,21 @@ class ThiesTelegram(Telegram):
             line_str = line.decode(encoding)
             line_list = line_str.split(":")
 
-            if len(line_list) > 1 and line_list[1].strip() != self.delimiter:
-                field = line_list[0]
-                value = line_list[1].strip()  # strip white space
-                value_list = value.split(self.delimiter)
-                value_list = [v for v in value_list if len(v) > 0]
+            if len(line_list) <= 1 or line_list[1].strip() == self.delimiter:
+                continue
 
-                if len(value_list) == 1:
-                    value = value_list[0]
-                else:
-                    value = value_list
+            field = line_list[0]
+            value = line_list[1].strip()  # strip white space
+            value_list = value.split(self.delimiter)
+            value_list = [v for v in value_list if len(v) > 0]
 
-                super().__setattr__(f'field_{field}_values', value)
-                self.telegram_data[field] = value
+            if len(value_list) == 1:
+                value = value_list[0]
+            else:
+                value = value_list
+
+            super().__setattr__(f'field_{field}_values', value)
+            self.telegram_data[field] = value
 
     def parse_telegram_row(self):
         '''
@@ -243,19 +245,21 @@ class ThiesTelegram(Telegram):
         for keyval in telegram_lines_list:
             keyval_list = keyval.split(':')
 
-            if keyval_list[0] in self.config_dict['telegram_fields'].keys() and \
-                    len(keyval_list) > 1 and keyval_list[1].strip() != self.delimiter:
-                field = keyval_list[0]
-                value = keyval_list[1].strip()  # strip white space
-                value_list = value.split(self.delimiter)
-                value_list = [v for v in value_list if len(v) > 0]
+            if keyval_list[0] not in self.config_dict['telegram_fields'].keys() or\
+                    len(keyval_list) <= 1 or keyval_list[1].strip() == self.delimiter:
+                continue
 
-                if len(value_list) == 1:
-                    value = value_list[0]
-                else:
-                    value = value_list
+            field = keyval_list[0]
+            value = keyval_list[1].strip()  # strip white space
+            value_list = value.split(self.delimiter)
+            value_list = [v for v in value_list if len(v) > 0]
 
-                self.telegram_data[field] = value
+            if len(value_list) == 1:
+                value = value_list[0]
+            else:
+                value = value_list
+
+            self.telegram_data[field] = value
 
         self.__str2list(field='81', separator=',')
 
