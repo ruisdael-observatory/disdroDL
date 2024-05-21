@@ -30,10 +30,25 @@ if __name__ == '__main__':
         '--date',
         default=date_yest.strftime('%Y-%m-%d'),
         help='Date string for files to be captured. Format: YYYY-mm-dd')
+    parser.add_argument(
+        '-v',
+        '--version',
+        default='full',
+        help="Bool for what version netCDF to export, a full or light version. Format: 'full' or 'light'")
 
     args = parser.parse_args()
     date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
+    
+    if (args.version == 'full'):
+        full_version = True
+    elif (args.version == 'light'):
+        full_version = False
+    else:
+        raise Exception("version was not 'full' or 'light'")
+
+
+    #config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 
     config_dict_site = yaml2dict(path=wd / args.config)
 
@@ -54,6 +69,9 @@ if __name__ == '__main__':
         db_path = Path("sample_data/disdrodl-thies.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+        
+    if (full_version is False):
+        fn_start = f"{fn_start}_light"
 
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name='disdro_db2nc',
@@ -141,6 +159,7 @@ if __name__ == '__main__':
                 config_dict=config_dict,
                 data_dir=data_dir,
                 fn_start=fn_start,
+                full_version=full_version,
                 telegram_objs=telegram_objs,
                 date=date_dt)
 

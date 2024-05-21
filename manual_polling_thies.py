@@ -3,11 +3,11 @@ Imports
 """
 from time import sleep
 from pathlib import Path
-import serial
 
-from modules.sqldb import create_db, connect_db
-from modules.util_functions import yaml2dict, thies_start_sequence
-from modules.now_time import NowTime
+from modules.sensors import Thies # pylint: disable=import-error
+from modules.sqldb import create_db, connect_db # pylint: disable=import-error
+from modules.util_functions import yaml2dict, create_logger # pylint: disable=import-error
+from modules.now_time import NowTime # pylint: disable=import-error
 
 if __name__ == '__main__':
 
@@ -23,9 +23,13 @@ if __name__ == '__main__':
     thies_port = '/dev/ttyACM0'
     thies_baud = 9600
     thies_id = '06'
-    thies = serial.Serial(port=thies_port, baudrate=thies_baud, timeout=10)
+    thies = Thies(thies_id=thies_id)
 
-    thies_start_sequence(thies, thies_id)
+    logger = create_logger(log_dir=Path(config_dict['log_dir']),
+                           script_name=config_dict['script_name'],
+                           sensor_name=config_dict['global_attrs']['sensor_name'])
+    thies.init_serial_connection(thies_port, thies_baud, logger)
+    thies.sensor_start_sequence(config_dict=config_dict, logger=logger)
 
     while True:
         now_time = NowTime()
@@ -37,11 +41,7 @@ if __name__ == '__main__':
 
         con, cur = connect_db(dbpath=str(db_path))
 
-        # Send request to get the latest telegram
-        sleep(2) # Give sensor some time to create the telegram
-        thies.write(('\r' + thies_id + 'TR00005\r').encode('utf-8'))
-        output = thies.readline()
-        decoded_bytes = str(output[0:len(output)-2].decode("utf-8"))
+        output = thies.read(logger)
 
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
         sensor = config_dict['global_attrs']['sensor_name']
 
         # Insert telegram into db
-        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{decoded_bytes}');"
+        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{output}');"
 
         cur.execute(insert_str)
 
@@ -58,5 +58,5 @@ if __name__ == '__main__':
         cur.close()
         con.close()
 
-        print(decoded_bytes)
+        print(output)
         sleep(2)

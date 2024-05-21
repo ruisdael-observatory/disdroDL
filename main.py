@@ -36,17 +36,18 @@ config_dict = deep_update(config_dict, config_dict_site)
 ### Log ###
 logger = create_logger(log_dir=Path(config_dict['log_dir']),
                        script_name=config_dict['script_name'],
-                       parsivel_name=config_dict['global_attrs']['sensor_name'])
+                       sensor_name=config_dict['global_attrs']['sensor_name'])
 logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}")
 print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
 
 ### Serial connection ###
-parsivel = init_serial(port=config_dict['port'], baud=config_dict['baud'], logger=logger)  # initiate serial connection
-parsivel_start_sequence(serialconnection=parsivel, config_dict=config_dict, logger=logger)
+parsivel = Parsivel()
+parsivel.init_serial_connection(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
+parsivel.sensor_start_sequence(config_dict=config_dict, logger=logger)
 sleep(2)
 
 ### DB ###
-db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+db_path = Path(config_dict['data_dir']) / 'disdrodl-test1.db' # change the db name
 create_db(dbpath=str(db_path))
 
 #########################################################
@@ -63,8 +64,8 @@ while True:
     con, cur = connect_db(dbpath=str(db_path))
     logger.debug(msg=f'writing Telegram to DB on: {now_utc.time_list}, {now_utc.utc}')
 
-    parsivel.write('CS/PA\r\n'.encode('ascii'))  # Output all telegram measurement values
-    parsivel_lines = parsivel.readlines()
+    parsivel.write('CS/PA\r\n'.encode('ascii'), logger=logger)  # Output all telegram measurement values
+    parsivel_lines = parsivel.read(logger=logger)
 
     # throw error if parsivel_lines is empty
     try:

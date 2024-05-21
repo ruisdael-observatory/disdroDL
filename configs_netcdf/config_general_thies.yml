@@ -314,8 +314,8 @@ telegram_fields:
     '4':
         dimensions:
             - time
-        dtype: 'S4'
-        include_in_nc: 'always'
+        dtype: 'f4'
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Software version'
             standard_name: 'software_version'
@@ -338,7 +338,7 @@ telegram_fields:
     '7':
         dimensions:
             - time
-        dtype: 'S4'  # string
+        dtype: 'f4'  # string
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '5M SYNOP Tab.4677'
@@ -348,7 +348,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'never'
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: '5M SYNOP Tab.4680'
             standard_name: 'weather_code_synop_4680_5min'
@@ -385,7 +385,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'never'
+        include_in_nc: 'always'                    
         var_attrs:
             long_name: '1M SYNOP Tab.4680'
             standard_name: 'weather_code_synop_4680'
@@ -1013,10 +1013,10 @@ telegram_fields:
            standard_name: 'wind_speed'
            units: 'm/s'
     '524':
-        dimensions:
+       dimensions:
            - time
-        dtype: 'f4'
-        include_in_nc: 'never'
+       dtype: 'f4'
+       include_in_nc: 'always'                    
         var_attrs:
            long_name: 'Wind direction [°]'
            standard_name: 'wind_direction'
