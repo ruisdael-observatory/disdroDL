@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
         telegram_instance.parse_telegram_row()
 
-        # Check if telegram_instance has data organized by keys(fields)
+        # Append telegram_instance if it has data organized by keys(fields)
         if (("11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima') or
             ("90" in telegram_instance.telegram_data.keys() and sensor_type == 'OTT Hydromet Parsivel2')):
             telegram_objs.append(telegram_instance)
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     con.close()
     cur.close()
 
-    # Directory for to put the netCDF file in
+    # Directory to put the netCDF file in
     # Put the netCDF in sample_data if the provided site config file is from the Thies
     if sensor_type == 'Thies Clima':
         data_dir = Path('sample_data/')
