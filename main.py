@@ -31,19 +31,33 @@ args = parser.parse_args()
 
 ### Config files ###
 wd = Path(__file__).parent
-config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
+
 config_dict_site = yaml2dict(path=wd / args.config)
-config_dict = deep_update(config_dict, config_dict_site)
 
 ### Log ###
-logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                       script_name=config_dict['script_name'],
-                       sensor_name=config_dict['global_attrs']['sensor_name'])
-logger.info(msg=f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}")
-print(f"{__file__} running\nLogs written to {config_dict['log_dir']}")
+logger = create_logger(log_dir=Path(config_dict_site['log_dir']),
+                       script_name=config_dict_site['script_name'],
+                       sensor_name=config_dict_site['global_attrs']['sensor_name'])
+logger.info(msg=f"Starting {__file__} for {config_dict_site['global_attrs']['sensor_name']}")
+print(f"{__file__} running\nLogs written to {config_dict_site['log_dir']}")
+
+config_dict = None
+
+sensor_type = config_dict_site['global_attrs']['sensor_type']
+if sensor_type == 'OTT Hydromet Parsivel2':
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
+elif sensor_type == 'Thies clima':
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
+else:
+    logger.error(msg=f"Sensor type {sensor_type} not recognized")
+    sys.exit(1)
+
+config_dict = deep_update(config_dict, config_dict_site)
+
+
 
 ### Serial connection ###
-sensor_type = config_dict['global_attrs']['sensor_type']
+
 sensor = None
 if sensor_type == 'OTT Hydromet Parsivel2':
     sensor = Parsivel()
