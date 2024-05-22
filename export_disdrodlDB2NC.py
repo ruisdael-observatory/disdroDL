@@ -96,16 +96,12 @@ if __name__ == '__main__':
     telegram_objs = []
     cur, con = connect_db(dbpath=str(db_path))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
+        ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
+
         #TODO needs to be removed once the data is written to database as " key:value"
         if sensor_type == 'Thies Clima':
-            print(row.get('telegram'))
             telegram_list = row.get('telegram').split(';')
             telegram_list.insert(0,'')
-            # telegram_list_stx_and_address = telegram_list[0]
-            # telegram_list_address = telegram_list_stx_and_address[-2:]
-            # telegram_list_stx = telegram_list_stx_and_address[:-2]
-            # correct_telegram_list = list(telegram_list_stx) + list(telegram_list_stx) + telegram_list[1:]
-            print(telegram_list[0])
             list_len = len(telegram_list)
             formatted_telegrams = []
             for index, value in enumerate(telegram_list[:-1]):
@@ -120,9 +116,7 @@ if __name__ == '__main__':
                 else:
                     formatted_telegrams.append(f" {index + 1}:{value};")
             telegram_str = ''.join(formatted_telegrams)
-
-        ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-        if sensor_type == 'Thies Clima':
+            
             telegram_instance = ThiesTelegram(
                 config_dict=config_dict,
                 telegram_lines=telegram_str,
@@ -135,13 +129,13 @@ if __name__ == '__main__':
         else:
             telegram_instance = ParsivelTelegram(
                 config_dict=config_dict,
-                telegram_lines=telegram_str,
+                telegram_lines=row.get('telegram'),
                 db_row_id=row.get('id'),
                 timestamp=ts_dt,
                 db_cursor=None,
                 telegram_data={},
                 logger=logger)
-        print(telegram_str)
+
         telegram_instance.parse_telegram_row()
         # check if Thies telegram_instance has data organized by keys(fields)
         if "11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima':
