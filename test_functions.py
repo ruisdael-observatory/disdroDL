@@ -96,6 +96,11 @@ class UtilFunctionsTests(unittest.TestCase):
     @patch('modules.util_functions.os.path.exists', return_value=False)
     @patch('modules.util_functions.Path.mkdir')
     def test_create_dir_1(self, mock_path_mkdir, mock_os_path_exists):
+        """
+        Test for the create_dir function
+        :param mock_path_mkdir: Mock object for the Path.mkdir call
+        :param mock_os_path_exists: Mock object for the os.path.exists call
+        """
         res = create_dir(wd)
 
         mock_os_path_exists.assert_called_once_with(wd)
@@ -105,6 +110,11 @@ class UtilFunctionsTests(unittest.TestCase):
     @patch('modules.util_functions.os.path.exists', return_value=True)
     @patch('modules.util_functions.Path.mkdir')
     def test_create_dir_2(self, mock_path_mkdir, mock_os_path_exists):
+        """
+        Test for the create_dir function
+        :param mock_path_mkdir: Mock object for the Path.mkdir call
+        :param mock_os_path_exists: Mock object for the os.path.exists call
+        """
         res = create_dir(wd)
 
         mock_os_path_exists.assert_called_once_with(wd)
@@ -113,6 +123,10 @@ class UtilFunctionsTests(unittest.TestCase):
 
     @patch('modules.util_functions.sleep')
     def test_reset_serial_buffers(self, mock_sleep):
+        """
+        Test for the resetSerialBuffers function
+        :param mock_sleep: Mock object for the sleep call
+        """
         mock_serial_connection = Mock()
 
         resetSerialBuffers(mock_serial_connection)
@@ -124,6 +138,11 @@ class UtilFunctionsTests(unittest.TestCase):
     @patch('modules.util_functions.print')
     @patch('modules.util_functions.resetSerialBuffers')
     def test_interrupt_handler(self, mock_reset_serial_buffers, mock_print):
+        """
+        Test for the interruptHandler function
+        :param mock_reset_serial_buffers: Mock object for the resetSerialBuffers function call
+        :param mock_print: Mock object for the print call
+        """
         mock_logger = Mock()
         mock_serial_connection = Mock()
 
@@ -136,6 +155,9 @@ class UtilFunctionsTests(unittest.TestCase):
 
     @staticmethod
     def test_unpack_telegram_from_db_no_None():
+        """
+        Test for the unpack_telegram_from_db function with no None values
+        """
         input_str = "20:10; 21:25.05.2023; 51:000140; 90:-9.999,-9.999,-9.999,-9.999"
         expected_output = {
             '20': '10',
@@ -147,6 +169,9 @@ class UtilFunctionsTests(unittest.TestCase):
 
     @staticmethod
     def test_unpack_telegram_from_db_with_None():
+        """
+        Test for the unpack_telegram_from_db function with a None value
+        """
         input_str = "19:None; 20:10; 21:25.05.2023; 51:000140; 90:-9.999,-9.999,-9.999,-9.999"
         expected_output = {
             '19': None,
