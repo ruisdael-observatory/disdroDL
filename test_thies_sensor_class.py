@@ -2,7 +2,7 @@
 Imports
 """
 import unittest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch, call, Mock
 from modules.sensors import Thies, SensorType  # pylint: disable=import-error
 
 
@@ -158,3 +158,15 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """
         thies = Thies()
         assert thies.get_type() == SensorType.THIES
+
+    def test_close_serial_connection(self):
+        """
+        Test for the close_serial_connection function
+        """
+        parsivel_obj = Thies()
+        mock_serial_connection = Mock()
+        parsivel_obj.serial_connection = mock_serial_connection
+
+        parsivel_obj.close_serial_connection()
+
+        mock_serial_connection.close.assert_called_once()
