@@ -1,6 +1,7 @@
 """
-a
+Script to export the DB data from a specific date to a netCDF file based on the given site config file.
 """
+
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
@@ -39,19 +40,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
     date_dt = datetime.strptime(args.date, '%Y-%m-%d')
     wd = Path(__file__).parent
-    
-    if (args.version == 'full'):
+
+    if args.version == 'full':
         full_version = True
-    elif (args.version == 'light'):
+    elif args.version == 'light':
         full_version = False
     else:
         raise Exception("version was not 'full' or 'light'")
 
-
-    #config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
-
     config_dict_site = yaml2dict(path=wd / args.config)
     sensor_type = config_dict_site['global_attrs']['sensor_type']
+
     # Use the general config file which corresponds to the sensor type
     config_dict = get_general_config(wd, sensor_type)
 
@@ -63,13 +62,15 @@ if __name__ == '__main__':
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
+
     # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
     if sensor_type == 'Thies Clima':
         db_path = Path("sample_data/disdrodl-thies.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
-        
-    if (full_version is False):
+
+    # Add "_light" to the end of the file name when exporting a light version
+    if full_version is False:
         fn_start = f"{fn_start}_light"
 
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
@@ -81,42 +82,31 @@ if __name__ == '__main__':
     msg_date = f'Exporting data from {date_dt} to {date_dt.replace(hour=23, minute=59, second=59)}'
     logger.info(msg=msg_date)
 
-    # -- Monthly Data dir
-    # Put the netCDF in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
-        data_dir = Path('sample_data/')
-    else:
-        data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
-
-    created_data_dir = create_dir(path=data_dir)  # create if does not exist
-    if created_data_dir:
-        logger.info(msg=f'Created data directory: {data_dir}')
-
-    # -- DB rows -> Telegram instances
+    # Query the relevant data rows and create Telegram instances out of those
     telegram_objs = []
     cur, con = connect_db(dbpath=str(db_path))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
 
-        #TODO needs to be removed once the data is written to database as " key:value"
+        #TODO needs to be removed once the data is written to database as " key:value" # pylint: disable=fixme
         if sensor_type == 'Thies Clima':
             telegram_list = row.get('telegram').split(';')
             telegram_list.insert(0,'')
             list_len = len(telegram_list)
             formatted_telegrams = []
             for index, value in enumerate(telegram_list[:-1]):
-                if(index == 80 ):
+                if index == 80:
                     formatted_telegrams.append(f" {81}:{value},")
-                elif(index>80 and index<519):
+                elif 81 <= index <= 518:
                     formatted_telegrams.append(f"{value},")
-                elif(index == 519):
+                elif index == 519:
                     formatted_telegrams.append(f"{value};")
-                elif(index == list_len-1):
+                elif index == list_len-1:
                     formatted_telegrams.append(f" {index + 1}:{value}")
                 else:
                     formatted_telegrams.append(f" {index + 1}:{value};")
             telegram_str = ''.join(formatted_telegrams)
-            
+
             telegram_instance = ThiesTelegram(
                 config_dict=config_dict,
                 telegram_lines=telegram_str,
@@ -124,8 +114,7 @@ if __name__ == '__main__':
                 timestamp=ts_dt,
                 db_cursor=None,
                 telegram_data={},
-                logger=logger
-            )
+                logger=logger)
         else:
             telegram_instance = ParsivelTelegram(
                 config_dict=config_dict,
@@ -137,17 +126,28 @@ if __name__ == '__main__':
                 logger=logger)
 
         telegram_instance.parse_telegram_row()
-        # check if Thies telegram_instance has data organized by keys(fields)
-        if "11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima':
-            telegram_objs.append(telegram_instance)
-        # check if Parsivel telegram_instance has data organized by keys(fields)
-        elif "90" in telegram_instance.telegram_data.keys() and sensor_type == 'OTT Hydromet Parsivel2':
+
+        # Check if telegram_instance has data organized by keys(fields)
+        if (("11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima') or
+            ("90" in telegram_instance.telegram_data.keys() and sensor_type == 'OTT Hydromet Parsivel2')):
             telegram_objs.append(telegram_instance)
 
     con.close()
     cur.close()
 
-    # -- NetCDF creation
+    # Directory for to put the netCDF file in
+    # Put the netCDF in sample_data if the provided site config file is from the Thies
+    if sensor_type == 'Thies Clima':
+        data_dir = Path('sample_data/')
+    else:
+        data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+
+    # Create data directory if it does not exist yet
+    created_data_dir = create_dir(path=data_dir)
+    if created_data_dir:
+        logger.info(msg=f'Created data directory: {data_dir}')
+
+    # Create the netCDF object
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
                 data_dir=data_dir,
@@ -157,8 +157,10 @@ if __name__ == '__main__':
                 date=date_dt)
 
     nc.create_netCDF()
+
     if sensor_type == 'Thies Clima':
         nc.write_data_to_netCDF_thies()
     else:
         nc.write_data_to_netCDF_parsivel()
+
     nc.compress()
