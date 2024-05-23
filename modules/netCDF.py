@@ -1,6 +1,20 @@
 """
-netCDF export functionality class
+This module contains the netCDF export functionality class.
+
+Functions:
+- create_netCDF: creates a new netCDF file
+- write_data_to_netCDF_thies: writes data from ThiesTelegram objects to the netCDF file
+- write_data_to_netCDF_parsivel: writes data from ParsivelTelegram objects to the netCDF file
+- compress: compresses the netCDF file
+- __set_netCDF_path: sets the path of the netCDF based on fn_start
+- __netcdf_populate_s4_var: populates netCDF S4 vars
+- __netcdf_variables: reads variables' definition from yaml config file and writes them to netCDF
+- __set_netcdf_variable: sets the value for a specific variable in the netCDF
+- __netCDF_dimensions: reads dimensions from yaml config file and writes them to netCDF
+- __global_attrs_to_netCDF: writes global attributes to newly created netCDF
+- unpack_telegram_from_db: unpacks telegram string from sqlite DB row into a dictionary
 """
+
 import os
 import subprocess
 from datetime import datetime
@@ -30,9 +44,9 @@ class NetCDF:
 
 
     def create_netCDF(self):
-        '''
-        def creates new netCDF file with global attributes, dimensions and variables (defined in yaml)
-        '''
+        """
+        creates new netCDF file with global attributes, dimensions and variables (defined in yaml)
+        """
         self.__set_netCDF_path()
         netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
         self.__global_attrs_to_netCDF(nc_rootgrp=netCDF_rootgrp)
@@ -42,9 +56,9 @@ class NetCDF:
         self.logger.info(msg='class NetCDF executed create_netCDF()')
 
     def write_data_to_netCDF_thies(self):
-        '''
-        def writes data to netCDF
-        '''
+        """
+        writes data from self.telegram_objs, containing ThiesTelegram objects, to the netCDF file
+        """
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
 
         # --- NetCDF variables NOT in telegram_data ---
@@ -104,7 +118,6 @@ class NetCDF:
                             error_f81 = numpy.full(shape=(22, 20), fill_value='-9999', dtype='<U3')
                             all_f81_items_val.append(error_f81)
                         else:
-                            #print(telegram_obj.telegram_data[key])
                             #telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int, sep=',') # pylint: disable=line-too-long
                             reshaped_f81 = numpy.array(telegram_obj.telegram_data[key]).reshape(22, 20)
                             all_f81_items_val.append(reshaped_f81)
@@ -117,9 +130,9 @@ class NetCDF:
         self.logger.info(msg='class NetCDF executed write_data_to_netCDF()')
 
     def write_data_to_netCDF_parsivel(self):
-        '''
-        def writes data to netCDF
-        '''
+        """
+        writes data from self.telegram_objs, containing ParsivelTelegram objects, to the netCDF file
+        """
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
 
         # --- NetCDF variables NOT in telegram_data ---
@@ -191,7 +204,7 @@ class NetCDF:
 
     def compress(self):
         """
-        def compress
+        compresses the netCDF file
         """
         try:
             print(f'compress: {self.path_netCDF} ')
@@ -208,16 +221,21 @@ class NetCDF:
             os.rename(self.path_netCDF_temp, self.path_netCDF)
 
     def __set_netCDF_path(self):
+        """
+        sets the path of the netCDF based on self.fn_start
+        """
         self.path_netCDF = self.data_dir / f'{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
         self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
 
     def __netcdf_populate_s4_var(self, netCDF_var_, var_key_):
-        '''
-        - Populates NetCDF S4 vars -
+        """
+        - Populates netCDF S4 vars -
         In Python netCDF4 lib the  dtype S4 (strings)
         are VLEN variables can only be assigned data
         one element at a time, with integer indices (not slices)
-        '''
+        :param netCDF_var_: netCDF variable object to be populated
+        :param var_key_: key to get the data
+        """
         if var_key_ in self.telegram_objs[0].telegram_data.keys():  # var in telegram
             for i, telegram_obj in enumerate(self.telegram_objs):
                 netCDF_var_[i] = telegram_obj.telegram_data[var_key_]
@@ -230,18 +248,25 @@ class NetCDF:
                     netCDF_var_[i] = getattr(telegram_obj, var_key_)
 
     def __netcdf_variables(self, nc_rootgrp):
-        # nc_rootgrp, config_dict, timestamp, logger):
-        '''
+        """
         Reads variables' definition from yaml config file and writes them to netCDF
         If variable values are set in the yml file def also assigns them their value
-        '''
+        :param nc_rootgrp: the root group of the netCDF file
+        """
         # variables not in telegram
         for key, var_dict in self.config_dict['variables'].items():
             self.__set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp)
+        #variables in telegram
         for key, var_dict in self.config_dict['telegram_fields'].items():
             self.__set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp)
 
     def __set_netcdf_variable(self, key, one_var_dict, nc_group):
+        """
+        Sets the value for a specific variable in the netCDF
+        :param key: the key of the variable
+        :param one_var_dict: the dict for the specific variable
+        :param nc_group: the root group of the netCDF file
+        """
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
         if ((self.full_version is True and one_var_dict['include_in_nc'] != 'never') or
             (self.full_version is False and one_var_dict['include_in_nc'] == 'always')):
@@ -293,25 +318,29 @@ class NetCDF:
                                      f'hours since {_start_dt} +00:00')  # pylint: disable=unnecessary-dunder-call
 
     def __netCDF_dimensions(self, nc_rootgrp):
-        '''
+        """
         reads dimensions from yaml config file and writes them to netCDF
-        '''
+        :param nc_rootgrp: the root group of the netCDF file
+        """
         for key in self.config_dict['dimensions'].keys():
             self.logger.info(msg=f'creating netCDF dimension: {key}')
             nc_rootgrp.createDimension(key, self.config_dict['dimensions'][key]['size'])
 
     def __global_attrs_to_netCDF(self, nc_rootgrp):
-        '''
-        def writes global attributes (metadata) to newly created netCDF
-        '''
+        """
+        writes global attributes (metadata) to newly created netCDF
+        :param nc_rootgrp: the root group of the netCDF file
+        """
         for key in self.config_dict['global_attrs'].keys():
             nc_rootgrp.__setattr__(key,
                                    self.config_dict['global_attrs'][key])  # pylint: disable=unnecessary-dunder-call
 
 
 def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
-    '''
+    """
     unpacks telegram string from sqlite DB row into a dictionary
+    :param telegram_str: the root group of the netCDF file
+    :return: the unpacked telegram dict
 
     * key precedes value NN:val
     * key:value pair, seperated by '; '
@@ -320,7 +349,7 @@ def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     Example Input: '19:None; 20:10; 21:25.05.2023;
     51:000140; 90:-9.999,-9.999,-9.999,-9.999,-9.999 ...'
     Example Output:  {'60': '00000062', '90': '-9.999,-9.999,01.619,...'}
-    '''
+    """
     telegram_dict = {}
     telegram_list = telegram_str.split('; ')
 
