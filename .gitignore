@@ -8,7 +8,7 @@ __pycache__
 config.yml
 test_data/*
 .vscode/
-.coverage
+.coverage*
 sample_data/*
 !sample_data/test_parsivel.db
 !sample_data/test_thies.db

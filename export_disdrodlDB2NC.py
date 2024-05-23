@@ -1,6 +1,7 @@
 """
 Script to export the DB data from a specific date to a netCDF file based on the given site config file.
 """
+
 import os
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
@@ -46,7 +47,7 @@ if __name__ == '__main__':
     elif args.version == 'light':
         full_version = False
     else:
-        raise Exception("version was not 'full' or 'light'")
+        raise ValueError("version was not 'full' or 'light'")
 
     config_dict_site = yaml2dict(path=wd / args.config)
     sensor_type = config_dict_site['global_attrs']['sensor_type']
