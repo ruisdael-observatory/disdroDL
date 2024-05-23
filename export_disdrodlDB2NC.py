@@ -1,7 +1,7 @@
 """
 Script to export the DB data from a specific date to a netCDF file based on the given site config file.
 """
-
+import os
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
@@ -63,8 +63,13 @@ if __name__ == '__main__':
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
 
+    # Use the respective test database when called by tests
+    if os.getenv('MOCK_DB', '0') == '1':
+        db_path = Path("sample_data/test_parsivel.db")
+    elif os.getenv('MOCK_DB', '0') == '2':
+        db_path = Path("sample_data/test_thies.db")
     # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
+    elif sensor_type == 'Thies Clima':
         db_path = Path("sample_data/disdrodl-thies.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'

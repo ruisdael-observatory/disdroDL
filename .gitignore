@@ -8,7 +8,10 @@ __pycache__
 config.yml
 test_data/*
 .vscode/
+.coverage
 sample_data/*
+!sample_data/test_parsivel.db
+!sample_data/test_thies.db
 !sample_data/20240115_Green_Village-GV_PAR008.nc
 !sample_data/20231106_PAR007_CabauwTower.csv
 *.fixtures
