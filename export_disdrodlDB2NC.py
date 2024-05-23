@@ -142,8 +142,8 @@ if __name__ == '__main__':
     cur.close()
 
     # Directory to put the netCDF file in
-    # Put the netCDF in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
+    # Put the netCDF in sample_data if the provided site config file is from the Thies or when testing
+    if sensor_type == 'Thies Clima' or os.getenv('MOCK_DB', '0') != '0':
         data_dir = Path('sample_data/')
     else:
         data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
