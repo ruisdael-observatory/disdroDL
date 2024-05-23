@@ -2,16 +2,6 @@
 This module contains the netCDF export functionality class.
 
 Functions:
-- create_netCDF: creates a new netCDF file
-- write_data_to_netCDF_thies: writes data from ThiesTelegram objects to the netCDF file
-- write_data_to_netCDF_parsivel: writes data from ParsivelTelegram objects to the netCDF file
-- compress: compresses the netCDF file
-- __set_netCDF_path: sets the path of the netCDF based on fn_start
-- __netcdf_populate_s4_var: populates netCDF S4 vars
-- __netcdf_variables: reads variables' definition from yaml config file and writes them to netCDF
-- __set_netcdf_variable: sets the value for a specific variable in the netCDF
-- __netCDF_dimensions: reads dimensions from yaml config file and writes them to netCDF
-- __global_attrs_to_netCDF: writes global attributes to newly created netCDF
 - unpack_telegram_from_db: unpacks telegram string from sqlite DB row into a dictionary
 """
 
@@ -28,11 +18,37 @@ from netCDF4 import Dataset # pylint: disable=no-name-in-module
 
 class NetCDF:
     """
-    class containing the netCDF export functionality
+    Class containing the netCDF export functionality.
+    
+    Attributes:
+    - logger: logger object for logging info related to the netCDF object
+    - config_dict: a combined site specific and sensor type specific config file
+    - data_dir: directory for the netCDF file
+    - fn_start: file name for the netCDF file
+    - full_version: bool to indicate whether this netCDF is a full or light version
+    - telegram_objs: list with all telegram objects
+    - date_dt: the date from when the data is
+    - path_netCDF: full path for the netCDF file
+    - path_netCDF_temp: additional temporary path for the netCDF file
+
+    Functions:
+    - create_netCDF: creates a new netCDF file
+    - write_data_to_netCDF_thies: writes data from ThiesTelegram objects to the netCDF file
+    - write_data_to_netCDF_parsivel: writes data from ParsivelTelegram objects to the netCDF file
+    - compress: compresses the netCDF file
+    - __set_netCDF_path: sets the path of the netCDF based on fn_start
+    - __netcdf_populate_s4_var: populates netCDF S4 vars
+    - __netcdf_variables: reads variables' definition from yaml config file and writes them to netCDF
+    - __set_netcdf_variable: sets the value for a specific variable in the netCDF
+    - __netCDF_dimensions: reads dimensions from yaml config file and writes them to netCDF
+    - __global_attrs_to_netCDF: writes global attributes to newly created netCDF
     """
     def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str, full_version, # pylint: disable=redefined-outer-name
                  telegram_objs: List[Dict],
                  date: datetime) -> None:
+        """
+        Constructor for NetCDF.
+        """
         self.logger = logger
         self.config_dict = config_dict
         self.data_dir = data_dir
@@ -45,7 +61,7 @@ class NetCDF:
 
     def create_netCDF(self):
         """
-        creates new netCDF file with global attributes, dimensions and variables (defined in yaml)
+        This function creates new netCDF file with global attributes, dimensions and variables (defined in yaml).
         """
         self.__set_netCDF_path()
         netCDF_rootgrp = Dataset(self.path_netCDF, "w", format="NETCDF4")
@@ -57,7 +73,7 @@ class NetCDF:
 
     def write_data_to_netCDF_thies(self):
         """
-        writes data from self.telegram_objs, containing ThiesTelegram objects, to the netCDF file
+        This function writes data from self.telegram_objs, containing ThiesTelegram objects, to the netCDF file.
         """
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
 
@@ -131,7 +147,7 @@ class NetCDF:
 
     def write_data_to_netCDF_parsivel(self):
         """
-        writes data from self.telegram_objs, containing ParsivelTelegram objects, to the netCDF file
+        This function writes data from self.telegram_objs, containing ParsivelTelegram objects, to the netCDF file.
         """
         netCDF_rootgrp = Dataset(self.path_netCDF, "a", format="NETCDF4")
 
@@ -204,7 +220,7 @@ class NetCDF:
 
     def compress(self):
         """
-        compresses the netCDF file
+        This function compresses the netCDF file.
         """
         try:
             print(f'compress: {self.path_netCDF} ')
@@ -222,17 +238,17 @@ class NetCDF:
 
     def __set_netCDF_path(self):
         """
-        sets the path of the netCDF based on self.fn_start
+        This function sets the path of the netCDF file based on self.fn_start.
         """
         self.path_netCDF = self.data_dir / f'{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
         self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
 
     def __netcdf_populate_s4_var(self, netCDF_var_, var_key_):
         """
-        - Populates netCDF S4 vars -
-        In Python netCDF4 lib the  dtype S4 (strings)
+        This function populates the S4 vars of the netCDF file.
+        In Python netCDF4 lib the dtype S4 (strings)
         are VLEN variables can only be assigned data
-        one element at a time, with integer indices (not slices)
+        one element at a time, with integer indices (not slices).
         :param netCDF_var_: netCDF variable object to be populated
         :param var_key_: key to get the data
         """
@@ -249,8 +265,8 @@ class NetCDF:
 
     def __netcdf_variables(self, nc_rootgrp):
         """
-        Reads variables' definition from yaml config file and writes them to netCDF
-        If variable values are set in the yml file def also assigns them their value
+        This function reads variables' definition from yaml config file and writes them to netCDF.
+        If variable values are set in the yml file def also assigns them their value.
         :param nc_rootgrp: the root group of the netCDF file
         """
         # variables not in telegram
@@ -262,7 +278,7 @@ class NetCDF:
 
     def __set_netcdf_variable(self, key, one_var_dict, nc_group):
         """
-        Sets the value for a specific variable in the netCDF
+        This function sets the value for a specific variable in the netCDF.
         :param key: the key of the variable
         :param one_var_dict: the dict for the specific variable
         :param nc_group: the root group of the netCDF file
@@ -319,7 +335,7 @@ class NetCDF:
 
     def __netCDF_dimensions(self, nc_rootgrp):
         """
-        reads dimensions from yaml config file and writes them to netCDF
+        This function reads dimensions from yaml config file and writes them to netCDF.
         :param nc_rootgrp: the root group of the netCDF file
         """
         for key in self.config_dict['dimensions'].keys():
@@ -328,7 +344,7 @@ class NetCDF:
 
     def __global_attrs_to_netCDF(self, nc_rootgrp):
         """
-        writes global attributes (metadata) to newly created netCDF
+        This function writes global attributes (metadata) to newly created netCDF.
         :param nc_rootgrp: the root group of the netCDF file
         """
         for key in self.config_dict['global_attrs'].keys():
@@ -338,7 +354,7 @@ class NetCDF:
 
 def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     """
-    unpacks telegram string from sqlite DB row into a dictionary
+    This function unpacks telegram string from sqlite DB row into a dictionary.
     :param telegram_str: the root group of the netCDF file
     :return: the unpacked telegram dict
 
