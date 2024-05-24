@@ -26,7 +26,7 @@ config_dict = deep_update(config_dict, config_dict_site)
 
 telegram_lines = [b'OK\r\n',
                   b'\n',
-                  b'SVFS:0000.000;0000.00;00;00;   NP;   C;-9.999;20000;00059;12773;00000;012;450994;2.11.6;2.11.1;0.50;24.3;0;14:09:59;16.02.2023;;;0000.00;000;025;013;013;00.000;0000.0;0000.00;-9.99;0000.00;0000.00;00000007;\n',
+                  b'SVFS:0000.000;0000.00;00;00;   NP;   C;-9.999;20000;00059;12773;00000;012;450994;2.11.6;2.11.1;0.50;24.3;0;14:09:59;16.02.2023;;;0000.00;000;025;013;013;00.000;0000.0;0000.00;-9.99;0000.00;0000.00;00000007;\n',  # pylint: disable=line-too-long
                   # pylint: disable=line-too-long
                   b'F90:-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;\n',
                   # pylint: disable=line-too-long
@@ -43,6 +43,9 @@ telegram_lines = [b'OK\r\n',
 
 
 class UtilFunctionsTests(unittest.TestCase):
+    """
+    Class for testing the functionality of the methods
+    """
 
     @staticmethod
     def test_logger():
@@ -83,7 +86,8 @@ class UtilFunctionsTests(unittest.TestCase):
     @staticmethod
     def test_get_general_config():
         """
-        This function tests whether for exporting the correct general config file is chosen based on the site config file.
+        This function tests whether for exporting the correct
+         general config file is chosen based on the site config file.
         """
         config_dict_par008 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
         config_dict_general = get_general_config(wd, config_dict_par008['global_attrs']['sensor_type'])

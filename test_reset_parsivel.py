@@ -1,3 +1,6 @@
+"""
+Module for testing reset_parsivel.py
+"""
 import unittest
 from pathlib import Path
 from unittest.mock import patch, Mock, call
@@ -9,9 +12,16 @@ wd = Path(__file__).parent
 
 
 class TestResetParsivel(unittest.TestCase):
+    """
+    Class for testing reset_parsivel.py
+    """
 
     @patch('reset_parsivel.ArgumentParser')
     def test_get_config_file(self, mock_argument_parser):
+        """
+        Tests for the get_config_file function
+        :param mock_argument_parser: Mock object for the ArgumentParser call
+        """
         mock_parser = Mock()
         mock_argument_parser.return_value = mock_parser
         mock_args = Mock()
@@ -35,6 +45,13 @@ class TestResetParsivel(unittest.TestCase):
     @patch('reset_parsivel.Parsivel')
     @patch('reset_parsivel.deep_update')
     def test_main(self, mock_deep_update, mock_parsivel, mock_yaml2dict, mock_create_logger):
+        """
+        Tests for the main function
+        :param mock_deep_update: Mock object for the deep_update call
+        :param mock_parsivel: Mock object for the Parsivel call
+        :param mock_yaml2dict: Mock object for the yaml2dict call
+        :param mock_create_logger: Mock object for the create_logger call
+        """
         test_conf_dict = {
             'log_dir': 'value1',
             'script_name': 'value2',
@@ -81,5 +98,6 @@ class TestResetParsivel(unittest.TestCase):
         mock_create_logger.assert_called_with(log_dir=Path('value1'),
                                                    script_name='value2',
                                                    parsivel_name='parsivel')
-        mock_parsivel_obj.init_serial_connection.assert_called_once_with(port=test_conf_dict['port'], baud=test_conf_dict['baud'], logger=mock_logger)
+        (mock_parsivel_obj.init_serial_connection.
+         assert_called_once_with(port=test_conf_dict['port'], baud=test_conf_dict['baud'], logger=mock_logger))
         mock_parsivel_obj.reset_sensor.assert_called_once()

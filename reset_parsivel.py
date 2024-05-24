@@ -1,5 +1,5 @@
 """
-TBC
+Module to reset a Parsivel sensor
 """
 from pathlib import Path
 from argparse import ArgumentParser
@@ -9,6 +9,10 @@ from modules.sensors import Parsivel
 
 
 def get_config_file():
+    """
+    Function that gets the correct config file
+    :return: the config file's name
+    """
     parser = ArgumentParser(
         description="Ruisdael: OTT Disdrometer reset. Run: python reset_parsivel.py -c config_*.yml")
     parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV.yml')
@@ -17,12 +21,16 @@ def get_config_file():
 
 
 def main(config_file):
+    """
+    config file's name
+    :param config_file:
+    """
     wd = Path(__file__).parent
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
     config_dict_site = yaml2dict(path=wd / config_file)  # TODO: come from cli # pylint: disable=fixme
     config_dict = deep_update(config_dict, config_dict_site)
 
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
+    logger = create_logger(log_dir=Path(config_dict['log_dir']),  # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
                            script_name=config_dict['script_name'],
                            parsivel_name=config_dict['global_attrs']['sensor_name'])
 
