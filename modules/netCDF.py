@@ -19,7 +19,7 @@ from netCDF4 import Dataset # pylint: disable=no-name-in-module
 class NetCDF:
     """
     Class containing the netCDF export functionality.
-    
+
     Attributes:
     - logger: logger object for logging info related to the netCDF object
     - config_dict: a combined site specific and sensor type specific config file

@@ -129,7 +129,7 @@ class Parsivel(Sensor):
         try:
             parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {parsivel}')
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-except
             logger.error(msg=e)
             sys.exit()
         self.serial_connection = parsivel
@@ -256,7 +256,7 @@ class Thies(Sensor):
             thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {thies}')
             self.serial_connection = thies
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-except
             logger.error(msg=e)
             sys.exit()
 

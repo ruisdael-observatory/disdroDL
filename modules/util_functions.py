@@ -13,9 +13,8 @@ Functions:
 import os
 from time import sleep
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict
 import yaml
-from modules.now_time import NowTime # pylint: disable=import-error
 
 
 if __name__ == '__main__':
@@ -46,8 +45,8 @@ def get_general_config(path: Path, sensor_type: str) -> Dict:
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_parsivel.yml')
     if sensor_type == 'Thies Clima':
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_thies.yml')
-    else:
-        raise Exception("unsupported sensor type")
+
+    raise Exception("unsupported sensor type")
 
 def create_dir(path: Path):
     """
