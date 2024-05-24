@@ -2,6 +2,7 @@
 This module contains the abstract class for sensors,
 and the implementations of different sensor classes inheriting this class.
 """
+
 import sys
 from abc import abstractmethod, ABC
 from enum import Enum

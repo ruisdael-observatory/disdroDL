@@ -1,4 +1,8 @@
-""""Class for handling telegrams received from the sensors"""
+"""
+This module contains the abstract class for handling telegrams received from the sensors,
+and the implementation of different telegram classes inheriting this class.
+"""
+
 from abc import abstractmethod, ABC
 from datetime import datetime
 from venv import logger as telegram_logger
@@ -9,11 +13,29 @@ import chardet
 
 
 class Telegram(ABC):
-    '''
-       Abstract class dedicated to handling the returned  telegram lines:
-       * storing, processing and writing telegram to netCDF
-       Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
-       '''
+    """
+    Abstract class dedicated to handling the returned telegram lines:
+    * storing, processing and writing telegram to netCDF
+    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
+
+    Attributes:
+    - config_dict: dictionary for later exporting into netcdf
+    - telegram_lines: lines of the telegram received from a sensor
+    - timestamp: the time
+    - delimiter: the delimiter used in the telegram
+    - db_cursor: database cursor
+    - logger: logger logging data from a sensor
+    - telegram_data: data from the telegram sent by a sensor
+    - db_row_id: row id from the database
+    - telegram_data_str: telegram data string
+
+    Functions:
+    - capture_prefixes_and_data: captures the telegram prefixes and data stored in self.telegram_lines
+        and adds the data to self.telegram_data dict
+    - parse_telegram_row: parses telegram string from SQL telegram field
+    - prep_telegram_data4db: transforms self.telegram_data so that it can be easily inserted to SQL DB
+    - insert2db: inserts telegram strings into the database
+    """
 
     def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
                  timestamp: datetime, db_cursor: Union[Cursor, None],
@@ -41,50 +63,53 @@ class Telegram(ABC):
 
     @abstractmethod
     def capture_prefixes_and_data(self):
-        '''
+        """
         Abstract method that captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
-        '''
+        """
 
     @abstractmethod
     def parse_telegram_row(self):
-        '''
-        Abstract method that parsers telegram string from SQL telegram field
-        '''
+        """
+        Abstract method that parses telegram string from SQL telegram field.
+        """
 
     @abstractmethod
     def prep_telegram_data4db(self):
-        '''
+        """
         Abstract method that transforms self.telegram_data items into self.telegram_data_str
-        so that it can be easily inserted to SQL DB
+        so that it can be easily inserted to SQL DB.
         * key precedes value NN:val
         * key:value pair, seperated by '; '
         * list: converted to str with ',' separator between values
         * empty lists, empty strings: converted to 'None'
         Example: 19:None; 20:10; 21:25.05.2023;
         51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
-        '''
+        """
 
 
     @abstractmethod
     def insert2db(self):
         """
-        Abstract class for inserting telegram strings into the database
+        Abstract class for inserting telegram strings into the database.
         """
 
 
 class ParsivelTelegram(Telegram):
-    '''
+    """
     Class dedicated to handling the returned the Parsivel telegram lines:
-    * storing, processing and writing telegram to netCDF
-    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
-    '''
+    * storing, processing and writing telegram to netCDF.
+    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows.
+
+    Functions:
+    - __str2list: Converts telegram_data values from string to list by splitting at the specified separator.
+    """
 
     def capture_prefixes_and_data(self):
-        '''
-        def Captures the telegram prefixes and data stored in self.telegram_lines
+        """
+        Captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
-        '''
+        """
         for line in self.telegram_lines:
             encoding = chardet.detect(line)['encoding']
             line_str = line.decode(encoding)
@@ -105,9 +130,9 @@ class ParsivelTelegram(Telegram):
                 self.telegram_data[field] = value
 
     def parse_telegram_row(self):
-        '''
-        def parsers telegram string from SQL telegram field
-        '''
+        """
+        Parses telegram string from SQL telegram fields.
+        """
         telegram_lines_list = self.telegram_lines.split('; ')
 
         try:
@@ -138,16 +163,16 @@ class ParsivelTelegram(Telegram):
         self.__str2list(field='93', separator=',')
 
     def prep_telegram_data4db(self):
-        '''
-        transforms self.telegram_data items into self.telegram_data_str
-        so that it can be easily inserted to SQL DB
+        """
+        Transforms self.telegram_data items into self.telegram_data_str
+        so that it can be easily inserted to SQL DB.
         * key precedes value NN:val
         * key:value pair, seperated by '; '
         * list: converted to str with ',' separator between values
         * empty lists, empty strings: converted to 'None'
         Example: 19:None; 20:10; 21:25.05.2023;
         51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
-        '''
+        """
         self.telegram_data_str = ''
 
         for key, val in self.telegram_data.items():
@@ -171,7 +196,7 @@ class ParsivelTelegram(Telegram):
 
     def insert2db(self):
         """"
-        Method for passing telegrams strings into the database
+        Passes telegrams strings into the database.
         """
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
@@ -187,27 +212,32 @@ class ParsivelTelegram(Telegram):
         self.db_cursor.execute(insert_str)
 
     def __str2list(self, field, separator):
-        '''
-        converts telegram_data values from string to list,
-        by splitting at separator
-        '''
+        """
+        Converts telegram_data values from string to list by splitting at the specified separator.
+
+        :param field: indicates the data to be split into a list
+        :param separator: the separator to split at
+        """
         str_val = self.telegram_data[field]
         list_val = str_val.split(separator)
         self.telegram_data[field] = list_val
 
 
 class ThiesTelegram(Telegram):
-    '''
+    """
     Class dedicated to handling the returned the Thies telegram lines:
-    * storing, processing and writing telegram to netCDF
-    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows
-    '''
+    * storing, processing and writing telegram to netCDF.
+    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows.
+
+    Functions:
+    - __str2list: Converts telegram_data values from string to list by splitting at the specified separator.
+    """
 
     def capture_prefixes_and_data(self):
-        '''
-        def Captures the telegram prefixes and data stored in self.telegram_lines
+        """
+        Captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
-        '''
+        """
         for line in self.telegram_lines:
             encoding = chardet.detect(line)['encoding']
             line_str = line.decode(encoding)
@@ -230,9 +260,9 @@ class ThiesTelegram(Telegram):
             self.telegram_data[field] = value
 
     def parse_telegram_row(self):
-        '''
-        def parsers telegram string from SQL telegram field
-        '''
+        """
+        Parses telegram string from SQL telegram fields.
+        """
 
         telegram_lines_list = self.telegram_lines.split('; ')
 
@@ -264,16 +294,16 @@ class ThiesTelegram(Telegram):
         self.__str2list(field='81', separator=',')
 
     def prep_telegram_data4db(self):
-        '''
-        transforms self.telegram_data items into self.telegram_data_str
-        so that it can be easily inserted to SQL DB
+        """
+        Transforms self.telegram_data items into self.telegram_data_str
+        so that it can be easily inserted to SQL DB.
         * key precedes value NN:val
         * key:value pair, seperated by '; '
         * list: converted to str with ',' separator between values
         * empty lists, empty strings: converted to 'None'
         Example: 19:None; 20:10; 21:25.05.2023;
         51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
-        '''
+        """
         self.telegram_data_str = ''
 
         for key, val in self.telegram_data.items():
@@ -297,7 +327,7 @@ class ThiesTelegram(Telegram):
 
     def insert2db(self):
         """"
-        Method for passing telegrams strings into the database
+        Passes telegrams strings into the database.
         """
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
@@ -313,10 +343,12 @@ class ThiesTelegram(Telegram):
         self.db_cursor.execute(insert_str)
 
     def __str2list(self, field, separator):
-        '''
-        converts telegram_data values from string to list,
-        by splitting at separator
-        '''
+        """
+        Converts telegram_data values from string to list by splitting at the specified separator.
+
+        :param field: indicates the data to be split into a list
+        :param separator: the separator to split at
+        """
         str_val = self.telegram_data[field]
         list_val = str_val.split(separator)
         self.telegram_data[field] = list_val

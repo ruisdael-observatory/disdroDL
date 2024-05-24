@@ -4,8 +4,8 @@ This module contains functionalities to use with the sql database.
 Functions:
 - connect_db: Connects to the database at the given path.
 - create_db: Creates disdrodl.db if it does not exist yet.
-- dict_factory: TODO
-- sql_query_gen: TODO
+- dict_factory: Creates a dictionary from a database row.
+- sql_query_gen: Generates rows from an SQL query.
 - query_db_rows_gen: Queries the row for the given date.
 """
 
@@ -49,10 +49,10 @@ def create_db(dbpath):
 
 def dict_factory(cursor, row):
     """
-    This function TODO.
-    :param cursor: TODO
-    :param row: TODO
-    :return: TODO
+    This function creates a dictionary from a database row.
+    :param cursor: the database cursor object
+    :param row: a row of the database
+    :return: the dictionary of column names and row values
     """
     fields = [column[0] for column in cursor.description]
     return {key: value for key, value in zip(fields, row)} # pylint: disable=unnecessary-comprehension
@@ -60,10 +60,10 @@ def dict_factory(cursor, row):
 
 def sql_query_gen(con, query):
     """
-    This function TODO.
-    :param con: TODO
-    :param query: TODO
-    :return: TODO
+    This function generates rows from an SQL query.
+    :param con: the database connection object
+    :param query: the query to be executed
+    :return: the result of the query
     """
     con.row_factory = dict_factory
     yield from con.execute(query)
@@ -72,10 +72,10 @@ def sql_query_gen(con, query):
 def query_db_rows_gen(con, date_dt, logger):
     """
     This function queries the database entries for the specified date between 00:00:00 and 23:59:59.
-    :param con: TODO
+    :param con: the database connection object
     :param date_dt: the date to get entries from in the format year,month,day
-    :param logger: TODO
-    :return: a row_factory generator
+    :param logger: the logger object to log the query string
+    :return: the result of the query
     """
     start_dt = date_dt.replace(hour=0, minute=0, second=0, tzinfo=timezone.utc)  # redundant replace
     start_ts = start_dt.timestamp()
