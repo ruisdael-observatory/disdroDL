@@ -46,7 +46,7 @@ config_file = None
 
 if sensor_type == 'OTT Hydromet Parsivel2':
     config_file = 'config_general_parsivel.yml'
-elif sensor_type == 'Thies clima':
+elif sensor_type == 'Thies Clima':
     config_file = 'config_general_thies.yml'
 else:
     logger.error(msg=f"Sensor type {sensor_type} not recognized")
@@ -63,7 +63,7 @@ config_dict = deep_update(config_dict, config_dict_site)
 sensor = None
 if sensor_type == 'OTT Hydromet Parsivel2':
     sensor = Parsivel()
-elif sensor_type == 'Thies clima':
+elif sensor_type == 'Thies Clima':
     sensor_name = config_dict['global_attrs']['sensor_name']
     thies_id = sensor_name[-2:]
     sensor = Thies(thies_id=thies_id)
@@ -113,7 +113,7 @@ while True:
                                     db_cursor=cur,
                                     telegram_data={},
                                     logger=logger)
-    elif sensor_type == 'Thies clima':
+    elif sensor_type == 'Thies Clima':
         telegram = ThiesTelegram(config_dict=config_dict,
                                  telegram_lines=telegram_lines,
                                  timestamp=now_utc.utc,
