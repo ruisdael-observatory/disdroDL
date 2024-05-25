@@ -123,6 +123,8 @@ Run: `python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml -i samp
 * [test_functions.py](test_functions.py)
 * [test_db.py](test_db.py)
 * [test_classes.py](test_classes.py)
+* [test_sensors_parsivel.py](test_sensors_parsivel.py)
+* [test_thies_sensor_class.py](test_thies_sensor_class.py)
 
 
 run: `pytest -s`
@@ -190,6 +192,11 @@ disdroDL is developed in the context of the [Ruisdael Observatory](https://ruisd
 * Andre Castro
 * Mahaut Sourzac 
 * Rob MacKenzie
+* Vasil Chirov
+* Mels Lutgerink
+* Ella Milinovic
+* Noky Soekarman
+* Jesse Vleeschdraager
 
 # License
 GPLv3. See [LICENSE](LICENSE)
