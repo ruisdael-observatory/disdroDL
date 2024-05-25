@@ -238,7 +238,7 @@ class Thies(Sensor):
         :param logger: the logger object
         """
         try:
-            thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
+            thies = serial.Serial(port, baud, timeout=5)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {thies}')
             self.serial_connection = thies
         except Exception as e:  # pylint: disable=broad-exception-caught
