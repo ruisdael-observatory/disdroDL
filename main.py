@@ -126,8 +126,8 @@ while True:
 
     # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
 
-    telegram.capture_prefixes_and_data()
-    telegram.prep_telegram_data4db()
+    #telegram.capture_prefixes_and_data()
+    #telegram.prep_telegram_data4db()
     telegram.insert2db()
     con.commit()
     cur.close()

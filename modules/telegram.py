@@ -307,7 +307,24 @@ class ThiesTelegram(Telegram):
         sensor = self.config_dict['global_attrs']['sensor_name']
         t_str = self.telegram_data_str
 
-        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{t_str}');"
+        telegram_list = self.telegram_lines.split(';')
+        telegram_list.insert(0,'')
+        list_len = len(telegram_list)
+        formatted_telegrams = []
+        for index, value in enumerate(telegram_list[:-1]):
+            if index == 80:
+                formatted_telegrams.append(f" {81}:{value},")
+            elif 81 <= index <= 518:
+                formatted_telegrams.append(f"{value},")
+            elif index == 519:
+                formatted_telegrams.append(f"{value};")
+            elif index == list_len-1:
+                formatted_telegrams.append(f" {index + 1}:{value}")
+            else:
+                formatted_telegrams.append(f" {index + 1}:{value};")
+        telegram_str = ''.join(formatted_telegrams)
+
+        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{telegram_str}');"
 
         self.logger.debug(msg=insert_str)
         self.db_cursor.execute(insert_str)
