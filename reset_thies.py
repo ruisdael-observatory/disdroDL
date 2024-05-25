@@ -7,12 +7,12 @@ from pydantic.v1.utils import deep_update
 from modules.util_functions import create_logger, yaml2dict  # pylint: disable=import-error
 from modules.sensors import Thies
 
-parser = ArgumentParser(description="Ruisdael: OTT Disdrometer reset. Run: python reset_parsivel.py -c config_*.yml")
-parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV.yml')
+parser = ArgumentParser(description="Ruisdael: OTT Disdrometer reset. Run: python reset_thies.py -c config_*.yml")
+parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV_THIES.yml')
 args = parser.parse_args()
 
 wd = Path(__file__).parent
-config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
+config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
 config_dict_site = yaml2dict(path=wd / args.config)  # TODO: come from cli # pylint: disable=fixme
 config_dict = deep_update(config_dict, config_dict_site)
 
