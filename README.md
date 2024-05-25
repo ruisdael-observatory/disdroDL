@@ -2,11 +2,11 @@
 
 [[_TOC_]]
 
-disdroDL is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer into daily NetCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
+disdroDL is a Python software for acquiring and storing data from the OTT Parsivel2 and Thies Clima optical disdrometer into daily NetCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
 
-One of the key aspects in disdroDL is the decision to separate code logic from the NetCDF structure and metadata. During the creation of the NetCDFs, one [general yaml file](configs_netcdf/config_general_parsivel.yml) containing the description of Parsivel telegram variables and dimensions, that is applicable to all the Parsivels; is combined with site-specific metadata files that describe the variable components of the metadata such as location, name, etc.
+One of the key aspects in disdroDL is the decision to separate code logic from the NetCDF structure and metadata. During the creation of the NetCDFs, a [Parsivel general yaml file](configs_netcdf/config_general_parsivel.yml) or a [Thies general yaml file](configs_netcdf/config_general_thies.yml) containing the description of Parsivel or Thies telegram variables and dimensions, that is applicable to all the Parsivel or Thies devices; is combined with site-specific metadata files that describe the variable components of the metadata such as location, name, etc.
 
-The software features a main script ([main.py](./main.py)) for setting up a serial connection with the Parsivel, requesting data at regular time intervals, and storing the Parsivel's Telegram data in a local sqlite3 database file `disdrodl.db`. And an export script ([export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)) that exports 1 day of Parsivel data, from `disdro.db` onto a NetCDF file. 
+The software features a main script ([main.py](./main.py)) for setting up a serial connection with the Parsivel or Thies disdrometers, requesting data at regular time intervals, and storing the Parsivel/Thies Telegram data in a local sqlite3 database file `disdrodl.db`. And an export script ([export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)) that exports 1 day of Parsivel/Thies data, from `disdro.db` onto a NetCDF file. 
 
 By default, all fields listed on page 29 of the [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) are requested, except for field 61 (List of all particles detected). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
 

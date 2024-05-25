@@ -1,5 +1,6 @@
 """
-Script to export the DB data from a specific date to a netCDF file based on the given site config file.
+Script to export telegram data from the database from a specific date to a netCDF file
+based on the given site config file.
 """
 
 from argparse import ArgumentParser
@@ -89,6 +90,8 @@ if __name__ == '__main__':
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
 
         #TODO needs to be removed once the data is written to database as " key:value" # pylint: disable=fixme
+        #curently Parsivel telegrams are stored in the database as key:value; while Thies telegrams are stored as
+        #value1;value , this part processes the Thies strings to they match the Parsivel ones
         if sensor_type == 'Thies Clima':
             telegram_list = row.get('telegram').split(';')
             telegram_list.insert(0,'')

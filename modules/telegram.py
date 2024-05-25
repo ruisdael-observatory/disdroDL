@@ -227,7 +227,6 @@ class ThiesTelegram(Telegram):
     """
     Class dedicated to handling the returned the Thies telegram lines:
     * storing, processing and writing telegram to netCDF.
-    Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows.
 
     Functions:
     - __str2list: Converts telegram_data values from string to list by splitting at the specified separator.
