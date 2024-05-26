@@ -213,7 +213,7 @@ class NetCDF:
             # check that the value in the key value pair is supposed to be of type string,
             # if so use function for populating strings
             if netCDF_var.dtype == str:  # S4
-                # assuming S4 vars are only 1D - that's the case for parsivel
+                # assuming S4 vars are only 1D - that's the case for the parsivel
                 self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
                                               var_key_=key)
             else:
@@ -288,10 +288,13 @@ class NetCDF:
         :param netCDF_var_: netCDF variable object to be populated
         :param var_key_: key to get the data
         """
-        if var_key_ in self.telegram_objs[0].telegram_data.keys():  # var in telegram
+        # checks if variable is in telegram data
+        if var_key_ in self.telegram_objs[0].telegram_data.keys():
             for i, telegram_obj in enumerate(self.telegram_objs):
                 netCDF_var_[i] = telegram_obj.telegram_data[var_key_]
-        else:  # var NOT in telegram
+        else:
+            # checks if variable is the time, if so convert to iso format
+            # otherwise just add to netcdf
             if netCDF_var_.standard_name == 'datetime':
                 for i, telegram_obj in enumerate(self.telegram_objs):
                     netCDF_var_[i] = getattr(telegram_obj, 'timestamp').isoformat()
@@ -305,7 +308,7 @@ class NetCDF:
         If variable values are set in the yml file def also assigns them their value.
         :param nc_rootgrp: the root group of the netCDF file
         """
-        # variables not in telegram
+        # variables not in telegram and already given their values in the yml files
         for key, var_dict in self.config_dict['variables'].items():
             self.__set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp)
         # variables in telegram
@@ -320,14 +323,16 @@ class NetCDF:
         :param nc_group: the root group of the netCDF file
         """
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
+        # checks if the value is supposed to be added
         if ((self.full_version is True and one_var_dict['include_in_nc'] != 'never') or
                 (self.full_version is False and one_var_dict['include_in_nc'] == 'always')):
-            if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
+            # can't compress variable-length str variables
+            if one_var_dict['dtype'] != 'S4':
                 compression_method = 'zlib'
                 # compression_method = dict(zlib=True, shuffle=True, complevel=5)
             else:
                 compression_method = None
-
+            # compresses and adds values depending on if the variables are scalar or not
             if 'dimensions' not in one_var_dict.keys() or one_var_dict['dimensions'] is None:
                 # scalar variables do not use dimensions
                 variable = nc_group.createVariable(
@@ -403,12 +408,15 @@ def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
     Example Output:  {'60': '00000062', '90': '-9.999,-9.999,01.619,...'}
     """
     telegram_dict = {}
+    # splits into key:value pairs
     telegram_list = telegram_str.split('; ')
 
     for telegram_item in telegram_list:
+        # splits into keys and values using : as a delimiter
         key, val = telegram_item.split(':')
         if val == 'None':
             val = None
+        # adds values to telegram dictionary
         telegram_dict[key] = val
 
     return telegram_dict
