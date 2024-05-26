@@ -203,7 +203,7 @@ class Parsivel(Sensor):
         :return: List of lines or None
         """
         if self.serial_connection is not None:
-            self.write('CS/PA\r\n'.encode('ascii'))
+            self.write('CS/PA\r\n'.encode('ascii'), logger)
             parsivel_lines = self.serial_connection.readlines()
             return parsivel_lines
         logger.error(msg="serial_connection not initialized")
