@@ -13,7 +13,7 @@ The software features a main script ([main.py](./main.py)) for setting up a seri
 What data is included in the NetCDF depends on the [configuration files](configs_netcdf/) and whether the exported netCDF is a light or full version (described in [Outputs](#outputs)). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
 
 
-The structure of the NetCDF file depends on the sensor type and two configuration files, a general and site-specific one. The general configuration files [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) and[configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) are applicable to all sensors of the same type, while the specific configuration files, 1 file per sensor (in [configs_netcdf/](configs_netcdf/)), describe the variable components such as site names, coordinates, etc.  
+The structure of the NetCDF file depends on the sensor type and two configuration files, a general and site-specific one. The general configuration files [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) and [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) are applicable to all sensors of the same type, while the specific configuration files, 1 file per sensor (in [configs_netcdf/](configs_netcdf/)), describe the variable components such as site names, coordinates, etc.  
 
 ![_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors._](docs/20211011_17_crop.JPG)
 
@@ -60,7 +60,7 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 
 ## Outputs
 **Light vs full netCDFs**
-* The software can output a light or full NetCDF. This can be done by selecting `--version light` or `--version full`. Which variables will be written to the light/full NetCDF depends on their include_in_nc filed in the [configuration files](configs_netcdf). The field can be assigned values: 'allways', 'only_full' or 'never'. Variables assigned 'allways' will be included in both light and full NetCDFs. Variables assigned 'only_full' will be included only in full netCDFs. Variables assigned 'never' will not be included in either. 
+* The software can output a light or full NetCDF. This can be done by selecting `--version light` or `--version full`. Which variables will be written to the light/full NetCDF depends on their include_in_nc filed in the [configuration files](configs_netcdf). The field can be assigned values: 'always', 'only_full' or 'never'. Variables assigned 'always' will be included in both light and full NetCDFs. Variables assigned 'only_full' will be included only in full netCDFs. Variables assigned 'never' will not be included in either. 
 * If a NetCDF version is not chosen the software outputs the default which is a full NetCDF.
 
 **netCDF output**
