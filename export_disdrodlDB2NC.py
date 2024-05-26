@@ -88,28 +88,10 @@ if __name__ == '__main__':
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
 
-        #TODO needs to be removed once the data is written to database as " key:value" # pylint: disable=fixme
         if sensor_type == 'Thies Clima':
-            telegram_list = row.get('telegram').split(';')
-            telegram_list.insert(0,'')
-            list_len = len(telegram_list)
-            formatted_telegrams = []
-            for index, value in enumerate(telegram_list[:-1]):
-                if index == 80:
-                    formatted_telegrams.append(f" {81}:{value},")
-                elif 81 <= index <= 518:
-                    formatted_telegrams.append(f"{value},")
-                elif index == 519:
-                    formatted_telegrams.append(f"{value};")
-                elif index == list_len-1:
-                    formatted_telegrams.append(f" {index + 1}:{value}")
-                else:
-                    formatted_telegrams.append(f" {index + 1}:{value};")
-            telegram_str = ''.join(formatted_telegrams)
-
             telegram_instance = ThiesTelegram(
                 config_dict=config_dict,
-                telegram_lines=telegram_str,
+                telegram_lines=row.get('telegram'),
                 db_row_id=row.get('id'),
                 timestamp=ts_dt,
                 db_cursor=None,
