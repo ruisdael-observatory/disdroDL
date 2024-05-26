@@ -77,7 +77,7 @@ The NetCDF files are automatically compressed.
 
 * Main script: [main.py](main.py)
 * Configuration files:
-    * general Parsivel: [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) - *should not need editing*
+    * general Parsivel: [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml)
     * general Thies: [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml)
     * specific Parsivel: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - *create 1 per Parsivel*
     * specific Thies: e.g., [configs_netcdf/config_008_GV_THIES.yml](configs_netcdf/config_008_GV_THIES.yml) - *create 1 per Thies*
