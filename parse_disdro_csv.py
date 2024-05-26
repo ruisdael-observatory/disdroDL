@@ -1,4 +1,4 @@
-""""comment"""
+""""WIP: parsing parsivel telegrams into a csv file"""
 import csv
 from pathlib import Path
 from typing import Dict
