@@ -1,5 +1,7 @@
 """
-This module contains the netCDF export functionality class.
+This file contains the netCDF class and functions for creating,writing to and compressing
+netCDFs for the Parsivel and Thies optical disdrometers.
+
 
 Functions:
 - unpack_telegram_from_db: unpacks telegram string from sqlite DB row into a dictionary
@@ -14,7 +16,8 @@ from pathlib import Path
 from typing import List, Dict, Union
 import numpy
 from cftime import date2num
-from netCDF4 import Dataset # pylint: disable=no-name-in-module
+from netCDF4 import Dataset  # pylint: disable=no-name-in-module
+
 
 class NetCDF:
     """
@@ -43,7 +46,9 @@ class NetCDF:
     - __netCDF_dimensions: reads dimensions from yaml config file and writes them to netCDF
     - __global_attrs_to_netCDF: writes global attributes to newly created netCDF
     """
-    def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str, full_version, # pylint: disable=redefined-outer-name
+
+    def __init__(self, logger: Logger, config_dict: Dict, data_dir: Path, fn_start: str, full_version,
+                 # pylint: disable=redefined-outer-name
                  telegram_objs: List[Dict],
                  date: datetime) -> None:
         """
@@ -57,7 +62,6 @@ class NetCDF:
         self.telegram_objs = telegram_objs
         self.full_version = full_version
         logger.debug(msg="NetCDF class is initialized")
-
 
     def create_netCDF(self):
         """
@@ -80,6 +84,7 @@ class NetCDF:
         # --- NetCDF variables NOT in telegram_data ---
 
         # var: time - appending timestamps to var time
+        # this part adds the time to th netcdf
         netCDF_var_time = netCDF_rootgrp.variables['time']
         value_list_dt = [telegram_obj.timestamp for telegram_obj in self.telegram_objs]
         time_value_list = [date2num(timestamp_val, units=netCDF_var_time.units, calendar=netCDF_var_time.calendar)
@@ -92,12 +97,15 @@ class NetCDF:
 
         # --- NetCDF variables in telegram_data ---
         for key in self.telegram_objs[0].telegram_data.keys():  # pylint: disable=too-many-nested-blocks
-            # Continue in the for loop if key is not in telegram_fields or should not be in the netCDF
-            if not (key in self.config_dict['telegram_fields'].keys()) or \
+
+            # checks if key is not in the telegram fields or if the value from the telegram should not be added
+            # to the netcdf (either should never be added or a light netcdf has been requested), if that is the
+            # case go onto next key
+            if key not in self.config_dict['telegram_fields'].keys() or \
                     ((self.full_version is True and
-                        self.config_dict['telegram_fields'][key].get('include_in_nc') == 'never') or
-                    (self.full_version is False and
-                        self.config_dict['telegram_fields'][key].get('include_in_nc') != 'always')):
+                      self.config_dict['telegram_fields'][key].get('include_in_nc') == 'never') or
+                     (self.full_version is False and
+                      self.config_dict['telegram_fields'][key].get('include_in_nc') != 'always')):
                 continue
 
             field_dict = self.config_dict['telegram_fields'][key]
@@ -105,25 +113,36 @@ class NetCDF:
             netCDF_var = netCDF_rootgrp.variables[standard_name]
 
             # import pdb; pdb.set_trace()
-
+            # message for the debugger
             nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
                           f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
                           f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
             logger.debug(msg=nc_details)
 
+            # check that the value in the key value pair is supposed to be of type string,
+            # if so use function for populating strings
             if netCDF_var.dtype == str:  # S4
                 # assuming S4 vars are only 1D
                 self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
                                               var_key_=key)
             else:
+
+                # check that the variable has 2 or fewer dimensions and if so add to netCDF
                 if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
                     all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
                     netCDF_var[:] = all_items_val
+
+                # check if variable has more than 2 dimensions and the key
+                # associated with the key:value pair is 81 (only 3D variable in Thies telegram)
                 elif len(netCDF_var._getdims()) > 2 and key == '81':  # pylint: disable=protected-access
                     all_f81_items_val = []
 
                     for telegram_obj in self.telegram_objs:
                         try:
+                            # value associated with key 81 is supposed to be a list of 440
+                            # values representing particle diameter and velocity classes
+                            # this is later converted to a 22x20 matrix
+                            # checks if the value is a list of length 440
                             assert len(telegram_obj.telegram_data[key]) == 440, \
                                 'telegram_obj.telegram_data["81"] len == 440'
                         except AssertionError as error:
@@ -131,10 +150,13 @@ class NetCDF:
                                                   f' from {telegram_obj.timestamp} {error}'
                                                   f'. 22x20 ndarray with (error value)'
                                                   f' -9.999 will be added instead')
+                            # fills fields with default -9999 error value if error has occurred
                             error_f81 = numpy.full(shape=(22, 20), fill_value='-9999', dtype='<U3')
                             all_f81_items_val.append(error_f81)
                         else:
-                            #telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int, sep=',') # pylint: disable=line-too-long
+                            # if list was of appropriate size reshapes it into a 22x20 matrix
+                            # telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int,
+                            # sep=',') # pylint: disable=line-too-long
                             reshaped_f81 = numpy.array(telegram_obj.telegram_data[key]).reshape(22, 20)
                             all_f81_items_val.append(reshaped_f81)
                             self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
@@ -166,12 +188,15 @@ class NetCDF:
 
         # --- NetCDF variables in telegram_data ---
         for key in self.telegram_objs[0].telegram_data.keys():  # pylint: disable=too-many-nested-blocks
-            # Continue in the for loop if key is not in telegram_fields or should not be in the netCDF
+
+            # checks if key is not in the telegram fields or if the value from the telegram should not be added
+            # to the netcdf (either should never be added or a light netcdf has been requested), if that is the
+            # case go onto next key
             if not (key in self.config_dict['telegram_fields'].keys()) or \
                     ((self.full_version is True and
-                        self.config_dict['telegram_fields'][key].get('include_in_nc') == 'never') or
-                    (self.full_version is False and
-                        self.config_dict['telegram_fields'][key].get('include_in_nc') != 'always')):
+                      self.config_dict['telegram_fields'][key].get('include_in_nc') == 'never') or
+                     (self.full_version is False and
+                      self.config_dict['telegram_fields'][key].get('include_in_nc') != 'always')):
                 continue
 
             field_dict = self.config_dict['telegram_fields'][key]
@@ -179,39 +204,50 @@ class NetCDF:
             netCDF_var = netCDF_rootgrp.variables[standard_name]
 
             # import pdb; pdb.set_trace()
-
+            # message for the debugger
             nc_details = (f'Handling values from NetCDF var: {key}, {netCDF_var.standard_name},'
-                            f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
-                            f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
+                          f' {netCDF_var.dtype}, {netCDF_var._vltype}, {netCDF_var._isvlen},'  # pylint: disable=protected-access
+                          f' dims: {netCDF_var._getdims()}')  # pylint: disable=W0212
             logger.debug(msg=nc_details)
 
+            # check that the value in the key value pair is supposed to be of type string,
+            # if so use function for populating strings
             if netCDF_var.dtype == str:  # S4
                 # assuming S4 vars are only 1D - that's the case for parsivel
                 self.__netcdf_populate_s4_var(netCDF_var_=netCDF_var,
-                                                var_key_=key)
+                                              var_key_=key)
             else:
+
+                # check that the variable has 2 or fewer dimensions and if so add to netCDF
                 if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
                     all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
                     netCDF_var[:] = all_items_val
+
+
                 elif len(netCDF_var._getdims()) > 2 and key == '93':  # pylint: disable=protected-access
                     all_f93_items_val = []
 
                     for telegram_obj in self.telegram_objs:
                         try:
+                            # value associated with key 93 is supposed to be a list of 1024
+                            # values, this is later converted to a 32x32 matrix
+                            # checks if the value is a list of length 1024
                             assert len(telegram_obj.telegram_data[key]) == 1024, \
                                 'telegram_obj.telegram_data["93"] len != 1024'
                         except AssertionError as error:
                             self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
-                                                    f' from {telegram_obj.timestamp} {error}'
-                                                    f'. 32x32 ndarray with (error value)'
-                                                    f' -9.999 will be added instead')
+                                                  f' from {telegram_obj.timestamp} {error}'
+                                                  f'. 32x32 ndarray with (error value)'
+                                                  f' -9.999 will be added instead')
+                            # fills fields with default -9999 error value if error has occurred
                             error_f93 = numpy.full(shape=(32, 32), fill_value='-9999', dtype='<U3')
                             all_f93_items_val.append(error_f93)
                         else:
+                            # if list was of appropriate size reshapes it into a 32x32 matrix
                             reshaped_f93 = numpy.array(telegram_obj.telegram_data[key]).reshape(32, 32)
                             all_f93_items_val.append(reshaped_f93)
                             self.logger.debug(msg=f'F93 values from DB item {telegram_obj.db_row_id}'
-                                                    f' from {telegram_obj.timestamp} successfully reshaped')
+                                                  f' from {telegram_obj.timestamp} successfully reshaped')
 
                     netCDF_var[:] = all_f93_items_val
 
@@ -272,7 +308,7 @@ class NetCDF:
         # variables not in telegram
         for key, var_dict in self.config_dict['variables'].items():
             self.__set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp)
-        #variables in telegram
+        # variables in telegram
         for key, var_dict in self.config_dict['telegram_fields'].items():
             self.__set_netcdf_variable(key=key, one_var_dict=var_dict, nc_group=nc_rootgrp)
 
@@ -285,7 +321,7 @@ class NetCDF:
         """
         self.logger.info(msg=f"creating netCDF variable {one_var_dict['var_attrs']['standard_name']}")
         if ((self.full_version is True and one_var_dict['include_in_nc'] != 'never') or
-            (self.full_version is False and one_var_dict['include_in_nc'] == 'always')):
+                (self.full_version is False and one_var_dict['include_in_nc'] == 'always')):
             if one_var_dict['dtype'] != 'S4':  # can't compress variable-length str variables
                 compression_method = 'zlib'
                 # compression_method = dict(zlib=True, shuffle=True, complevel=5)
