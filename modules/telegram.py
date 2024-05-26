@@ -173,6 +173,9 @@ class ParsivelTelegram(Telegram):
         """"
         Method for passing telegrams strings into the database
         """
+        self.capture_prefixes_and_data()
+        self.prep_telegram_data4db()
+
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
 
