@@ -1,6 +1,20 @@
 """
-test db
+This module contains tests for the SQL database and the NetCDF class.
+
+Functions:
+- create_db_: Creates test.db in sample_data if it does not exist yet.
+- test_connect_db: Tests that connect_db returns a Connection and Cursor object.
+- test_db_schema: Tests that the test database has the correct schema.
+- test_db_insert: Tests that inserting a ParsivelTelegram object into the database works correctly.
+- test_unpack_telegram_from_db: Tests the unpack_telegram_from_db function.
+- db_insert_24h: Inserts 24 hours worth of data into the test database.
+- test_query_db: Tests querying from the database and creates a test netCDF file.
+- test_NetCDF: This function tests whether netCDF files are correctly created.
+- delete_netcdf: Deletes the created test netCDF file.
+- db_insert_24h_w_gaps: This function inserts 24 hours worth of data into the test database, but with some missing rows.
+- test_NetCDF_w_gaps: Tests whether the db rows with empty telegram data are not included in NetCDF.
 """
+
 import os
 import sqlite3
 import logging
@@ -46,7 +60,7 @@ data_points_24h = 1440  # (60min * 24h)
 @pytest.fixture()
 def create_db_():
     """
-    create db
+    This function creates test.db in sample_data if it does not exist yet.
     """
     if os.path.isfile(db_path):
         os.remove(db_path)
@@ -55,8 +69,8 @@ def create_db_():
 
 def test_connect_db(create_db_): # pylint: disable=unused-argument,redefined-outer-name
     """
-    test connect db
-    :param create_db_:
+    This function tests that connect_db returns a Connection and Cursor object.
+    :param create_db_: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     assert isinstance(con, sqlite3.Connection) is True
@@ -66,8 +80,8 @@ def test_connect_db(create_db_): # pylint: disable=unused-argument,redefined-out
 
 def test_db_schema(create_db_): # pylint: disable=unused-argument,redefined-outer-name
     """
-    test db schema
-    :param create_db_:
+    This function tests that the test database has the correct schema.
+    :param create_db_: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     table_info = cur.execute("PRAGMA table_info('disdrodl');")
@@ -84,8 +98,8 @@ def test_db_schema(create_db_): # pylint: disable=unused-argument,redefined-oute
 
 def test_db_insert(create_db_): # pylint: disable=unused-argument,redefined-outer-name
     """
-    test db insert
-    :param create_db_:
+    This function tests that inserting a ParsivelTelegram object into the database works correctly.
+    :param create_db_: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     telegram = ParsivelTelegram(config_dict=config_dict,
@@ -129,7 +143,7 @@ def test_db_insert(create_db_): # pylint: disable=unused-argument,redefined-oute
 
 def test_unpack_telegram_from_db():
     """
-    test unpack telegram from db
+    This function tests the unpack_telegram_from_db function.
     """
     db_row = (1, 1702542494.204936, '2023-12-14T09:28:14.204936', 'PAR008', '01:0000.000; 02:0000.00; 03:00; 04:00; 05:NP; 06:C; 07:-9.999; 08:20000; 09:00043; 10:13894; 11:00000; 12:021; 13:450994; 14:2.11.6; 15:2.11.1; 16:0.50; 17:24.3; 18:0; 19:None; 20:10; 21:25.05.2023; 22:None; 23:None; 24:0000.00; 25:000; 26:032; 27:022; 28:022; 29:000.041; 30:00.000; 31:0000.0; 32:0000.00; 34:0000.00; 35:0000.00; 40:20000; 41:20000; 50:00000000; 51:000140; 90:-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999,-9.999; 91:00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000,00.000; 93:000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000; 94:0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000,0000; 95:0.00,0.00,0.00,0.00,0.00,0.00,0.00; 96:0000000,0000000,0000000,0000000,0000000,0000000,0000000') # pylint: disable=line-too-long
     telegram_tmp_dict = unpack_telegram_from_db(telegram_str=db_row[-1])
@@ -145,8 +159,8 @@ parsivel_lines = [b'TYP OP4A\r\n', b'01:0000.000\r\n', b'02:0000.00\r\n', b'03:0
 @pytest.fixture()
 def db_insert_24h(create_db_): # pylint: disable=unused-argument,redefined-outer-name
     """
-    db insert 24h
-    :param create_db_:
+    This function inserts 24 hours worth of data into the test database.
+    :param create_db_: the function to create the test database
     """
     # inserts 1440 rows to db
     con, cur = connect_db(dbpath=str(db_path))
@@ -168,8 +182,8 @@ def db_insert_24h(create_db_): # pylint: disable=unused-argument,redefined-outer
 
 def test_query_db(db_insert_24h): # pylint: disable=unused-argument,redefined-outer-name
     """
-    test query db
-    :param db_insert_24h:
+    This function tests querying from the database and creates a test netCDF file.
+    :param db_insert_24h: the function to insert 24 hours worth of data into the test database.
     """
     delete_netcdf(fn_start='test', data_dir=data_dir,)  # delete old netCDF
     telegram_objs = []
@@ -210,7 +224,7 @@ def test_query_db(db_insert_24h): # pylint: disable=unused-argument,redefined-ou
 
 def test_NetCDF():
     """
-    test netCDF
+    This function tests whether netCDF files are correctly created.
     """
     rootgrp = Dataset(data_dir / 'test.nc', 'r', format="NETCDF4")  # read netcdf
     # test NetCDF time and datetime variables values
@@ -252,13 +266,12 @@ def test_NetCDF():
 
 class ExceptionTests(unittest.TestCase):
     """
-    Class to make testing exceptions possible
+    Class to make testing exceptions possible.
     """
 
     def test_netCDF_include_in_nc(self):
         """
-        test include_in_nc for both full and light netCDF versions
-        :param self:
+        This function tests the functionality of include_in_nc for both full and light netCDF versions.
         """
         # Create an array of all Telegram objects
         telegram_objs = []
@@ -306,12 +319,12 @@ class ExceptionTests(unittest.TestCase):
 
         # Test that both the full and light netCDFs include the field 'rain_intensity' (include_in_nc: 'always')
         try:
-            rootgrp_full.variables['rain_intensity']
-            rootgrp_light.variables['rain_intensity']
+            rootgrp_full.variables['rain_intensity'] # pylint: disable=pointless-statement
+            rootgrp_light.variables['rain_intensity'] # pylint: disable=pointless-statement
         except KeyError:
             self.fail("getting 'rain_intensity' from full or light netCDF raised KeyError unexpectedly!")
 
-        # Test that the full netCDF does include the field 'data_raw', but the light netCDF does not (include_in_nc: 'only_full')
+        # Test that the full netCDF does include the field 'data_raw', but the light netCDF does not (include_in_nc: 'only_full') # pylint: disable=line-too-long
         try:
             rootgrp_full.variables['data_raw']
         except KeyError:
@@ -322,14 +335,14 @@ class ExceptionTests(unittest.TestCase):
 
         # Test that both the full and light netCDFs include the fields 'acc_rain_amount' (include_in_nc: 'never')
         with self.assertRaises(KeyError):
-            rootgrp_full.variables['acc_rain_amount'] # pylint: disable=pointless-statement  
-            rootgrp_light.variables['acc_rain_amount'] # pylint: disable=pointless-statement        
+            rootgrp_full.variables['acc_rain_amount'] # pylint: disable=pointless-statement
+            rootgrp_light.variables['acc_rain_amount'] # pylint: disable=pointless-statement
 
 def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
     """
-    delete netcdf
-    :param fn_start:
-    :param data_dir:
+    This function deletes the created test netCDF file.
+    :param fn_start: the name of the netCDF file
+    :param data_dir: the directory where the netCDF file is stored
     """
     test_nc_path = data_dir / f'{fn_start}.nc'
     if os.path.exists(test_nc_path):
@@ -339,8 +352,8 @@ def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
 @pytest.fixture()
 def db_insert_24h_w_gaps(create_db_): # pylint: disable=unused-argument,redefined-outer-name
     """
-    db insert 24h with gaps
-    :param create_db_:
+    This function inserts 24 hours worth of data into the test database, but with some missing rows.
+    :param create_db_: the function to create the test database
     """
     # inserts 1440 rows to db, but in half of entries, telegram is empty
     con, cur = connect_db(dbpath=str(db_path))
@@ -366,8 +379,8 @@ def db_insert_24h_w_gaps(create_db_): # pylint: disable=unused-argument,redefine
 
 def test_NetCDF_w_gaps(db_insert_24h_w_gaps): # pylint: disable=unused-argument,redefined-outer-name
     '''
-    def should test if the db rows with empty telegram data
-    are not included in NetCDF
+    This function tests whether the db rows with empty telegram data are not included in NetCDF.
+    :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
     '''
     delete_netcdf(fn_start='test', data_dir=data_dir,)  # delete old netCDF
     telegram_objs = []
