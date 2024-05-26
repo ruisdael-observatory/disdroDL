@@ -9,6 +9,8 @@ ensuring that all expected keys are present.
 Functions:
 - test_logger: Tests the logger by creating a log message and checking if the message is written to the log file.
 - test_config_dict: Tests the integrity of the configuration dictionary `config_dict`.
+- test_get_general_config: Tests whether for exporting the correct general config file
+    is chosen based on the site config file.
 """
 import json
 from pathlib import Path
@@ -86,7 +88,11 @@ def test_get_general_config():
 
 class ExceptionTests(unittest.TestCase):
     """
-    Class to make testing exceptions possible
+    Class to make testing exceptions possible.
+
+    Functions:
+    - test_unsupported_site_config: Varifies that a site config file with an unsupported sensor type
+        will cause an error to be thrown.
     """
 
     def test_unsupported_site_config(self):
