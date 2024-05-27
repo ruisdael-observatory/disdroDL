@@ -19,7 +19,8 @@ from unittest.mock import patch, Mock
 
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, get_general_config, create_logger, \
-    create_dir, resetSerialBuffers, interruptHandler, unpack_telegram_from_db  # pylint: disable=import-error
+    create_dir, resetSerialBuffers, interruptHandler # pylint: disable=import-error
+from modules.netCDF import unpack_telegram_from_db
 
 wd = Path(__file__).parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
