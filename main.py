@@ -132,6 +132,8 @@ while True:
     con.commit()
     cur.close()
     con.close()
+    
+    sensor.sensor_start_sequence(config_dict=config_dict, logger=logger)
 
     # sleep for 2 seconds to guarantee you don't log the same data twice
     # this causes issues with a computation time of 58 seconds
