@@ -1,4 +1,4 @@
-"""documentation"""
+"""Port sniffer for Thies sensors"""
 import serial
 
 com_port2 = '/dev/ttyACM0'

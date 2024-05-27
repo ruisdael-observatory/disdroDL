@@ -1,6 +1,7 @@
 """
-Module to reset a Parsivel sensor
+Script to reset the serial connection with the Parsivel.
 """
+
 from pathlib import Path
 from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update

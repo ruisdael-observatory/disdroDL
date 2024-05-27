@@ -1,10 +1,19 @@
 """
-Imports
+This module contains a variety of functions with different utilities.
+
+Functions:
+- yaml2dict: This function reads a yaml file and returns a dictionary with all the field and values.
+- get_general_config: This function returns a general config file based on the provided sensor type.
+- create_dir: This function creates a directory if it does not already exist.
+- resetSerialBuffers: This function resets the input and output buffers of the serial connection.
+- interruptHandler: This function interrupts the execution of the serial connection.
+- create_logger: This function creates a logger object that logs to a file.
 """
+
 import os
 from time import sleep
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict
 import yaml
 
 if __name__ == '__main__':
@@ -41,7 +50,7 @@ def get_general_config(path: Path, sensor_type: str) -> Dict:
 
 def create_dir(path: Path):
     """
-    This function creates a directory if it does not exist.
+    This function creates a directory if it does not already exist.
     :param path: the path to the directory
     :return: True if the directory was created, False if it already existed
     """
@@ -90,25 +99,3 @@ def create_logger(log_dir, script_name, sensor_name):
                  log_name=f"{script_name}: {sensor_name}")
     logger.info(msg=f"Starting {script_name} for {sensor_name}")
     return logger
-
-
-def unpack_telegram_from_db(telegram_str: str) -> Dict[str, Union[str, list]]:
-    """
-    unpacks telegram string from sqlite DB row into a dictionary
-
-    * key precedes value NN:val
-    * key:value pair, seperated by '; '
-    * list: converted to str with ',' separator between values
-    * empty lists, empty strings: converted to 'None'
-    Example Input: '19:None; 20:10; 21:25.05.2023;
-    51:000140; 90:-9.999,-9.999,-9.999,-9.999,-9.999 ...'
-    Example Output:  {'60': '00000062', '90': '-9.999,-9.999,01.619,...'}
-    """
-    telegram_dict = {}
-    telegram_list = telegram_str.split('; ')
-    for telegram_item in telegram_list:
-        key, val = telegram_item.split(':')
-        if val == 'None':
-            val = None
-        telegram_dict[key] = val
-    return telegram_dict

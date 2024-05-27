@@ -9,6 +9,8 @@ ensuring that all expected keys are present.
 Functions:
 - test_logger: Tests the logger by creating a log message and checking if the message is written to the log file.
 - test_config_dict: Tests the integrity of the configuration dictionary `config_dict`.
+- test_get_general_config: Tests whether for exporting the correct general config file
+    is chosen based on the site config file.
 """
 import json
 from pathlib import Path
@@ -17,7 +19,8 @@ from unittest.mock import patch, Mock
 
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, get_general_config, create_logger, \
-    create_dir, resetSerialBuffers, interruptHandler, unpack_telegram_from_db  # pylint: disable=import-error
+    create_dir, resetSerialBuffers, interruptHandler # pylint: disable=import-error
+from modules.netCDF import unpack_telegram_from_db
 
 wd = Path(__file__).parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
@@ -189,7 +192,11 @@ class UtilFunctionsTests(unittest.TestCase):
 
 class ExceptionTests(unittest.TestCase):
     """
-    Class to make testing exceptions possible
+    Class to make testing exceptions possible.
+
+    Functions:
+    - test_unsupported_site_config: Varifies that a site config file with an unsupported sensor type
+        will cause an error to be thrown.
     """
 
     def test_unsupported_site_config(self):
