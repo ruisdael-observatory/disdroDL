@@ -3,6 +3,7 @@ Script to export telegram data from the database from a specific date to a netCD
 based on the given site config file.
 """
 
+import os
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
@@ -47,7 +48,7 @@ if __name__ == '__main__':
     elif args.version == 'light':
         full_version = False
     else:
-        raise Exception("version was not 'full' or 'light'")
+        raise ValueError("version was not 'full' or 'light'")
 
     config_dict_site = yaml2dict(path=wd / args.config)
     sensor_type = config_dict_site['global_attrs']['sensor_type']
@@ -64,8 +65,13 @@ if __name__ == '__main__':
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
 
+    # Use the respective test database when called by tests
+    if os.getenv('MOCK_DB', '0') == '1':
+        db_path = Path("sample_data/test_parsivel.db")
+    elif os.getenv('MOCK_DB', '0') == '2':
+        db_path = Path("sample_data/test_thies.db")
     # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
+    elif sensor_type == 'Thies Clima':
         db_path = Path("sample_data/disdrodl-thies.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
@@ -139,8 +145,8 @@ if __name__ == '__main__':
     cur.close()
 
     # Directory to put the netCDF file in
-    # Put the netCDF in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
+    # Put the netCDF in sample_data if the provided site config file is from the Thies or when testing
+    if sensor_type == 'Thies Clima' or os.getenv('MOCK_DB', '0') != '0':
         data_dir = Path('sample_data/')
     else:
         data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')

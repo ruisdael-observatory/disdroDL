@@ -37,7 +37,7 @@ parsivel_lines = [b'TYP OP4A\r\n', b'01:0000.000\r\n', b'02:0000.00\r\n', b'03:0
 now = NowTime()
 wd = Path().resolve()
 data_dir = wd / 'sample_data'
-db_file = 'test.db'
+db_file = 'test_parsivel.db'
 db_path = data_dir / db_file
 par008_db_file = 'disdrodl_PA008.db'
 par008_db_path = data_dir / par008_db_file
@@ -132,7 +132,7 @@ def test_db_insert(create_db_): # pylint: disable=unused-argument,redefined-oute
         assert isinstance(datetime_, str) is True
         assert parsivel_id == config_dict['global_attrs']['sensor_name']
         assert isinstance(telegram_str, str) is True
-        print('test.db', timestamp, datetime_)
+        print('test_parsivel.db', timestamp, datetime_)
 
     res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
     assert res.fetchone()[0] == 1
