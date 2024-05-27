@@ -173,7 +173,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         Test if the get_type function returns the correct sensor type.
         """
         thies = Thies()
-        assert thies.get_type() == SensorType.THIES
+        assert thies.get_type() == "thies"
 
     def test_close_serial_connection(self):
         """

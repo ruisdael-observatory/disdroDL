@@ -366,4 +366,4 @@ class Thies(Sensor):
         Returns the type of the sensor as a string.
         :return: Type of the sensor as a string
         """
-        return self.sensor_type # TODO: change to .value and change the test accordingly
+        return self.sensor_type.value
