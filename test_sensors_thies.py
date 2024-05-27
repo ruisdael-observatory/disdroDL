@@ -3,8 +3,8 @@ Module for testing the Thies class from sensors.py
 """
 
 import unittest
-from unittest.mock import MagicMock, patch, call
-from modules.sensors import Thies, SensorType  # pylint: disable=unused-import
+from unittest.mock import MagicMock, patch, call, Mock
+from modules.sensors import Thies, SensorType  # pylint: disable=import-error
 
 
 class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
@@ -174,3 +174,15 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """
         thies = Thies()
         assert thies.get_type() == "thies"
+
+    def test_close_serial_connection(self):
+        """
+        Test for the close_serial_connection function
+        """
+        parsivel_obj = Thies()
+        mock_serial_connection = Mock()
+        parsivel_obj.serial_connection = mock_serial_connection
+
+        parsivel_obj.close_serial_connection()
+
+        mock_serial_connection.close.assert_called_once()

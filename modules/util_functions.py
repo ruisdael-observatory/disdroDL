@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Dict
 import yaml
 
-
 if __name__ == '__main__':
     from log import log # pylint: disable=import-error
 else:
@@ -46,7 +45,7 @@ def get_general_config(path: Path, sensor_type: str) -> Dict:
     if sensor_type == 'Thies Clima':
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_thies.yml')
 
-    raise Exception("unsupported sensor type")
+    raise Exception("unsupported sensor type") # pylint: disable=broad-exception-raised
 
 def create_dir(path: Path):
     """
