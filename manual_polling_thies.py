@@ -1,5 +1,5 @@
 """
-Imports
+Manual polling of telegrams for Thies sensors
 """
 from time import sleep
 from pathlib import Path

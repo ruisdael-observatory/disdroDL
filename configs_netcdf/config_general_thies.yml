@@ -27,14 +27,14 @@ variables:
             units: 's'
             long_name: 'Length of measurement interval'
             standard_name: 'time_interval'
-    timestamp:
+    datetime:
         dimensions:
             - time
         dtype: 'S4'  # string
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
-            standard_name: 'timestamp'
+            standard_name: 'datetime'
     velocity_classes_center:
         dimensions:
             - velocity_classes
@@ -293,15 +293,24 @@ variables:
             - 8.000
 telegram_fields:
 
-    # '1-2':
-    #     dimensions:
-    #         - time
-    #     dtype: 'S4'
-    #     include_in_nc: 'never'                    
-    #     var_attrs:
-    #         units: None
-    #         long_name: 'start identifer + device adress'
-    #         standard_name: 'STX'
+    '1':
+        dimensions:
+            - time
+        dtype: 'S4'
+        include_in_nc: 'never'
+        var_attrs:
+            units: None
+            long_name: 'start identifer'
+            standard_name: 'STX'
+    '2':
+        dimensions:
+            - time
+        dtype: 'S4'
+        include_in_nc: 'always'
+        var_attrs:
+            units: None
+            long_name: 'device address'
+            standard_name: 'device_address'
     '3':
         dimensions:
             - time
@@ -323,7 +332,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'never'                    
+        include_in_nc: 'always'
         var_attrs:
             long_name: 'Date of the sensor'
             standard_name: 'sensor_date'
@@ -331,7 +340,7 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'  # string
-        include_in_nc: 'never'                    
+        include_in_nc: 'always'
         var_attrs:
             long_name: 'Time of the sensor'
             standard_name: 'sensor_time'
@@ -747,7 +756,7 @@ telegram_fields:
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '„00000.000“ (internal data)'
-            standard_name: 'internal_data'
+            standard_name: 'internal_data_1'
     '53':
         dimensions:
             - time
@@ -763,14 +772,14 @@ telegram_fields:
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '„00000.000“ (internal data)'
-            standard_name: 'internal_data'
+            standard_name: 'internal_data_2'
     '55':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles > maximal speed (20m/s'
+            long_name: 'Number of particles > maximal speed (20m/s)'
             standard_name: 'number_of_particles_faster_than_20'
     '56':
         dimensions:
@@ -779,7 +788,7 @@ telegram_fields:
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '„00000.000“ (internal data)'
-            standard_name: 'internal_data'
+            standard_name: 'internal_data_3'
     '57':
         dimensions:
             - time
@@ -795,7 +804,7 @@ telegram_fields:
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '„00000.000“ (internal data)'
-            standard_name: 'internal_data'
+            standard_name: 'internal_data_4'
     '59':
         dimensions:
             - time
@@ -974,12 +983,13 @@ telegram_fields:
             standard_name: 'total_volume_gross_of_class_9'
 # The field 81 to 520 are the classes:
 #    1st diameter-1st speed, then 1st diameter-2nd speed etc... until Diameter 22, speed 20
-# I am not sure how to describe it here.
-    '81-520': 
+#    in the netcdf they are written into a 22 by 20 matrix
+    '81':
         dimensions:
+            - time
             - diameter_classes
             - velocity_classes
-        dtype: 'f4'
+        dtype: 'i4'
         include_in_nc: 'only_full'                    
         var_attrs:
             long_name: 'Raw data as a function of particle diameter and velocity'
@@ -994,28 +1004,28 @@ telegram_fields:
             standard_name: 'temperature'
             units: '°C'
     '522':
-       dimensions:
+        dimensions:
            - time
-       dtype: 'f4'
-       include_in_nc: 'always'                    
+        dtype: 'f4'
+        include_in_nc: 'always'
         var_attrs:
            long_name: 'Relative Air humidity [%r.h.]'
            standard_name: 'relative_humidity'
            units: '%r.h.'
     '523':
-       dimensions:
+        dimensions:
            - time
-       dtype: 'f4'
-       include_in_nc: 'always'                    
+        dtype: 'f4'
+        include_in_nc: 'always'
         var_attrs:
            long_name: 'Wind speed [m/s] '
            standard_name: 'wind_speed'
            units: 'm/s'
     '524':
-       dimensions:
+        dimensions:
            - time
-       dtype: 'f4'
-       include_in_nc: 'always'                    
+        dtype: 'f4'
+        include_in_nc: 'always'
         var_attrs:
            long_name: 'Wind direction [°]'
            standard_name: 'wind_direction'
@@ -1024,15 +1034,15 @@ telegram_fields:
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'always'
         var_attrs:
             long_name: 'Checksum'
             standard_name: 'checksum'
-    '526-527': # or 522-523 without “<id>TM00005”
-       dimensions:
-           - time
-       dtype: 'S4'
-       include_in_nc: 'never'                    
-        var_attrs:
-           long_name: 'CRLF + ETX (End identifier)'
-           standard_name: 'end_identifier'
+#    '526-527': # or 522-523 without “<id>TM00005”
+#        dimensions:
+#           - time
+#        dtype: 'S4'
+#        include_in_nc: 'never'
+#        var_attrs:
+#           long_name: 'CRLF + ETX (End identifier)'
+#           standard_name: 'end_identifier'

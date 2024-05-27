@@ -5,7 +5,7 @@
 # from netCDF4 import Dataset
 # from cftime import num2date
 # from pydantic.v1.utils import deep_update
-# from modules.classes import Telegram
+# from modules.classes import ParsivelTelegram
 # from modules.util_functions import yaml2dict, create_logger
 # from parse_disdro_csv import (
 #     str2list_by_ndigits,
@@ -93,7 +93,7 @@
 #         telegram_dict = telegram2dict(telegram=csv_row['telegram'],
 #                                       dt=csv_row['datetime'],
 #                                       ts=csv_row['timestamp'], )
-#         telegram = Telegram(config_dict=config_dict,
+#         telegram = ParsivelTelegram(config_dict=config_dict,
 #                             telegram_lines=None,
 #                             telegram_data=telegram_dict,
 #                             timestamp=telegram_dict['datetime'],

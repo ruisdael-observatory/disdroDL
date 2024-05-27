@@ -10,11 +10,13 @@ from pathlib import Path
 from time import sleep
 from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, create_logger
+
 from modules.sensors import Parsivel
-from modules.telegram import Telegram
+from modules.util_functions import yaml2dict, create_logger
+from modules.telegram import ParsivelTelegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
+
 
 ######################## BOILER PLATE ##################
 
@@ -77,12 +79,12 @@ while True:
     # logger.debug(msg=f"parsivel_lines: {parsivel_lines}")
 
     # insert telegram to db
-    telegram = Telegram(config_dict=config_dict,
-                        telegram_lines=parsivel_lines,
-                        timestamp=now_utc.utc,
-                        db_cursor=cur,
-                        telegram_data={},
-                        logger=logger)
+    telegram = ParsivelTelegram(config_dict=config_dict,
+                                telegram_lines=parsivel_lines,
+                                timestamp=now_utc.utc,
+                                db_cursor=cur,
+                                telegram_data={},
+                                logger=logger)
 
     # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
 
