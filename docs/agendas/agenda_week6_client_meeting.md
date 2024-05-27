@@ -1,6 +1,6 @@
 # Agenda Week 6 - Client Meeting
 
-## 27-05-2024
+## 28-05-2024
 
 ## Chairman: Vasil Chirov
 ## Minute taker: Jesse Vleeschdraager
