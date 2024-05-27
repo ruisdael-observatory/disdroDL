@@ -8,6 +8,7 @@ from pydantic.v1.utils import deep_update
 from modules.util_functions import create_logger, yaml2dict  # pylint: disable=import-error
 from modules.sensors import Parsivel
 
+
 def get_config_file():
     """
     Function that gets the correct config file
@@ -18,6 +19,7 @@ def get_config_file():
     parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV.yml')
     args = parser.parse_args()
     return args.config
+
 
 def main(config_file):
     """

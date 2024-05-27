@@ -17,9 +17,9 @@ from typing import Dict
 import yaml
 
 if __name__ == '__main__':
-    from log import log # pylint: disable=import-error
+    from log import log  # pylint: disable=import-error
 else:
-    from modules.log import log # pylint: disable=import-error, ungrouped-imports
+    from modules.log import log  # pylint: disable=import-error, ungrouped-imports
 
 
 def yaml2dict(path: Path) -> Dict:
@@ -28,10 +28,11 @@ def yaml2dict(path: Path) -> Dict:
     :param path: the path to the yaml file
     :return: dictionary with all the field and values
     """
-    with open(path, 'r') as yaml_f: # pylint: disable=unspecified-encoding
+    with open(path, 'r') as yaml_f:  # pylint: disable=unspecified-encoding
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict
+
 
 def get_general_config(path: Path, sensor_type: str) -> Dict:
     """
@@ -44,8 +45,8 @@ def get_general_config(path: Path, sensor_type: str) -> Dict:
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_parsivel.yml')
     if sensor_type == 'Thies Clima':
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_thies.yml')
+    raise Exception("unsupported sensor type")  # pylint: disable=broad-exception-raised
 
-    raise Exception("unsupported sensor type") # pylint: disable=broad-exception-raised
 
 def create_dir(path: Path):
     """
