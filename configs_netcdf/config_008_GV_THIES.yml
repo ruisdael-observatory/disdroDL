@@ -51,6 +51,6 @@ variables:
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'm'
-            long_name: 'Altitude of site'
+            long_name: 'Altitude of site, in meters above mean sea level'
             standard_name: 'altitude'
     
