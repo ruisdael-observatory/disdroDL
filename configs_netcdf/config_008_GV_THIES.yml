@@ -18,7 +18,9 @@ global_attrs:
     site_name: 'Green_Village'
     sensor_name: THIES006
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
+    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
+    license: 'CC BY 4.0 https://creativecommons.org/licenses/by/4.0/deed.en'
+    logging software: '(#TODO - URL public git repo) - Version 0.3.0'
     sensor_type: 'Thies Clima'
     sensor_serial_number: '450994' # to be updated
 
