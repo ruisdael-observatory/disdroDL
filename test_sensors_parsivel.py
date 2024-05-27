@@ -194,3 +194,15 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
         parsivel_obj = Parsivel()
 
         assert parsivel_obj.get_type() == "parsivel"
+
+    def test_close_serial_connection(self):
+        """
+        Test for the close_serial_connection function
+        """
+        parsivel_obj = Parsivel()
+        mock_serial_connection = Mock()
+        parsivel_obj.serial_connection = mock_serial_connection
+
+        parsivel_obj.close_serial_connection()
+
+        mock_serial_connection.close.assert_called_once()
