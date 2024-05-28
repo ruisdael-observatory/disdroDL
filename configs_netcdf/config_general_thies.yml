@@ -304,13 +304,12 @@ telegram_fields:
             standard_name: 'STX'
     '2':
         dimensions:
-            - time
         dtype: 'S4'
         include_in_nc: 'always'
         var_attrs:
             units: None
-            long_name: 'device address'
-            standard_name: 'device_address'
+            long_name: 'device id'
+            standard_name: 'device_id'
     '3':
         dimensions:
             - time
@@ -654,7 +653,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Mean value laser current [1/100 mA]'
             standard_name: 'mean_value_laser_current'
-            units: 'mA'
+            units: '1/100 mA'
     '41':
         dimensions:
             - time
