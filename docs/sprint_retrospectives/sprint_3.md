@@ -12,17 +12,17 @@
 | ---        | #62  | Ella     |                |            |               |      |
 | #63*       | #64  | Ella     |                |            |               |      |
 | #63*       | #65  | Noky     |                |            |               |      |
-| #63*       | #66  | Jesse    |                |            |               |      |
+| #63*       | #66  | Jesse    | 15m            | 15m        | Yes           |      |
 | ---        | #67  | Vasil    |                |            |               |      |
 | ---        | #68  | Noky     |                |            |               |      |
 | ---        | #69  | Ella     |                |            |               |      |
-| #70*       | #71  | Jesse    |                |            |               |      |
+| #70*       | #71  | Jesse    | ---            | 3h         | Yes           |      |
 | #70*       | #72  | Vasil    | 6h | 7h | Yes |      |
-| #70*       | #73  |          |                |            |               |      |
+| #70*       | #73  | ---      | ---            | ---        | No            | This issue is still blocked |
 
 ## Notes
 - *these are not actual user stories, but they are still split up in smaller issues
 
 ## Main Problems Encountered
 
-- 
+- The main issue we ran into was that there was a lot of unexpected work with fixing bugs and improving documentation of the code, leaving a lot less time for the issues we intended to do in this sprint
