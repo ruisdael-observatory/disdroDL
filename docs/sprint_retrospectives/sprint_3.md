@@ -14,11 +14,11 @@
 | #63*       | #64  | Ella     | 1h             | 30min      | no            | Have to disscus with group how twe want the wiki to look, we want the whole project documented well for handover                                       |
 | #63*       | #65  | Noky     | 15m            | 15m        | Yes           |                                                                                                                         |
 | #63*       | #66  | Jesse    | 15m            | 15m        | Yes           |                                                                                                                                                        |
-| ---        | #67  | Vasil    |                |            |               |                                                                                                                                                        |
+| ---        | #67  | Vasil    |                |            | no |                                                                                                                                                        |
 | ---        | #68  | Noky     | 6h             | 9h         | Sort of       | This issue took a bit of a turn when it was discovered that the logging had unexpected behaviour after a day of running |
 | ---        | #69  | Ella     | 6 h            | 30 mins    | No            |                                                                                                                                                        |
 | #70*       | #71  | Jesse    | ---            | 3h         | Yes           |                                                                                                                                                        |
-| #70*       | #72  | Vasil    | 6h             | 7h         | Yes           |                                                                                                                                                        |
+| #70*       | #72  | Vasil    | 15h             | 16h         | Yes           |                                                                                                                                                        |
 | #70*       | #73  | ---      | ---            | ---        | No            | This issue is still blocked                                                                                                                            |
 
 ## Notes
