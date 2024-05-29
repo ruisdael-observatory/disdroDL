@@ -42,7 +42,7 @@ variables:
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'center of fall velocity classes'
-            standard_name: 'velocity_center_classes'  # error when changed
+            standard_name: 'velocity_center_classes_1'  # error when changed
             units: 'm/s'
             comment: 'as defined in the technical documentation'
         value:
@@ -681,7 +681,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Voltage sensor supply [1/10V] '
             standard_name: 'voltage_sensor_supply'
-            units: 'V'
+            units: '1/10 V'
     '44':
         dimensions:
             - time
@@ -717,7 +717,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Voltage Heating supply [1/10 V]'
             standard_name: 'voltage_heating_supply'
-            units: 'V'
+            units: '1/10 V'
     '48':
         dimensions:
             - time
