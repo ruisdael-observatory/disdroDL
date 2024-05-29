@@ -196,8 +196,11 @@ class ParsivelTelegram(Telegram):
 
     def insert2db(self):
         """"
-        Passes telegrams strings into the database.
+        Method for passing telegrams strings into the database
         """
+        self.capture_prefixes_and_data()
+        self.prep_telegram_data4db()
+
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
 
@@ -210,6 +213,7 @@ class ParsivelTelegram(Telegram):
 
         self.logger.debug(msg=insert_str)
         self.db_cursor.execute(insert_str)
+
 
     def __str2list(self, field, separator):
         """
@@ -370,3 +374,28 @@ class ThiesTelegram(Telegram):
         str_val = self.telegram_data[field]
         list_val = str_val.split(separator)
         self.telegram_data[field] = list_val
+
+def create_telegram(config_dict: Dict, telegram_lines: Union[str, bytes],
+                 timestamp: datetime, db_cursor: Union[Cursor, None],
+                 logger: Logger, telegram_data: Dict, db_row_id=None, telegram_data_str=None):
+    sensor_type = config_dict['global_attrs']['sensor_type']
+
+    if sensor_type == 'OTT Hydromet Parsivel2':
+        return ParsivelTelegram(config_dict=config_dict,
+                    telegram_lines=telegram_lines,
+                    timestamp=timestamp,
+                    db_cursor=db_cursor,
+                    telegram_data={},
+                    logger=logger)
+    
+    if sensor_type == 'Thies Clima':
+        return ThiesTelegram(config_dict=config_dict,
+                    telegram_lines=telegram_lines,
+                    timestamp=timestamp,
+                    db_cursor=db_cursor,
+                    telegram_data={},
+                    logger=logger)
+
+    logger.error(msg=f"Sensor type {sensor_type} not recognized")
+    sys.exit(1)
+    

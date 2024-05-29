@@ -14,7 +14,7 @@ import pytest
 from modules.sqldb import create_db, connect_db
 from modules.util_functions import yaml2dict
 from modules.now_time import NowTime
-from modules.telegram import ParsivelTelegram, ThiesTelegram
+from modules.telegram import ParsivelTelegram, ThiesTelegram, create_telegram
 from modules.netCDF import NetCDF
 
 # General
@@ -52,61 +52,47 @@ config_dict_thies = deep_update(config_dict, config_dict_site)
 
 thies_lines = '06;0854;2.11;01.01.14;18:59:00;00;00;NP   ;000.000;00;00;NP   ;000.000;000.000;000.000;0000.00;99999;-9.9;100;0.0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;+23;26;1662;4011;2886;258;062;063;+20.3;999;9999;9999;9999;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;99999;99999;9999;999;E9;'
 
-#TODO: remove redundancy when thies works
-
 @pytest.fixture()
-def create_db_():
+def create_db_parsivel():
     """
     This function creates test.db in sample_data if it does not exist yet.
     """
-    if os.path.isfile(db_path_parsivel):
-        os.remove(db_path_parsivel)
-    create_db(dbpath=db_path_parsivel)
+    create_db_(db_path_parsivel)
 
 @pytest.fixture()
-def create_db_thies_():
+def create_db_thies():
     """
     This function creates test.db in sample_data if it does not exist yet.
     """
-    if os.path.isfile(db_path_thies):
-        os.remove(db_path_thies)
-    create_db(dbpath=db_path_thies)
+    create_db_(db_path_thies)
+
+def create_db_(db_path):
+    """
+    This function creates test.db in sample_data if it does not exist yet.
+    """
+    if os.path.isfile(db_path):
+        os.remove(db_path)
+    create_db(dbpath=db_path)
 
 @pytest.fixture()
-def db_insert_24h(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def db_insert_24h_parsivel(create_db_parsivel):
+    db_insert_24h(db_path_parsivel, config_dict_parsivel, parsivel_lines)
+
+@pytest.fixture()
+def db_insert_24h_thies(create_db_thies):
+    db_insert_24h(db_path_thies, config_dict_thies, thies_lines)
+
+def db_insert_24h(db_path, config_dict, telegram_lines): # pylint: disable=unused-argument,redefined-outer-name
     """
     This function inserts 24 hours worth of data into the test database.
     :param create_db_: the function to create the test database
     """
     # inserts 1440 rows to db
-    con, cur = connect_db(dbpath=str(db_path_parsivel))
+    con, cur = connect_db(dbpath=str(db_path))
     for i in range(data_points_24h):
         new_time = start_dt + timedelta(minutes=i)  # time offset: by 1 minute
-        telegram = ParsivelTelegram(config_dict=config_dict_parsivel,
-                                    telegram_lines=parsivel_lines,
-                                    timestamp=new_time,
-                                    db_cursor=cur,
-                                    telegram_data={},
-                                    logger=logger)
-        telegram.capture_prefixes_and_data()
-        telegram.prep_telegram_data4db()
-        telegram.insert2db()
-    con.commit()
-    cur.close()
-    con.close()
-
-@pytest.fixture()
-def db_insert_24h_thies(create_db_thies_): # pylint: disable=unused-argument,redefined-outer-name
-    """
-    This function inserts 24 hours worth of data into the test database.
-    :param create_db_: the function to create the test database
-    """
-    # inserts 1440 rows to db
-    con, cur = connect_db(dbpath=str(db_path_thies))
-    for i in range(data_points_24h):
-        new_time = start_dt + timedelta(minutes=i)  # time offset: by 1 minute
-        telegram = ThiesTelegram(config_dict=config_dict_thies,
-                                    telegram_lines=thies_lines,
+        telegram = create_telegram(config_dict=config_dict,
+                                    telegram_lines=telegram_lines,
                                     timestamp=new_time,
                                     db_cursor=cur,
                                     telegram_data={},
@@ -117,7 +103,7 @@ def db_insert_24h_thies(create_db_thies_): # pylint: disable=unused-argument,red
     con.close()
 
 @pytest.fixture()
-def db_insert_24h_w_gaps(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def db_insert_24h_w_gaps(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
     """
     This function inserts 24 hours worth of data into the test database, but with some missing rows.
     :param create_db_: the function to create the test database
@@ -144,7 +130,7 @@ def db_insert_24h_w_gaps(create_db_): # pylint: disable=unused-argument,redefine
     con.close()
 
 @pytest.fixture()
-def db_insert_24h_empty(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def db_insert_24h_empty(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
     """
     This function inserts 24 hours worth of data into the test database, but with some missing rows.
     :param create_db_: the function to create the test database

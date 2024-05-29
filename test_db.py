@@ -2,12 +2,12 @@
 This module contains tests for the SQL database and the NetCDF class.
 
 Functions:
-- create_db_: Creates test.db in sample_data if it does not exist yet.
+- create_db_parsivel: Creates test.db in sample_data if it does not exist yet.
 - test_connect_db: Tests that connect_db returns a Connection and Cursor object.
 - test_db_schema: Tests that the test database has the correct schema.
 - test_db_insert: Tests that inserting a ParsivelTelegram object into the database works correctly.
 - test_unpack_telegram_from_db: Tests the unpack_telegram_from_db function.
-- db_insert_24h: Inserts 24 hours worth of data into the test database.
+- db_insert_24h_parsivel: Inserts 24 hours worth of data into the test database.
 - test_query_db: Tests querying from the database and creates a test netCDF file.
 - test_NetCDF: This function tests whether netCDF files are correctly created.
 - delete_netcdf: Deletes the created test netCDF file.
@@ -54,10 +54,10 @@ data_points_24h = 1440  # (60min * 24h)
 # # random_telegram_fields = set([str(randint(1, 99)).zfill(2) for i in range(20)])
 # print(random_telegram_fields)
 
-def test_connect_db(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def test_connect_db(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
     """
     This function tests that connect_db returns a Connection and Cursor object.
-    :param create_db_: the function to create the test database
+    :param create_db_parsivel: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     assert isinstance(con, sqlite3.Connection) is True
@@ -65,10 +65,10 @@ def test_connect_db(create_db_): # pylint: disable=unused-argument,redefined-out
     cur.close()
     con.close()
 
-def test_db_schema(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def test_db_schema(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
     """
     This function tests that the test database has the correct schema.
-    :param create_db_: the function to create the test database
+    :param create_db_parsivel: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     table_info = cur.execute("PRAGMA table_info('disdrodl');")
@@ -83,10 +83,10 @@ def test_db_schema(create_db_): # pylint: disable=unused-argument,redefined-oute
     con.close()
 
 
-def test_db_insert(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def test_db_insert(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
     """
     This function tests that inserting a ParsivelTelegram object into the database works correctly.
-    :param create_db_: the function to create the test database
+    :param create_db_parsivel: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     telegram = ParsivelTelegram(config_dict=config_dict,
@@ -140,10 +140,10 @@ def test_unpack_telegram_from_db():
     # print(telegram_tmp_dict)
 
 
-def test_query_db(db_insert_24h): # pylint: disable=unused-argument,redefined-outer-name
+def test_query_db(db_insert_24h_parsivel): # pylint: disable=unused-argument,redefined-outer-name
     """
     This function tests querying from the database and creates a test netCDF file.
-    :param db_insert_24h: the function to insert 24 hours worth of data into the test database.
+    :param db_insert_24h_parsivel: the function to insert 24 hours worth of data into the test database.
     """
     delete_netcdf(fn_start='test', data_dir=data_dir,)  # delete old netCDF
     telegram_objs = []

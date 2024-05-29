@@ -20,7 +20,7 @@ standard_args = [sys.executable]
 # Uncomment the line below to get coverage reports (run 'coverage combine' to combine them with the main report)
 # standard_args = standard_args + ['-m', 'coverage', 'run', '--parallel-mode']
 
-def test_parsivel_full(db_insert_24h):
+def test_parsivel_full(db_insert_24h_parsivel):
     """
     This function verifies that exporting a full version of the PAR008 sensor results in no errors
     """
@@ -47,7 +47,7 @@ def test_parsivel_full(db_insert_24h):
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-def test_parsivel_light(db_insert_24h):
+def test_parsivel_light(db_insert_24h_parsivel):
     """
     This function verifies that exporting a light version of the PAR008 sensor results in no errors
     """
@@ -128,7 +128,7 @@ def test_thies_light(db_insert_24h_thies):
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-@pytest.mark.usefixtures("db_insert_24h")
+@pytest.mark.usefixtures("db_insert_24h_parsivel")
 class ExportArgumentExceptionTests(unittest.TestCase):
     """
     This class contains tests for passing illegal arguments to export_disdrodlDB2NC.py
