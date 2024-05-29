@@ -4,6 +4,7 @@ based on the given site config file.
 """
 
 import os
+import sys
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
@@ -99,26 +100,9 @@ if __name__ == '__main__':
         #curently Parsivel telegrams are stored in the database as key:value; while Thies telegrams are stored as
         #value1;value , this part processes the Thies strings so they match the Parsivel ones
         if sensor_type == 'Thies Clima':
-            telegram_list = row.get('telegram').split(';')
-            telegram_list.insert(0,'')
-            list_len = len(telegram_list)
-            formatted_telegrams = []
-            for index, value in enumerate(telegram_list[:-1]):
-                if index == 80:
-                    formatted_telegrams.append(f" {81}:{value},")
-                elif 81 <= index <= 518:
-                    formatted_telegrams.append(f"{value},")
-                elif index == 519:
-                    formatted_telegrams.append(f"{value};")
-                elif index == list_len-1:
-                    formatted_telegrams.append(f" {index + 1}:{value}")
-                else:
-                    formatted_telegrams.append(f" {index + 1}:{value};")
-            telegram_str = ''.join(formatted_telegrams)
-
             telegram_instance = ThiesTelegram(
                 config_dict=config_dict,
-                telegram_lines=telegram_str,
+                telegram_lines=row.get('telegram'),
                 db_row_id=row.get('id'),
                 timestamp=ts_dt,
                 db_cursor=None,
@@ -143,6 +127,11 @@ if __name__ == '__main__':
 
     con.close()
     cur.close()
+
+    # Exit the process if there are no Telegram objects
+    if len(telegram_objs) == 0:
+        logger.error(msg=f"netCDF not created because there are no Telegram objects")
+        sys.exit(1)
 
     # Directory to put the netCDF file in
     # Put the netCDF in sample_data if the provided site config file is from the Thies or when testing

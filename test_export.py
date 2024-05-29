@@ -10,6 +10,7 @@ import subprocess
 import sys
 import os
 import unittest
+import pytest
 from pathlib import Path
 
 env = os.environ.copy()
@@ -19,7 +20,7 @@ standard_args = [sys.executable]
 # Uncomment the line below to get coverage reports (run 'coverage combine' to combine them with the main report)
 # standard_args = standard_args + ['-m', 'coverage', 'run', '--parallel-mode']
 
-def test_parsivel_full():
+def test_parsivel_full(db_insert_24h):
     """
     This function verifies that exporting a full version of the PAR008 sensor results in no errors
     """
@@ -46,7 +47,7 @@ def test_parsivel_full():
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-def test_parsivel_light():
+def test_parsivel_light(db_insert_24h):
     """
     This function verifies that exporting a light version of the PAR008 sensor results in no errors
     """
@@ -73,11 +74,11 @@ def test_parsivel_light():
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-def test_thies_full():
+def test_thies_full(db_insert_24h_thies):
     """
     This function verifies that exporting a full version of the THIES006 sensor results in no errors
     """
-    output_file_path = output_file_dir / '20240513_Green_Village-GV_THIES006.nc'
+    output_file_path = output_file_dir / '20240101_Green_Village-GV_THIES006.nc'
 
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
@@ -87,7 +88,7 @@ def test_thies_full():
         standard_args +
         ['export_disdrodlDB2NC.py',
         '-c', 'configs_netcdf/config_008_GV_THIES.yml',
-        '-d', '2024-05-13',
+        '-d', '2024-01-01',
         '-v', 'full'],
         capture_output=True,
         check=True,
@@ -100,11 +101,11 @@ def test_thies_full():
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-def test_thies_light():
+def test_thies_light(db_insert_24h_thies):
     """
     This function verifies that exporting a light version of the THIES006 sensor results in no errors
     """
-    output_file_path = output_file_dir / '20240513_Green_Village-GV_THIES006_light.nc'
+    output_file_path = output_file_dir / '20240101_Green_Village-GV_THIES006_light.nc'
 
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
@@ -114,7 +115,7 @@ def test_thies_light():
         standard_args +
         ['export_disdrodlDB2NC.py',
         '-c', 'configs_netcdf/config_008_GV_THIES.yml',
-        '-d', '2024-05-13',
+        '-d', '2024-01-01',
         '-v', 'light'],
         capture_output=True,
         check=True,
@@ -127,9 +128,10 @@ def test_thies_light():
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-class ExportExceptionTests(unittest.TestCase):
+@pytest.mark.usefixtures("db_insert_24h")
+class ExportArgumentExceptionTests(unittest.TestCase):
     """
-    This class contains the bad weather tests for export_disdrodlDB2NC.py
+    This class contains tests for passing illegal arguments to export_disdrodlDB2NC.py
     """
 
     def test_bad_config(self):
@@ -182,3 +184,26 @@ class ExportExceptionTests(unittest.TestCase):
                 check=True,
                 env=env
             )
+
+@pytest.mark.usefixtures("db_insert_24h_empty")
+class EmptyExportTests(unittest.TestCase):
+    """
+    This class contains tests for running export_disdrodlDB2NC.py for a date with no database entries
+    """
+
+    def test_no_telegrams(self):
+        """
+        This function verifies that running the export script for a date without database entries resuls in an error
+        """
+        env['MOCK_DB'] = '1'
+        with self.assertRaises(subprocess.CalledProcessError):
+            subprocess.run(
+                standard_args +
+                ['export_disdrodlDB2NC.py',
+                '-c', 'configs_netcdf/config_008_GV.yml',
+                '-d', '2024-01-01',
+                '-v', 'full'],
+                capture_output=True,
+                check=True,
+                env=env
+            )    
