@@ -273,24 +273,24 @@ def test_NetCDF_thies():
     # test that NetCDF captures full 24 hours of data
     netCDF_var_datetime = rootgrp.variables['datetime']
     netCDF_var_datetime_data = netCDF_var_datetime[:]
-    #replace once we get a 24h of telegrams for the thies database for testing
-    #test that NetCDF captures 60x24 telegrams
+    # replace once we get a 24h of telegrams for the thies testing database
+    # test that NetCDF captures 60x24 telegrams
     assert len(netCDF_var_datetime_data) == 109
-    #test that first telegram is at 00:00 hours
+    # test that first telegram is at 00:00 hours
     assert netCDF_var_datetime_data[0][:-13] == '2024-05-14T09:27:00'
-    #test that last telegram is at 23:59 hours
+    # test that last telegram is at 23:59 hours
     assert netCDF_var_datetime_data[-1][:-13] == '2024-05-14T11:32:00'
 
-    #3 tests that site specific variables are written to file
+    # 3 tests that site specific variables are written to file
     netCDF_var_velocity_classes_center = rootgrp.variables['velocity_center_classes']
     netCDF_var_velocity_classes_center_data = netCDF_var_velocity_classes_center[:].data
-    #test value of first velocity center class
+    # test value of first velocity center class
     assert abs(netCDF_var_velocity_classes_center_data[0] - 0.100) <= 1.0E-4
-    #test value of last velocity center class
+    # test value of last velocity center class
     assert netCDF_var_velocity_classes_center_data[-1] == 15.00
     netCDF_var_altitude = rootgrp.variables['altitude']
     netCDF_var_altitude_data = netCDF_var_altitude[:].data
-    #test altitude for specific site
+    # test altitude for specific site
     assert netCDF_var_altitude_data == 1
     # test that particle class is correctly populated
     netCDF_var_particle_number = rootgrp.variables['number_of_particles_class_8']
@@ -300,7 +300,7 @@ def test_NetCDF_thies():
     netCDF_var_data_raw = rootgrp.variables['raw_data']
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
-    #change 109 to 1440 once we have 24h of thies telegram data
+    # change 109 to 1440 once we have 24h of thies telegram data
     assert netCDF_var_data_raw_shape == (109, 22, 20)
 
 
