@@ -10,8 +10,8 @@ import subprocess
 import sys
 import os
 import unittest
-import pytest
 from pathlib import Path
+import pytest
 
 env = os.environ.copy()
 output_file_dir = Path('sample_data/')
@@ -20,7 +20,7 @@ standard_args = [sys.executable]
 # Uncomment the line below to get coverage reports (run 'coverage combine' to combine them with the main report)
 # standard_args = standard_args + ['-m', 'coverage', 'run', '--parallel-mode']
 
-def test_parsivel_full(db_insert_24h_parsivel):
+def test_parsivel_full(db_insert_24h_parsivel): # pylint: disable=unused-argument
     """
     This function verifies that exporting a full version of the PAR008 sensor results in no errors
     """
@@ -47,7 +47,7 @@ def test_parsivel_full(db_insert_24h_parsivel):
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-def test_parsivel_light(db_insert_24h_parsivel):
+def test_parsivel_light(db_insert_24h_parsivel): # pylint: disable=unused-argument
     """
     This function verifies that exporting a light version of the PAR008 sensor results in no errors
     """
@@ -74,7 +74,7 @@ def test_parsivel_light(db_insert_24h_parsivel):
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-def test_thies_full(db_insert_24h_thies):
+def test_thies_full(db_insert_24h_thies): # pylint: disable=unused-argument
     """
     This function verifies that exporting a full version of the THIES006 sensor results in no errors
     """
@@ -101,7 +101,7 @@ def test_thies_full(db_insert_24h_thies):
     if os.path.exists(output_file_path):
         os.remove(output_file_path)
 
-def test_thies_light(db_insert_24h_thies):
+def test_thies_light(db_insert_24h_thies): # pylint: disable=unused-argument
     """
     This function verifies that exporting a light version of the THIES006 sensor results in no errors
     """
@@ -185,7 +185,7 @@ class ExportArgumentExceptionTests(unittest.TestCase):
                 env=env
             )
 
-@pytest.mark.usefixtures("db_insert_24h_empty")
+@pytest.mark.usefixtures("db_insert_24h_empty_parsivel")
 class EmptyExportTests(unittest.TestCase):
     """
     This class contains tests for running export_disdrodlDB2NC.py for a date with no database entries
@@ -206,4 +206,4 @@ class EmptyExportTests(unittest.TestCase):
                 capture_output=True,
                 check=True,
                 env=env
-            )    
+            )

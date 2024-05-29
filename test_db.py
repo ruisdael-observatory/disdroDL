@@ -2,16 +2,13 @@
 This module contains tests for the SQL database and the NetCDF class.
 
 Functions:
-- create_db_parsivel: Creates test.db in sample_data if it does not exist yet.
 - test_connect_db: Tests that connect_db returns a Connection and Cursor object.
 - test_db_schema: Tests that the test database has the correct schema.
 - test_db_insert: Tests that inserting a ParsivelTelegram object into the database works correctly.
 - test_unpack_telegram_from_db: Tests the unpack_telegram_from_db function.
-- db_insert_24h_parsivel: Inserts 24 hours worth of data into the test database.
 - test_query_db: Tests querying from the database and creates a test netCDF file.
 - test_NetCDF: This function tests whether netCDF files are correctly created.
 - delete_netcdf: Deletes the created test netCDF file.
-- db_insert_24h_w_gaps: This function inserts 24 hours worth of data into the test database, but with some missing rows.
 - test_NetCDF_w_gaps: Tests whether the db rows with empty telegram data are not included in NetCDF.
 """
 
@@ -25,7 +22,6 @@ import unittest
 from netCDF4 import Dataset # pylint: disable=no-name-in-module
 from cftime import num2date
 from pydantic.v1.utils import deep_update
-import pytest
 
 from modules.sqldb import connect_db, query_db_rows_gen
 from modules.util_functions import yaml2dict
@@ -54,7 +50,7 @@ data_points_24h = 1440  # (60min * 24h)
 # # random_telegram_fields = set([str(randint(1, 99)).zfill(2) for i in range(20)])
 # print(random_telegram_fields)
 
-def test_connect_db(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
+def test_connect_db(create_db_parsivel): # pylint: disable=unused-argument
     """
     This function tests that connect_db returns a Connection and Cursor object.
     :param create_db_parsivel: the function to create the test database
@@ -65,7 +61,7 @@ def test_connect_db(create_db_parsivel): # pylint: disable=unused-argument,redef
     cur.close()
     con.close()
 
-def test_db_schema(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
+def test_db_schema(create_db_parsivel): # pylint: disable=unused-argument
     """
     This function tests that the test database has the correct schema.
     :param create_db_parsivel: the function to create the test database
@@ -83,7 +79,7 @@ def test_db_schema(create_db_parsivel): # pylint: disable=unused-argument,redefi
     con.close()
 
 
-def test_db_insert(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
+def test_db_insert(create_db_parsivel): # pylint: disable=unused-argument
     """
     This function tests that inserting a ParsivelTelegram object into the database works correctly.
     :param create_db_parsivel: the function to create the test database
@@ -140,7 +136,7 @@ def test_unpack_telegram_from_db():
     # print(telegram_tmp_dict)
 
 
-def test_query_db(db_insert_24h_parsivel): # pylint: disable=unused-argument,redefined-outer-name
+def test_query_db(db_insert_24h_parsivel): # pylint: disable=unused-argument
     """
     This function tests querying from the database and creates a test netCDF file.
     :param db_insert_24h_parsivel: the function to insert 24 hours worth of data into the test database.
@@ -309,7 +305,7 @@ def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
         os.remove(test_nc_path)
 
 
-def test_NetCDF_w_gaps(db_insert_24h_w_gaps): # pylint: disable=unused-argument,redefined-outer-name
+def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-argument
     '''
     This function tests whether the db rows with empty telegram data are not included in NetCDF.
     :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
