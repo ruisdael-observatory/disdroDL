@@ -4,12 +4,13 @@ based on the given site config file.
 """
 
 import os
+import sys
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
-from modules.telegram import ParsivelTelegram, ThiesTelegram
+from modules.telegram import create_telegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
 
@@ -72,7 +73,7 @@ if __name__ == '__main__':
         db_path = Path("sample_data/test_thies.db")
     # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
     elif sensor_type == 'Thies Clima':
-        db_path = Path("sample_data/disdrodl-thies.db")
+        db_path = Path("sample_data/disdrodl-test1.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
 
@@ -95,37 +96,7 @@ if __name__ == '__main__':
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
 
-        #TODO needs to be removed once the data is written to database as " key:value" # pylint: disable=fixme
-        #curently Parsivel telegrams are stored in the database as key:value; while Thies telegrams are stored as
-        #value1;value , this part processes the Thies strings so they match the Parsivel ones
-        if sensor_type == 'Thies Clima':
-            telegram_list = row.get('telegram').split(';')
-            telegram_list.insert(0,'')
-            list_len = len(telegram_list)
-            formatted_telegrams = []
-            for index, value in enumerate(telegram_list[:-1]):
-                if index == 80:
-                    formatted_telegrams.append(f" {81}:{value},")
-                elif 81 <= index <= 518:
-                    formatted_telegrams.append(f"{value},")
-                elif index == 519:
-                    formatted_telegrams.append(f"{value};")
-                elif index == list_len-1:
-                    formatted_telegrams.append(f" {index + 1}:{value}")
-                else:
-                    formatted_telegrams.append(f" {index + 1}:{value};")
-            telegram_str = ''.join(formatted_telegrams)
-
-            telegram_instance = ThiesTelegram(
-                config_dict=config_dict,
-                telegram_lines=telegram_str,
-                db_row_id=row.get('id'),
-                timestamp=ts_dt,
-                db_cursor=None,
-                telegram_data={},
-                logger=logger)
-        else:
-            telegram_instance = ParsivelTelegram(
+        telegram_instance = create_telegram(
                 config_dict=config_dict,
                 telegram_lines=row.get('telegram'),
                 db_row_id=row.get('id'),
@@ -143,6 +114,11 @@ if __name__ == '__main__':
 
     con.close()
     cur.close()
+
+    # Exit the process if there are no Telegram objects
+    if len(telegram_objs) == 0:
+        logger.error(msg="netCDF not created because there are no Telegram objects")
+        sys.exit(1)
 
     # Directory to put the netCDF file in
     # Put the netCDF in sample_data if the provided site config file is from the Thies or when testing
