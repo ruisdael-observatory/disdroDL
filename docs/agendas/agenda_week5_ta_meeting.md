@@ -1,4 +1,4 @@
-# Minutes TA Week 5 
+# Agenda & Minutes TA Week 5 
 ## Date: 22-05-2024
 ## Chairwoman: Ella Milinovic
 ## Minutetaker: Mels Lutgerink
@@ -21,7 +21,7 @@
   - How will the TA evaluate our performance over 2 repos ?
   - How to include it in the report ?
 
-
+# Minutes:
 - Demo
 	- ella shows how the software exports to netCDF
 	- Ella mentions that the client is looking at the YAML file if erverything is setup correctly, changes may be necessary.
