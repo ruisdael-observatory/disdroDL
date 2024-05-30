@@ -1,9 +1,9 @@
-# Agenda & Minutes TA Week 5 
+# Agenda Week 5 - TA Meeting
 ## Date: 22-05-2024
-## Chairwoman: Ella Milinovic
+## Chairman: Ella Milinovic
 ## Minutetaker: Mels Lutgerink
 
-- Agenda
+### Discussion points:
   - Give update on current progress
   - show demo of working prototype for communication with the Thies and exporting to NetCDF
 
