@@ -60,6 +60,7 @@ config_dict = deep_update(config_dict, config_dict_site)
 
 ### Serial connection ###
 
+# Initialize the sensor based on the sensor type
 sensor = None
 if sensor_type == 'OTT Hydromet Parsivel2':
     sensor = Parsivel()

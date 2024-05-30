@@ -1,5 +1,7 @@
 """
-TBC
+Quick version of the reset function for the Thies Clima sensor.
+Adapted reset_parsivel.py to work with the thies.
+Maybe we can merge the two scripts into one in the future.
 """
 from pathlib import Path
 from argparse import ArgumentParser

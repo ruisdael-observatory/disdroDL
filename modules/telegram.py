@@ -310,6 +310,7 @@ class ThiesTelegram(Telegram):
         sensor = self.config_dict['global_attrs']['sensor_name']
         t_str = self.telegram_data_str
 
+        # Transform raw telegram to key value pairs
         telegram_list = self.telegram_lines.split(';')
         telegram_list.insert(0,'')
         list_len = len(telegram_list)
