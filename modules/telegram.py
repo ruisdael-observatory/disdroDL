@@ -1,6 +1,9 @@
 """
 This module contains the abstract class for handling telegrams received from the sensors,
 and the implementation of different telegram classes inheriting this class.
+
+Functions:
+- create_telegram: Creates a specific Telegram object based on the sensor type in the configuration dictionary.
 """
 
 from abc import abstractmethod, ABC
@@ -196,8 +199,11 @@ class ParsivelTelegram(Telegram):
 
     def insert2db(self):
         """"
-        Passes telegrams strings into the database.
+        Method for passing telegrams strings into the database
         """
+        self.capture_prefixes_and_data()
+        self.prep_telegram_data4db()
+
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
 
@@ -210,6 +216,7 @@ class ParsivelTelegram(Telegram):
 
         self.logger.debug(msg=insert_str)
         self.db_cursor.execute(insert_str)
+
 
     def __str2list(self, field, separator):
         """
@@ -326,7 +333,7 @@ class ThiesTelegram(Telegram):
 
     def insert2db(self):
         """"
-        Passes telegrams strings into the database.
+        Method for passing telegrams strings into the database
         """
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
@@ -334,12 +341,30 @@ class ThiesTelegram(Telegram):
         timestamp_str = self.timestamp.isoformat()
         ts = self.timestamp.timestamp()
         sensor = self.config_dict['global_attrs']['sensor_name']
-        t_str = self.telegram_data_str
 
-        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{t_str}');"
+        telegram_list = self.telegram_lines.split(';')
+        telegram_list.insert(0,'')
+        list_len = len(telegram_list)
+        formatted_telegrams = []
+        for index, value in enumerate(telegram_list[:-1]):
+            if index == 80:
+                formatted_telegrams.append(f" {81}:{value},")
+            elif 81 <= index <= 518:
+                formatted_telegrams.append(f"{value},")
+            elif index == 519:
+                formatted_telegrams.append(f"{value};")
+            elif index == list_len-1:
+                formatted_telegrams.append(f" {index + 1}:{value}")
+            else:
+                formatted_telegrams.append(f" {index + 1}:{value};")
+        telegram_str = ''.join(formatted_telegrams)
+
+        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{telegram_str}');"
 
         self.logger.debug(msg=insert_str)
         self.db_cursor.execute(insert_str)
+
+
 
     def __str2list(self, field, separator):
         """
@@ -351,3 +376,43 @@ class ThiesTelegram(Telegram):
         str_val = self.telegram_data[field]
         list_val = str_val.split(separator)
         self.telegram_data[field] = list_val
+
+def create_telegram(config_dict: Dict, telegram_lines: Union[str, bytes],
+                 timestamp: datetime, db_cursor: Union[Cursor, None],
+                 logger: Logger, db_row_id: Union[Cursor, None], telegram_data: Dict) -> Union[Telegram, None]: # pylint: disable=unused-argument
+                 # telegram_data_str=None
+    """
+    Creates a specific Telegram object based on the sensor type in the configuration dictionary.
+    :param config_dict: dictionary for later exporting into netcdf
+    :param telegram_lines: lines of the telegram received from a sensor
+    :param timestamp: the time
+    :param db_cursor: database cursor
+    :param logger: logger logging data from a sensor
+    :param telegram_data: data from the telegram sent by a sensor
+    :param db_row_id: row id from the database
+    :param telegram_data_str: telegram data string
+    :return: the respective Telegram object for a recognized sensor type, or None otherwise
+    """
+    sensor_type = config_dict['global_attrs']['sensor_type']
+
+    if sensor_type == 'OTT Hydromet Parsivel2':
+        return ParsivelTelegram(config_dict=config_dict,
+                    telegram_lines=telegram_lines,
+                    db_row_id=db_row_id,
+                    timestamp=timestamp,
+                    db_cursor=db_cursor,
+                    telegram_data={},
+                    logger=logger)
+
+    if sensor_type == 'Thies Clima':
+        return ThiesTelegram(config_dict=config_dict,
+                    telegram_lines=telegram_lines,
+                    db_row_id=db_row_id,
+                    timestamp=timestamp,
+                    db_cursor=db_cursor,
+                    telegram_data={},
+                    logger=logger)
+
+    logger.error(msg=f"Sensor type {sensor_type} not recognized")
+    return None
+    

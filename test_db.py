@@ -2,16 +2,13 @@
 This module contains tests for the SQL database and the NetCDF class.
 
 Functions:
-- create_db_: Creates test.db in sample_data if it does not exist yet.
 - test_connect_db: Tests that connect_db returns a Connection and Cursor object.
 - test_db_schema: Tests that the test database has the correct schema.
 - test_db_insert: Tests that inserting a ParsivelTelegram object into the database works correctly.
 - test_unpack_telegram_from_db: Tests the unpack_telegram_from_db function.
-- db_insert_24h: Inserts 24 hours worth of data into the test database.
 - test_query_db: Tests querying from the database and creates a test netCDF file.
 - test_NetCDF: This function tests whether netCDF files are correctly created.
 - delete_netcdf: Deletes the created test netCDF file.
-- db_insert_24h_w_gaps: This function inserts 24 hours worth of data into the test database, but with some missing rows.
 - test_NetCDF_w_gaps: Tests whether the db rows with empty telegram data are not included in NetCDF.
 """
 
@@ -25,9 +22,8 @@ import unittest
 from netCDF4 import Dataset # pylint: disable=no-name-in-module
 from cftime import num2date
 from pydantic.v1.utils import deep_update
-import pytest
 
-from modules.sqldb import create_db, connect_db, query_db_rows_gen
+from modules.sqldb import connect_db, query_db_rows_gen
 from modules.util_functions import yaml2dict
 from modules.now_time import NowTime
 from modules.telegram import ParsivelTelegram
@@ -39,8 +35,6 @@ wd = Path().resolve()
 data_dir = wd / 'sample_data'
 db_file = 'test_parsivel.db'
 db_path = data_dir / db_file
-par008_db_file = 'disdrodl_PA008.db'
-par008_db_path = data_dir / par008_db_file
 
 log_handler = StreamHandler()
 logger = logging.getLogger('test-log')
@@ -56,21 +50,10 @@ data_points_24h = 1440  # (60min * 24h)
 # # random_telegram_fields = set([str(randint(1, 99)).zfill(2) for i in range(20)])
 # print(random_telegram_fields)
 
-
-@pytest.fixture()
-def create_db_():
-    """
-    This function creates test.db in sample_data if it does not exist yet.
-    """
-    if os.path.isfile(db_path):
-        os.remove(db_path)
-    create_db(dbpath=db_path)
-
-
-def test_connect_db(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def test_connect_db(create_db_parsivel): # pylint: disable=unused-argument
     """
     This function tests that connect_db returns a Connection and Cursor object.
-    :param create_db_: the function to create the test database
+    :param create_db_parsivel: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     assert isinstance(con, sqlite3.Connection) is True
@@ -78,10 +61,10 @@ def test_connect_db(create_db_): # pylint: disable=unused-argument,redefined-out
     cur.close()
     con.close()
 
-def test_db_schema(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def test_db_schema(create_db_parsivel): # pylint: disable=unused-argument
     """
     This function tests that the test database has the correct schema.
-    :param create_db_: the function to create the test database
+    :param create_db_parsivel: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     table_info = cur.execute("PRAGMA table_info('disdrodl');")
@@ -96,10 +79,10 @@ def test_db_schema(create_db_): # pylint: disable=unused-argument,redefined-oute
     con.close()
 
 
-def test_db_insert(create_db_): # pylint: disable=unused-argument,redefined-outer-name
+def test_db_insert(create_db_parsivel): # pylint: disable=unused-argument
     """
     This function tests that inserting a ParsivelTelegram object into the database works correctly.
-    :param create_db_: the function to create the test database
+    :param create_db_parsivel: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path))
     telegram = ParsivelTelegram(config_dict=config_dict,
@@ -153,37 +136,10 @@ def test_unpack_telegram_from_db():
     # print(telegram_tmp_dict)
 
 
-parsivel_lines = [b'TYP OP4A\r\n', b'01:0000.000\r\n', b'02:0000.00\r\n', b'03:00\r\n', b'04:00\r\n', b'05:   NP\r\n', b'06:   C\r\n', b'07:-9.999\r\n', b'08:20000\r\n', b'09:00043\r\n', b'10:13894\r\n', b'11:00000\r\n', b'12:021\r\n', b'13:450994\r\n', b'14:2.11.6\r\n', b'15:2.11.1\r\n', b'16:0.50\r\n', b'17:24.3\r\n', b'18:0\r\n', b'19: \r\n', b'20:10:13:21\r\n', b'21:25.05.2023\r\n', b'22:\r\n', b'23:\r\n', b'24:0000.00\r\n', b'25:000\r\n', b'26:032\r\n', b'27:022\r\n', b'28:022\r\n', b'29:000.041\r\n', b'30:00.000\r\n', b'31:0000.0\r\n', b'32:0000.00\r\n', b'34:0000.00\r\n', b'35:0000.00\r\n', b'40:20000\r\n', b'41:20000\r\n', b'50:00000000\r\n', b'51:000140\r\n', b'90:-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;\r\n', b'91:00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;\r\n', b'93:000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;\r\n', b'94:0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;0000;\r\n', b'95:0.00;0.00;0.00;0.00;0.00;0.00;0.00;\r\n', b'96:0000000;0000000;0000000;0000000;0000000;0000000;0000000;\r\n', b'97:;\r\n', b'98:;\r\n', b'99:;\r\n', b'\x03'] # pylint: disable=line-too-long
-
-
-@pytest.fixture()
-def db_insert_24h(create_db_): # pylint: disable=unused-argument,redefined-outer-name
-    """
-    This function inserts 24 hours worth of data into the test database.
-    :param create_db_: the function to create the test database
-    """
-    # inserts 1440 rows to db
-    con, cur = connect_db(dbpath=str(db_path))
-    for i in range(data_points_24h):
-        new_time = start_dt + timedelta(minutes=i)  # time offset: by 1 minute
-        telegram = ParsivelTelegram(config_dict=config_dict,
-                                    telegram_lines=parsivel_lines,
-                                    timestamp=new_time,
-                                    db_cursor=cur,
-                                    telegram_data={},
-                                    logger=logger)
-        telegram.capture_prefixes_and_data()
-        telegram.prep_telegram_data4db()
-        telegram.insert2db()
-    con.commit()
-    cur.close()
-    con.close()
-
-
-def test_query_db(db_insert_24h): # pylint: disable=unused-argument,redefined-outer-name
+def test_query_db(db_insert_24h_parsivel): # pylint: disable=unused-argument
     """
     This function tests querying from the database and creates a test netCDF file.
-    :param db_insert_24h: the function to insert 24 hours worth of data into the test database.
+    :param db_insert_24h_parsivel: the function to insert 24 hours worth of data into the test database.
     """
     delete_netcdf(fn_start='test', data_dir=data_dir,)  # delete old netCDF
     telegram_objs = []
@@ -389,35 +345,7 @@ def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
         os.remove(test_nc_path)
 
 
-@pytest.fixture()
-def db_insert_24h_w_gaps(create_db_): # pylint: disable=unused-argument,redefined-outer-name
-    """
-    This function inserts 24 hours worth of data into the test database, but with some missing rows.
-    :param create_db_: the function to create the test database
-    """
-    # inserts 1440 rows to db, but in half of entries, telegram is empty
-    con, cur = connect_db(dbpath=str(db_path))
-    for i in range(data_points_24h):
-        new_time = start_dt + timedelta(minutes=i)  # time offset: by 1 minute
-        if i % 2 == 0:
-            data_lines = parsivel_lines
-        else:
-            data_lines = []  # odd index: empty list, instead of parsivel_lines
-        telegram = ParsivelTelegram(config_dict=config_dict,
-                                    telegram_lines=data_lines,
-                                    timestamp=new_time,
-                                    db_cursor=cur,
-                                    telegram_data={},
-                                    logger=logger)
-        telegram.capture_prefixes_and_data()
-        telegram.prep_telegram_data4db()
-        telegram.insert2db()
-    con.commit()
-    cur.close()
-    con.close()
-
-
-def test_NetCDF_w_gaps(db_insert_24h_w_gaps): # pylint: disable=unused-argument,redefined-outer-name
+def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-argument
     '''
     This function tests whether the db rows with empty telegram data are not included in NetCDF.
     :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
