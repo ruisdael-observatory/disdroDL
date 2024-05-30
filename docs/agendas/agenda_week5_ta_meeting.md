@@ -4,11 +4,23 @@
 ## Minutetaker: Mels Lutgerink
 
 - Agenda
-    - demo of current progress
-    - midterm meeting - contents of the presentation itself/ what we should present besides the demo
-    - endterm meeting time slot
-    - test coverage expectations
-    - talk about the quality control software
+  - Give update on current progress
+  - show demo of working prototype for communication with the Thies and exporting to NetCDF
+
+  - midterm presentation:
+    - what should the demo contain ?
+    - what should we present besides our demo ?
+    - how long should we present for ?
+    - What happens after we present ?
+    - total length of midterm presentation
+    - when will we receive feedback ?
+    - ask for elaboration on test coverage expectations
+  - discuss endterm meeting time slots
+  - discuss new quality control software:
+  - How should we approach having 2 repositories ?
+  - How will the TA evaluate our performance over 2 repos ?
+  - How to include it in the report ?
+
 
 - Demo
 	- ella shows how the software exports to netCDF
