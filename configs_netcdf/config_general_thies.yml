@@ -779,7 +779,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles > maximal speed (20m/s'
+            long_name: 'Number of particles > maximal speed (20m/s)'
             standard_name: 'number_of_particles_faster_than_20'
     '56':
         dimensions:
@@ -983,7 +983,7 @@ telegram_fields:
             standard_name: 'total_volume_gross_of_class_9'
 # The field 81 to 520 are the classes:
 #    1st diameter-1st speed, then 1st diameter-2nd speed etc... until Diameter 22, speed 20
-# I am not sure how to describe it here.
+#    in the netcdf they are written into a 22 by 20 matrix
     '81':
         dimensions:
             - time
