@@ -33,7 +33,7 @@ def main(config_file):
 
     logger = create_logger(log_dir=Path(config_dict['log_dir']),  # pylint: disable=unexpected-keyword-arg, no-value-for-parameter
                            script_name=config_dict['script_name'],
-                           parsivel_name=config_dict['global_attrs']['sensor_name'])
+                           sensor_name=config_dict['global_attrs']['sensor_name'])
 
     parsivel = Parsivel()
     parsivel.init_serial_connection(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
