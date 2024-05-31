@@ -17,20 +17,15 @@ from modules.telegram import ParsivelTelegram, ThiesTelegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
 
+
 ######################## BOILER PLATE ##################
-
-### Parser ###
-parser = ArgumentParser(
-    description="Ruisdael: OTT Disdrometer data logger. Run: python capture_disdrometer_data.py -c config_*.yml")
-parser.add_argument(
-    '-c',
-    '--config',
-    required=True,
-    help='Path to site config file. ie. -c configs_netcdf/config_008_GV.yml')
-args = parser.parse_args()
-
-### Config files ###
-wd = Path(__file__).parent
+def main(config_site):
+    """
+    Main function to log data once every minute
+    :param config_site: the config file for the site
+    """
+    ### Config files ###
+    wd = Path(__file__).parent
 
 config_dict_site = yaml2dict(path=wd / args.config)
 
@@ -56,9 +51,7 @@ config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_file)
 
 config_dict = deep_update(config_dict, config_dict_site)
 
-
-
-### Serial connection ###
+    ### Serial connection ###
 
 sensor = None
 if sensor_type == 'OTT Hydromet Parsivel2':
@@ -138,3 +131,27 @@ while True:
     # sleep for 2 seconds to guarantee you don't log the same data twice
     # this causes issues with a computation time of 58 seconds
     sleep(2)
+
+        # sleep for 2 seconds to guarantee you don't log the same data twice
+        # this causes issues with a computation time of 58 seconds
+        sleep(2)
+
+
+def get_config_file():
+    """
+    Function that gets th config file from the command line
+    :return: the config file's name
+    """
+    parser = ArgumentParser(
+        description="Ruisdael: OTT Disdrometer data logger. Run: python capture_disdrometer_data.py -c config_*.yml")
+    parser.add_argument(
+        '-c',
+        '--config',
+        required=True,
+        help='Path to site config file. ie. -c configs_netcdf/config_008_GV.yml')
+    args = parser.parse_args()
+    return args.config
+
+
+if __name__ == '__main__':
+    main(get_config_file())
