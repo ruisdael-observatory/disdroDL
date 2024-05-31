@@ -1,6 +1,10 @@
 """
 This module is used to create a logger object that logs to a file.
+
+Functions:
+- log: creates a logger object
 """
+
 import logging
 import json
 import time

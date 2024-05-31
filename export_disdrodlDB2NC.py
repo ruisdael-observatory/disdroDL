@@ -1,13 +1,16 @@
 """
-Script to export the DB data from a specific date to a netCDF file based on the given site config file.
+Script to export telegram data from the database from a specific date to a netCDF file
+based on the given site config file.
 """
 
+import os
+import sys
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
 from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
-from modules.telegram import ParsivelTelegram, ThiesTelegram
+from modules.telegram import create_telegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
 
@@ -46,7 +49,7 @@ if __name__ == '__main__':
     elif args.version == 'light':
         full_version = False
     else:
-        raise Exception("version was not 'full' or 'light'")
+        raise ValueError("version was not 'full' or 'light'")
 
     config_dict_site = yaml2dict(path=wd / args.config)
     sensor_type = config_dict_site['global_attrs']['sensor_type']
@@ -63,9 +66,14 @@ if __name__ == '__main__':
     sensor_name = config_dict['global_attrs']['sensor_name']
     fn_start = f"{args.date.replace('-', '')}_{site_name}-{st_code}_{sensor_name}"
 
+    # Use the respective test database when called by tests
+    if os.getenv('MOCK_DB', '0') == '1':
+        db_path = Path("sample_data/test_parsivel.db")
+    elif os.getenv('MOCK_DB', '0') == '2':
+        db_path = Path("sample_data/test_thies.db")
     # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
-        db_path = Path("sample_data/disdrodl-thies.db")
+    elif sensor_type == 'Thies Clima':
+        db_path = Path("sample_data/disdrodl-test1.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
 
@@ -88,17 +96,7 @@ if __name__ == '__main__':
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
 
-        if sensor_type == 'Thies Clima':
-            telegram_instance = ThiesTelegram(
-                config_dict=config_dict,
-                telegram_lines=row.get('telegram'),
-                db_row_id=row.get('id'),
-                timestamp=ts_dt,
-                db_cursor=None,
-                telegram_data={},
-                logger=logger)
-        else:
-            telegram_instance = ParsivelTelegram(
+        telegram_instance = create_telegram(
                 config_dict=config_dict,
                 telegram_lines=row.get('telegram'),
                 db_row_id=row.get('id'),
@@ -117,9 +115,14 @@ if __name__ == '__main__':
     con.close()
     cur.close()
 
+    # Exit the process if there are no Telegram objects
+    if len(telegram_objs) == 0:
+        logger.error(msg="netCDF not created because there are no Telegram objects")
+        sys.exit(1)
+
     # Directory to put the netCDF file in
-    # Put the netCDF in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
+    # Put the netCDF in sample_data if the provided site config file is from the Thies or when testing
+    if sensor_type == 'Thies Clima' or os.getenv('MOCK_DB', '0') != '0':
         data_dir = Path('sample_data/')
     else:
         data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
