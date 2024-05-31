@@ -7,7 +7,6 @@ Functions:
 - main: The main function for exporting a netCDF file.
 """
 
-import os
 import sys
 from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
@@ -93,13 +92,8 @@ def main(args):
     if full_version is False:
         fn_start = f"{fn_start}_light"
 
-    # Use the respective test database when called by tests
-    if os.getenv('MOCK_DB', '0') == '1':
-        db_path = Path("sample_data/test_parsivel.db")
-    elif os.getenv('MOCK_DB', '0') == '2':
-        db_path = Path("sample_data/test_thies.db")
     # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
-    elif sensor_type == 'Thies Clima':
+    if sensor_type == 'Thies Clima':
         db_path = Path("sample_data/disdrodl-test1.db")
     else:
         db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
@@ -141,8 +135,8 @@ def main(args):
         sys.exit(1)
 
     # Directory to put the netCDF file in
-    # Put the netCDF in sample_data if the provided site config file is from the Thies or when testing
-    if sensor_type == 'Thies Clima' or os.getenv('MOCK_DB', '0') != '0':
+    # Put the netCDF in sample_data if the provided site config file is from the Thies
+    if sensor_type == 'Thies Clima':
         data_dir = Path('sample_data/')
     else:
         data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
