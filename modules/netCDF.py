@@ -289,6 +289,7 @@ class NetCDF:
         :param var_key_: key to get the data
         """
         # checks if variable is in telegram data
+        print(var_key_)
         if var_key_ in self.telegram_objs[0].telegram_data.keys():
             for i, telegram_obj in enumerate(self.telegram_objs):
                 netCDF_var_[i] = telegram_obj.telegram_data[var_key_]
@@ -298,7 +299,6 @@ class NetCDF:
             if netCDF_var_.standard_name == 'datetime':
                 for i, telegram_obj in enumerate(self.telegram_objs):
                     netCDF_var_[i] = getattr(telegram_obj, 'timestamp').isoformat()
-                    print(netCDF_var_[i])
             else:
                 for i, telegram_obj in enumerate(self.telegram_objs):
                     netCDF_var_[i] = getattr(telegram_obj, var_key_)

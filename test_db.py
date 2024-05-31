@@ -26,7 +26,7 @@ from pydantic.v1.utils import deep_update
 from modules.sqldb import connect_db, query_db_rows_gen
 from modules.util_functions import yaml2dict
 from modules.now_time import NowTime
-from modules.telegram import ParsivelTelegram,ThiesTelegram
+from modules.telegram import ParsivelTelegram, ThiesTelegram
 from modules.netCDF import NetCDF, unpack_telegram_from_db
 import conftest
 
@@ -36,6 +36,9 @@ wd = Path().resolve()
 data_dir = wd / 'sample_data'
 db_file = 'test_parsivel.db'
 db_path = data_dir / db_file
+
+db_file_thies = 'test_thies.db'
+db_path_thies = data_dir / db_file_thies
 
 log_handler = StreamHandler()
 logger = logging.getLogger('test-log')
@@ -49,9 +52,9 @@ start_dt = datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0, tzinf
 
 config_dict_thies = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
 config_dict_site_thies = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
-config_dict_thies = deep_update(config_dict, config_dict_site)
+config_dict_thies = deep_update(config_dict_thies, config_dict_site_thies)
 
-start_dt_thies = datetime(year=2024, month=5, day=30, hour=0, minute=0, second=0, tzinfo=timezone.utc)
+start_dt_thies = datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0, tzinfo=timezone.utc)
 
 data_points_24h = 1440  # (60min * 24h)
 
@@ -230,13 +233,13 @@ def test_NetCDF_parsivel():
 
 def test_query_db_thies(db_insert_24h_thies): # pylint: disable=unused-argument
     """
-    This function tests querying from the database and creates a test netCDF file.
+    This function tests querying from the database and creates a test Thies netCDF file.
     :param db_insert_24h_thies: the function to insert 24 hours worth of data into the test database.
     """
 
-    delete_netcdf(fn_start='test', data_dir=data_dir,)  # delete old netCDF
+    delete_netcdf(fn_start='test_thies', data_dir=data_dir,)  # delete old netCDF
     telegram_objs = []
-    con, cur = connect_db(dbpath=str(db_path))
+    con, cur = connect_db(dbpath=str(db_path_thies))
     res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
     assert res.fetchone()[0] == data_points_24h
     for i, row in enumerate(query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger)):

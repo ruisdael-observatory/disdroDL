@@ -279,7 +279,6 @@ class ThiesTelegram(Telegram):
             return
 
         for keyval in telegram_lines_list:
-            print(keyval)
             if keyval[0] == '6':
                 keyval_list = keyval.split(':',1)
             else:
