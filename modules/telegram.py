@@ -244,26 +244,26 @@ class ThiesTelegram(Telegram):
         Captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
         """
-        for line in self.telegram_lines:
-            encoding = chardet.detect(line)['encoding']
-            line_str = line.decode(encoding)
-            line_list = line_str.split(":")
 
-            if len(line_list) <= 1 or line_list[1].strip() == self.delimiter:
-                continue
-
-            field = line_list[0]
-            value = line_list[1].strip()  # strip white space
-            value_list = value.split(self.delimiter)
-            value_list = [v for v in value_list if len(v) > 0]
-
-            if len(value_list) == 1:
-                value = value_list[0]
+        telegram_list_stx_and_id_combined = self.telegram_lines.split(';')
+        telegram_stx_and_id = telegram_list_stx_and_id_combined[0].split()
+        telegram_stx = telegram_stx_and_id[0]
+        telegram_device_id = telegram_stx_and_id[-2:]
+        telegram_list = telegram_list_stx_and_id_combined[1:]
+        telegram_list.insert(0, telegram_stx)
+        telegram_list.insert(0, telegram_device_id)
+        list_len = len(telegram_list)
+        for index,value in enumerate(telegram_list[:-1]):
+            if index == 80:
+                self.telegram_data['81'] = value
+                super().__setattr__(f'field_{index+1}_values', value)
+            if 81 <= index <= 519:
+                self.telegram_data['81'] = self.telegram_data['81'] + ',' + value
+                super().__setattr__(f'field_{81}_values', value)
             else:
-                value = value_list
+                self.telegram_data[str(index+1)] = value
+                super().__setattr__(f'field_{index+1}_values', value)
 
-            super().__setattr__(f'field_{field}_values', value)
-            self.telegram_data[field] = value
 
     def parse_telegram_row(self):
         """
@@ -279,7 +279,11 @@ class ThiesTelegram(Telegram):
             return
 
         for keyval in telegram_lines_list:
-            keyval_list = keyval.split(':')
+            print(keyval)
+            if keyval[0] == '6':
+                keyval_list = keyval.split(':',1)
+            else:
+                keyval_list = keyval.split(':')
 
             if keyval_list[0] not in self.config_dict['telegram_fields'].keys() or\
                     len(keyval_list) <= 1 or keyval_list[1].strip() == self.delimiter:
@@ -333,37 +337,24 @@ class ThiesTelegram(Telegram):
 
     def insert2db(self):
         """"
-        Method for passing telegrams strings into the database
+        method for passing telegrams strings into the database
         """
+
+        self.capture_prefixes_and_data()
+        self.prep_telegram_data4db()
+
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
         insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
 
         timestamp_str = self.timestamp.isoformat()
         ts = self.timestamp.timestamp()
         sensor = self.config_dict['global_attrs']['sensor_name']
+        t_str = self.telegram_data_str
 
-        telegram_list = self.telegram_lines.split(';')
-        telegram_list.insert(0,'')
-        list_len = len(telegram_list)
-        formatted_telegrams = []
-        for index, value in enumerate(telegram_list[:-1]):
-            if index == 80:
-                formatted_telegrams.append(f" {81}:{value},")
-            elif 81 <= index <= 518:
-                formatted_telegrams.append(f"{value},")
-            elif index == 519:
-                formatted_telegrams.append(f"{value};")
-            elif index == list_len-1:
-                formatted_telegrams.append(f" {index + 1}:{value}")
-            else:
-                formatted_telegrams.append(f" {index + 1}:{value};")
-        telegram_str = ''.join(formatted_telegrams)
-
-        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{telegram_str}');"
+        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{t_str}');"
 
         self.logger.debug(msg=insert_str)
         self.db_cursor.execute(insert_str)
-
 
 
     def __str2list(self, field, separator):

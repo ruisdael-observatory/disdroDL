@@ -298,6 +298,7 @@ class NetCDF:
             if netCDF_var_.standard_name == 'datetime':
                 for i, telegram_obj in enumerate(self.telegram_objs):
                     netCDF_var_[i] = getattr(telegram_obj, 'timestamp').isoformat()
+                    print(netCDF_var_[i])
             else:
                 for i, telegram_obj in enumerate(self.telegram_objs):
                     netCDF_var_[i] = getattr(telegram_obj, var_key_)
