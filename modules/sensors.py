@@ -167,6 +167,9 @@ class Parsivel(Sensor):
         parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')
         self.write(parsivel_user_telegram, logger)
 
+        self.serial_connection.reset_input_buffer()
+        self.serial_connection.reset_output_buffer()
+
     def reset_sensor(self, logger, factory_reset: bool):
         """
         Abstract function for reseting a sensor.
