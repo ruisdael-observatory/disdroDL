@@ -237,7 +237,8 @@ def test_query_db_thies(db_insert_24h_thies): # pylint: disable=unused-argument
     :param db_insert_24h_thies: the function to insert 24 hours worth of data into the test database.
     """
 
-    delete_netcdf(fn_start='test_thies', data_dir=data_dir,)  # delete old netCDF
+    # delete old netCDF
+    delete_netcdf(fn_start='test_thies', data_dir=data_dir,)
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path_thies))
     res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
@@ -278,7 +279,8 @@ def test_NetCDF_thies(db_insert_24h_thies):
     This function tests whether netCDF files are correctly created.
     """
 
-    rootgrp = Dataset(data_dir / 'test_thies.nc', 'r', format="NETCDF4")  # read netcdf
+    # read netcdf
+    rootgrp = Dataset(data_dir / 'test_thies.nc', 'r', format="NETCDF4")
     # test that NetCDF captures full 24 hours of data,
     netCDF_var_datetime = rootgrp.variables['datetime']
     netCDF_var_datetime_data = netCDF_var_datetime[:]
@@ -414,7 +416,9 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-
     This function tests whether the db rows with empty telegram data are not included in NetCDF.
     :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
     '''
-    delete_netcdf(fn_start='test', data_dir=data_dir,)  # delete old netCDF
+
+    # delete old netCDF
+    delete_netcdf(fn_start='test', data_dir=data_dir,)
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path))
     returned_rows = 0
@@ -476,12 +480,14 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
     assert netCDF_var_data_raw_shape == (data_points_24h / 2, 32, 32)
 
+
 def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unused-argument
     '''
     This function tests whether the db rows with empty telegram data are not included in NetCDF for Thies sensor.
     :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
     '''
-    delete_netcdf(fn_start='test_w_gaps_thies', data_dir=data_dir,)  # delete old netCDF
+    # delete old netCDF
+    delete_netcdf(fn_start='test_w_gaps_thies', data_dir=data_dir,)
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path_thies))
     returned_rows = 0

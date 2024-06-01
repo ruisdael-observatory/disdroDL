@@ -254,6 +254,11 @@ class ThiesTelegram(Telegram):
         telegram_list = telegram_list_stx_and_id_combined[1:]
         telegram_list.insert(0, telegram_stx)
         telegram_list.insert(0, telegram_device_id)
+
+        if(len(telegram_list) != 526):
+           telegram_logger.error(msg=f"telegram is missing values")
+           return
+
         for index,value in enumerate(telegram_list[:-1]):
             if index == 80:
                 self.telegram_data['81'] = value
