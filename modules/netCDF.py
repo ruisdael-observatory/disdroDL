@@ -289,7 +289,6 @@ class NetCDF:
         :param var_key_: key to get the data
         """
         # checks if variable is in telegram data
-        print(var_key_)
         if var_key_ in self.telegram_objs[0].telegram_data.keys():
             for i, telegram_obj in enumerate(self.telegram_objs):
                 netCDF_var_[i] = telegram_obj.telegram_data[var_key_]

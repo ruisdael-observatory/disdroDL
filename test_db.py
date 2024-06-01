@@ -279,33 +279,45 @@ def test_NetCDF_thies(db_insert_24h_thies):
     """
 
     rootgrp = Dataset(data_dir / 'test_thies.nc', 'r', format="NETCDF4")  # read netcdf
-    # test that NetCDF captures full 24 hours of data
+    # test that NetCDF captures full 24 hours of data,
     netCDF_var_datetime = rootgrp.variables['datetime']
     netCDF_var_datetime_data = netCDF_var_datetime[:]
-
-    # test that NetCDF captures 60x24 = 1440 telegrams
     assert len(netCDF_var_datetime_data) == 1440
     # test that first telegram is at 00:00 hours
     assert netCDF_var_datetime_data[0][:-13] == '2024-01-01T0'
     # test that last telegram is at 23:59 hours
     assert netCDF_var_datetime_data[-1][:-13] == '2024-01-01T2'
 
-    # 3 tests that site specific variables are written to file
+    #test global attributes
+    netCDF_dictionary = rootgrp.__dict__
+    netCDF_var_site_name = netCDF_dictionary.get('site_name')[:]
+    assert netCDF_var_site_name == 'Green_Village'
+    netCDF_var_sensor_name = netCDF_dictionary.get('sensor_name')[:]
+    assert netCDF_var_sensor_name == 'THIES006'
+    netCDF_var_sensor_type = netCDF_dictionary.get('sensor_type')[:]
+    assert netCDF_var_sensor_type == 'Thies Clima'
+
+    #tests that site specific variables are written to file correctly
     netCDF_var_velocity_classes_center = rootgrp.variables['velocity_center_classes']
     netCDF_var_velocity_classes_center_data = netCDF_var_velocity_classes_center[:].data
     # test value of first velocity center class
-    assert abs(netCDF_var_velocity_classes_center_data[0] - 0.100) <= 1.0E-4
+    assert abs(netCDF_var_velocity_classes_center_data[0] - 0.100) <= 1.0E-6
     # test value of last velocity center class
     assert netCDF_var_velocity_classes_center_data[-1] == 15.00
     netCDF_var_altitude = rootgrp.variables['altitude']
     netCDF_var_altitude_data = netCDF_var_altitude[:].data
     # test altitude for specific site
     assert netCDF_var_altitude_data == 1
-    # test that particle class is correctly populated
+
+    # test that netcdf variables are populated correctly
     netCDF_var_particle_number = rootgrp.variables['number_of_particles_class_8']
     netCDF_var_particle_number_data = netCDF_var_particle_number[:].data
-    # assert netCDF_var_particle_number_data[5] == 2
-    # test that particle diameter velocity matrix is populated
+    assert len(netCDF_var_particle_number_data) == 1440
+    netCDF_var_ambient_temperature = rootgrp.variables['ambient_temperature']
+    netCDF_var_ambient_temperature_data = netCDF_var_ambient_temperature[:].data
+    assert abs(netCDF_var_ambient_temperature_data[0] - 20.3) <= 1.0E-6
+    assert len(netCDF_var_ambient_temperature_data) == 1440
+    # test that particle diameter-velocity matrix is populated correctly
     netCDF_var_data_raw = rootgrp.variables['raw_data']
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
