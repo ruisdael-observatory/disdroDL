@@ -97,7 +97,7 @@ class TestResetParsivel(unittest.TestCase):
         mock_deep_update.assert_called_once_with(test_conf_dict, test_conf_dict_site)
         mock_create_logger.assert_called_with(log_dir=Path('value1'),
                                                    script_name='value2',
-                                                   parsivel_name='parsivel')
+                                                   sensor_name='parsivel')
         (mock_parsivel_obj.init_serial_connection.
          assert_called_once_with(port=test_conf_dict['port'], baud=test_conf_dict['baud'], logger=mock_logger))
         mock_parsivel_obj.reset_sensor.assert_called_once()
