@@ -317,7 +317,7 @@ def test_NetCDF_thies(db_insert_24h_thies):
     netCDF_var_ambient_temperature_data = netCDF_var_ambient_temperature[:].data
     assert abs(netCDF_var_ambient_temperature_data[0] - 20.3) <= 1.0E-6
     assert len(netCDF_var_ambient_temperature_data) == 1440
-    # test that particle diameter-velocity matrix is populated correctly
+    # test that particle diameter-velocity matrix is populated correctly (1440x22x20 matrix)
     netCDF_var_data_raw = rootgrp.variables['raw_data']
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
@@ -418,7 +418,7 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path))
     returned_rows = 0
-    for row in query_db_rows_gen(con=con, date_dt=start_dt, logger=logger):
+    for row in query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger):
         returned_rows += 1
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
         row_telegram = ParsivelTelegram(
@@ -475,3 +475,69 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
     assert netCDF_var_data_raw_shape == (data_points_24h / 2, 32, 32)
+
+def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unused-argument
+    '''
+    This function tests whether the db rows with empty telegram data are not included in NetCDF for Thies sensor.
+    :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
+    '''
+    delete_netcdf(fn_start='test_w_gaps_thies', data_dir=data_dir,)  # delete old netCDF
+    telegram_objs = []
+    con, cur = connect_db(dbpath=str(db_path_thies))
+    returned_rows = 0
+    for row in query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger):
+        returned_rows += 1
+        ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
+        row_telegram = ThiesTelegram(
+            config_dict=config_dict_thies,
+            telegram_lines=row.get('telegram'),
+            timestamp=ts_dt,
+            db_cursor=None,
+            telegram_data={},
+            logger=logger)
+        row_telegram.parse_telegram_row()
+        if row_telegram.telegram_data.keys() and \
+            '14' in row_telegram.telegram_data.keys() and \
+            '81' in row_telegram.telegram_data.keys():
+            # append only rows w telegram data
+            telegram_objs.append(row_telegram)
+    cur.close()
+    con.close()
+    # len(telegram_objs) should be half of returned_rows,
+    # as def db_insert_24h_w_gaps includes telegram data, only in half of
+    # the db entries
+    assert len(telegram_objs) == returned_rows / 2
+    nc = NetCDF(logger=logger,
+                config_dict=config_dict_thies,
+                data_dir=data_dir,
+                fn_start='test_w_gaps_thies',
+                full_version=True,
+                telegram_objs=telegram_objs,
+                date=start_dt_thies)
+    nc.create_netCDF()
+    nc.write_data_to_netCDF_thies()
+    nc.compress()
+    # test netCDF content
+    rootgrp = Dataset(data_dir / 'test_w_gaps_thies.nc', 'r', format="NETCDF4")
+    # test NetCDF time and datetime variables values
+    netCDF_var_time = rootgrp.variables['time']
+    netCDF_var_time_data = netCDF_var_time[:].data
+    assert len(netCDF_var_time_data) == data_points_24h / 2
+    # netCDF_var_datetime = rootgrp.variables['datetime']
+    # test gap between 1st and 2nd measure: 120secs
+    # since 2nd db entry was skipped, due to not having data
+    first_nc_time_val = num2date(
+        netCDF_var_time_data[0],
+        units=f'hours since {start_dt.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
+    )
+    second_nc_time_val = num2date(
+        netCDF_var_time_data[1],
+        units=f'hours since {start_dt.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
+    )
+    delta = second_nc_time_val - first_nc_time_val
+    assert delta.seconds == 120
+    # test that particle diameter-velocity matrix is populated correctly (720x22x20 matrix)
+    netCDF_var_data_raw = rootgrp.variables['raw_data']
+    netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
+    netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
+    assert netCDF_var_data_raw_shape == (data_points_24h / 2, 22, 20)

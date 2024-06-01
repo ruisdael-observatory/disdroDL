@@ -244,6 +244,8 @@ class ThiesTelegram(Telegram):
         Captures the telegram prefixes and data stored in self.telegram_lines
         and adds the data to self.telegram_data dict.
         """
+        if len(self.telegram_lines) == 0:
+            return
 
         telegram_list_stx_and_id_combined = self.telegram_lines.split(';')
         telegram_stx_and_id = telegram_list_stx_and_id_combined[0].split()
@@ -252,7 +254,6 @@ class ThiesTelegram(Telegram):
         telegram_list = telegram_list_stx_and_id_combined[1:]
         telegram_list.insert(0, telegram_stx)
         telegram_list.insert(0, telegram_device_id)
-        list_len = len(telegram_list)
         for index,value in enumerate(telegram_list[:-1]):
             if index == 80:
                 self.telegram_data['81'] = value
@@ -271,7 +272,6 @@ class ThiesTelegram(Telegram):
         """
 
         telegram_lines_list = self.telegram_lines.split('; ')
-
         try:
             telegram_lines_list[1]
         except IndexError:
