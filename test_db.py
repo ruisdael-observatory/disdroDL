@@ -547,3 +547,41 @@ def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unus
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
     assert netCDF_var_data_raw_shape == (data_points_24h / 2, 22, 20)
+
+def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
+
+    delete_netcdf(fn_start='test_wrong_f81_len_thies', data_dir=data_dir, )
+    telegram_objs = []
+    con, cur = connect_db(dbpath=str(db_path_thies))
+    for row in query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger):
+        ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
+        row_telegram = ThiesTelegram(
+            config_dict=config_dict_thies,
+            telegram_lines=row.get('telegram'),
+            timestamp=ts_dt,
+            db_cursor=None,
+            telegram_data={},
+            logger=logger)
+        row_telegram.parse_telegram_row()
+        row_telegram.telegram_data['81'] = ''
+        assert len(row_telegram.telegram_data['81']) == 0
+        telegram_objs.append(row_telegram)
+    cur.close()
+    con.close()
+    nc = NetCDF(logger=logger,
+                config_dict=config_dict_thies,
+                data_dir=data_dir,
+                fn_start='test_wrong_f81_len_thies',
+                full_version=True,
+                telegram_objs=telegram_objs,
+                date=start_dt_thies)
+    nc.create_netCDF()
+    nc.write_data_to_netCDF_thies()
+    nc.compress()
+    rootgrp = Dataset(data_dir / 'test_wrong_f81_len_thies.nc', 'r', format="NETCDF4")
+    netCDF_var_data_raw = rootgrp.variables['raw_data']
+    netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
+    netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
+    assert netCDF_var_data_raw_shape == (2, 22, 20)
+
+

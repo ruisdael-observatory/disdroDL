@@ -210,3 +210,33 @@ def db_insert_24h_empty(db_path, config_dict):
     con.commit()
     cur.close()
     con.close()
+
+def db_insert_two_telegrams(db_path, config_dict, telegram_lines):
+    """
+    This function inserts 1 telegram into a test database.
+    :param db_path: the path to the database to insert data to
+    :param config_dict: the combined site specific and general config files as a dictionary
+    :param telegram_lines: the telegram lines to insert
+    """
+    con, cur = connect_db(dbpath=str(db_path))
+    for i in range(2):
+        new_time = start_dt + timedelta(minutes=i)  # time offset: by 1 minute
+        telegram = create_telegram(config_dict=config_dict,
+                                   telegram_lines=telegram_lines,
+                                   db_row_id=None,
+                                   timestamp=new_time,
+                                   db_cursor=cur,
+                                   telegram_data={},
+                                   logger=logger)
+        telegram.insert2db()
+    con.commit()
+    cur.close()
+    con.close()
+
+@pytest.fixture()
+def db_insert_two_telegrams_thies(create_db_thies): # pylint: disable=unused-argument,redefined-outer-name
+    """
+    This function inserts two Thies telegrams into the test database.
+    :param create_db_thies: the function to create the test database
+    """
+    db_insert_two_telegrams(db_path_thies, config_dict_thies, thies_lines)
