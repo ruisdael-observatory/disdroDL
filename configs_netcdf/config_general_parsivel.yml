@@ -34,6 +34,7 @@ variables:
             standard_name: "time"
             axis: "T"
             calendar: "standard"
+            unitS: 'UTC'
     interval:
         dimensions:  # empty for scalar variables
         dtype: 'i4'            
@@ -41,7 +42,7 @@ variables:
             - 60
         include_in_nc: 'always'                    
         var_attrs:
-            units: s
+            units: 's'
             long_name: 'Length of measurement interval'
             standard_name: 'time_interval'
     datetime:
