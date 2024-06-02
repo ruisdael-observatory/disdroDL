@@ -582,6 +582,45 @@ def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
     netCDF_var_data_raw = rootgrp.variables['raw_data']
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
+    assert netCDF_var_data_raw_data[0][0][0] == -99
     assert netCDF_var_data_raw_shape == (2, 22, 20)
 
 
+def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
+
+    delete_netcdf(fn_start='test_wrong_f93_len_parsivel', data_dir=data_dir, )
+    telegram_objs = []
+    con, cur = connect_db(dbpath=str(db_path))
+    for i, row in enumerate(
+        query_db_rows_gen(con=con, date_dt=start_dt, logger=logger)):  # pylint: disable=unused-variable
+        ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
+        row_telegram = ParsivelTelegram(
+            config_dict=config_dict,
+            telegram_lines=row.get('telegram'),
+            timestamp=ts_dt,
+            db_cursor=None,
+            telegram_data={},
+            logger=logger)
+        row_telegram.parse_telegram_row()
+        row_telegram.telegram_data['93'] = ''
+        assert len(row_telegram.telegram_data['93']) == 0
+        telegram_objs.append(row_telegram)
+    cur.close()
+    con.close()
+
+    nc = NetCDF(logger=logger,
+                     config_dict=config_dict,
+                     data_dir=data_dir,
+                     fn_start='test_wrong_f93_len_parsivel',
+                     full_version=True,
+                     telegram_objs=telegram_objs,
+                     date=start_dt)
+    nc.create_netCDF()
+    nc.write_data_to_netCDF_parsivel()
+    nc.compress()
+    rootgrp = Dataset(data_dir / 'test_wrong_f93_len_parsivel.nc', 'r', format="NETCDF4")
+    netCDF_var_data_raw = rootgrp.variables['data_raw']
+    netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
+    netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
+    assert netCDF_var_data_raw_data[0][0][0] == -99
+    assert netCDF_var_data_raw_shape == (2, 32, 32)

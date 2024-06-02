@@ -240,3 +240,12 @@ def db_insert_two_telegrams_thies(create_db_thies): # pylint: disable=unused-arg
     :param create_db_thies: the function to create the test database
     """
     db_insert_two_telegrams(db_path_thies, config_dict_thies, thies_lines)
+
+
+@pytest.fixture()
+def db_insert_two_telegrams_parsivel(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
+    """
+    This function inserts two Parsivel telegrams into the test database.
+    :param create_db_parsivel: the function to create the test database
+    """
+    db_insert_two_telegrams(db_path_parsivel, config_dict_parsivel, parsivel_lines)

@@ -149,14 +149,12 @@ class NetCDF:
                             self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
                                                   f' from {telegram_obj.timestamp} {error}'
                                                   f'. 22x20 ndarray with (error value)'
-                                                  f' -9.999 will be added instead')
-                            # fills fields with default -9999 error value if error has occurred
-                            error_f81 = numpy.full(shape=(22, 20), fill_value='-9999', dtype='<U3')
+                                                  f' -99 will be added instead')
+                            # fills fields with default -99 error value if error has occurred
+                            error_f81 = numpy.full(shape=(22, 20), fill_value='-99', dtype='<U3')
                             all_f81_items_val.append(error_f81)
                         else:
                             # if list was of appropriate size reshapes it into a 22x20 matrix
-                            # telegram_string_to_array = numpy.fromstring(telegram_obj.telegram_data[key], dtype=int,
-                            # sep=',') # pylint: disable=line-too-long
                             reshaped_f81 = numpy.array(telegram_obj.telegram_data[key]).reshape(22, 20)
                             all_f81_items_val.append(reshaped_f81)
                             self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
@@ -238,9 +236,9 @@ class NetCDF:
                             self.logger.error(msg=f'DB item {telegram_obj.db_row_id}'
                                                   f' from {telegram_obj.timestamp} {error}'
                                                   f'. 32x32 ndarray with (error value)'
-                                                  f' -9.999 will be added instead')
-                            # fills fields with default -9999 error value if error has occurred
-                            error_f93 = numpy.full(shape=(32, 32), fill_value='-9999', dtype='<U3')
+                                                  f' -99 will be added instead')
+                            # fills fields with default -99 error value if error has occurred
+                            error_f93 = numpy.full(shape=(32, 32), fill_value='-99', dtype='<U3')
                             all_f93_items_val.append(error_f93)
                         else:
                             # if list was of appropriate size reshapes it into a 32x32 matrix
