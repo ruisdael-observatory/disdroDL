@@ -77,10 +77,9 @@ class Telegram(ABC):
         Abstract method that parses telegram string from SQL telegram field.
         """
 
-    @abstractmethod
     def prep_telegram_data4db(self):
         """
-        Abstract method that transforms self.telegram_data items into self.telegram_data_str
+        Transforms self.telegram_data items into self.telegram_data_str
         so that it can be easily inserted to SQL DB.
         * key precedes value NN:val
         * key:value pair, seperated by '; '
@@ -89,13 +88,47 @@ class Telegram(ABC):
         Example: 19:None; 20:10; 21:25.05.2023;
         51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
         """
+        self.telegram_data_str = ''
+
+        for key, val in self.telegram_data.items():
+            dt_str = f'{key}:'
+
+            if isinstance(val, list):
+                if len(val) == 0:
+                    dt_str += 'None'
+                else:
+                    dt_str += (',').join(val)
+            elif isinstance(val, str):
+                if len(val) == 0:
+                    dt_str += 'None'
+                else:
+                    dt_str += val
+
+            self.telegram_data_str += dt_str
+            self.telegram_data_str += '; '
+
+        self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
 
 
-    @abstractmethod
     def insert2db(self):
+        """"
+        Method for passing telegrams strings into the database
         """
-        Abstract class for inserting telegram strings into the database.
-        """
+        self.capture_prefixes_and_data()
+        self.prep_telegram_data4db()
+
+        self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
+        insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
+
+        timestamp_str = self.timestamp.isoformat()
+        ts = self.timestamp.timestamp()
+        sensor = self.config_dict['global_attrs']['sensor_name']
+        t_str = self.telegram_data_str
+
+        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{t_str}');"
+
+        self.logger.debug(msg=insert_str)
+        self.db_cursor.execute(insert_str)
 
 
 class ParsivelTelegram(Telegram):
@@ -164,58 +197,6 @@ class ParsivelTelegram(Telegram):
         self.__str2list(field='90', separator=',')
         self.__str2list(field='91', separator=',')
         self.__str2list(field='93', separator=',')
-
-    def prep_telegram_data4db(self):
-        """
-        Transforms self.telegram_data items into self.telegram_data_str
-        so that it can be easily inserted to SQL DB.
-        * key precedes value NN:val
-        * key:value pair, seperated by '; '
-        * list: converted to str with ',' separator between values
-        * empty lists, empty strings: converted to 'None'
-        Example: 19:None; 20:10; 21:25.05.2023;
-        51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
-        """
-        self.telegram_data_str = ''
-
-        for key, val in self.telegram_data.items():
-            dt_str = f'{key}:'
-
-            if isinstance(val, list):
-                if len(val) == 0:
-                    dt_str += 'None'
-                else:
-                    dt_str += (',').join(val)
-            elif isinstance(val, str):
-                if len(val) == 0:
-                    dt_str += 'None'
-                else:
-                    dt_str += val
-
-            self.telegram_data_str += dt_str
-            self.telegram_data_str += '; '
-
-        self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
-
-    def insert2db(self):
-        """"
-        Method for passing telegrams strings into the database
-        """
-        self.capture_prefixes_and_data()
-        self.prep_telegram_data4db()
-
-        self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
-        insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
-
-        timestamp_str = self.timestamp.isoformat()
-        ts = self.timestamp.timestamp()
-        sensor = self.config_dict['global_attrs']['sensor_name']
-        t_str = self.telegram_data_str
-
-        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{t_str}');"
-
-        self.logger.debug(msg=insert_str)
-        self.db_cursor.execute(insert_str)
 
 
     def __str2list(self, field, separator):
@@ -306,59 +287,6 @@ class ThiesTelegram(Telegram):
             self.telegram_data[field] = value
 
         self.__str2list(field='81', separator=',')
-
-    def prep_telegram_data4db(self):
-        """
-        Transforms self.telegram_data items into self.telegram_data_str
-        so that it can be easily inserted to SQL DB.
-        * key precedes value NN:val
-        * key:value pair, seperated by '; '
-        * list: converted to str with ',' separator between values
-        * empty lists, empty strings: converted to 'None'
-        Example: 19:None; 20:10; 21:25.05.2023;
-        51:000140; 90:-9.999|-9.999|-9.999|-9.999|-9.999 ...
-        """
-        self.telegram_data_str = ''
-
-        for key, val in self.telegram_data.items():
-            dt_str = f'{key}:'
-
-            if isinstance(val, list):
-                if len(val) == 0:
-                    dt_str += 'None'
-                else:
-                    dt_str += (',').join(val)
-            elif isinstance(val, str):
-                if len(val) == 0:
-                    dt_str += 'None'
-                else:
-                    dt_str += val
-
-            self.telegram_data_str += dt_str
-            self.telegram_data_str += '; '
-
-        self.telegram_data_str = self.telegram_data_str[:-2]  # remove last '; '
-
-    def insert2db(self):
-        """"
-        method for passing telegrams strings into the database
-        """
-
-        self.capture_prefixes_and_data()
-        self.prep_telegram_data4db()
-
-        self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
-        insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
-
-        timestamp_str = self.timestamp.isoformat()
-        ts = self.timestamp.timestamp()
-        sensor = self.config_dict['global_attrs']['sensor_name']
-        t_str = self.telegram_data_str
-
-        insert_str = f"{insert} ({ts}, '{timestamp_str}', '{sensor}', '{t_str}');"
-
-        self.logger.debug(msg=insert_str)
-        self.db_cursor.execute(insert_str)
 
 
     def __str2list(self, field, separator):
