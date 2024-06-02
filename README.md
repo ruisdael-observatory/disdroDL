@@ -2,19 +2,22 @@
 
 [[_TOC_]]
 
-disdroDL is a Python software for acquiring and storing data from the OTT Parsivel2 optical disdrometer into daily NetCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
+disdroDL is a Python software for acquiring and storing data from the OTT Parsivel2 and Thies Clima optical disdrometer into daily NetCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
 
-One of the key aspects in disdroDL is the decision to separate code logic from the NetCDF structure and metadata. During the creation of the NetCDFs, one [general yaml file](configs_netcdf/config_general.yml) containing the description of Parsivel telegram variables and dimensions, that is applicable to all the Parsivels; is combined with site-specific metadata files that describe the variable components of the metadata such as location, name, etc.
+One of the key aspects in disdroDL is the decision to separate code logic from the NetCDF structure and metadata. During the creation of the NetCDFs, a [Parsivel general yaml file](configs_netcdf/config_general_parsivel.yml) or a [Thies general yaml file](configs_netcdf/config_general_thies.yml) containing the description of Parsivel/Thies telegram variables and dimensions, that is applicable to all the Parsivel/Thies devices; is combined with site-specific metadata files that describe the variable components of the metadata such as location, name, etc.
 
-The software features a main script ([main.py](./main.py)) for setting up a serial connection with the Parsivel, requesting data at regular time intervals, and storing the Parsivel's Telegram data in a local sqlite3 database file `disdrodl.db`. And an export script ([export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)) that exports 1 day of Parsivel data, from `disdro.db` onto a NetCDF file. 
+The software features a main script ([main.py](./main.py)) for setting up a serial connection with the disdrometers, requesting data at regular time intervals, and storing the Telegram data in a local sqlite3 database file `disdrodl.db`. And an export script ([export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)) that exports 1 day of device data, from `disdro.db` onto a NetCDF file. 
 
-By default, all fields listed on page 29 of the [OTT Parsivel2 official documentation](https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-1/) are requested, except for field 61 (List of all particles detected). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
 
-The structure of the NetCDF file depends on two configuration files, a general and site-specific one. The general configuration ([configs_netcdf/config_general.yml](.configs_netcdf/config_general.yml)) file is applicable to all sites and sensors, while the specific configuration files (1 file per sensor (in [configs_netcdf/](configs_netcdf/)) describe the variable components such as site names, coordinates, etc.  
+
+What data is included in the NetCDF depends on the [configuration files](configs_netcdf/) and whether the exported netCDF is a light or full version (described in [Outputs](#outputs)). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
+
+
+The structure of the NetCDF file depends on the sensor type and two configuration files, a general and site-specific one. The general configuration files [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) and [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) are applicable to all sensors of the same type, while the specific configuration files, 1 file per sensor (in [configs_netcdf/](configs_netcdf/)), describe the variable components such as site names, coordinates, etc.  
 
 ![_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors._](docs/20211011_17_crop.JPG)
 
-_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors._
+_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometers._
 
 
 ![](docs/DSD_PAR001_Cabauw_20231021_1300_20231021_1730.png)
@@ -42,9 +45,9 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 
 ## Run scripts
 **Manually**: 
-* Writes Parsivel Telegrams to sqlite3 DB `python main.py --config configs_netcdf/config_008_GV.yml` (usually ran as service, but can also be run as a standalone script)
+* Writes Parsivel/Thies Telegrams to sqlite3 DB `python main.py --config configs_netcdf/config_008_GV.yml` (usually ran as service, but can also be run as a standalone script)
 
-* Export DB entries of one day to a NetCDF `python export_disdrodlDB2NC.py --date 2023-12-24 --config configs_netcdf/config_008_GV.yml`
+* Export DB entries of one day to a NetCDF `python export_disdrodlDB2NC.py (--version light/full) --date 2023-12-24 --config configs_netcdf/config_008_GV.yml`
 
 
 **As Linux Systemd Service**: 
@@ -56,6 +59,10 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 
 
 ## Outputs
+**Light vs full netCDFs**
+* The software can output a light or full NetCDF. This can be done by selecting `--version light` or `--version full`. Which variables will be written to the light/full NetCDF depends on their include_in_nc filed in the [configuration files](configs_netcdf). The field can be assigned values: 'always', 'only_full' or 'never'. Variables assigned 'always' will be included in both light and full NetCDFs. Variables assigned 'only_full' will be included only in full netCDFs. Variables assigned 'never' will not be included in either. 
+* If a NetCDF version is not chosen the software outputs the default which is a full NetCDF.
+
 **netCDF output**
 * [sample_data/20240115_Green_Village-GV_PAR008.nc](sample_data/20240115_Green_Village-GV_PAR008.nc)
 
@@ -69,25 +76,37 @@ The NetCDF files are automatically compressed.
 ## Software Operational Principals
 
 * Main script: [main.py](main.py)
-* Configuration files: 
-    * general: [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) - *should not need editing*
-    * specific: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - *create 1 per Parsivel*
-* Export script [export_disdrodlDB2NC.py](export_disdrodlDB2NC.py) - exports 1day of measurements from DB to NetCDF file
-* Functions and classes: [modules/classes.py](modules/classes.py), [modules/util_functions.py](modules/util_functions.py)
+* Configuration files:
+    * general Parsivel: [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml)
+    * general Thies: [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml)
+    * specific Parsivel: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - *create 1 per Parsivel*
+    * specific Thies: e.g., [configs_netcdf/config_008_GV_THIES.yml](configs_netcdf/config_008_GV_THIES.yml) - *create 1 per Thies*
+* Export script [export_disdrodlDB2NC.py](export_disdrodlDB2NC.py) - exports 1 day of measurements from DB to NetCDF file
+* Functions and classes are in their matching files in the modules folder:
+* function for creating the logger - [modules/log.py](modules/log.py)
+* NetCDF classes and functionality - [modules/netCDF.py](modules/netCDF.py)
+* class for getting current time - [modules/now_time.py](modules/now_time.py)
+* sensor abstract class and Parsivel/Thies sensor classes - [modules/sensors.py](modules/sensors.py)
+* functions for communicating with the database - [modules/sqldb.py](modules/sqldb.py)
+* telegram abstract class and Parsivel/Thies telegram classes - [modules/telegram.py](modules/telegram.py)
+* utility functions - [modules/util_functions.py](modules/util_functions.py)
+
+
+
 
 **[main.py](main.py)** (often as service, see example [disdrodlv2.service](disdrodlv2.service))
-* reads configurations from [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) and target-device config
-* sets up the serial communication with the Parsivel 
+* reads configurations from [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) or [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) and target-device config
+* sets up the serial communication with the Parsivel/Thies 
 * in a while loop (every minute):
-    * requests the telegram from OTT Parsivel2, outputting all measurement values : `CS/PA<CR>` 
+    * requests the telegram from OTT Parsivel2/Thies Clima, outputting all measurement values : `CS/PA<CR>` 
     * appends the received telegram data into `disdro.db`
 
 **[export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)**
-* reads configurations from [configs_netcdf/config_general.yml](configs_netcdf/config_general.yml) and target-device config
+* reads configurations from [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) or [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) and target-device config
 * queries `disdro.db` for entries between 00:00:00 and 23:59:59 of the date provided to arg `--date`
 * for each returned database entry:
-    * the telegram (db column) value is parsed in an instance of the `Telegram`
-    * instance of the `Telegram` is appended to `telegram_objs` list
+    * the telegram (db column) value is parsed in an instance of the `ParsivelTelegram/ThiesTelegram`
+    * instance of the `ParsivelTelegram/ThiesTelegram` is appended to `telegram_objs` list
 * `telegram_objs` is provided to an instance of the `NetCDF` class, which
     * creates a NetCDF file
     * writes the `telegram_objs` data into the NetCDF 
@@ -108,6 +127,8 @@ Run: `python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml -i samp
 * [test_functions.py](test_functions.py)
 * [test_db.py](test_db.py)
 * [test_classes.py](test_classes.py)
+* [test_sensors_parsivel.py](test_sensors_parsivel.py)
+* [test_thies_sensor_class.py](test_thies_sensor_class.py)
 
 
 run: `pytest -s`
@@ -175,6 +196,11 @@ disdroDL is developed in the context of the [Ruisdael Observatory](https://ruisd
 * Andre Castro
 * Mahaut Sourzac 
 * Rob MacKenzie
+* Vasil Chirov
+* Mels Lutgerink
+* Ella Milinovic
+* Noky Soekarman
+* Jesse Vleeschdraager
 
 # License
 GPLv3. See [LICENSE](LICENSE)
