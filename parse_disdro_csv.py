@@ -63,17 +63,12 @@ def telegram2dict(telegram: str, dt: datetime, ts: datetime, config_dict: Dict):
     for i, key in enumerate(default_telegram_indeces):
         
         if(key == '90' or key == '91'):
-            print(key)
-            print("i: ", i)
             shallow_copy = []
             telegram_value = [float(value) for value in telegram_list[i+x*32:i+32*(x+1)]] #field_type[config_dict[key]['dtype']](telegram_list[i:i+32])
             x +=1
             shallow_copy[:] = telegram_value
             telegram_dict[key] = shallow_copy
         elif(key == '93'):
-            #print(len(telegram_list[i+x*32-1]))
-            print(len(telegram_list[-1]))
-            print(telegram_list[-1])
             s = telegram_list[-1]
             raw_data = [int(s[i:i+3]) for i in range(0, len(s), 3)]
             telegram_dict[key] = raw_data
@@ -92,9 +87,6 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     telegram_indices = config_dict
     telegram_dict = {key: None for key in telegram_indices}  # pylint: disable=W0621
     for index, field_n in enumerate(telegram_indices):
-        print(index)
-        print(field_n)
-        print(telegram[index])
         telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index])
     telegram_dict['datetime'] = dt
     
@@ -166,7 +158,6 @@ if __name__ == '__main__':
         reader = csv.reader(csvfile, delimiter=';')
         telegram_objs = []
         for row in reader:
-            print(row)
             
             telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
             telegram_instance = telegrams[sensor](
