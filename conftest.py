@@ -213,7 +213,7 @@ def db_insert_24h_empty(db_path, config_dict):
 
 def db_insert_two_telegrams(db_path, config_dict, telegram_lines):
     """
-    This function inserts 1 telegram into a test database.
+    This function inserts 2 telegrams into a test database.
     :param db_path: the path to the database to insert data to
     :param config_dict: the combined site specific and general config files as a dictionary
     :param telegram_lines: the telegram lines to insert

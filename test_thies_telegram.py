@@ -1,3 +1,4 @@
+""""Module that tests Thies telegram methods"""
 import logging
 from pathlib import Path
 from logging import StreamHandler

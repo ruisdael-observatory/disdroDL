@@ -276,9 +276,9 @@ def test_query_db_thies(db_insert_24h_thies): # pylint: disable=unused-argument
 
 def test_NetCDF_thies(db_insert_24h_thies):
     """
-    This function tests whether netCDF files are correctly created.
+    This function tests whether Thies netCDF files are correctly created and written.
+    :param db_insert_24h_thies: the function to insert 24 hours worth of data into the test database.
     """
-
     # read netcdf
     rootgrp = Dataset(data_dir / 'test_thies.nc', 'r', format="NETCDF4")
     # test that NetCDF captures full 24 hours of data,
@@ -505,7 +505,7 @@ def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unus
         if row_telegram.telegram_data.keys() and \
             '14' in row_telegram.telegram_data.keys() and \
             '81' in row_telegram.telegram_data.keys():
-            # append only rows w telegram data
+            # append only rows with telegram data
             telegram_objs.append(row_telegram)
     cur.close()
     con.close()
@@ -529,7 +529,6 @@ def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unus
     netCDF_var_time = rootgrp.variables['time']
     netCDF_var_time_data = netCDF_var_time[:].data
     assert len(netCDF_var_time_data) == data_points_24h / 2
-    # netCDF_var_datetime = rootgrp.variables['datetime']
     # test gap between 1st and 2nd measure: 120secs
     # since 2nd db entry was skipped, due to not having data
     first_nc_time_val = num2date(
@@ -549,7 +548,10 @@ def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unus
     assert netCDF_var_data_raw_shape == (data_points_24h / 2, 22, 20)
 
 def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
-
+    '''
+    This function tests thies netcdf creation when matrix array is of wrong length.
+    :param db_insert_two_telegrams_thies: the function inserts 2 telegrams into the database.
+    '''
     delete_netcdf(fn_start='test_wrong_f81_len_thies', data_dir=data_dir, )
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path_thies))
@@ -587,7 +589,10 @@ def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
 
 
 def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
-
+    '''
+    This function tests thies netcdf creation when matrix array is of wrong length.
+    :param db_insert_two_telegrams_thies: the function inserts 2 telegrams into the database.
+    '''
     delete_netcdf(fn_start='test_wrong_f93_len_parsivel', data_dir=data_dir, )
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path))

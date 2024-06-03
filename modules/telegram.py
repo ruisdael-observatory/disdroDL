@@ -1,5 +1,5 @@
 """
-This module contains the abstract class for handling telegrams received from the sensors,
+This module contains the partly abstract class for handling telegrams received from the sensors and database,
 and the implementation of different telegram classes inheriting this class.
 
 Functions:
@@ -223,12 +223,15 @@ class ThiesTelegram(Telegram):
     def capture_prefixes_and_data(self):
         """
         Captures the telegram prefixes and data stored in self.telegram_lines
-        and adds the data to self.telegram_data dict.
+        and adds the data to self.telegram_data dictionary.
         """
+        # check if given telegram is an empty string
         if len(self.telegram_lines) == 0:
             return
-
+        # split telegram string into individual values
         telegram_list_stx_and_id_combined = self.telegram_lines.split(';')
+
+        # separate start of text character from device id
         telegram_stx_and_id = telegram_list_stx_and_id_combined[0].split()
         telegram_stx = telegram_stx_and_id[0]
         telegram_device_id = telegram_stx_and_id[-2:]
@@ -236,10 +239,12 @@ class ThiesTelegram(Telegram):
         telegram_list.insert(0, telegram_stx)
         telegram_list.insert(0, telegram_device_id)
 
+        # check if telegram is has correct number of values
         if(len(telegram_list) != 526):
            telegram_logger.error(msg=f"telegram is missing values")
            return
 
+        # put telegram values into telegram dictionary
         for index,value in enumerate(telegram_list[:-1]):
             if index == 80:
                 self.telegram_data['81'] = value
@@ -254,7 +259,7 @@ class ThiesTelegram(Telegram):
 
     def parse_telegram_row(self):
         """
-        Parses telegram string from SQL telegram fields.
+        Parses telegram string from SQL database telegram fields.
         """
 
         telegram_lines_list = self.telegram_lines.split('; ')
@@ -265,6 +270,7 @@ class ThiesTelegram(Telegram):
             return
 
         for keyval in telegram_lines_list:
+            # check if telegram value is sensor time (has format 6:XX:XX:XX)
             if keyval[0] == '6':
                 keyval_list = keyval.split(':',1)
             else:
@@ -286,6 +292,7 @@ class ThiesTelegram(Telegram):
 
             self.telegram_data[field] = value
 
+        # add 440 value array representing 22x20 matrix
         self.__str2list(field='81', separator=',')
 
 
