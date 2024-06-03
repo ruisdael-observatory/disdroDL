@@ -263,6 +263,7 @@ def test_query_db_thies(db_insert_24h_thies): # pylint: disable=unused-argument
         telegram_objs.append(row_telegram)
     cur.close()
     con.close()
+
     nc = NetCDF(logger=logger,
                 config_dict=config_dict_thies,
                 data_dir=data_dir,
@@ -565,6 +566,7 @@ def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
             telegram_data={},
             logger=logger)
         row_telegram.parse_telegram_row()
+        print(row_telegram.telegram_data['81'])
         row_telegram.telegram_data['81'] = ''
         assert len(row_telegram.telegram_data['81']) == 0
         telegram_objs.append(row_telegram)

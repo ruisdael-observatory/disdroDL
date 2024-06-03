@@ -43,7 +43,7 @@ variables:
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'center of fall velocity classes'
-            standard_name: 'velocity_center_classes_1'
+            standard_name: 'velocity_center_classes'
             units: 'm/s'
             comment: 'as defined in the technical documentation'
         value:
@@ -305,6 +305,7 @@ telegram_fields:
             standard_name: 'STX'
     '2':
         dimensions:
+            - time
         dtype: 'S4'
         include_in_nc: 'always'
         var_attrs:
@@ -313,6 +314,7 @@ telegram_fields:
             standard_name: 'device_id'
     '3':
         dimensions:
+            - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
