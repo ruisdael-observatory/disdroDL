@@ -1,14 +1,30 @@
 """
-Imports
+Module for testing the Thies class from sensors.py
 """
+
 import unittest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch, call, Mock
 from modules.sensors import Thies, SensorType  # pylint: disable=import-error
 
 
 class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """
-    Class for testing the Thies class
+    Class for testing the Thies Sensor subclass.
+
+    Functions:
+    - test_init_serial_connection_exception: Test if the init_serial_connection function
+        raises an exception when the serial connection fails.
+    - test_init_serial_connection: Test if the init_serial_connection function
+        initializes the serial connection correctly.
+    - test_sensor_start_sequence: Test if the sensor_start_sequence function initializes the thies sensor correctly
+        and tests if all the commands are sent in the correct order.
+    - test_reset_sensor: Test if the reset_sensor function resets the sensor correctly.
+    - test_write_fail: Test if the logger writes an error when there is an exception in the write function.
+    - test_write_successful: Test if the write function writes the message to the serial connection
+        and nothing gets written to the logger.
+    - test_read_fail: Test if the read function writes an error to the logger when there is an exception.
+    - test_read_successful: Test if the read function reads the data from the serial connection.
+    - test_get_type: Test if the get_type function returns the correct sensor type.
     """
 
     @patch('modules.sensors.serial.Serial')
@@ -16,7 +32,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_init_serial_connection_exception(self, mock_sys_exit, mock_serial):
         """
         Test if the init_serial_connection function raises
-        an exception when the serial connection fails
+        an exception when the serial connection fails.
         :param mock_sys_exit: the mocked exit function
         :param mock_serial: the mocked Serial object
         """
@@ -31,13 +47,13 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
     @patch('modules.sensors.serial.Serial')
     def test_init_serial_connection(self, mock_serial):
         """
-        Test if the init_serial_connection function initializes the serial connection correctly
+        Test if the init_serial_connection function initializes the serial connection correctly.
         :param mock_serial: the mocked Serial object
         """
         thies = Thies()
         logger = MagicMock()
         thies.init_serial_connection(port='/dev/ttyACM0', baud=9600, logger=logger)
-        mock_serial.assert_called_once_with('/dev/ttyACM0', 9600, timeout=1)
+        mock_serial.assert_called_once_with('/dev/ttyACM0', 9600, timeout=5)
 
     @patch('modules.sensors.NowTime')
     @patch('modules.sensors.sleep', return_value=None)
@@ -45,7 +61,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_sensor_start_sequence(self, mock_serial, mock_sleep, mock_now_time):  # pylint: disable=unused-argument
         """
         Test if the sensor_start_sequence function initializes the thies sensor correctly
-        it also tests if all the commands are sent in the correct order
+        it also tests if all the commands are sent in the correct order.
         :param mock_serial: the mocked Serial object
         :param mock_sleep: temporary argument for now
         :param mock_now_time: the mocked NowTime object
@@ -82,7 +98,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
     @patch('modules.sensors.sleep', return_value=None)
     def test_reset_sensor(self, mock_sleep, mock_serial):  # pylint: disable=unused-argument
         """
-        Test if the reset_sensor function resets the sensor correctly
+        Test if the reset_sensor function resets the sensor correctly.
         :param mock_sleep: temporary argument for now
         :param mock_serial: the mocked Serial object
         """
@@ -109,7 +125,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_write_fail(self):
         """
-        Test if the logger writes an error when there is an exception in the write function
+        Test if the logger writes an error when there is an exception in the write function.
         """
         thies = Thies()
         logger = MagicMock()
@@ -119,7 +135,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
     def test_write_successful(self):
         """
         Test if the write function writes the message to the serial connection
-        and nothing gets written to the logger
+        and nothing gets written to the logger.
         """
         thies = Thies()
         logger = MagicMock()
@@ -130,7 +146,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_read_fail(self):
         """
-        Test if the read function writes an error to the logger when there is an exception
+        Test if the read function writes an error to the logger when there is an exception.
         """
         thies = Thies()
         logger = MagicMock()
@@ -140,7 +156,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_read_successful(self):
         """
-        Test if the read function reads the data from the serial connection
+        Test if the read function reads the data from the serial connection.
         """
         thies = Thies()
         logger = MagicMock()
@@ -154,7 +170,19 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
     def test_get_type(self):
         """
-        Test if the get_type function returns the correct sensor type
+        Test if the get_type function returns the correct sensor type.
         """
         thies = Thies()
-        assert thies.get_type() == SensorType.THIES
+        assert thies.get_type() == "thies"
+
+    def test_close_serial_connection(self):
+        """
+        Test for the close_serial_connection function
+        """
+        parsivel_obj = Thies()
+        mock_serial_connection = Mock()
+        parsivel_obj.serial_connection = mock_serial_connection
+
+        parsivel_obj.close_serial_connection()
+
+        mock_serial_connection.close.assert_called_once()

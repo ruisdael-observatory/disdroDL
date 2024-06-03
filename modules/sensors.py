@@ -1,8 +1,8 @@
 """
-Module containing the abstract class for sensors,
-and the implementations of different sensor
-classes inheriting this class
+This module contains the abstract class for sensors,
+and the implementations of different sensor classes inheriting this class.
 """
+
 import sys
 from abc import abstractmethod, ABC
 from enum import Enum
@@ -15,7 +15,7 @@ from modules.now_time import NowTime  # pylint: disable=import-error
 
 class SensorType(Enum):
     """
-    Enum class for the different types of sensors
+    Enum class for the different types of sensors.
     """
     PARSIVEL = "parsivel"
     THIES = "thies"
@@ -23,13 +23,24 @@ class SensorType(Enum):
 
 class Sensor(ABC):
     """
-    Abstract class for outlining the commonly
-    used functionality for different types of sensors
+    Abstract class for outlining the commonly used functionality for different types of sensors.
+
+    Attributes:
+    - sensor_type: type of the sensor
+
+    Functions:
+    - init_serial_connection: initializes the serial connection with the sensor
+    - sensor_start_sequence: executes the startup sequence for a sensor
+    - reset_sensor: resets a sensor
+    - close_serial_connection: closes the serial connection
+    - write: sends a message to the sensor
+    - read: reads lines from the sensor
+    - get_type: returns the type of the sensor as a string
     """
 
     def __init__(self, sensor_type: SensorType):
         """
-        Constructor for sensors
+        Constructor for sensors.
         :param sensor_type: type of the sensor (enum)
         """
         self.sensor_type = sensor_type
@@ -37,8 +48,7 @@ class Sensor(ABC):
     @abstractmethod
     def init_serial_connection(self, port: str, baud: int, logger):
         """
-        Abstract function for initializing
-        the serial connection with the sensor
+        Abstract function for initializing the serial connection with the sensor.
         :param port: the port where the sensor is connected to
         :param baud: the baudrate of the sensor
         :param logger: Logger for logging information and errors
@@ -49,8 +59,8 @@ class Sensor(ABC):
         """
         Abstract function for executing the startup sequence for a sensor.
         This function performs the necessary initialization steps to configure a
-        sensor with specific settings provided in the `config_dict`. It
-        logs each step of the process using the provided `logger` object.
+        sensor with specific settings provided in the `config_dict`.
+        It logs each step of the process using the provided `logger` object.
         :param config_dict: Dictionary containing configuration parameters
                             for the sensor.
         :param logger: Logger for logging information and errors
@@ -67,14 +77,13 @@ class Sensor(ABC):
     @abstractmethod
     def close_serial_connection(self):
         """
-        Abstract function for closing the serial connection
+        Abstract function for closing the serial connection.
         """
 
     @abstractmethod
     def write(self, msg, logger):
         """
-        Abstract function for sending
-        a message to the sensor
+        Abstract function for sending a message to the sensor.
         :param msg: Message for the sensor
         :param logger: Logger for errors
         """
@@ -82,22 +91,24 @@ class Sensor(ABC):
     @abstractmethod
     def read(self, logger):
         """
-        Abstract function for reading
-        lines from the sensor
+        Abstract function for reading lines from the sensor.
         :param logger: Logger for errors
         """
 
     @abstractmethod
     def get_type(self) -> str:
         """
-        Returns the type of the sensor as a string
+        Abstract function for returning the type of the sensor as a string.
+        :return: Type of the sensor as a string
         """
 
 
 class Parsivel(Sensor):
     """
-    Class inheriting Sensor and representing
-    the parsivel type sensor
+    Class inheriting Sensor and representing the Parsivel type sensor.
+
+    Attributes:
+    - serial_connection : the serial connection to the sensor
     """
 
     def __init__(self, sensor_type=SensorType.PARSIVEL):
@@ -118,7 +129,7 @@ class Parsivel(Sensor):
         try:
             parsivel = serial.Serial(port, baud, timeout=1)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {parsivel}')
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-except
             logger.error(msg=e)
             sys.exit()
         self.serial_connection = parsivel
@@ -156,6 +167,9 @@ class Parsivel(Sensor):
         parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')
         self.write(parsivel_user_telegram, logger)
 
+        self.serial_connection.reset_input_buffer()
+        self.serial_connection.reset_output_buffer()
+
     def reset_sensor(self, logger, factory_reset: bool):
         """
         Abstract function for reseting a sensor.
@@ -173,7 +187,7 @@ class Parsivel(Sensor):
 
     def close_serial_connection(self):
         """
-        Closes the serial connection
+        Closes the serial connection.
         """
         if self.serial_connection is not None:
             self.serial_connection.close()
@@ -183,7 +197,7 @@ class Parsivel(Sensor):
         If the serial connection is initialized ->
         executes the write function for the
         serial connection with the respective message,
-        else -> sends an error through the logger
+        else -> sends an error through the logger.
         :param msg: Message for the sensor
         :param logger: Logger for errors
         :return: None
@@ -203,6 +217,7 @@ class Parsivel(Sensor):
         :return: List of lines or None
         """
         if self.serial_connection is not None:
+            self.write('CS/PA\r\n'.encode('ascii'), logger)
             parsivel_lines = self.serial_connection.readlines()
             return parsivel_lines
         logger.error(msg="serial_connection not initialized")
@@ -210,20 +225,24 @@ class Parsivel(Sensor):
 
     def get_type(self) -> str:
         """
-        Returns the type of the sensor
-        :return: Type of the serial as a string
+        Returns the type of the sensor as a string.
+        :return: Type of the sensor as a string
         """
         return self.sensor_type.value
 
 
 class Thies(Sensor):
     """
-    Class inheriting Sensor and representing the thies sensor
+    Class inheriting Sensor and representing the Thies type sensor.
+
+    Attributes:
+    - serial_connection : the serial connection to the sensor
+    - thies_id : id for the specific Thies sensor
     """
 
     def __init__(self, sensor_type=SensorType.THIES, thies_id='00'):
         """
-        Constructor for the thies type serial_connection
+        Constructor for the thies type serial_connection.
         :param sensor_type: type of the serial_connection (enum)
         """
         super().__init__(sensor_type)
@@ -232,22 +251,22 @@ class Thies(Sensor):
 
     def init_serial_connection(self, port, baud, logger):
         """
-        Initializes the serial connection for the thies sensor
+        Initializes the serial connection for the thies sensor.
         :param port: the port where the thies is connected to
         :param baud: the baudrate of the thies
         :param logger: the logger object
         """
         try:
-            thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
+            thies = serial.Serial(port, baud, timeout=5)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {thies}')
             self.serial_connection = thies
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-except
             logger.error(msg=e)
             sys.exit()
 
     def sensor_start_sequence(self, config_dict, logger):
         """
-        Send the serial commands to the thies that changes the necessary parameters
+        Send the serial commands to the thies that changes the necessary parameters.
         :param config_dict: the configuration dictionary
         :param logger: the logger object
         """
@@ -285,7 +304,7 @@ class Thies(Sensor):
 
     def reset_sensor(self, logger, factory_reset: bool):
         """
-        Resets the thies sensor
+        Resets the thies sensor.
         :param logger: the logger object
         :param factory_reset: whether the factory reset should be performed
         """
@@ -315,14 +334,14 @@ class Thies(Sensor):
 
     def close_serial_connection(self):
         """
-        Closes the serial connection
+        Closes the serial connection.
         """
         if self.serial_connection is not None:
             self.serial_connection.close()
 
     def write(self, msg, logger):
         """
-        Writes the message to the serial connection
+        Writes the message to the serial connection.
         :param msg: The message to send over the serial connection
         :param logger: the logger object
         """
@@ -333,7 +352,7 @@ class Thies(Sensor):
 
     def read(self, logger):
         """
-        Reads the data sent by the thies sensor
+        Reads the data sent by the thies sensor.
         :param logger: the logger object
         :return: the read line from the thies sensor
         """
@@ -342,13 +361,14 @@ class Thies(Sensor):
             return None
 
         sleep(2)  # Give sensor some time to create the telegram
+        self.serial_connection.write(f'\r{self.thies_id}TR00005\r'.encode('utf-8'))
         output = self.serial_connection.readline()
         decoded = str(output[0:len(output) - 2].decode("utf-8"))
         return decoded
 
-    def get_type(self):
+    def get_type(self) -> str:
         """
-        Returns the type of the serial_connection
-        :return: the type of the serial_connection
+        Returns the type of the sensor as a string.
+        :return: Type of the sensor as a string
         """
-        return self.sensor_type
+        return self.sensor_type.value

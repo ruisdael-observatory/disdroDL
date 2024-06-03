@@ -1,6 +1,7 @@
 """
-Module for testing the parsivel class from sensors.py
+Module for testing the Parsivel class from sensors.py
 """
+
 import unittest
 from unittest.mock import Mock, patch, call
 from modules.sensors import Parsivel
@@ -8,12 +9,25 @@ from modules.sensors import Parsivel
 
 class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-methods
     """
-    Class for testing the Parsivel class
+    Class for testing the Parsivel Sensor subclass.
+
+    Functions:
+    - test___init__: Constructor test.
+    - test_init_serial_connection_success: Good weather test for the init_serial_connection_success function.
+    - test_init_serial_connection_exception: Bad weather test for the init_serial_connection_success function.
+    - test_sensor_start_sequence: Test for the sensor_start_sequence function.
+    - test_reset_sensor_success: Good weather test for the reset_sensor function.
+    - test_reset_sensor_fail: Bad weather test for the test_sensor function.
+    - test_write_success: Good weather test for the write function.
+    - test_write_fail: Bad weather test for the write function.
+    - test_read_success: Good weather test for the read function.
+    - test_read_fail: Bad weather test for the read function.
+    - test_get_type: Test if the get_type function returns the correct sensor type.
     """
 
     def test___init__(self):
         """
-        Constructor test
+        Constructor test.
         """
         parsivel = Parsivel()
         assert parsivel.serial_connection is None
@@ -22,7 +36,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     @patch('modules.sensors.serial.Serial')
     def test_init_serial_connection_success(self, mock_serial):
         """
-        Good weather test for the init_serial_connection_success function
+        Good weather test for the init_serial_connection_success function.
         :param mock_serial: Mock of the serial.Serial call
         """
         mock_logger = Mock()
@@ -51,7 +65,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
         parsivel_obj = Parsivel()
         try:
             parsivel_obj.init_serial_connection(port="test", baud=1, logger=mock_logger)
-        except Exception:  # pylint: disable=broad-exception-caught
+        except Exception:  # pylint: disable=broad-except
             mock_serial.assert_called_once()
             mock_logger.error.assert_called_once()
             mock_exit.assert_called_once()
@@ -59,7 +73,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     @patch('modules.sensors.sleep', return_value=None)
     def test_sensor_start_sequence(self, mock_sleep):
         """
-        Test for the sensor_start_sequence function
+        Test for the sensor_start_sequence function.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_logger = Mock()
@@ -85,7 +99,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
         parsivel_obj.sensor_start_sequence(config_dict, mock_logger)
 
         mock_logger.info.assert_called_once_with(msg="Starting parsivel start sequence commands")
-        mock_serial_connection.reset_input_buffer.assert_called_once()
+        assert mock_serial_connection.reset_input_buffer.call_count == 2
 
         parsivel_obj.write.assert_has_calls(expected_calls_write)
 
@@ -100,7 +114,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     @patch('modules.sensors.sleep', return_value=None)
     def test_reset_sensor_success(self, mock_sleep):
         """
-        Good weather test for the reset_sensor function
+        Good weather test for the reset_sensor function.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_serial_connection = Mock()
@@ -118,7 +132,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     @patch('modules.sensors.sleep', return_value=None)
     def test_reset_sensor_fail(self, mock_sleep):
         """
-        Basd weather test for the test_sensor function
+        Bad weather test for the test_sensor function.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_serial_connection = Mock()
@@ -135,7 +149,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
     def test_write_success(self):
         """
-        Good weather test for the write function
+        Good weather test for the write function.
         """
         mock_serial_connection = Mock()
         parsivel_obj = Parsivel()
@@ -150,7 +164,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
     def test_write_fail(self):
         """
-        Bad weather test for the write function
+        Bad weather test for the write function.
         """
         parsivel_obj = Parsivel()
         mock_logger = Mock()
@@ -162,7 +176,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
     def test_read_success(self):
         """
-        Good weather test for the read function
+        Good weather test for the read function.
         """
         parsivel_obj = Parsivel()
         mock_serial_connection = Mock()
@@ -177,7 +191,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
     def test_read_fail(self):
         """
-        Bad weather test for the read function
+        Bad weather test for the read function.
         """
         parsivel_obj = Parsivel()
         mock_logger = Mock()
@@ -189,8 +203,20 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
     def test_get_type(self):
         """
-        Test for the get_type function
+        Test if the get_type function returns the correct sensor type.
         """
         parsivel_obj = Parsivel()
 
         assert parsivel_obj.get_type() == "parsivel"
+
+    def test_close_serial_connection(self):
+        """
+        Test for the close_serial_connection function
+        """
+        parsivel_obj = Parsivel()
+        mock_serial_connection = Mock()
+        parsivel_obj.serial_connection = mock_serial_connection
+
+        parsivel_obj.close_serial_connection()
+
+        mock_serial_connection.close.assert_called_once()
