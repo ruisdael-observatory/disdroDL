@@ -124,7 +124,7 @@ class ExportThiesTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV_THIES.yml'
+        mock_args.config = 'configs_netcdf/config_006_GV_THIES.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'full'
 
@@ -154,7 +154,7 @@ class ExportThiesTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV_THIES.yml'
+        mock_args.config = 'configs_netcdf/config_006_GV_THIES.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'light'
 
