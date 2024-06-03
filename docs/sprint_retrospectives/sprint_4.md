@@ -10,7 +10,7 @@
 | #29        | #77   | Mels?    | 5H             | 7H         | Yes           | TODO: Currently Mels's assigned issue is #29, the user story. Would it make sense to assign #77, parsing old .csv's, to Mels since that's his starting point?                     |
 | #29        | #78   | Mels    | 6H             | 8H         | No            |                                                                                                                                                                                   |
 | #29        | #79   | Mels      | 6H             | 0H         | No            |                                                                                                                                                                                   |
-| #57        | #82   | Vasil    |                |            |               |                                                                                                                                                                                   |
+| #57        | #82   | Vasil    | 16h | 2h | Yes | Was much easier than expected                                                                                                                                                                                  |
 | #57        | #85   | Jesse    | 6h             | 3h         | Yes           | The time estimate was quite high since setting up the boilerplate code for a project was something completely new, but didn't end up taking that long                             |
 | #57        | #87   | Jesse    | 2h             | 1.5h       | Yes           |                                                                                                                                                                                   |
 | #63        | #64   | Ella     | 1h 20min       | 30min      | no            | still needs to be finished, focused more on the code in this sprint                                                                                                               |
@@ -26,7 +26,7 @@
 | ---        | #90   | Ella+Noky | 1h             | 20min      | yes           | was and eassy fix once the telegram class was refactored, some code still will need to be deleted after merging                                                                   |
 | ---        | #92   | Noky     | 1h             | 1h         | Yes           |                                                                                                                                                                                   |
 | ---        | #93   | Jesse    | 3h             | 3h         | Yes           |                                                                                                                                                                                   |
-| ---        | #102  | Vasil    |                |            |               |                                                                                                                                                                                   |
+| ---        | #102  | Vasil    | 7h | 8h | Yes | Figuring out some details before starting to code takes some time, and hence this issue is more time consuming.                                                                                                                                                                                  |
 
 ## Main Problems Encountered
 
