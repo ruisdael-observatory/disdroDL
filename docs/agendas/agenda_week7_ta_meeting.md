@@ -15,3 +15,11 @@
 - When meeting as a group on campus, we tend to write things down on the whiteboard on what we are going to do during the meeting, should we also upload those notes (in the form of a picture) to gitlab to show more about our process?
 
 - A second point about group meetings, what would be a reasonable amount of time to spend on a meeting? Sometimes we have meetings where we discuss things in quite some detail. Also, this time is not spend on coding, so when you mention we should be working 32 hours, what is and is not included in those hours? Because we feel like those meetings are also important for the project.
+
+### Our plan this week
+
+- Quality Control software: Tuesday we have a meeting planned with Marc and Andre to deep dive into what a good and bad netCDF file look like
+
+- Iron out the bugs in live logging: As previously seen, some bugs take hours, even days to show up. So that's why we still focus on solving those potential bugs this week
+
+- Have csv parsing fully working: CSV parsing turned out to be way harder than expected, that is the reason we still need to work on it in the coming week
