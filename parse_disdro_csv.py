@@ -159,7 +159,7 @@ if __name__ == '__main__':
     site_name = config_dict['global_attrs']['site_name']
     st_code = config_dict['station_code']
     sensor_name = config_dict['global_attrs']['sensor_name']
-    output_fn = f"{input_path.stem}.nc"
+    output_fn = f"{input_path.stem}"
     output_path = input_path.parent / output_fn
     
     with open(input_path , newline='') as csvfile:  # pylint: disable=W1514
