@@ -630,25 +630,3 @@ def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
     assert netCDF_var_data_raw_data[0][0][0] == -99
     assert netCDF_var_data_raw_shape == (2, 32, 32)
 
-# def test_compress_wrong_file_format():
-#     nc = NetCDF(logger=logger,
-#                 config_dict=config_dict_thies,
-#                 data_dir=data_dir,
-#                 fn_start='test_compression_normal',
-#                 full_version=True,
-#                 telegram_objs=[],
-#                 date=start_dt_thies)
-#     nc.create_netCDF()
-#     nc.compress()
-#
-#     nc_wrong = NetCDF(logger=logger,
-#                 config_dict=config_dict_thies,
-#                 data_dir=data_dir,
-#                 fn_start='test_compression_wrong',
-#                 full_version=True,
-#                 telegram_objs=[],
-#                 date=start_dt_thies)
-#     nc.create_netCDF()
-#     p = Path('sample_data/test_compression_normal.nc')
-#     p.rename(p.with_suffix('.txt'))
-#     nc.compress()
