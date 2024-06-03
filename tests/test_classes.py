@@ -23,7 +23,7 @@ from modules.util_functions import yaml2dict
 log_handler = StreamHandler()
 logger = logging.getLogger('testlog')
 logger.addHandler(log_handler)
-wd = Path(__file__).parent
+wd = Path(__file__).parent.parent
 test_data_dir = wd / 'test_data'
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
