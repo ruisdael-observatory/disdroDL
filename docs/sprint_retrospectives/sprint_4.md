@@ -7,7 +7,7 @@
 
 | User Story | Task  | Assignee | Time Estimated | Time Spent | Done (Yes/No) | Notes                                                                                                                                                                             |
 |------------|-------|----------|----------------|------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| #29        | #77   | Mels?    | 5H             | 7H         | Yes           | TODO: Currently Mels's assigned issue is #29, the user story. Would it make sense to assign #77, parsing old .csv's, to Mels since that's his starting point?                     |
+| #29        | #77   | Mels    | 5H             | 7H         | Yes           |                     |
 | #29        | #78   | Mels    | 6H             | 8H         | No            |                                                                                                                                                                                   |
 | #29        | #79   | Mels      | 6H             | 0H         | No            |                                                                                                                                                                                   |
 | #57        | #82   | Vasil    | 16h | 2h | Yes | Was much easier than expected                                                                                                                                                                                  |
