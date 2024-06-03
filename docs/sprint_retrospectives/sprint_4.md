@@ -7,9 +7,9 @@
 
 | User Story | Task  | Assignee | Time Estimated | Time Spent | Done (Yes/No) | Notes                                                                                                                                                                             |
 |------------|-------|----------|----------------|------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| #29        | #77   | Mels?    |                |            |               | TODO: Currently Mels's assigned issue is #29, the user story. Would it make sense to assign #77, parsing old .csv's, to Mels since that's his starting point?                     |
-| #29        | #78   | ---      |                |            |               |                                                                                                                                                                                   |
-| #29        | #79   | ---      |                |            |               |                                                                                                                                                                                   |
+| #29        | #77   | Mels?    |       5H        |   7H         |    Yes           | TODO: Currently Mels's assigned issue is #29, the user story. Would it make sense to assign #77, parsing old .csv's, to Mels since that's his starting point?                     |
+| #29        | #78   | Mels    |       6H         |        8H    |        No       |                                                                                                                                                                                   |
+| #29        | #79   | Mels      |      6H          |     0H      |    No           |                                                                                                                                                                                   |
 | #57        | #82   | Vasil    |                |            |               |                                                                                                                                                                                   |
 | #57        | #85   | Jesse    | 6h             | 3h         | Yes           | The time estimate was quite high since setting up the boilerplate code for a project was something completely new, but didn't end up taking that long                             |
 | #57        | #87   | Jesse    | 2h             | 1.5h       | Yes           |                                                                                                                                                                                   |
@@ -32,3 +32,4 @@
 ## Main Problems Encountered
 
 - This week has been quite busy with meeting and presentations. Therefore, we all couldn't spend that much time actually coding.
+- Parsing old .csv's and .txt's are still difficult, since there is little consistency in naming conventions and the way the data is logged in the respective files. 
