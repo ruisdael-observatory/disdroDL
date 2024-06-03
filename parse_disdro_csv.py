@@ -1,4 +1,8 @@
-""""comment"""
+""""
+This script exports .csv's to netCDF files. It parses the data read from the csv here with custom functions, 
+as the functions from the telegram object didn't work on the string of data from the csv.
+It then makes a telegram object with the parsed data already inserted, before it gets passed on to a NetCDF object.
+"""
 import csv
 import math
 from pathlib import Path
@@ -11,10 +15,11 @@ from modules.telegram import ParsivelTelegram, ThiesTelegram
 from modules.util_functions import yaml2dict, create_logger
 from modules.netCDF import NetCDF
 
-
+#Different dictionaries to select the necessary method/file needed, corresponding to the respective sensor
 telegrams = {'THIES': ThiesTelegram, 'PAR': ParsivelTelegram}
 config_files = {'THIES': 'config_general_thies.yml', 'PAR': 'config_general_parsivel.yml'}
 field_type = {'i4': int, 'i2': int, 'S4': str, 'f4': float}
+
 
 def choose_sensor(input: str) -> str:
     sensors = telegrams.keys()
@@ -168,19 +173,9 @@ if __name__ == '__main__':
                 logger=logger,
                 telegram_data=telegram,
             )
-            #print(telegram_instance.telegram_data)
+
             telegram_objs.append(telegram_instance)
 
-            #telegram_data_ts = datetime.fromtimestamp(row_telegram.telegram_data['timestamp'], tz=timezone.utc)
-            # assert row_telegram.timestamp.strftime('%Y-%m-%dT%H:%M:%S') ==
-            # row_telegram.telegram_data['datetime'].strftime('%Y-%m-%dT%H:%M:%S')
-            # '''
-            # Error: there is 1hour difference betweem row_telegram.timestamp and row_telegram.telegram_data
-            # Compare: ts_dt 2023-11-06 22:58:51.979260+00:00 Telegram.timestamp: 2023-11-06T22:58:51
-            # telegram_data[datetime]: 2023-11-06T23:58:51 telegram_data[timestamp]: 2023-11-06T22:58:51
-            # while discussing it with Rob, Rob thinks that the Parsivel Pi and script might have been running on
-            # local time and not UTC 
-            # '''
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
                 data_dir='sample_data/',
@@ -192,25 +187,3 @@ if __name__ == '__main__':
     nc.create_netCDF()
     nc.write_data_to_netCDF_parsivel() if sensor == 'PAR' else nc.write_data_to_netCDF_thies() 
     nc.compress()
-#     # CSV processing
-#     df = csv2df(csv_path=str(input_path))
-#     for index, csv_row in df.iterrows():
-#         telegram_dict = telegram2dict(telegram=csv_row['telegram'],
-#                                       dt=csv_row['datetime'],
-#                                       ts=csv_row['timestamp'], )
-#         telegram = ParsivelTelegram(config_dict=config_dict,
-#                             telegram_lines=None,
-#                             telegram_data=telegram_dict,
-#                             timestamp=telegram_dict['datetime'],
-#                             db_cursor=None,
-#                             logger=logger
-#                             )
-#         telegram.str2list(field='90', separator=',')
-#         telegram.str2list(field='91', separator=',')
-#         telegram.telegram_data['93'] = str2list_by_ndigits(input=telegram.telegram_data['93'], ndigits=3)
-#         telegram.write_data_to_netCDF()
-
-# '''
-
-# * field 93 error handling: what happens when x is present
-# * time: unit - start see: `def test_nc_time`
