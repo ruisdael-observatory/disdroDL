@@ -7,9 +7,9 @@
 
 | User Story | Task  | Assignee | Time Estimated | Time Spent | Done (Yes/No) | Notes                                                                                                                                                                             |
 |------------|-------|----------|----------------|------------|---------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| #29        | #77   | Mels    | 5H             | 7H         | Yes           |                     |
-| #29        | #78   | Mels    | 6H             | 8H         | No            |                                                                                                                                                                                   |
-| #29        | #79   | Mels      | 6H             | 0H         | No            |                                                                                                                                                                                   |
+| #29        | #77   | Mels    | 5H             | 7H         | Yes           |      Finally got this to work, still took longer than expected, see notes for the general issues with .csv's and .txt's               |
+| #29        | #78   | Mels    | 6H             | 8H         | No            | This was also harder than expected, do expect to finish it next sprint though |                                                                                                                                                                                   |
+| #29        | #79   | Mels      | 6H             | 0H         | No           | Didn't get to it due to previous issues |                                                                                                                                                                                   |
 | #57        | #82   | Vasil    | 16h | 2h | Yes | Was much easier than expected                                                                                                                                                                                  |
 | #57        | #85   | Jesse    | 6h             | 3h         | Yes           | The time estimate was quite high since setting up the boilerplate code for a project was something completely new, but didn't end up taking that long                             |
 | #57        | #87   | Jesse    | 2h             | 1.5h       | Yes           |                                                                                                                                                                                   |
@@ -32,5 +32,5 @@
 
 - Many of the issues involved parts that are new to the person doing them. Therefore, issue time estimation was a bit off.
 - Because of the previous point some issues ended up taking much more time.
-- Parsing old .csv's and .txt's are still difficult, since there is little consistency in naming conventions and the way the data is logged in the respective files.
+- Parsing old .csv's and .txt's are still difficult, since there is little consistency in naming conventions and the way the data is logged in the respective files. For example, the telegram data is stored in a massive string, making no distinction between single data values and list's of data values.
 - This week has been quite busy with meeting and presentations. Therefore, we all couldn't spend that much time actually coding.
