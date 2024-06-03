@@ -3,6 +3,7 @@
 ## 03-06-2024
 
 ## Chairman: Noky Soekarman
+## Minutetaker: Mels Lutgerink
 
 ### Discussion points
 - Regarding the feedback from the midterm meeting
