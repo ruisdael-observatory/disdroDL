@@ -28,7 +28,7 @@ def yaml2dict(path: Path) -> Dict:
     :param path: the path to the yaml file
     :return: dictionary with all the field and values
     """
-    with open(path, 'r') as yaml_f:  # pylint: disable=unspecified-encoding
+    with open(path, 'r',encoding="utf8") as yaml_f:  # pylint: disable=unspecified-encoding
         yaml_content = yaml_f.read()
         yaml_dict = yaml.safe_load(yaml_content)
     return yaml_dict

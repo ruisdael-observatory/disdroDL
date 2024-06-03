@@ -99,7 +99,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
         parsivel_obj.sensor_start_sequence(config_dict, mock_logger)
 
         mock_logger.info.assert_called_once_with(msg="Starting parsivel start sequence commands")
-        mock_serial_connection.reset_input_buffer.assert_called_once()
+        assert mock_serial_connection.reset_input_buffer.call_count == 2
 
         parsivel_obj.write.assert_has_calls(expected_calls_write)
 
