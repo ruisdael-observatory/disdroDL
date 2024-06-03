@@ -30,5 +30,7 @@
 
 ## Main Problems Encountered
 
+- Many of the issues involved parts that are new to the person doing them. Therefore, issue time estimation was a bit off.
+- Because of the previous point some issues ended up taking much more time.
+- Parsing old .csv's and .txt's are still difficult, since there is little consistency in naming conventions and the way the data is logged in the respective files.
 - This week has been quite busy with meeting and presentations. Therefore, we all couldn't spend that much time actually coding.
-- Parsing old .csv's and .txt's are still difficult, since there is little consistency in naming conventions and the way the data is logged in the respective files. 
