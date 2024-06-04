@@ -167,6 +167,9 @@ class Parsivel(Sensor):
         parsivel_user_telegram = 'CS/M/M/1\r'.encode('utf-8')
         self.write(parsivel_user_telegram, logger)
 
+        self.serial_connection.reset_input_buffer()
+        self.serial_connection.reset_output_buffer()
+
     def reset_sensor(self, logger, factory_reset: bool):
         """
         Abstract function for reseting a sensor.
@@ -214,6 +217,7 @@ class Parsivel(Sensor):
         :return: List of lines or None
         """
         if self.serial_connection is not None:
+            self.write('CS/PA\r\n'.encode('ascii'), logger)
             parsivel_lines = self.serial_connection.readlines()
             return parsivel_lines
         logger.error(msg="serial_connection not initialized")
@@ -253,7 +257,7 @@ class Thies(Sensor):
         :param logger: the logger object
         """
         try:
-            thies = serial.Serial(port, baud, timeout=1)  # Defines the serial port
+            thies = serial.Serial(port, baud, timeout=5)  # Defines the serial port
             logger.info(msg=f'Connected to parsivel, via: {thies}')
             self.serial_connection = thies
         except Exception as e:  # pylint: disable=broad-except
@@ -357,6 +361,7 @@ class Thies(Sensor):
             return None
 
         sleep(2)  # Give sensor some time to create the telegram
+        self.serial_connection.write(f'\r{self.thies_id}TR00005\r'.encode('utf-8'))
         output = self.serial_connection.readline()
         decoded = str(output[0:len(output) - 2].decode("utf-8"))
         return decoded

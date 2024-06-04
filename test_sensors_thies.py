@@ -53,7 +53,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         thies = Thies()
         logger = MagicMock()
         thies.init_serial_connection(port='/dev/ttyACM0', baud=9600, logger=logger)
-        mock_serial.assert_called_once_with('/dev/ttyACM0', 9600, timeout=1)
+        mock_serial.assert_called_once_with('/dev/ttyACM0', 9600, timeout=5)
 
     @patch('modules.sensors.NowTime')
     @patch('modules.sensors.sleep', return_value=None)
