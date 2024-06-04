@@ -89,10 +89,21 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     '''
     Creates 1 dict from a dataframe row, with the telegram values
     '''
-    telegram_indices = config_dict
-    telegram_dict = {key: None for key in telegram_indices}  # pylint: disable=W0621
+    telegram_indices = list(config_dict.keys())[1:]
+    telegram_dict = {}
+    print(telegram_indices)
+    #telegram = telegram[1:]
     for index, field_n in enumerate(telegram_indices):
-        telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index])
+        print(field_n, config_dict[field_n]['dtype'], telegram[index])
+        if(field_n == '81'):
+            telegram_dict[field_n] = [int(x) for x in telegram[index:index+439]]
+            print(telegram_dict[field_n])
+        elif(field_n > '520'):
+            telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index+439])
+        else:
+            telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index])
+    telegram_dict['2'] = telegram_dict['2'].split(',')[-1]
+    print(telegram_dict)
     telegram_dict['datetime'] = dt
     
     telegram_dict['timestamp'] = str(ts)
@@ -108,7 +119,11 @@ def process_row(row, sensor, config_dict):
             ts_dt = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
             return telegram2dict(telegram_str, timestamp, ts_dt, config_dict=config_dict), timestamp
         else: 
-            return {}
+            dt_str, ts_str, telegram_b = row
+            timestamp = datetime.strptime(dt_str, "%Y%m%d-%H%M%S")
+            telegram_str = telegram_b[4:-1].split(";")
+            ts_dt = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
+            return thies_telegram_to_dict(telegram_str, ts_dt, timestamp, config_dict), timestamp
     else:
         if sensor == "THIES":
             dates = row[0].split(",")
