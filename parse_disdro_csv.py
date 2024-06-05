@@ -27,35 +27,7 @@ def choose_sensor(input: str) -> str:
 
 
 
-def str2list_by_ndigits(input: str, ndigits: int) -> list[str]:  # pylint: disable=W0622
-    '''
-    converts str (sequence of characters) into a list,
-    with each item being ndigits long.
-    Used only for F93 values, when they are in  '00000000000' (Ruisdael CSVs)
-    '''
-    range_obj = range(0, len(input), ndigits)
-    list_val = [input[i:i + ndigits] for i in range_obj]
-    return list_val
-
-
-def telegram_list2dict(telegram_indeces: list, telegram: list) -> Dict:
-    '''
-    Converts the parsivel telegram list to a dictionary.
-    The dictionary keys are the iter numbers of the telegram string
-    The telegram list input: ['0000.102', '0100.87', '57', '58', '-RADZ', ' RL-'
-    Telegram has the following sequence: 01,02,03...35,60,90,91,93
-    '''
-    telegram_dict = {key: None for key in telegram_indeces} # pylint: disable=W0621
-    # print(telegram[:-3])
-    for index, field_n in enumerate(telegram_indeces[:-3]):  # ignore fields 90,91,93
-        telegram_dict[field_n] = telegram[index]
-    telegram_dict['90'] = (",").join(telegram[-65:-33])
-    telegram_dict['91'] = (",").join(telegram[-33:-1])
-    telegram_dict['93'] = telegram[-1]
-    return telegram_dict
-
-
-def telegram2dict(telegram: str, dt: datetime, ts: datetime, config_dict: Dict):
+def telegram2dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: Dict):
     '''
     Creates 1 dict from a dataframe row, with the telegram values
     '''
@@ -63,22 +35,21 @@ def telegram2dict(telegram: str, dt: datetime, ts: datetime, config_dict: Dict):
     '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '30',
     '31', '32', '33', '34', '35', '60', '90', '91', '93']
     telegram_dict = {}
-    telegram_list = telegram.split(";")
     x = 0
     for i, key in enumerate(default_telegram_indeces):
         
         if(key == '90' or key == '91'):
             shallow_copy = []
-            telegram_value = [float(value) for value in telegram_list[i+x*32:i+32*(x+1)]] #field_type[config_dict[key]['dtype']](telegram_list[i:i+32])
+            telegram_value = [float(value) for value in telegram[i+x*32:i+32*(x+1)]] #field_type[config_dict[key]['dtype']](telegram_list[i:i+32])
             x +=1
             shallow_copy[:] = telegram_value
             telegram_dict[key] = shallow_copy
         elif(key == '93'):
-            s = telegram_list[-1]
+            s = telegram[-1]
             raw_data = [int(s[i:i+3]) for i in range(0, len(s), 3)]
             telegram_dict[key] = raw_data
         else:
-            telegram_value = field_type[config_dict[key]['dtype']](telegram_list[i])
+            telegram_value = field_type[config_dict[key]['dtype']](telegram[i])
             telegram_dict[key] = telegram_value
     
     telegram_dict['datetime'] = dt
@@ -109,27 +80,30 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     telegram_dict['timestamp'] = str(ts)
     return telegram_dict
 
-def process_row(row, sensor, config_dict):
+def process_row(telegram, sensor, config_dict):
 
-    if len(row) == 3:
+    if len(telegram) == 3:
+        
+        dt_str, ts_str, telegram_b = telegram
+        timestamp = datetime.strptime(dt_str, "%Y%m%d-%H%M%S")
+        date = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
         if sensor == 'PAR':
-            dt_str, ts_str, telegram_b = row
-            timestamp = datetime.strptime(dt_str, "%Y%m%d-%H%M%S")
-            telegram_str = telegram_b[2:-1]
-            ts_dt = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
-            return telegram2dict(telegram_str, timestamp, ts_dt, config_dict=config_dict), timestamp
+            telegram = telegram_b[2:-1].split(";")
+            return telegram2dict(telegram, timestamp, date, config_dict), timestamp
         else: 
-            dt_str, ts_str, telegram_b = row
-            timestamp = datetime.strptime(dt_str, "%Y%m%d-%H%M%S")
-            telegram_str = telegram_b[4:-1].split(";")
-            ts_dt = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
-            return thies_telegram_to_dict(telegram_str, ts_dt, timestamp, config_dict), timestamp
+            telegram = telegram_b[4:-1].split(";")
+            return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
     else:
         if sensor == "THIES":
             dates = row[0].split(",")
             timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
             date = datetime.fromtimestamp(float(row[1]), tz=timezone.utc)
-            return thies_telegram_to_dict(row, date, timestamp, config_dict), timestamp
+            return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
+        else:
+            date = telegram[0]
+            timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
+            return telegram2dict(telegram[1:], timestamp, timestamp, config_dict), timestamp
+
             
 
 if __name__ == '__main__':
@@ -178,7 +152,8 @@ if __name__ == '__main__':
         reader = csv.reader(csvfile, delimiter=';')
         telegram_objs = []
         for row in reader:
-            
+            if(row[0] == 'Timestamp (UTC)'):
+                continue
             telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
             telegram_instance = telegrams[sensor](
                 config_dict=config_dict,
