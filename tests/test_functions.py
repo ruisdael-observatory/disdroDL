@@ -22,7 +22,7 @@ from modules.util_functions import yaml2dict, get_general_config, create_logger,
     create_dir, resetSerialBuffers, interruptHandler # pylint: disable=import-error
 from modules.netCDF import unpack_telegram_from_db
 
-wd = Path(__file__).parent
+wd = Path(__file__).parent.parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_007_CABAUW.yml')
 config_dict = deep_update(config_dict, config_dict_site)

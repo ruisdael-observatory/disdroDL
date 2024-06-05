@@ -17,7 +17,7 @@ from main import main
 from modules.sensors import Thies
 from modules.sqldb import connect_db
 
-wd = Path(__file__).parent
+wd = Path(__file__).parent.parent
 
 
 class TestThiesIntegration(unittest.TestCase):
