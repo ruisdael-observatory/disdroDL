@@ -1,5 +1,6 @@
 """"Module that tests Thies telegram methods"""
 import logging
+import os
 from pathlib import Path
 from logging import StreamHandler
 from datetime import datetime, timezone
@@ -131,3 +132,5 @@ def test_parse_thies_empty_telegram_row(db_insert_two_telegrams_thies):
     assert len(data_dictionary.keys()) == 0
     cur.close()
     con.close()
+
+    os.remove(db_path_thies)

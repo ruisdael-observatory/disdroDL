@@ -187,6 +187,8 @@ class ExportThiesTests(unittest.TestCase):
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
 
+        os.remove("sample_data/test_thies.db")
+
 @pytest.mark.usefixtures("db_insert_24h_parsivel")
 class ExportArgumentExceptionTests(unittest.TestCase):
     """
@@ -332,3 +334,5 @@ class EmptyExportTests(unittest.TestCase):
 
         assert result == 1
         assert output_file_path.exists() is False
+
+        os.remove("sample_data/test_parsivel.db")
