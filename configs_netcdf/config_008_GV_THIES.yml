@@ -1,5 +1,5 @@
 # sensor and script settings
-station_code: 'GV' # keep under 10 characters, max accepted by Parsivel
+station_code: 'GV'
 port: '/dev/ttyACM0'
 baud: 9600
 script_name: 'capture_disdro_data.py'
@@ -22,7 +22,7 @@ global_attrs:
     license: 'CC BY 4.0 https://creativecommons.org/licenses/by-sa/4.0/'
     logging software: '(#TODO - URL public git repo) - Version 0.3.0'
     sensor_type: 'Thies Clima'
-    sensor_serial_number: '450994' # to be updated
+    sensor_serial_number: '0854'
 
 variables:
     latitude:

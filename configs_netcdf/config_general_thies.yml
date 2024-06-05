@@ -397,7 +397,7 @@ telegram_fields:
             long_name: '1-minute SYNOP Tab.4677'
             standard_name: 'weather_code_synop_4677'
             units: 'None'
-            comment: '"See Table 7: Code SYNOP/METAR in the documentation for possible values'
+            comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
 
     '12':
         dimensions:
@@ -522,7 +522,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status laser temperature (analogue) '
+            long_name: 'Status laser temperature (analogue)'
             standard_name: 'status_laser_temperature_analogue'
             units: 'None'
             comment: 'OK:0, Error:1'
@@ -612,7 +612,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status current heating housing '
+            long_name: 'Status current heating housing'
             standard_name: 'status_heating_housing'
             units: 'None'
             comment: 'OK:0, warning:1'
@@ -672,7 +672,7 @@ telegram_fields:
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Temperature of laser driver'
-            standard_name: 'Temperature of laser driver'
+            standard_name: 'temperature_of_laser_driver'
             units: '°C'
             comment: 'this should be between 0-80°C'
     '40':
@@ -710,7 +710,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Voltage sensor supply [1/10V] '
+            long_name: 'Voltage sensor supply [1/10V]'
             standard_name: 'voltage_sensor_supply'
             units: '1/10 V'
     '44':
@@ -719,7 +719,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Current pane heating laser head [mA] '
+            long_name: 'Current pane heating laser head [mA]'
             standard_name: 'current_heating_laser_head'
             units: 'mA'
     '45':
@@ -737,7 +737,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Ambient temperature [°C] '
+            long_name: 'Ambient temperature [°C]'
             standard_name: 'ambient_temperature'
             units: '°C'
     '47':
@@ -773,7 +773,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Current heating carriers [mA] '
+            long_name: 'Current heating carriers [mA]'
             standard_name: 'current_heating_carriers'
             units: 'mA'
     '51':
@@ -860,7 +860,7 @@ telegram_fields:
             long_name: 'Number of particles no hydrometeor '
             standard_name: 'number_of_particles_no_hydrometeor'
             units: 'None'
-            comment: 'add a comment: "This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '60':
         dimensions:
             - time
@@ -1087,7 +1087,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'
         var_attrs:
-           long_name: 'Wind speed [m/s] '
+           long_name: 'Wind speed [m/s]'
            standard_name: 'wind_speed'
            units: 'm/s'
     '524':

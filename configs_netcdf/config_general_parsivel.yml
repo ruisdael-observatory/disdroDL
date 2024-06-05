@@ -34,7 +34,7 @@ variables:
             standard_name: "time"
             axis: "T"
             calendar: "standard"
-            unitS: 'UTC'
+            units: 'UTC'
     interval:
         dimensions:  # empty for scalar variables
         dtype: 'i4'            
