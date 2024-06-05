@@ -1,5 +1,5 @@
 """
-Module for testing reset_parsivel.py
+Module for testing reset_sensor.py with Parsivel sensor
 """
 import unittest
 from pathlib import Path
