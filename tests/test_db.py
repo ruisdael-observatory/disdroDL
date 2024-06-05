@@ -338,7 +338,7 @@ def test_NetCDF_thies(db_insert_24h_thies):
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
     assert netCDF_var_data_raw_shape == (1440, 22, 20)
-    
+
     os.remove(data_dir / 'test_thies.nc')
 
 @pytest.mark.usefixtures("db_insert_24h_parsivel")
@@ -464,7 +464,7 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-
     con.close()
 
     # len(telegram_objs) should be half of returned_rows,
-    # as def db_insert_24h_w_gaps includes telegram data, 
+    # as def db_insert_24h_w_gaps includes telegram data,
     # only in half of the db entries
     assert len(telegram_objs) == returned_rows / 2
 
@@ -479,7 +479,7 @@ def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-
     nc.create_netCDF()
     nc.write_data_to_netCDF_parsivel()
     nc.compress()
-    
+
     # test netCDF content
     rootgrp = Dataset(data_dir / 'test_w_gaps.nc', 'r', format="NETCDF4")
     # test NetCDF time and datetime variables values
@@ -623,7 +623,7 @@ def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
     nc.create_netCDF()
     nc.write_data_to_netCDF_thies()
     nc.compress()
-    
+
     rootgrp = Dataset(data_dir / 'test_wrong_f81_len_thies.nc', 'r', format="NETCDF4")
     netCDF_var_data_raw = rootgrp.variables['raw_data']
     netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
@@ -683,4 +683,3 @@ def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
 
     os.remove(data_dir / 'test_wrong_f93_len_parsivel.nc')
     os.remove(db_path_parsivel)
-
