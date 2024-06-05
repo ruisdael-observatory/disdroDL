@@ -300,27 +300,27 @@ telegram_fields:
         dtype: 'S4'
         include_in_nc: 'never'
         var_attrs:
-            units: None
             long_name: 'start identifier'
             standard_name: 'STX'
+            units: 'None'
     '2':
         dimensions:
             - time
         dtype: 'S4'
         include_in_nc: 'always'
         var_attrs:
-            units: None
             long_name: 'device id'
             standard_name: 'device_id'
+            units: 'None'
     '3':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            units: None
             long_name: 'Serial number'
             standard_name: 'serial_number'
+            units: 'None'
     '4':
         dimensions:
             - time
@@ -329,7 +329,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Software version of sensor'
             standard_name: 'software_version'
-            units: None
+            units: 'None'
     '5':
         dimensions:
             - time
@@ -347,8 +347,8 @@ telegram_fields:
         var_attrs:
             long_name: 'Time of the sensor'
             standard_name: 'sensor_time'
-            comment: 'note that the sensor time may deviate from the actual time'
             units: 'time'
+            comment: 'note that the sensor time may deviate from the actual time'
     '7':
         dimensions:
             - time
@@ -358,7 +358,7 @@ telegram_fields:
             long_name: '5-minute SYNOP Tab.4677 code'
             standard_name: 'weather_code_synop_4677_5min'
             comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
-            units: None
+            units: 'None'
     '8':
         dimensions:
             - time
@@ -367,7 +367,7 @@ telegram_fields:
         var_attrs:
             long_name: '5-minute SYNOP Tab.4680 code'
             standard_name: 'weather_code_synop_4680_5min'
-            units: None
+            units: 'None'
             comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '9':
         dimensions:
@@ -377,7 +377,7 @@ telegram_fields:
         var_attrs:
             long_name: '5-minute METAR Tab.4678 code'
             standard_name: 'weather_code_metar_4678_5min'
-            units: None
+            units: 'None'
             comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '10':
         dimensions:
@@ -396,7 +396,7 @@ telegram_fields:
         var_attrs:
             long_name: '1-minute SYNOP Tab.4677'
             standard_name: 'weather_code_synop_4677'
-            units: None
+            units: 'None'
             comment: '"See Table 7: Code SYNOP/METAR in the documentation for possible values'
 
     '12':
@@ -407,7 +407,7 @@ telegram_fields:
         var_attrs:
             long_name: '1-minute SYNOP Tab.4680'
             standard_name: 'weather_code_synop_4680'
-            units: None
+            units: 'None'
             comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
     '13':
         dimensions:
@@ -417,7 +417,7 @@ telegram_fields:
         var_attrs:
             long_name: '1-minute METAR Tab.4678'
             standard_name: 'weather_code_metar_4678'
-            units: None
+            units: 'None'
             comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
     '14':
         dimensions:
@@ -463,27 +463,30 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1-minute visibility in precipitation [0...99999m]'
+            long_name: '1-minute visibility in precipitation'
             standard_name: 'visibility'
             units: 'm'
+            comment: 'range [0...99999m]'
     '19':
         dimensions:
           - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1-minute radar reflectivity [-9.9...99.9dBZ] '
+            long_name: '1-minute radar reflectivity'
             standard_name: 'reflectivity'
             units: 'dBZ'
+            comment: 'range [-9.9...99.9dBZ]'
     '20':
         dimensions:
           - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1-minute measuring quality [0...100%] '
+            long_name: '1-minute measuring quality'
             standard_name: 'measurement_quality'
             units: '%'
+            comment: 'range [0...100%]'
     '21':
         dimensions:
           - time
@@ -501,7 +504,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status Laser'
             standard_name: 'status_laser'
-            units: None
+            units: 'None'
             comment: 'OK/on:0, off:1'
     '23':
         dimensions:
@@ -511,7 +514,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Static signal '
             standard_name: 'static_signal'
-            units: None
+            units: 'None'
             comment: 'OK:0, Error:1'
     '24':
         dimensions:
@@ -521,7 +524,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status laser temperature (analogue) '
             standard_name: 'status_laser_temperature_analogue'
-            units: None
+            units: 'None'
             comment: 'OK:0, Error:1'
     '25':
         dimensions:
@@ -531,7 +534,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status laser temperature (digital)'
             standard_name: 'status_laser_temperature_digital'
-            units: None
+            units: 'None'
             comment: 'OK:0, Error:1'
     '26':
         dimensions:
@@ -541,7 +544,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status laser current (analogue)'
             standard_name: 'status_laser_current_analogue'
-            units: None
+            units: 'None'
             comment: 'OK:0, Error:1'
     '27':
         dimensions:
@@ -551,7 +554,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status laser current (digital)'
             standard_name: 'status_laser_current_digital'
-            units: None
+            units: 'None'
             comment: 'OK:0, Error:1'
     '28':
         dimensions:
@@ -561,7 +564,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status sensor supply'
             standard_name: 'status_sensor_supply'
-            units: None
+            units: 'None'
             comment: 'OK:0, Error:1'
     '29':
         dimensions:
@@ -571,7 +574,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status current pane heating laser head'
             standard_name: 'status_heating_laser_head'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '30':
         dimensions:
@@ -581,7 +584,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status current pane heating receiver head'
             standard_name: 'status_heating_receiver'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '31':
         dimensions:
@@ -591,7 +594,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status temperature sensor'
             standard_name: 'status_temperature_sensor'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '32':
         dimensions:
@@ -601,7 +604,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status heating supply'
             standard_name: 'status_heating_supply'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '33':
         dimensions:
@@ -611,7 +614,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status current heating housing '
             standard_name: 'status_heating_housing'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '34':
         dimensions:
@@ -621,7 +624,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status current heating heads'
             standard_name: 'status_heating_heads'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '35':
         dimensions:
@@ -631,7 +634,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status current heating carriers'
             standard_name: 'status_heating_carriers'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '36':
         dimensions:
@@ -641,7 +644,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Status control output laser power'
             standard_name: 'status_output_laser_power'
-            units: None
+            units: 'None'
             comment: 'OK:0, warning:1'
     '37':
         dimensions:
@@ -651,7 +654,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Reserve status'
             standard_name: 'reserve_status'
-            units: None
+            units: 'None'
             comment: 'value = 0'
     '38':
         dimensions:
@@ -668,7 +671,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Temperature of laser driver 0-80°C'
+            long_name: 'Temperature of laser driver'
             standard_name: 'Temperature of laser driver'
             units: '°C'
             comment: 'this should be between 0-80°C'
@@ -697,9 +700,10 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Optical control output [mV] (2300 … 6500)'
+            long_name: 'Optical control output [mV]'
             standard_name: 'optical_control_output'
             units: 'mV'
+            comment: 'range (2300 … 6500)'
     '43':
         dimensions:
             - time
@@ -780,7 +784,7 @@ telegram_fields:
         var_attrs:
             long_name: 'total number of all measured particles'
             standard_name: 'number_of_all_measured_particles'
-            units: None
+            units: 'None'
     '52':
         dimensions:
             - time
@@ -789,7 +793,8 @@ telegram_fields:
         var_attrs:
             long_name: '„00000.000“ (internal data)'
             standard_name: 'internal_data_1'
-            units: None
+            units: 'None'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '53':
         dimensions:
             - time
@@ -798,7 +803,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles with a velocity smaller than 0.15 m/s'
             standard_name: 'number_of_particles_slower_than_0.15'
-            units: None
+            units: 'None'
     '54':
         dimensions:
             - time
@@ -807,7 +812,7 @@ telegram_fields:
         var_attrs:
             long_name: '„00000.000“ (internal data)'
             standard_name: 'internal_data_2'
-            units: None
+            units: 'None'
     '55':
         dimensions:
             - time
@@ -816,7 +821,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles with a velocity larger than 20m/s'
             standard_name: 'number_of_particles_faster_than_20'
-            units: None
+            units: 'None'
     '56':
         dimensions:
             - time
@@ -825,7 +830,8 @@ telegram_fields:
         var_attrs:
             long_name: '„00000.000“ (internal data)'
             standard_name: 'internal_data_3'
-            units: None
+            units: 'None'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '57':
         dimensions:
             - time
@@ -834,7 +840,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles with a diameter smaller than 0.15mm'
             standard_name: 'number_of_particles_smaller_than_0.15'
-            units: None
+            units: 'None'
     '58':
         dimensions:
             - time
@@ -843,7 +849,8 @@ telegram_fields:
         var_attrs:
             long_name: '„00000.000“ (internal data)'
             standard_name: 'internal_data_4'
-            units: None
+            units: 'None'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '59':
         dimensions:
             - time
@@ -852,7 +859,8 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles no hydrometeor '
             standard_name: 'number_of_particles_no_hydrometeor'
-            units: None
+            units: 'None'
+            comment: 'add a comment: "This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '60':
         dimensions:
             - time
@@ -861,7 +869,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of this class'
             standard_name: 'total_volume_gross_of_class'
-            units: None
+            units: 'None'
     '61':
         dimensions:
             - time
@@ -870,7 +878,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles with unknown classification'
             standard_name: 'number_of_particles_with_unknown_classification'
-            units: None
+            units: 'None'
     '62':
         dimensions:
             - time
@@ -879,7 +887,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of this class'
             standard_name: 'total_volume_gross_of_this_class'
-            units: None
+            units: 'None'
     '63':
         dimensions:
             - time
@@ -888,7 +896,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 1'
             standard_name: 'number_of_particles_class_1'
-            units: None
+            units: 'None'
     '64':
         dimensions:
             - time
@@ -897,7 +905,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 1'
             standard_name: 'total_volume_gross_of_class_1'
-            units: None
+            units: 'None'
     '65':
         dimensions:
             - time
@@ -906,7 +914,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 2'
             standard_name: 'number_of_particles_class_2'
-            units: None
+            units: 'None'
     '66':
         dimensions:
             - time
@@ -915,7 +923,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 2'
             standard_name: 'total_volume_gross_of_class_2'
-            units: None
+            units: 'None'
     '67':
         dimensions:
             - time
@@ -924,7 +932,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 3'
             standard_name: 'number_of_particles_class_3'
-            units: None
+            units: 'None'
     '68':
         dimensions:
             - time
@@ -933,7 +941,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 3'
             standard_name: 'total_volume_gross_of_class_3'
-            units: None
+            units: 'None'
     '69':
         dimensions:
             - time
@@ -942,7 +950,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 4'
             standard_name: 'number_of_particles_class_4'
-            units: None
+            units: 'None'
     '70':
         dimensions:
             - time
@@ -951,7 +959,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 4'
             standard_name: 'total_volume_gross_of_class_4'
-            units: None
+            units: 'None'
     '71':
         dimensions:
             - time
@@ -960,7 +968,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 5'
             standard_name: 'number_of_particles_class_5'
-            units: None
+            units: 'None'
     '72':
         dimensions:
             - time
@@ -969,7 +977,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 5'
             standard_name: 'total_volume_gross_of_class_5'
-            units: None
+            units: 'None'
     '73':
         dimensions:
             - time
@@ -978,7 +986,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 6'
             standard_name: 'number_of_particles_class_6'
-            units: None
+            units: 'None'
     '74':
         dimensions:
             - time
@@ -987,7 +995,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 6'
             standard_name: 'total_volume_gross_of_class_6'
-            units: None
+            units: 'None'
     '75':
         dimensions:
             - time
@@ -1004,7 +1012,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 7'
             standard_name: 'total_volume_gross_of_class_7'
-            units: None
+            units: 'None'
     '77':
         dimensions:
             - time
@@ -1013,7 +1021,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 8'
             standard_name: 'number_of_particles_class_8'
-            units: None
+            units: 'None'
     '78':
         dimensions:
             - time
@@ -1022,7 +1030,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 8'
             standard_name: 'total_volume_gross_of_class_8'
-            units: None
+            units: 'None'
     '79':
         dimensions:
             - time
@@ -1031,7 +1039,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Number of particles class 9'
             standard_name: 'number_of_particles_class_9'
-            units: None
+            units: 'None'
     '80':
         dimensions:
             - time
@@ -1040,10 +1048,9 @@ telegram_fields:
         var_attrs:
             long_name: 'Total volume (gross) of class 9'
             standard_name: 'total_volume_gross_of_class_9'
-            units: None
-# The field 81 to 520 are the classes:
+            units: 'None'
+# The field 81 to 520 are the particle diameter/velocity classes:
 #    1st diameter-1st speed, then 1st diameter-2nd speed etc... until Diameter 22, speed 20
-# I am not sure how to describe it here.
     '81':
         dimensions:
             - time
@@ -1054,7 +1061,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Raw particle counts for each diameter and velocity class'
             standard_name: 'raw_data'
-            units: None
+            units: 'None'
     '521':
         dimensions:
            - time
@@ -1093,7 +1100,7 @@ telegram_fields:
            standard_name: 'wind_direction'
            units: '°'
            comment: 'wind direction represented in degrees clockwise from the North'
-    '525': # or 521 without “<id>TM00005”
+    '525':
         dimensions:
             - time
         dtype: 'S4'
@@ -1101,13 +1108,5 @@ telegram_fields:
         var_attrs:
             long_name: 'Checksum'
             standard_name: 'checksum'
-            units: None
-#    '526-527': # or 522-523 without “<id>TM00005”
-#        dimensions:
-#           - time
-#        dtype: 'S4'
-#        include_in_nc: 'never'
-#        var_attrs:
-#           long_name: 'CRLF + ETX (End identifier)'
-#           standard_name: 'end_identifier'
-#            units: None
+            units: 'None'
+
