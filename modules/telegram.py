@@ -38,6 +38,8 @@ class Telegram(ABC):
     - parse_telegram_row: parses telegram string from SQL telegram field
     - prep_telegram_data4db: transforms self.telegram_data so that it can be easily inserted to SQL DB
     - insert2db: inserts telegram strings into the database
+    - Functions:
+    - str2list: Converts telegram_data values from string to list by splitting at the specified separator.
     """
 
     def __init__(self, config_dict: Dict, telegram_lines: Union[str, bytes],
@@ -131,14 +133,23 @@ class Telegram(ABC):
         self.db_cursor.execute(insert_str)
 
 
+    def str2list(self, field, separator):
+        """
+        Converts telegram_data values from string to list by splitting at the specified separator.
+
+        :param field: indicates the data to be split into a list
+        :param separator: the separator to split at
+        """
+        str_val = self.telegram_data[field]
+        list_val = str_val.split(separator)
+        self.telegram_data[field] = list_val
+
+
 class ParsivelTelegram(Telegram):
     """
     Class dedicated to handling the returned the Parsivel telegram lines:
     * storing, processing and writing telegram to netCDF.
     Note: f61 is handled a little differently as its values are multi-line, hence self.f61_rows.
-
-    Functions:
-    - __str2list: Converts telegram_data values from string to list by splitting at the specified separator.
     """
 
     def capture_prefixes_and_data(self):
@@ -164,6 +175,7 @@ class ParsivelTelegram(Telegram):
 
                 super().__setattr__(f'field_{field}_values', value)
                 self.telegram_data[field] = value
+
 
     def parse_telegram_row(self):
         """
@@ -194,30 +206,15 @@ class ParsivelTelegram(Telegram):
 
                 self.telegram_data[field] = value
 
-        self.__str2list(field='90', separator=',')
-        self.__str2list(field='91', separator=',')
-        self.__str2list(field='93', separator=',')
-
-
-    def __str2list(self, field, separator):
-        """
-        Converts telegram_data values from string to list by splitting at the specified separator.
-
-        :param field: indicates the data to be split into a list
-        :param separator: the separator to split at
-        """
-        str_val = self.telegram_data[field]
-        list_val = str_val.split(separator)
-        self.telegram_data[field] = list_val
+        self.str2list(field='90', separator=',')
+        self.str2list(field='91', separator=',')
+        self.str2list(field='93', separator=',')
 
 
 class ThiesTelegram(Telegram):
     """
     Class dedicated to handling the returned the Thies telegram lines:
     * storing, processing and writing telegram to netCDF.
-
-    Functions:
-    - __str2list: Converts telegram_data values from string to list by splitting at the specified separator.
     """
 
     def capture_prefixes_and_data(self):
@@ -271,7 +268,7 @@ class ThiesTelegram(Telegram):
 
         for keyval in telegram_lines_list:
             # check if telegram value is sensor time (has format 6:XX:XX:XX)
-            if keyval[0] == '6':
+            if len(keyval) > 0 and keyval[0] == '6':
                 keyval_list = keyval.split(':',1)
             else:
                 keyval_list = keyval.split(':')
@@ -293,19 +290,8 @@ class ThiesTelegram(Telegram):
             self.telegram_data[field] = value
 
         # add 440 value array representing 22x20 matrix
-        self.__str2list(field='81', separator=',')
+        self.str2list(field='81', separator=',')
 
-
-    def __str2list(self, field, separator):
-        """
-        Converts telegram_data values from string to list by splitting at the specified separator.
-
-        :param field: indicates the data to be split into a list
-        :param separator: the separator to split at
-        """
-        str_val = self.telegram_data[field]
-        list_val = str_val.split(separator)
-        self.telegram_data[field] = list_val
 
 def create_telegram(config_dict: Dict, telegram_lines: Union[str, bytes],
                  timestamp: datetime, db_cursor: Union[Cursor, None],

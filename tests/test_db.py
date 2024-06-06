@@ -290,6 +290,22 @@ def test_NetCDF_thies(db_insert_24h_thies):
     # test that last telegram is at 23:59 hours
     assert netCDF_var_datetime_data[-1][:-13] == '2024-01-01T2'
 
+    # test that time variable has correct amount of data
+    netCDF_var_time = rootgrp.variables['time']
+    netCDF_var_time_data = netCDF_var_time[:].data
+    assert len(netCDF_var_time_data) == data_points_24h
+    # test that time and datetime are equivalent/show the same time
+    first_nc_time_val = num2date(
+        netCDF_var_time_data[0],
+        units=f'hours since {start_dt.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
+    )
+    assert first_nc_time_val.strftime("%Y-%m-%dT%H:%M:%S") == netCDF_var_datetime_data[0][:-6]
+    last_nc_time_val = num2date(
+        netCDF_var_time_data[-1],
+        units=f'hours since {start_dt.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
+    )
+    assert last_nc_time_val.strftime("%Y-%m-%dT%H:%M:%S") == netCDF_var_datetime_data[-1][:-6]
+
     #test global attributes
     netCDF_dictionary = rootgrp.__dict__
     netCDF_var_site_name = netCDF_dictionary.get('site_name')[:]
