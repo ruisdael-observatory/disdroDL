@@ -325,24 +325,39 @@ def create_telegram(config_dict: Dict, telegram_lines: Union[str, bytes],
     """
     sensor_type = config_dict['global_attrs']['sensor_type']
 
-    if sensor_type == 'OTT Hydromet Parsivel2':
-        return ParsivelTelegram(config_dict=config_dict,
-                    telegram_lines=telegram_lines,
-                    db_row_id=db_row_id,
-                    timestamp=timestamp,
-                    db_cursor=db_cursor,
-                    telegram_data={},
-                    logger=logger)
+    sensors = {"OTT Hydromet Parsivel2": ParsivelTelegram, "Thies Clima": ThiesTelegram}
 
-    if sensor_type == 'Thies Clima':
-        return ThiesTelegram(config_dict=config_dict,
-                    telegram_lines=telegram_lines,
-                    db_row_id=db_row_id,
-                    timestamp=timestamp,
-                    db_cursor=db_cursor,
-                    telegram_data={},
-                    logger=logger)
+    try:
+        telegram_obj = sensors[sensor_type](config_dict=config_dict,
+                                            telegram_lines=telegram_lines,
+                                            db_row_id=db_row_id,
+                                            timestamp=timestamp,
+                                            db_cursor=db_cursor,
+                                            telegram_data=telegram_data,
+                                            logger=logger)
+        return telegram_obj
+    except KeyError:
+        logger.error(msg=f"Sensor type {sensor_type} not recognized")
+        return None
 
-    logger.error(msg=f"Sensor type {sensor_type} not recognized")
-    return None
+    # if sensor_type == 'OTT Hydromet Parsivel2':
+    #     return ParsivelTelegram(config_dict=config_dict,
+    #                 telegram_lines=telegram_lines,
+    #                 db_row_id=db_row_id,
+    #                 timestamp=timestamp,
+    #                 db_cursor=db_cursor,
+    #                 telegram_data={},
+    #                 logger=logger)
+    #
+    # if sensor_type == 'Thies Clima':
+    #     return ThiesTelegram(config_dict=config_dict,
+    #                 telegram_lines=telegram_lines,
+    #                 db_row_id=db_row_id,
+    #                 timestamp=timestamp,
+    #                 db_cursor=db_cursor,
+    #                 telegram_data={},
+    #                 logger=logger)
+    #
+    # logger.error(msg=f"Sensor type {sensor_type} not recognized")
+    # return None
     
