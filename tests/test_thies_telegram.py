@@ -149,14 +149,14 @@ def test_capture_prefixes_and_data_one_missing_value():
     telegram_str_list = telegram.telegram_data_str.split('; ')
     assert telegram_str_list[2] == '3:None'
 
-# def test_parse_telegram_row_missing_key_value_pair():
-#     telegram = ThiesTelegram(
-#         config_dict=config_dict_thies,
-#         telegram_lines=thies_lines_missing_value,
-#         timestamp=now.utc,
-#         db_cursor=None,
-#         telegram_data={},
-#         logger=logger)
-#     telegram.capture_prefixes_and_data()
-#     telegram.parse_telegram_row()
-#     assert len(telegram.telegram_data) == 526
+def test_parse_telegram_row_missing_key_value_pair():
+    telegram = ThiesTelegram(
+        config_dict=config_dict_thies,
+        telegram_lines=thies_lines_missing_value,
+        timestamp=now.utc,
+        db_cursor=None,
+        telegram_data={},
+        logger=logger)
+    telegram.capture_prefixes_and_data()
+    telegram.parse_telegram_row()
+    assert len(telegram.telegram_data) == 526
