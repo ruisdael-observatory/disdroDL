@@ -310,7 +310,6 @@ class ThiesTelegram(Telegram):
 def create_telegram(config_dict: Dict, telegram_lines: Union[str, bytes],
                  timestamp: datetime, db_cursor: Union[Cursor, None],
                  logger: Logger, db_row_id: Union[Cursor, None], telegram_data: Dict) -> Union[Telegram, None]: # pylint: disable=unused-argument
-                 # telegram_data_str=None
     """
     Creates a specific Telegram object based on the sensor type in the configuration dictionary.
     :param config_dict: dictionary for later exporting into netcdf
@@ -320,11 +319,11 @@ def create_telegram(config_dict: Dict, telegram_lines: Union[str, bytes],
     :param logger: logger logging data from a sensor
     :param telegram_data: data from the telegram sent by a sensor
     :param db_row_id: row id from the database
-    :param telegram_data_str: telegram data string
     :return: the respective Telegram object for a recognized sensor type, or None otherwise
     """
     sensor_type = config_dict['global_attrs']['sensor_type']
 
+    # Create dictionary with the sensor types as keys and the respective Telegram classes as values
     sensors = {"OTT Hydromet Parsivel2": ParsivelTelegram, "Thies Clima": ThiesTelegram}
 
     try:
@@ -337,27 +336,8 @@ def create_telegram(config_dict: Dict, telegram_lines: Union[str, bytes],
                                             logger=logger)
         return telegram_obj
     except KeyError:
+        # If the sensor type is not recognized, log an error and return None
         logger.error(msg=f"Sensor type {sensor_type} not recognized")
         return None
 
-    # if sensor_type == 'OTT Hydromet Parsivel2':
-    #     return ParsivelTelegram(config_dict=config_dict,
-    #                 telegram_lines=telegram_lines,
-    #                 db_row_id=db_row_id,
-    #                 timestamp=timestamp,
-    #                 db_cursor=db_cursor,
-    #                 telegram_data={},
-    #                 logger=logger)
-    #
-    # if sensor_type == 'Thies Clima':
-    #     return ThiesTelegram(config_dict=config_dict,
-    #                 telegram_lines=telegram_lines,
-    #                 db_row_id=db_row_id,
-    #                 timestamp=timestamp,
-    #                 db_cursor=db_cursor,
-    #                 telegram_data={},
-    #                 logger=logger)
-    #
-    # logger.error(msg=f"Sensor type {sensor_type} not recognized")
-    # return None
     
