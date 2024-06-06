@@ -96,7 +96,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
             call(b'CS/M/M/1\r', mock_logger)
         ]
 
-        parsivel_obj.sensor_start_sequence(config_dict, mock_logger)
+        parsivel_obj.sensor_start_sequence(config_dict, mock_logger, True)
 
         mock_logger.info.assert_called_once_with(msg="Starting parsivel start sequence commands")
         assert mock_serial_connection.reset_input_buffer.call_count == 2
@@ -110,6 +110,29 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
         ]
 
         mock_sleep.assert_has_calls(expected_calls_sleep)
+
+    @patch('modules.sensors.sleep', return_value=None)
+    def test_sensor_start_sequence_no_log(self, mock_sleep):
+        """
+        Test for the sensor_start_sequence function.
+        :param mock_sleep: Mock of the time.sleep call
+        """
+        mock_logger = Mock()
+        mock_serial_connection = Mock()
+        parsivel_obj = Parsivel()
+        parsivel_obj.serial_connection = mock_serial_connection
+        parsivel_obj.write = Mock()
+
+        config_dict = {
+            'station_code': 'STATION1',
+            'global_attrs': {
+                'sensor_name': '1234'
+            }
+        }
+
+        parsivel_obj.sensor_start_sequence(config_dict=config_dict, logger=mock_logger, include_in_log=False)
+
+        mock_logger.assert_not_called()
 
     @patch('modules.sensors.sleep', return_value=None)
     def test_reset_sensor_success(self, mock_sleep):

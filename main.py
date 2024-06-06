@@ -65,7 +65,7 @@ def main(config_site):
         sys.exit(1)
 
     sensor.init_serial_connection(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
-    sensor.sensor_start_sequence(config_dict=config_dict, logger=logger)
+    sensor.sensor_start_sequence(config_dict=config_dict, logger=logger, include_in_log=True)
     sleep(2)
 
     ### DB ###
@@ -126,7 +126,7 @@ def main(config_site):
         cur.close()
         con.close()
 
-        sensor.sensor_start_sequence(config_dict=config_dict, logger=logger)
+        sensor.sensor_start_sequence(config_dict=config_dict, logger=logger, include_in_log=False)
 
         # sleep for 2 seconds to guarantee you don't log the same data twice
         # this causes issues with a computation time of 58 seconds
