@@ -274,54 +274,50 @@ def test_query_db_thies(db_insert_24h_thies): # pylint: disable=unused-argument
     nc.write_data_to_netCDF_thies()
     nc.compress()
 
-def test_NetCDF_thies(db_insert_24h_thies):
+def test_NetCDF_thies():
     """
     This function tests whether Thies netCDF files are correctly created and written.
-    :param db_insert_24h_thies: the function to insert 24 hours worth of data into the test database.
     """
     # read netcdf
     rootgrp = Dataset(data_dir / 'test_thies.nc', 'r', format="NETCDF4")
     # test that NetCDF captures full 24 hours of data,
     netCDF_var_datetime = rootgrp.variables['datetime']
-    netCDF_var_datetime_data = netCDF_var_datetime[:]
-    assert len(netCDF_var_datetime_data) == 1440
+    assert len(netCDF_var_datetime) == 1440
     # test that first telegram is at 00:00 hours
-    assert netCDF_var_datetime_data[0][:-13] == '2024-01-01T0'
+    assert netCDF_var_datetime[0][:-13] == '2024-01-01T0'
     # test that last telegram is at 23:59 hours
-    assert netCDF_var_datetime_data[-1][:-13] == '2024-01-01T2'
+    assert netCDF_var_datetime[-1][:-13] == '2024-01-01T2'
 
     # test that time variable has correct amount of data
     netCDF_var_time = rootgrp.variables['time']
-    netCDF_var_time_data = netCDF_var_time[:].data
-    assert len(netCDF_var_time_data) == data_points_24h
+    assert len(netCDF_var_time) == data_points_24h
     # test that time and datetime are equivalent/show the same time
     first_nc_time_val = num2date(
-        netCDF_var_time_data[0],
+        netCDF_var_time[0],
         units=f'hours since {start_dt.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
     )
-    assert first_nc_time_val.strftime("%Y-%m-%dT%H:%M:%S") == netCDF_var_datetime_data[0][:-6]
+    assert first_nc_time_val.strftime("%Y-%m-%dT%H:%M:%S") == netCDF_var_datetime[0][:-6]
     last_nc_time_val = num2date(
-        netCDF_var_time_data[-1],
+        netCDF_var_time[-1],
         units=f'hours since {start_dt.strftime("%Y-%m-%d %H:%M:%S")} +00:00'
     )
-    assert last_nc_time_val.strftime("%Y-%m-%dT%H:%M:%S") == netCDF_var_datetime_data[-1][:-6]
+    assert last_nc_time_val.strftime("%Y-%m-%dT%H:%M:%S") == netCDF_var_datetime[-1][:-6]
 
     #test global attributes
     netCDF_dictionary = rootgrp.__dict__
-    netCDF_var_site_name = netCDF_dictionary.get('site_name')[:]
+    netCDF_var_site_name = netCDF_dictionary.get('site_name')
     assert netCDF_var_site_name == 'Green_Village'
-    netCDF_var_sensor_name = netCDF_dictionary.get('sensor_name')[:]
+    netCDF_var_sensor_name = netCDF_dictionary.get('sensor_name')
     assert netCDF_var_sensor_name == 'THIES006'
-    netCDF_var_sensor_type = netCDF_dictionary.get('sensor_type')[:]
+    netCDF_var_sensor_type = netCDF_dictionary.get('sensor_type')
     assert netCDF_var_sensor_type == 'Thies Clima'
 
     #tests that site specific variables are written to file correctly
     netCDF_var_velocity_classes_center = rootgrp.variables['velocity_center_classes']
-    netCDF_var_velocity_classes_center_data = netCDF_var_velocity_classes_center[:].data
     # test value of first velocity center class
-    assert abs(netCDF_var_velocity_classes_center_data[0] - 0.100) <= 1.0E-6
+    assert abs(netCDF_var_velocity_classes_center[0] - 0.100) <= 1.0E-6
     # test value of last velocity center class
-    assert netCDF_var_velocity_classes_center_data[-1] == 15.00
+    assert netCDF_var_velocity_classes_center[-1] == 15.00
     netCDF_var_altitude = rootgrp.variables['altitude']
     netCDF_var_altitude_data = netCDF_var_altitude[:].data
     # test altitude for specific site
@@ -329,17 +325,14 @@ def test_NetCDF_thies(db_insert_24h_thies):
 
     # test that netcdf variables are populated correctly
     netCDF_var_particle_number = rootgrp.variables['number_of_particles_class_8']
-    netCDF_var_particle_number_data = netCDF_var_particle_number[:].data
-    assert len(netCDF_var_particle_number_data) == 1440
+    assert len(netCDF_var_particle_number) == 1440
     netCDF_var_ambient_temperature = rootgrp.variables['ambient_temperature']
-    netCDF_var_ambient_temperature_data = netCDF_var_ambient_temperature[:].data
-    assert abs(netCDF_var_ambient_temperature_data[0] - 20.3) <= 1.0E-6
-    assert len(netCDF_var_ambient_temperature_data) == 1440
+    assert abs(netCDF_var_ambient_temperature[0] - 20.3) <= 1.0E-6
+    assert len(netCDF_var_ambient_temperature) == 1440
     # test that particle diameter-velocity matrix is populated correctly (1440x22x20 matrix)
-    netCDF_var_data_raw = rootgrp.variables['raw_data']
-    netCDF_var_data_raw_data = netCDF_var_data_raw[:].data
-    netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
-    assert netCDF_var_data_raw_shape == (1440, 22, 20)
+    netCDF_var_raw_data = rootgrp.variables['raw_data']
+    netCDF_var_raw_data_shape = netCDF_var_raw_data.shape
+    assert netCDF_var_raw_data_shape == (1440, 22, 20)
 
 
 class ExceptionTests(unittest.TestCase):
@@ -606,8 +599,8 @@ def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
 
 def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
     '''
-    This function tests thies netcdf creation when matrix array is of wrong length.
-    :param db_insert_two_telegrams_thies: the function inserts 2 telegrams into the database.
+    This function tests parsivel netcdf creation when matrix array is of wrong length.
+    :param db_insert_two_telegrams_parsivel: the function inserts 2 telegrams into the database.
     '''
     delete_netcdf(fn_start='test_wrong_f93_len_parsivel', data_dir=data_dir, )
     telegram_objs = []
@@ -645,3 +638,4 @@ def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
     netCDF_var_data_raw_shape = netCDF_var_data_raw_data.shape
     assert netCDF_var_data_raw_data[0][0][0] == -99
     assert netCDF_var_data_raw_shape == (2, 32, 32)
+
