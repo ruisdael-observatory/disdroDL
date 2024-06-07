@@ -10,8 +10,6 @@ stages:
 test:
   script:
     - pytest
-    - ls -lh sample_data/*.nc
-    - find -name "*.nc"
     - coverage run -m pytest
     - coverage report --omit=test_*.py */*.py *.py
 
