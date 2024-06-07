@@ -132,7 +132,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
         parsivel_obj.sensor_start_sequence(config_dict=config_dict, logger=mock_logger, include_in_log=False)
 
-        mock_logger.assert_not_called()
+        mock_logger.info.assert_not_called()
 
     @patch('modules.sensors.sleep', return_value=None)
     def test_reset_sensor_success(self, mock_sleep):

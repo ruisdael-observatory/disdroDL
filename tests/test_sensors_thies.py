@@ -116,9 +116,9 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         now_time_instance.time_list = ['10', '20', '30']
         mock_now_time.return_value = now_time_instance
 
-        thies.sensor_start_sequence(config_dict={}, logger=logger, include_in_log=True)
+        thies.sensor_start_sequence(config_dict={}, logger=logger, include_in_log=False)
 
-        logger.assert_not_called()
+        logger.info.assert_not_called()
 
     @patch('modules.sensors.serial.Serial')
     @patch('modules.sensors.sleep', return_value=None)
