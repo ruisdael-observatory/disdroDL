@@ -80,7 +80,7 @@ The NetCDF files are automatically compressed.
     * general Parsivel: [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml)
     * general Thies: [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml)
     * specific Parsivel: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - *create 1 per Parsivel*
-    * specific Thies: e.g., [configs_netcdf/config_008_GV_THIES.yml](configs_netcdf/config_008_GV_THIES.yml) - *create 1 per Thies*
+    * specific Thies: e.g., [configs_netcdf/config_006_GV_THIES.yml](configs_netcdf/config_006_GV_THIES.yml) - *create 1 per Thies*
 * Export script [export_disdrodlDB2NC.py](export_disdrodlDB2NC.py) - exports 1 day of measurements from DB to NetCDF file
 * Functions and classes are in their matching files in the modules folder:
 * function for creating the logger - [modules/log.py](modules/log.py)
