@@ -37,7 +37,6 @@ def telegram2dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: 
     telegram_dict = {}
     x = 0
     for i, key in enumerate(default_telegram_indeces):
-        
         if(key == '90' or key == '91'):
             shallow_copy = []
             telegram_value = [float(value) for value in telegram[i+x*32:i+32*(x+1)]] #field_type[config_dict[key]['dtype']](telegram_list[i:i+32])
@@ -74,13 +73,12 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
         else:
             telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index])
     telegram_dict['2'] = telegram_dict['2'].split(',')[-1]
-    print(telegram_dict)
     telegram_dict['datetime'] = dt
     
     telegram_dict['timestamp'] = str(ts)
     return telegram_dict
 
-def process_row(telegram, sensor, config_dict):
+def process_row(telegram: list, sensor: str, config_dict: dict):
 
     if len(telegram) == 3:
         
@@ -95,9 +93,9 @@ def process_row(telegram, sensor, config_dict):
             return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
     else:
         if sensor == "THIES":
-            dates = row[0].split(",")
+            dates = telegram[0].split(",")
             timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
-            date = datetime.fromtimestamp(float(row[1]), tz=timezone.utc)
+            date = datetime.fromtimestamp(float(telegram[1]), tz=timezone.utc)
             return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
         else:
             date = telegram[0]
@@ -128,7 +126,11 @@ if __name__ == '__main__':
     input_path = Path(args.input)
 
     sensor = choose_sensor(args.input)
-    date_str = args.input.split("_")[0]
+    if sensor is None:
+        raise ValueError("Sensor not recognized. Please check the input file name.")
+
+    date_str = args.input.split("_")[:-2]
+    print(date_str)
     date = datetime(2021, 12, 19)
     ## Config
     wd = Path(__file__).parent
