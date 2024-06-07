@@ -13,7 +13,7 @@ wd = Path(__file__).parent.parent
 
 class TestResetParsivel(unittest.TestCase):
     """
-    Class for testing reset_parsivel.py
+    Class for testing reset_sensor.py with Parsivel
     """
 
     @patch('reset_sensor.ArgumentParser')

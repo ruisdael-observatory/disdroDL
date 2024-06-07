@@ -39,7 +39,7 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 * installed python dependencies: `pip -r requirements.txt`
 * create a log directory with read and write permissions to all users: `sudo mkdir /var/log/disdroDL/; sudo chmod a+rw /var/log/disdroDL` 
 * create a data directory with read and write permissions to all users: `sudo mkdir /data/disdroDL/; sudo chmod a+rw /data/disdroDL` 
-* run [reset_parsivel](./reset_parsivel.py): `python reset_parsivel.py` to reset the parsivel time and accumulated rain amount **(TODO:confirm)** 
+* run [reset_parsivel](./reset_sensor.py): `python reset_sensor.py -c config_*.yml` to reset the sensor time and accumulated rain amount **(TODO:confirm)** 
 * create a station-specific file and commit it to this repo (see [configs_netcdf/config_008_GV.yml](./configs_netcdf/config_008_GV.yml) as an example) 
 * install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress NetCDFs
 
