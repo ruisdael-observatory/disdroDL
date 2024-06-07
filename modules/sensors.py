@@ -176,7 +176,7 @@ class Parsivel(Sensor):
         :param logger: Logger for logging information
         :param factory_reset: Whether the factory reset should be performed
         """
-        logger.info(msg="Reseting Parsivel")
+        logger.info(msg="Resetting Parsivel")
         if factory_reset:
             parsivel_reset_code = 'CS/F/1\r'.encode('utf-8')
             self.write(parsivel_reset_code, logger)
