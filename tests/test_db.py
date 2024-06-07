@@ -4,12 +4,12 @@ This module contains tests for the SQL database and the NetCDF class.
 Functions:
 - test_connect_db: Tests that connect_db returns a Connection and Cursor object.
 - test_db_schema: Tests that the test database has the correct schema.
-- test_db_insert: Tests that inserting a ParsivelTelegram object into the database works correctly.
+- test_db_insert_parsivel: Tests that inserting a ParsivelTelegram object into the database works correctly.
 - test_unpack_telegram_from_db: Tests the unpack_telegram_from_db function.
-- test_query_db: Tests querying from the database and creates a test netCDF file.
+- test_query_db_parsivel: Tests querying from the database and creates a test netCDF file.
 - test_NetCDF: This function tests whether netCDF files are correctly created.
 - delete_netcdf: Deletes the created test netCDF file.
-- test_NetCDF_w_gaps: Tests whether the db rows with empty telegram data are not included in NetCDF.
+- test_NetCDF_w_gaps_parsivel: Tests whether the db rows with empty telegram data are not included in NetCDF.
 """
 
 import os
@@ -57,6 +57,7 @@ config_dict_parsivel = deep_update(config_dict_parsivel, config_dict_site_parsiv
 
 db_file_thies = 'test_thies.db'
 db_path_thies = data_dir / db_file_thies
+thies_lines = '06;0854;2.11;01.01.14;18:59:00;00;00;NP   ;000.000;00;00;NP   ;000.000;000.000;000.000;0000.00;99999;-9.9;100;0.0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;+23;26;1662;4011;2886;258;062;063;+20.3;999;9999;9999;9999;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;99999;99999;9999;999;E9;' # pylint: disable=line-too-long
 
 config_dict_thies = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
 config_dict_site_thies = yaml2dict(path=wd / 'configs_netcdf' / 'config_006_GV_THIES.yml')
@@ -92,7 +93,7 @@ def test_db_schema(create_db_parsivel): # pylint: disable=unused-argument
     con.close()
 
 
-def test_db_insert(create_db_parsivel): # pylint: disable=unused-argument
+def test_db_insert_parsivel(create_db_parsivel): # pylint: disable=unused-argument
     """
     This function tests that inserting a ParsivelTelegram object into the database works correctly.
     :param create_db_parsivel: the function to create the test database
@@ -139,6 +140,52 @@ def test_db_insert(create_db_parsivel): # pylint: disable=unused-argument
     # print(telegram.telegram_lines)
 
 
+def test_db_insert_thies(create_db_thies): # pylint: disable=unused-argument
+    """
+    This function tests that inserting a ParsivelTelegram object into the database works correctly.
+    :param create_db_parsivel: the function to create the test database
+    """
+    con, cur = connect_db(dbpath=str(db_path_thies))
+    telegram = ThiesTelegram(config_dict=config_dict_parsivel,
+                                telegram_lines=thies_lines,
+                                timestamp=now.utc,
+                                db_cursor=cur,
+                                telegram_data={},
+                                logger=logger)
+    telegram.capture_prefixes_and_data()
+    # testing Telegram method prep_telegram_data4db() argument telegram.telegram_data_str
+    telegram.prep_telegram_data4db()
+    assert isinstance(telegram.telegram_data_str, str) is True
+    assert telegram.telegram_data_str.count(';') == len(telegram.telegram_data) - 1
+    assert isinstance(telegram.db_cursor, sqlite3.Cursor) is True
+
+    # insert data to  db
+    telegram.insert2db()
+    con.commit()
+
+    # query
+    res = cur.execute("SELECT id, timestamp, datetime, parsivel_id, telegram FROM disdrodl")
+    for i in res.fetchall():
+        assert isinstance(telegram.telegram_data_str, str) is True
+        id_, timestamp, datetime_, parsivel_id, telegram_str = i
+        assert isinstance(id_, int) is True
+        assert isinstance(timestamp, float) is True
+        timestamp_as_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+        assert timestamp_as_dt == now.utc
+        datetime_as_dt = datetime.strptime(datetime_.split('+')[0], "%Y-%m-%dT%H:%M:%S.%f").replace(tzinfo=timezone.utc)
+        assert datetime_as_dt == now.utc
+        assert timestamp_as_dt == datetime_as_dt
+        assert isinstance(datetime_, str) is True
+        assert parsivel_id == config_dict_parsivel['global_attrs']['sensor_name']
+        assert isinstance(telegram_str, str) is True
+        print('test_parsivel.db', timestamp, datetime_)
+
+    res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
+    assert res.fetchone()[0] == 1
+    cur.close()
+    con.close()
+
+
 def test_unpack_telegram_from_db():
     """
     This function tests the unpack_telegram_from_db function.
@@ -151,7 +198,7 @@ def test_unpack_telegram_from_db():
     # print(telegram_tmp_dict)
 
 
-def test_query_db(db_insert_24h_parsivel): # pylint: disable=unused-argument
+def test_query_db_parsivel(db_insert_24h_parsivel): # pylint: disable=unused-argument
     """
     This function tests querying from the database and creates a test netCDF file.
     :param db_insert_24h_parsivel: the function to insert 24 hours worth of data into the test database.
@@ -288,7 +335,7 @@ def test_query_db_thies(db_insert_24h_thies): # pylint: disable=unused-argument
     nc.write_data_to_netCDF_thies()
     nc.compress()
 
-def test_NetCDF_thies(db_insert_24h_thies):
+def test_NetCDF_thies(db_insert_24h_thies): # pylint: disable=unused-argument
     """
     This function tests whether Thies netCDF files are correctly created and written.
     :param db_insert_24h_thies: the function to insert 24 hours worth of data into the test database.
@@ -430,7 +477,7 @@ def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
         os.remove(test_nc_path)
 
 
-def test_NetCDF_w_gaps(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-argument
+def test_NetCDF_w_gaps_parsivel(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-argument
     '''
     This function tests whether the db rows with empty telegram data are not included in NetCDF.
     :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
@@ -586,7 +633,7 @@ def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unus
 
     os.remove(data_dir / 'test_w_gaps_thies.nc')
 
-def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
+def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies): # pylint: disable=unused-argument
     '''
     This function tests thies netcdf creation when matrix array is of wrong length.
     :param db_insert_two_telegrams_thies: the function inserts 2 telegrams into the database.
@@ -635,7 +682,7 @@ def test_netcdf_wrong_f81_len_thies(db_insert_two_telegrams_thies):
     os.remove(db_path_thies)
 
 
-def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
+def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel): # pylint: disable=unused-argument
     '''
     This function tests thies netcdf creation when matrix array is of wrong length.
     :param db_insert_two_telegrams_thies: the function inserts 2 telegrams into the database.
