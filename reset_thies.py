@@ -10,7 +10,7 @@ from modules.util_functions import create_logger, yaml2dict  # pylint: disable=i
 from modules.sensors import Thies
 
 parser = ArgumentParser(description="Ruisdael: OTT Disdrometer reset. Run: python reset_thies.py -c config_*.yml")
-parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV_THIES.yml')
+parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_006_GV_THIES.yml')
 args = parser.parse_args()
 
 wd = Path(__file__).parent
