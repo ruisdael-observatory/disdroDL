@@ -14,12 +14,16 @@ import logging
 from logging import StreamHandler
 from datetime import datetime, timezone
 from pathlib import Path
+from unittest import mock
+from unittest.mock import Mock, MagicMock
+
+import pytest
 from pydantic.v1.utils import deep_update
 
-from conftest import now
 from modules.now_time import NowTime
 from modules.telegram import ParsivelTelegram, ThiesTelegram
 from modules.util_functions import yaml2dict
+import modules.telegram as telegram
 
 
 log_handler = StreamHandler()
@@ -186,3 +190,19 @@ def test_parse_telegram_row_edge_cases():
         logger=None)
     telegram.parse_telegram_row()
     assert telegram.telegram_data['03'] == ['1','2']
+
+
+def test_create_telegram_not_recognized(caplog):
+    config_dict = MagicMock()
+    values = { 'global_attrs': {'sensor_type':'wrong_telegram'} }
+    config_dict.__getitem__.side_effect = values.__getitem__
+    assert config_dict['global_attrs']['sensor_type'] == 'wrong_telegram'
+    created_telegram = telegram.create_telegram(config_dict=config_dict,
+                                                telegram_lines=None,
+                                                db_row_id=None,
+                                                timestamp=None,
+                                                db_cursor=None,
+                                                telegram_data={},
+                                                logger=logger)
+    assert [r.msg for r in caplog.records][0] == 'Sensor type wrong_telegram not recognized'
+    assert created_telegram == None
