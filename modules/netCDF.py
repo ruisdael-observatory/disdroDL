@@ -290,15 +290,11 @@ class NetCDF:
         if var_key_ in self.telegram_objs[0].telegram_data.keys():
             for i, telegram_obj in enumerate(self.telegram_objs):
                 netCDF_var_[i] = telegram_obj.telegram_data[var_key_]
-        else:
-            # checks if variable is the time, if so convert to iso format
-            # otherwise just add to netcdf
-            if netCDF_var_.standard_name == 'datetime':
-                for i, telegram_obj in enumerate(self.telegram_objs):
-                    netCDF_var_[i] = getattr(telegram_obj, 'timestamp').isoformat()
-            else:
-                for i, telegram_obj in enumerate(self.telegram_objs):
-                    netCDF_var_[i] = getattr(telegram_obj, var_key_)
+
+        # checks if variable is the time, if so convert to iso format
+        elif netCDF_var_.standard_name == 'datetime':
+            for i, telegram_obj in enumerate(self.telegram_objs):
+                netCDF_var_[i] = getattr(telegram_obj, 'timestamp').isoformat()
 
     def __netcdf_variables(self, nc_rootgrp):
         """

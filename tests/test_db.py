@@ -640,50 +640,16 @@ def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
     assert netCDF_var_data_raw_data[0][0][0] == -99
     assert netCDF_var_data_raw_shape == (2, 32, 32)
 
-
-def test_netcdf_populate_s4_var_edge_case(db_insert_two_telegrams_thies):
-    '''
-       This function tests adding string values not in telegram fields to NetCDF.
-       '''
-    telegram_objs = []
-    con, cur = connect_db(dbpath=str(db_path_thies))
-    for row in query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger):
-        ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-        row_telegram = ThiesTelegram(
-            config_dict=config_dict_thies,
-            telegram_lines=row.get('telegram'),
-            timestamp=ts_dt,
-            db_cursor=None,
-            telegram_data={},
-            logger=logger)
-        row_telegram.parse_telegram_row()
-        telegram_objs.append(row_telegram)
-    cur.close()
-    con.close()
-    config_test = '''
-    variables:
-        test:
-            dimensions:
-                - time
-            dtype: 'S4'
-            include_in_nc: 'always'
-            var_attrs:
-                long_name: "test"
-                standard_name: "test"
-    '''
-    config_test_yml = yaml.safe_load(config_test)
-    combined_config = deep_update(config_dict_thies,config_test_yml)
-    assert 'test' in combined_config['variables'].keys()
-    assert 'test' not in telegram_objs[0].telegram_data.keys()
+def test_compress_non_existent_file():
     nc = NetCDF(logger=logger,
-                config_dict=combined_config,
+                config_dict=config_dict_thies,
                 data_dir=data_dir,
-                fn_start='test_populate_s4',
+                fn_start='test_compress',
                 full_version=True,
-                telegram_objs=telegram_objs,
+                telegram_objs=[],
                 date=start_dt_thies)
     nc.create_netCDF()
-    nc.write_data_to_netCDF_thies()
+    nc.path_netCDF = 'non_existent_file.nc'
+    nc.path_netCDF_temp = "sample_data/test_compress.nc"
     nc.compress()
-    rootgrp = Dataset(data_dir / 'test_populate_s4.nc', 'r', format="NETCDF4")
-    assert 'test' in rootgrp.variables.keys()
+    assert 'test_compress.nc' not in os.listdir('sample_data')
