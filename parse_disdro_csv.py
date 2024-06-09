@@ -10,7 +10,7 @@ from typing import Dict
 from datetime import datetime, timezone
 from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
-from modules.telegram import ParsivelTelegram, ThiesTelegram
+from modules.telegram import ParsivelTelegram, ThiesTelegram, create_telegram
 #from pprint import pprint
 from modules.util_functions import yaml2dict, create_logger
 from modules.netCDF import NetCDF
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                 continue
             telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
             date = datetime.timestamp(timestamp)
-            telegram_instance = telegrams[sensor](
+            telegram_instance = create_telegram(
                 config_dict=config_dict,
                 telegram_lines="",
                 timestamp=timestamp,
