@@ -15,9 +15,18 @@ import pytest
 
 from main import main
 from modules.sensors import Thies
-from modules.sqldb import connect_db
+from modules.sqldb import connect_db, create_db
 
 wd = Path(__file__).parent.parent
+
+db_name = 'integration-test.db'
+db_path = Path(f'sample_data/{db_name}')
+
+def wrapper1(dbpath):
+    create_db(dbpath=str(db_path))
+
+def wrapper2(dbpath):
+    return connect_db(dbpath=str(db_path))
 
 
 class TestThiesIntegration(unittest.TestCase):
@@ -88,7 +97,9 @@ class TestThiesIntegration(unittest.TestCase):
     @patch('main.NowTime')
     @patch('main.yaml2dict')
     @patch('main.sleep', return_value=None)
-    @patch('modules.sensors.serial', )
+    @patch('modules.sensors.serial')
+    @patch('main.create_db', new=wrapper1)
+    @patch('main.connect_db', new=wrapper2)
     def test_main_loop(self, mock_serial, mock_sleep, mock_yaml2dict, # pylint: disable=unused-argument
                        mock_now_time, mock_read, mock_sensor_sleep): # pylint: disable=unused-argument
         """
@@ -155,13 +166,29 @@ class TestThiesIntegration(unittest.TestCase):
 
         mock_sleep.side_effect = side_effect
 
+        # db_name = 'integration-test.db'
+        # db_path = Path(f'sample_data/{db_name}')
+        #
+        # def mock_create_db_side_effect(dbpath):
+        #     create_db(dbpath=str(db_path))
+        #
+        # def mock_connect_db_side_effect(dbpath):
+        #     connect_db(dbpath=str(db_path))
+        #
+        # mock_create_db.side_effect = mock_create_db_side_effect
+        # mock_connect_db.side_effect = mock_connect_db_side_effect
+
+        # If the db already exists, remove it, otherwise test will fail
+        if os.path.exists(f'sample_data/{db_name}'):
+            os.remove(f'sample_data/{db_name}')
+
         with self.assertRaises(KeyboardInterrupt):
             main('configs_netcdf/config_006_GV_THIES.yml')
 
-        con, cur = connect_db(dbpath='sample_data/disdrodl-test1.db')
+        con, cur = connect_db(dbpath=f'sample_data/{db_name}')
         number_of_rows = len(con.execute('SELECT * FROM disdrodl').fetchall())
         assert number_of_rows == 1440
         cur.close()
         con.close()
-        os.remove('sample_data/disdrodl-test1.db')
+        os.remove(f'sample_data/{db_name}')
         os.remove('sample_data/log_test_log.json')
