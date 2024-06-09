@@ -1,5 +1,5 @@
 """
-This module contains tests for the NowTime and Telegram classes.
+This module contains tests for the NowTime,Telegram and ParsivelTelegram class and methods in the telegram file.
 
 Functions:
 - test_NowTime: Tests that the NowTime class functions in general, and returns the correct time.
@@ -8,7 +8,6 @@ Functions:
 - test_Telegram_empty_row: Tests the correctness of creating a ParsivelTelegram object without contents.
 - create_test_data_dir: Creates a directory at the given path if it doesn't exist yet.
 - test_telegram_row_thies: Tests the correctness of creating a ThiesTelegram object with contents.
-- test_telegram_empty_row_thies: Tests the correctness of creating a ThiesTelegram object without contents.
 - test_parse_telegram_row_edge_cases: Tests that a telegram row with key:val,val,...; for some pair can be parsed.
 - test_create_telegram_not_recognized: Tests parsing a non recognized sensor type.
 """
@@ -22,7 +21,7 @@ from unittest.mock import MagicMock
 from pydantic.v1.utils import deep_update
 
 from modules.now_time import NowTime
-from modules.telegram import ParsivelTelegram, ThiesTelegram
+from modules.telegram import ParsivelTelegram
 from modules.util_functions import yaml2dict
 import modules.telegram as telegram
 
@@ -173,4 +172,4 @@ def test_create_telegram_not_recognized(caplog):
                                                 telegram_data={},
                                                 logger=logger)
     assert [r.msg for r in caplog.records][0] == 'Sensor type wrong_telegram not recognized'
-    assert created_telegram == None
+    assert created_telegram is None

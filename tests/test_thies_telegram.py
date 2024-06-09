@@ -1,26 +1,26 @@
-""""
+"""
 Module that tests Thies telegram methods.
 
 Functions:
 - test_capture_prefixes_and_data: Tests the correctness of capturing telegram data.
 - test_capture_prefixes_and_data_empty: Tests the correctness of capturing telegram when telegram is empty.
 - test_capture_prefixes_and_data_partial_telegram: Tests the correctness of capturing telegram data when
-only a partial Thies telegram is given.
+  only a partial Thies telegram is given.
 - test_capture_prefixes_and_data_one_missing_value: Tests the correctness of capturing telegram data when
-a Thies telegram with a missing value is given.
+  a Thies telegram with a missing value is given.
 - test_parse_thies_telegram_row: Tests the correctness of creating a ThiesTelegram object with contents.
 - test_parse_thies_empty_telegram_row: Tests the correctness of creating a ThiesTelegram object without contents.
-- test_parse_telegram_row_missing_value: Tests the correctness of creating a ThiesTelegram object with one value missing.
+- test_parse_telegram_row_missing_value: Tests the correctness of creating a ThiesTelegram object with one value
+  missing.
 - test_parse_telegram_row_edge_cases: Tests 2 edge cases. Parsing a telegram row with a key that has assigned
-    multiple values (key:val;val;) and parsing a telegram with a key that is not in the configuration
-    dictionary of the sensor.
+  multiple values (key:val;val;) and parsing a telegram with a key that is not in the configuration
+  dictionary of the sensor.
 """
 
 import logging
 from pathlib import Path
 from logging import StreamHandler
 from datetime import datetime, timezone
-from unittest.mock import Mock
 
 from pydantic.v1.utils import deep_update
 
@@ -138,6 +138,7 @@ def test_capture_prefixes_and_data_one_missing_value():
 def test_parse_thies_telegram_row(db_insert_two_telegrams_thies):
     """
     This function tests the correctness of creating a ThiesTelegram object with contents.
+    :param db_insert_two_telegrams_thies: the function inserts 2 telegrams into the database.
     """
     con, cur = connect_db(dbpath=str(db_path_thies))
     row = next(query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger))
@@ -225,4 +226,3 @@ def test_parse_telegram_row_edge_cases():
     telegram.parse_telegram_row()
     assert telegram.telegram_data['2'] == ['1','2']
     assert '800' not in telegram.telegram_data.keys()
-

@@ -10,6 +10,12 @@ Functions:
 - test_NetCDF: This function tests whether netCDF files are correctly created.
 - delete_netcdf: Deletes the created test netCDF file.
 - test_NetCDF_w_gaps: Tests whether the db rows with empty telegram data are not included in NetCDF.
+- test_query_db_thies: Tests querying from the database and creates a test Thies netCDF file.
+- test_NetCDF_thies: Tests whether Thies netCDF files are correctly created and written.
+- test_NetCDF_w_gaps_thies: Tests whether the db rows with empty telegram data are not included in NetCDF.
+- test_netcdf_wrong_f81_len_thies: Tests thies netcdf creation when matrix array is of wrong length.
+- test_netcdf_wrong_f93_len_parsivel: Tests parsivel netcdf creation when matrix array is of wrong length.
+- test_compress_non_existent_file: Tests compressing a non-existent NetCDF file.
 """
 
 import os
@@ -19,7 +25,6 @@ from pathlib import Path
 from logging import StreamHandler
 from datetime import datetime, timedelta, timezone
 import unittest
-import yaml
 from netCDF4 import Dataset # pylint: disable=no-name-in-module
 from cftime import num2date
 from pydantic.v1.utils import deep_update
@@ -57,9 +62,6 @@ config_dict_thies = deep_update(config_dict_thies, config_dict_site_thies)
 start_dt_thies = datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0, tzinfo=timezone.utc)
 
 data_points_24h = 1440  # (60min * 24h)
-
-# # random_telegram_fields = set([str(randint(1, 99)).zfill(2) for i in range(20)])
-# print(random_telegram_fields)
 
 def test_connect_db(create_db_parsivel): # pylint: disable=unused-argument
     """
@@ -236,7 +238,6 @@ def test_query_db_thies(db_insert_24h_thies): # pylint: disable=unused-argument
     This function tests querying from the database and creates a test Thies netCDF file.
     :param db_insert_24h_thies: the function to insert 24 hours worth of data into the test database.
     """
-
     # delete old netCDF
     delete_netcdf(fn_start='test_thies', data_dir=data_dir,)
     telegram_objs = []
@@ -640,7 +641,10 @@ def test_netcdf_wrong_f93_len_parsivel(db_insert_two_telegrams_parsivel):
     assert netCDF_var_data_raw_data[0][0][0] == -99
     assert netCDF_var_data_raw_shape == (2, 32, 32)
 
-def test_compress_non_existent_file():
+def test_compress_non_existent_file(caplog):
+    '''
+    This function tests compressing a non-existent NetCDF file.
+    '''
     nc = NetCDF(logger=logger,
                 config_dict=config_dict_thies,
                 data_dir=data_dir,
@@ -652,4 +656,5 @@ def test_compress_non_existent_file():
     nc.path_netCDF = 'non_existent_file.nc'
     nc.path_netCDF_temp = "sample_data/test_compress.nc"
     nc.compress()
+    assert [r.msg for r in caplog.records][0] == 'Failed to compress non_existent_file.nc. Error code:1 '
     assert 'test_compress.nc' not in os.listdir('sample_data')
