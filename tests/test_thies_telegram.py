@@ -1,4 +1,21 @@
-""""Module that tests Thies telegram methods"""
+""""
+Module that tests Thies telegram methods.
+
+Functions:
+- test_capture_prefixes_and_data: Tests the correctness of capturing telegram data.
+- test_capture_prefixes_and_data_empty: Tests the correctness of capturing telegram when telegram is empty.
+- test_capture_prefixes_and_data_partial_telegram: Tests the correctness of capturing telegram data when
+only a partial Thies telegram is given.
+- test_capture_prefixes_and_data_one_missing_value: Tests the correctness of capturing telegram data when
+a Thies telegram with a missing value is given.
+- test_parse_thies_telegram_row: Tests the correctness of creating a ThiesTelegram object with contents.
+- test_parse_thies_empty_telegram_row: Tests the correctness of creating a ThiesTelegram object without contents.
+- test_parse_telegram_row_missing_value: Tests the correctness of creating a ThiesTelegram object with one value missing.
+- test_parse_telegram_row_edge_cases: Tests 2 edge cases. Parsing a telegram row with a key that has assigned
+    multiple values (key:val;val;) and parsing a telegram with a key that is not in the configuration
+    dictionary of the sensor.
+"""
+
 import logging
 from pathlib import Path
 from logging import StreamHandler
@@ -43,7 +60,10 @@ logger = logging.getLogger('test-log')
 logger.addHandler(log_handler)
 
 def test_capture_prefixes_and_data():
-
+    """
+    This function tests that the capture_prefixes_and_data method correctly fills
+    the telegram data dictionary.
+    """
     telegram = ThiesTelegram(config_dict=None,
                              telegram_lines=thies_lines,
                              timestamp=None,
@@ -62,7 +82,10 @@ def test_capture_prefixes_and_data():
     assert data_dictionary['81'] == matrix_values
 
 def test_capture_prefixes_and_data_empty():
-
+    """
+    This function tests that the capture_prefixes_and_data method correctly fills
+    the telegram data dictionary when an empty telegram is given.
+    """
     telegram = ThiesTelegram(config_dict=None,
                              telegram_lines=thies_lines_empty,
                              timestamp=None,
@@ -76,7 +99,10 @@ def test_capture_prefixes_and_data_empty():
     assert len(data_dictionary.keys()) == 0
 
 def test_capture_prefixes_and_data_partial_telegram():
-
+    """
+    This function tests that the capture_prefixes_and_data method correctly fills
+    the telegram data dictionary when a partial telegram is given.
+    """
     telegram = ThiesTelegram(config_dict=None,
                              telegram_lines=thies_lines_partial,
                              timestamp=None,
@@ -89,9 +115,30 @@ def test_capture_prefixes_and_data_partial_telegram():
     #check that telegram data dictionary is empty, partial telegrams are not parsed
     assert len(data_dictionary.keys()) == 0
 
+def test_capture_prefixes_and_data_one_missing_value():
+    """
+    This function tests that the capture_prefixes_and_data method correctly fills
+    the telegram data dictionary when a telegram with one missing value (val;;val;) is given.
+    """
+    telegram = ThiesTelegram(
+        config_dict=config_dict_thies,
+        telegram_lines=thies_lines,
+        timestamp=now.utc,
+        db_cursor=None,
+        telegram_data={},
+        logger=None)
+    telegram.capture_prefixes_and_data()
+    assert telegram.telegram_data['3'] == '0854'
+    telegram.telegram_data['3'] = ''
+    telegram.prep_telegram_data4db()
+    telegram_str_list = telegram.telegram_data_str.split('; ')
+    assert telegram_str_list[2] == '3:None'
+
 
 def test_parse_thies_telegram_row(db_insert_two_telegrams_thies):
-
+    """
+    This function tests the correctness of creating a ThiesTelegram object with contents.
+    """
     con, cur = connect_db(dbpath=str(db_path_thies))
     row = next(query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger))
     ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
@@ -113,11 +160,19 @@ def test_parse_thies_telegram_row(db_insert_two_telegrams_thies):
     # check that values for 22x20 matrix are correctly added
     assert data_dictionary['81'] == matrix_values.split(',')
     assert len(data_dictionary['81']) == 440
+    for i in row_telegram.telegram_data['81']:
+        assert (len(i) == 3 or len(i) == 4)  and ',' not in i
+    # check that each key is also in configuration dictionary
+    for key in row_telegram.telegram_data.keys():
+        assert key in config_dict_thies['telegram_fields']
     cur.close()
     con.close()
 
-def test_parse_thies_empty_telegram_row(db_insert_two_telegrams_thies):
 
+def test_parse_thies_empty_telegram_row(db_insert_two_telegrams_thies):
+    """
+    This function tests the correctness of creating a ThiesTelegram object without contents.
+    """
     con, cur = connect_db(dbpath=str(db_path_thies))
     row = next(query_db_rows_gen(con=con, date_dt=start_dt_thies, logger=logger))
     ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
@@ -129,30 +184,16 @@ def test_parse_thies_empty_telegram_row(db_insert_two_telegrams_thies):
         telegram_data={},
         logger=None)
     row_telegram.parse_telegram_row()
-
-    data_dictionary = row_telegram.telegram_data
     # check that telegram data dictionary is empty
-    assert len(data_dictionary.keys()) == 0
+    assert row_telegram.telegram_data == {}
     cur.close()
     con.close()
 
-def test_capture_prefixes_and_data_one_missing_value():
-
-    telegram = ThiesTelegram(
-        config_dict=config_dict_thies,
-        telegram_lines=thies_lines,
-        timestamp=now.utc,
-        db_cursor=None,
-        telegram_data={},
-        logger=None)
-    telegram.capture_prefixes_and_data()
-    assert telegram.telegram_data['3'] == '0854'
-    telegram.telegram_data['3'] = ''
-    telegram.prep_telegram_data4db()
-    telegram_str_list = telegram.telegram_data_str.split('; ')
-    assert telegram_str_list[2] == '3:None'
-
 def test_parse_telegram_row_missing_value():
+    """
+    This function tests the correctness of creating a ThiesTelegram object with contents, but
+    with one value missing.
+    """
     telegram = ThiesTelegram(
         config_dict=config_dict_thies,
         telegram_lines=thies_lines_missing_value,
@@ -169,6 +210,11 @@ def test_parse_telegram_row_missing_value():
     assert telegram.telegram_data['3'] == ''
 
 def test_parse_telegram_row_edge_cases():
+    """
+    This function tests 2 edge cases. Parsing a telegram row with a key that has assigned
+    multiple values (key:val;val;) and parsing a telegram with a key that is not in the configuration
+    dictionary of the sensor.
+    """
     telegram = ThiesTelegram(
         config_dict=config_dict_thies,
         telegram_lines=thies_db_line_edge_case,

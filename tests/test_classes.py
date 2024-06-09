@@ -7,6 +7,10 @@ Functions:
 - test_Telegram_row: Tests the correctness of creating a ParsivelTelegram object with contents.
 - test_Telegram_empty_row: Tests the correctness of creating a ParsivelTelegram object without contents.
 - create_test_data_dir: Creates a directory at the given path if it doesn't exist yet.
+- test_telegram_row_thies: Tests the correctness of creating a ThiesTelegram object with contents.
+- test_telegram_empty_row_thies: Tests the correctness of creating a ThiesTelegram object without contents.
+- test_parse_telegram_row_edge_cases: Tests that a telegram row with key:val,val,...; for some pair can be parsed.
+- test_create_telegram_not_recognized: Tests parsing a non recognized sensor type.
 """
 
 import os
@@ -14,10 +18,7 @@ import logging
 from logging import StreamHandler
 from datetime import datetime, timezone
 from pathlib import Path
-from unittest import mock
-from unittest.mock import Mock, MagicMock
-
-import pytest
+from unittest.mock import MagicMock
 from pydantic.v1.utils import deep_update
 
 from modules.now_time import NowTime
@@ -115,30 +116,6 @@ def test_telegram_row_parsivel():
     for key in row_telegram.telegram_data.keys():
         assert key in config_dict['telegram_fields']
 
-def test_telegram_row_thies():
-    """
-    This function tests the correctness of creating a ThiesTelegram object with contents.
-    """
-    row = {'id': 1, 'timestamp': 1704067200, 'datetime': '2024-01-01T00:00:00+00:00', 'parsivel_id': 'THIES006', 'telegram':'1:06; 2:06; 3:0854; 4:2.11; 5:01.01.14; 6:18:59:00; 7:00; 8:00; 9:NP   ; 10:000.000; 11:00; 12:00; 13:NP   ; 14:000.000; 15:000.000; 16:000.000; 17:0000.00; 18:99999; 19:-9.9; 20:100; 21:0.0; 22:0; 23:0; 24:0; 25:0; 26:0; 27:0; 28:0; 29:0; 30:0; 31:0; 32:0; 33:0; 34:0; 35:0; 36:0; 37:0; 38:+23; 39:26; 40:1662; 41:4011; 42:2886; 43:258; 44:062; 45:063; 46:+20.3; 47:999; 48:9999; 49:9999; 50:9999; 51:00000; 52:00000.000; 53:00000; 54:00000.000; 55:00000; 56:00000.000; 57:00000; 58:00000.000; 59:00000; 60:00000.000; 61:00000; 62:00000.000; 63:00000; 64:00000.000; 65:00000; 66:00000.000; 67:00000; 68:00000.000; 69:00000; 70:00000.000; 71:00000; 72:00000.000; 73:00000; 74:00000.000; 75:00000; 76:00000.000; 77:00000; 78:00000.000; 79:00000; 80:00000.000; 81:000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000; 521:99999; 522:99999; 523:9999; 524:999; 525:E9'} # pylint: disable=line-too-long
-    row_ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-    row_telegram = ThiesTelegram(
-        config_dict=config_dict_thies,
-        telegram_lines=row.get('telegram'),
-        timestamp=row_ts_dt,
-        db_cursor=None,
-        telegram_data={},
-        logger=logger)
-    row_telegram.parse_telegram_row()
-    # check that time matches
-    assert row_ts_dt == row_telegram.timestamp
-    assert row.get('timestamp') == row_telegram.timestamp.timestamp()
-    # check diameter velocity matrix
-    assert len(row_telegram.telegram_data['81']) == 440
-    for i in row_telegram.telegram_data['81']:
-        assert (len(i) == 3 or len(i) == 4)  and ',' not in i
-    # check that each key is also in configuration dictionary
-    for key in row_telegram.telegram_data.keys():
-        assert key in config_dict_thies['telegram_fields']
 
 def test_telegram_empty_row_parsivel():
     """
@@ -157,22 +134,6 @@ def test_telegram_empty_row_parsivel():
     row_telegram.parse_telegram_row()
     assert row_telegram.telegram_data == {}
 
-def test_telegram_empty_row_thies():
-    """
-    This function tests the correctness of creating a ThiesTelegram object without contents.
-    """
-    row = {'id': 1, 'timestamp': 1704067200, 'datetime': '2024-01-01T00:00:00+00:00', 'parsivel_id': 'THIES006', 'telegram':''} # pylint: disable=line-too-long
-    row_ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
-    row_telegram = ThiesTelegram(
-        config_dict=config_dict_thies,
-        telegram_lines=row.get('telegram'),
-        timestamp=row_ts_dt,
-        db_cursor=None,
-        telegram_data={},
-        logger=logger)
-    row_telegram.parse_telegram_row()
-    assert row_telegram.telegram_data == {}
-
 def create_test_data_dir(directory):
     """
     This functions creates a directory at the given path if it doesn't exist yet.
@@ -181,6 +142,9 @@ def create_test_data_dir(directory):
         os.mkdir(path=directory)
 
 def test_parse_telegram_row_edge_cases():
+    """
+    Tests that a telegram row with key:val,val,... for some pair can be passed
+    """
     telegram = ParsivelTelegram(
         config_dict=config_dict,
         telegram_lines=parsivel_db_line_edge_case,
@@ -193,6 +157,10 @@ def test_parse_telegram_row_edge_cases():
 
 
 def test_create_telegram_not_recognized(caplog):
+    """
+    Tests that if a configuration dictionary for a not recognized disdrometer sensor is
+    parsed the logger sends a message and the function returns None.
+    """
     config_dict = MagicMock()
     values = { 'global_attrs': {'sensor_type':'wrong_telegram'} }
     config_dict.__getitem__.side_effect = values.__getitem__
