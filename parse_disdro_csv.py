@@ -22,14 +22,17 @@ field_type = {'i4': int, 'i2': int, 'S4': str, 'f4': float}
 
 
 def choose_sensor(input: str) -> str:
+    '''
+    Choose a sensor based on the input string
+    '''
     sensors = telegrams.keys()
     return next((sensor for sensor in sensors if (sensor in input)), None)
 
 
 
-def telegram2dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: Dict):
+def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: Dict):
     '''
-    Creates 1 dict from a dataframe row, with the telegram values
+    Creates 1 dict from a dataframe row representing a parsivel telegram, with the telegram values
     '''
     default_telegram_indeces = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
     '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '30',
@@ -57,12 +60,11 @@ def telegram2dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: 
 
 def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: Dict) -> Dict:
     '''
-    Creates 1 dict from a dataframe row, with the telegram values
+    Creates 1 dict from a dataframe row representing a Thies telegram, with the telegram values
     '''
     telegram_indices = list(config_dict.keys())[1:]
     telegram_dict = {}
     print(telegram_indices)
-    #telegram = telegram[1:]
     for index, field_n in enumerate(telegram_indices):
         print(field_n, config_dict[field_n]['dtype'], telegram[index])
         if(field_n == '81'):
@@ -79,7 +81,12 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     return telegram_dict
 
 def process_row(telegram: list, sensor: str, config_dict: dict):
-
+    '''
+    Determines which in which format the telegram is in, and preprocesses if necessary, currently able to parse 4 telegram formats:
+    Parsivel-> one format where all values are contained in a single column in a string, or each value in their own column
+    Thies-> one format where all values are contained in a single column in a string, or each value in their own column
+    All formats don't indicate when a value is part of a list, this is hardcoded based ont the respective documentation
+    '''
     if len(telegram) == 3:
         
         dt_str, ts_str, telegram_b = telegram
@@ -87,7 +94,7 @@ def process_row(telegram: list, sensor: str, config_dict: dict):
         date = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
         if sensor == 'PAR':
             telegram = telegram_b[2:-1].split(";")
-            return telegram2dict(telegram, timestamp, date, config_dict), timestamp
+            return parsival_telegram_to_dict(telegram, timestamp, date, config_dict), timestamp
         else: 
             telegram = telegram_b[4:-1].split(";")
             return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
@@ -100,11 +107,14 @@ def process_row(telegram: list, sensor: str, config_dict: dict):
         else:
             date = telegram[0]
             timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
-            return telegram2dict(telegram[1:], timestamp, timestamp, config_dict), timestamp
+            return parsival_telegram_to_dict(telegram[1:], timestamp, timestamp, config_dict), timestamp
 
             
 
 if __name__ == '__main__':
+    '''
+    Main script for parsing a csv of telegram
+    '''
     ## Parser
     parser = ArgumentParser(
         description="Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF. \
@@ -129,8 +139,7 @@ if __name__ == '__main__':
     if sensor is None:
         raise ValueError("Sensor not recognized. Please check the input file name.")
 
-    date_str = args.input.split("_")[:-2]
-    print(date_str)
+    #placeholder
     date = datetime(2021, 12, 19)
     ## Config
     wd = Path(__file__).parent
@@ -150,6 +159,7 @@ if __name__ == '__main__':
     output_fn = f"{input_path.stem}"
     output_path = input_path.parent / output_fn
     
+    #iterate over all telegrams
     with open(input_path , newline='') as csvfile:  # pylint: disable=W1514
         reader = csv.reader(csvfile, delimiter=';')
         telegram_objs = []
@@ -157,6 +167,7 @@ if __name__ == '__main__':
             if(row[0] == 'Timestamp (UTC)'):
                 continue
             telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
+            date = datetime.timestamp(timestamp)
             telegram_instance = telegrams[sensor](
                 config_dict=config_dict,
                 telegram_lines="",
@@ -168,6 +179,7 @@ if __name__ == '__main__':
 
             telegram_objs.append(telegram_instance)
 
+    #create NetCDF
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
                 data_dir='sample_data/',
