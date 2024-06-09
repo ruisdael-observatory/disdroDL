@@ -29,7 +29,7 @@ def wrapper2(dbpath):
     return connect_db(dbpath=str(db_path))
 
 
-class TestThiesIntegration(unittest.TestCase):
+class TestIntegration(unittest.TestCase):
     """
     Class for testing main.py for the Thies sensor.
 
