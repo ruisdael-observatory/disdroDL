@@ -8,7 +8,7 @@ from unittest.mock import patch, Mock, call
 import reset_parsivel
 from reset_parsivel import get_config_file
 
-wd = Path(__file__).parent
+wd = Path(__file__).parent.parent
 
 
 class TestResetParsivel(unittest.TestCase):

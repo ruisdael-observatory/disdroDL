@@ -330,13 +330,18 @@ class NetCDF:
                 # compression_method = dict(zlib=True, shuffle=True, complevel=5)
             else:
                 compression_method = None
+
+            if (one_var_dict['dtype'] == 'S4'):
+                fill_val = ''
+            else:
+                fill_val = -999
             # compresses and adds values depending on if the variables are scalar or not
             if 'dimensions' not in one_var_dict.keys() or one_var_dict['dimensions'] is None:
                 # scalar variables do not use dimensions
                 variable = nc_group.createVariable(
                     one_var_dict['var_attrs']['standard_name'],
                     one_var_dict['dtype'],
-                    fill_value=-1,
+                    fill_value=fill_val,
                     compression=compression_method,
                     complevel=9,
                     shuffle=True,
@@ -344,8 +349,6 @@ class NetCDF:
             elif len(one_var_dict['dimensions']) >= 1:
                 if 'fill_value' in one_var_dict.keys():
                     fill_val = one_var_dict['fill_value']
-                else:
-                    fill_val = -1
 
                 variable = nc_group.createVariable(
                     one_var_dict['var_attrs']['standard_name'],

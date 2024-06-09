@@ -22,7 +22,7 @@ from modules.util_functions import yaml2dict, get_general_config, create_logger,
     create_dir, resetSerialBuffers, interruptHandler # pylint: disable=import-error
 from modules.netCDF import unpack_telegram_from_db
 
-wd = Path(__file__).parent
+wd = Path(__file__).parent.parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
 config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_007_CABAUW.yml')
 config_dict = deep_update(config_dict, config_dict_site)
@@ -96,7 +96,7 @@ class UtilFunctionsTests(unittest.TestCase):
         config_dict_general = get_general_config(wd, config_dict_par008['global_attrs']['sensor_type'])
         assert config_dict_general['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
 
-        config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
+        config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_006_GV_THIES.yml')
         config_dict_general = get_general_config(wd, config_dict_thies006['global_attrs']['sensor_type'])
         assert config_dict_general['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number'
 

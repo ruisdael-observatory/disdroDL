@@ -1,5 +1,5 @@
 # sensor and script settings
-station_code: 'GV' # keep under 10 characters, max accepted by Parsivel
+station_code: 'GV'
 port: '/dev/ttyACM0'
 baud: 9600
 script_name: 'capture_disdro_data.py'
@@ -18,9 +18,11 @@ global_attrs:
     site_name: 'Green_Village'
     sensor_name: THIES006
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
+    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
+    license: 'CC BY 4.0 https://creativecommons.org/licenses/by-sa/4.0/'
+    logging software: '(#TODO - URL public git repo) - Version 0.3.0'
     sensor_type: 'Thies Clima'
-    sensor_serial_number: '450994' # to be updated
+    sensor_serial_number: '0854'
 
 variables:
     latitude:
@@ -51,6 +53,6 @@ variables:
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'm'
-            long_name: 'Altitude of site'
+            long_name: 'Altitude of site, in meters above mean sea level'
             standard_name: 'altitude'
     

@@ -17,7 +17,7 @@ from main import main
 from modules.sensors import Thies
 from modules.sqldb import connect_db
 
-wd = Path(__file__).parent
+wd = Path(__file__).parent.parent
 
 
 class TestThiesIntegration(unittest.TestCase):
@@ -156,7 +156,7 @@ class TestThiesIntegration(unittest.TestCase):
         mock_sleep.side_effect = side_effect
 
         with self.assertRaises(KeyboardInterrupt):
-            main('configs_netcdf/config_008_GV_THIES.yml')
+            main('configs_netcdf/config_006_GV_THIES.yml')
 
         con, cur = connect_db(dbpath='sample_data/disdrodl-test1.db')
         number_of_rows = len(con.execute('SELECT * FROM disdrodl').fetchall())
