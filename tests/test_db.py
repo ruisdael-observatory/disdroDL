@@ -707,7 +707,7 @@ def test_compress_non_existent_file(caplog):
                 fn_start='test_compress',
                 full_version=True,
                 telegram_objs=[],
-                date=start_dt_thies)
+                date=start_dt)
     nc.create_netCDF()
     nc.path_netCDF = 'non_existent_file.nc'
     nc.path_netCDF_temp = "sample_data/test_compress.nc"
