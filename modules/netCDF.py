@@ -275,7 +275,7 @@ class NetCDF:
         This function sets the path of the netCDF file based on self.fn_start.
         """
         self.path_netCDF = self.data_dir / f'{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
-        self.path_netCDF_temp = self.data_dir /+ "/" + f'tmp_{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
+        self.path_netCDF_temp = self.data_dir / f'tmp_{self.fn_start}.nc'  # pylint: disable=attribute-defined-outside-init
 
     def __netcdf_populate_s4_var(self, netCDF_var_, var_key_):
         """
