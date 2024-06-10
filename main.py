@@ -13,7 +13,7 @@ from pydantic.v1.utils import deep_update
 
 from modules.sensors import Parsivel, Thies
 from modules.util_functions import yaml2dict, create_logger
-from modules.telegram import ParsivelTelegram, ThiesTelegram
+from modules.telegram import ParsivelTelegram, ThiesTelegram, create_telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
 
@@ -95,29 +95,16 @@ def main(config_site):
         except IndexError:
             logger.error(msg="sensor_lines is EMPTY")
 
-        # logger.debug(msg=f"parsivel_lines: {parsivel_lines}")
+        telegram = create_telegram(config_dict=config_dict,
+                                   telegram_lines=telegram_lines,
+                                   db_row_id=None,
+                                   timestamp=now_utc.utc,
+                                   db_cursor=cur,
+                                   telegram_data={},
+                                   logger=logger)
 
-        telegram = None
-
-        if sensor_type == 'OTT Hydromet Parsivel2':
-            telegram = ParsivelTelegram(config_dict=config_dict,
-                                        telegram_lines=telegram_lines,
-                                        timestamp=now_utc.utc,
-                                        db_cursor=cur,
-                                        telegram_data={},
-                                        logger=logger)
-        elif sensor_type == 'Thies Clima':
-            telegram = ThiesTelegram(config_dict=config_dict,
-                                     telegram_lines=telegram_lines,
-                                     timestamp=now_utc.utc,
-                                     db_cursor=cur,
-                                     telegram_data={},
-                                     logger=logger)
-        else:
-            logger.error(msg=f"Sensor type {sensor_type} not recognized")
+        if telegram is None:
             sys.exit(1)
-
-        # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
 
         telegram.capture_prefixes_and_data()
         telegram.prep_telegram_data4db()
