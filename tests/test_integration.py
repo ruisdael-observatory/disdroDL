@@ -142,18 +142,6 @@ class TestIntegration(unittest.TestCase):
 
         mock_sleep.side_effect = side_effect
 
-        # db_name = 'integration-test.db'
-        # db_path = Path(f'sample_data/{db_name}')
-        #
-        # def mock_create_db_side_effect(dbpath):
-        #     create_db(dbpath=str(db_path))
-        #
-        # def mock_connect_db_side_effect(dbpath):
-        #     connect_db(dbpath=str(db_path))
-        #
-        # mock_create_db.side_effect = mock_create_db_side_effect
-        # mock_connect_db.side_effect = mock_connect_db_side_effect
-
         # If the db already exists, remove it, otherwise test will fail
         if os.path.exists(f'sample_data/{db_name}'):
             os.remove(f'sample_data/{db_name}')
@@ -180,7 +168,7 @@ class TestIntegration(unittest.TestCase):
     def test_main_loop_parsivel(self, mock_serial, mock_sleep, mock_yaml2dict,  # pylint: disable=unused-argument
                                 mock_now_time, mock_read, mock_sensor_sleep):  # pylint: disable=unused-argument
         """
-        Test for the main loop of the Thies sensor, it checks whether there are 1440 rows in the database.
+        Test for the main loop of the Parsivel sensor, it checks whether there are 1440 rows in the database.
         :param mock_serial: mock serial object
         :param mock_sleep: mock sleep object to skip the sleep time
         :param mock_yaml2dict: mock yaml2dict object
@@ -221,7 +209,7 @@ class TestIntegration(unittest.TestCase):
             os.remove(f'sample_data/{db_name}')
 
         with self.assertRaises(KeyboardInterrupt):
-            main('configs_netcdf/config_006_GV_THIES.yml')
+            main('configs_netcdf/config_008_GV.yml')
 
         con, cur = connect_db(dbpath=f'sample_data/{db_name}')
         number_of_rows = len(con.execute('SELECT * FROM disdrodl').fetchall())
