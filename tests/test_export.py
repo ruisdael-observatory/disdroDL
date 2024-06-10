@@ -135,7 +135,7 @@ class ExportThiesTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV_THIES.yml'
+        mock_args.config = 'configs_netcdf/config_006_GV_THIES.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'full'
 
@@ -169,7 +169,7 @@ class ExportThiesTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV_THIES.yml'
+        mock_args.config = 'configs_netcdf/config_006_GV_THIES.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'light'
 
@@ -186,6 +186,8 @@ class ExportThiesTests(unittest.TestCase):
 
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
+
+        os.remove("sample_data/test_thies.db")
 
 @pytest.mark.usefixtures("db_insert_24h_parsivel")
 class ExportArgumentExceptionTests(unittest.TestCase):
@@ -332,3 +334,5 @@ class EmptyExportTests(unittest.TestCase):
 
         assert result == 1
         assert output_file_path.exists() is False
+
+        os.remove("sample_data/test_parsivel.db")

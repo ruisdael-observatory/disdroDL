@@ -18,6 +18,7 @@ Functions:
 """
 
 import logging
+import os
 from pathlib import Path
 from logging import StreamHandler
 from datetime import datetime, timezone
@@ -40,7 +41,7 @@ logger = logging.getLogger('test-log')
 logger.addHandler(log_handler)
 
 config_dict_thies = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_thies.yml')
-config_dict_site_thies = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
+config_dict_site_thies = yaml2dict(path=wd / 'configs_netcdf' / 'config_006_GV_THIES.yml')
 config_dict_thies = deep_update(config_dict_thies, config_dict_site_thies)
 
 start_dt_thies = datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0, tzinfo=timezone.utc)
@@ -189,6 +190,7 @@ def test_parse_thies_empty_telegram_row(db_insert_two_telegrams_thies):
     assert row_telegram.telegram_data == {}
     cur.close()
     con.close()
+    os.remove(db_path_thies)
 
 def test_parse_telegram_row_missing_value():
     """
