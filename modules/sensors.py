@@ -144,6 +144,7 @@ class Parsivel(Sensor):
         :param config_dict: Dictionary containing configuration parameters
                             for the sensor.
         :param logger: Logger for logging information and errors
+        :param include_in_log: Whether the start sequence should be included in the log
         """
         if include_in_log:
             logger.info(msg="Starting parsivel start sequence commands")
@@ -271,6 +272,7 @@ class Thies(Sensor):
         Send the serial commands to the thies that changes the necessary parameters.
         :param config_dict: the configuration dictionary
         :param logger: the logger object
+        :param include_in_log: whether the start sequence should be included in the log
         """
         self.serial_connection.reset_input_buffer()
         self.serial_connection.reset_output_buffer()
