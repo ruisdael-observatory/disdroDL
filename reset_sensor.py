@@ -39,7 +39,8 @@ def main(config_file):
     if sensor_type == 'OTT Hydromet Parsivel2':
         sensor = Parsivel()
     elif sensor_type == 'Thies Clima':
-        sensor = Thies()
+        thies_id = config_dict['global_attrs']['sensor_name'][-2:]
+        sensor = Thies(thies_id=thies_id)
     else:
         logger.error(msg=f"Sensor type {sensor_type} not recognized")
         sys.exit(1)
