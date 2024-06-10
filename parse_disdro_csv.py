@@ -26,6 +26,9 @@ def choose_sensor(input: str) -> str:
     Choose a sensor based on the input string
     '''
     sensors = telegrams.keys()
+    '''
+    Checks 
+    '''
     return next((sensor for sensor in sensors if (sensor in input)), None)
 
 
@@ -41,16 +44,26 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
     x = 0
     for i, key in enumerate(default_telegram_indeces):
         if(key == '90' or key == '91'):
-            shallow_copy = []
-            telegram_value = [float(value) for value in telegram[i+x*32:i+32*(x+1)]] #field_type[config_dict[key]['dtype']](telegram_list[i:i+32])
-            x +=1
-            shallow_copy[:] = telegram_value
-            telegram_dict[key] = shallow_copy
+            '''
+            Field 90 and 91 have a list of 32 values
+            Grab the corresponding 32 values for field 90 or 91
+            '''
+            value_type = field_type[config_dict[key]['dtype']] #Get value type, e.g float or integer
+            telegram_value = telegram[-65:-33] if key == '90' else telegram[-33:-1] #Copy all values and cast to respective type
+            telegram_dict[key] = [value_type(value) for value in telegram_value]
         elif(key == '93'):
+            '''
+            Key 93 is a long string of values, not seperated by a semicolon or something else
+            Each substring of 3 character is a single value, so a list is created each three characters
+            '''
             s = telegram[-1]
-            raw_data = [int(s[i:i+3]) for i in range(0, len(s), 3)]
+
+            raw_data = [int(s[i:i+3]) for i in range(0, len(s), 3)] #value should always be cast to int
             telegram_dict[key] = raw_data
         else:
+            '''
+            Value is cast to type based on the config dict
+            '''
             telegram_value = field_type[config_dict[key]['dtype']](telegram[i])
             telegram_dict[key] = telegram_value
     
@@ -64,12 +77,9 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     '''
     telegram_indices = list(config_dict.keys())[1:]
     telegram_dict = {}
-    print(telegram_indices)
     for index, field_n in enumerate(telegram_indices):
-        print(field_n, config_dict[field_n]['dtype'], telegram[index])
         if(field_n == '81'):
             telegram_dict[field_n] = [int(x) for x in telegram[index:index+439]]
-            print(telegram_dict[field_n])
         elif(field_n > '520'):
             telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index+439])
         else:
@@ -88,13 +98,13 @@ def process_row(telegram: list, sensor: str, config_dict: dict):
     All formats don't indicate when a value is part of a list, this is hardcoded based ont the respective documentation
     '''
     if len(telegram) == 3:
-        
+        #If the telegram consists of 3 columns, the
         dt_str, ts_str, telegram_b = telegram
         timestamp = datetime.strptime(dt_str, "%Y%m%d-%H%M%S")
         date = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
         if sensor == 'PAR':
             telegram = telegram_b[2:-1].split(";")
-            return parsival_telegram_to_dict(telegram, timestamp, date, config_dict), timestamp
+            return parsival_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
         else: 
             telegram = telegram_b[4:-1].split(";")
             return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
@@ -107,7 +117,7 @@ def process_row(telegram: list, sensor: str, config_dict: dict):
         else:
             date = telegram[0]
             timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
-            return parsival_telegram_to_dict(telegram[1:], timestamp, timestamp, config_dict), timestamp
+            return parsival_telegram_to_dict(telegram[1:], date, timestamp, config_dict), timestamp
 
             
 
@@ -139,8 +149,9 @@ if __name__ == '__main__':
     if sensor is None:
         raise ValueError("Sensor not recognized. Please check the input file name.")
 
-    #placeholder
-    date = datetime(2021, 12, 19)
+    #Get date from file name
+    get_date = args.input.split("/")[-1]
+    date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
     ## Config
     wd = Path(__file__).parent
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
@@ -167,13 +178,13 @@ if __name__ == '__main__':
             if(row[0] == 'Timestamp (UTC)'):
                 continue
             telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
-            date = datetime.timestamp(timestamp)
             telegram_instance = create_telegram(
                 config_dict=config_dict,
                 telegram_lines="",
                 timestamp=timestamp,
                 db_cursor=None,
                 logger=logger,
+                db_row_id=None,
                 telegram_data=telegram,
             )
 
