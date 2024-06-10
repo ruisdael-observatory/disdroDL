@@ -34,6 +34,8 @@ def main(config_file):
 
     sensor_type = config_dict['global_attrs']['sensor_type']
     sensor = None
+
+    # Create the sensor object based on the type specified in the config file
     if sensor_type == 'OTT Hydromet Parsivel2':
         sensor = Parsivel()
     elif sensor_type == 'Thies Clima':
@@ -42,6 +44,7 @@ def main(config_file):
         logger.error(msg=f"Sensor type {sensor_type} not recognized")
         sys.exit(1)
 
+    # Initialize the serial connection and reset the sensor
     sensor.init_serial_connection(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
     sensor.reset_sensor(logger=logger, factory_reset=False)
     sensor.close_serial_connection()
