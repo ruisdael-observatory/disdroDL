@@ -91,7 +91,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         now_time_instance.time_list = ['10', '20', '30']
         mock_now_time.return_value = now_time_instance
 
-        thies.sensor_start_sequence(config_dict={}, logger=logger)
+        thies.sensor_start_sequence(config_dict={}, logger=logger, include_in_log=True)
 
         logger.info.assert_called_once()
         calls = [
@@ -107,6 +107,32 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
             call.reset_output_buffer()
         ]
         mock_serial.assert_has_calls(calls, any_order=False)
+
+    @patch('modules.sensors.NowTime')
+    @patch('modules.sensors.sleep', return_value=None)
+    @patch('modules.sensors.serial.Serial')
+    def test_sensor_start_sequence_no_log(self, mock_serial, mock_sleep, mock_now_time):  # pylint: disable=unused-argument
+        """
+        Test if the sensor_start_sequence function initializes the thies sensor correctly
+        it also tests if all the commands are sent in the correct order.
+        :param mock_serial: the mocked Serial object
+        :param mock_sleep: temporary argument for now
+        :param mock_now_time: the mocked NowTime object
+        """
+
+        thies = Thies()
+        thies.thies_id = '06'
+        thies.serial_connection = mock_serial
+
+        logger = MagicMock()
+
+        now_time_instance = MagicMock()
+        now_time_instance.time_list = ['10', '20', '30']
+        mock_now_time.return_value = now_time_instance
+
+        thies.sensor_start_sequence(config_dict={}, logger=logger, include_in_log=False)
+
+        logger.info.assert_not_called()
 
     @patch('modules.sensors.serial.Serial')
     @patch('modules.sensors.sleep', return_value=None)
