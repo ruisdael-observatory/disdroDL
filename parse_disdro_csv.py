@@ -64,6 +64,7 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
             '''
             Value is cast to type based on the config dict
             '''
+            #print(i, key, telegram[i])
             telegram_value = field_type[config_dict[key]['dtype']](telegram[i])
             telegram_dict[key] = telegram_value
     
@@ -177,14 +178,15 @@ if __name__ == '__main__':
         for row in reader:
             if(row[0] == 'Timestamp (UTC)'):
                 continue
+            #parse single telegram row from csv
             telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
-            telegram_instance = create_telegram(
+            #choose telegram object based on sensor
+            telegram_instance = telegrams[sensor](
                 config_dict=config_dict,
                 telegram_lines="",
                 timestamp=timestamp,
                 db_cursor=None,
                 logger=logger,
-                db_row_id=None,
                 telegram_data=telegram,
             )
 
