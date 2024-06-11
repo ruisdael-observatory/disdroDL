@@ -15,7 +15,8 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     - test___init__: Constructor test.
     - test_init_serial_connection_success: Good weather test for the init_serial_connection_success function.
     - test_init_serial_connection_exception: Bad weather test for the init_serial_connection_success function.
-    - test_sensor_start_sequence: Test for the sensor_start_sequence function.
+    - test_sensor_start_sequence: Test for the sensor_start_sequence function with logging.
+    - test_sensor_start_sequence_no_log: Test for the sensor_start_sequence function without logging.
     - test_reset_sensor_factory_reset: Good weather test for the reset_sensor function with factory_reset=True.
     - test_reset_sensor_restart: Good weather test for the reset_sensor function with factory_reset=False.
     - test_write_success: Good weather test for the write function.
@@ -73,7 +74,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     @patch('modules.sensors.sleep', return_value=None)
     def test_sensor_start_sequence(self, mock_sleep):
         """
-        Test for the sensor_start_sequence function.
+        Test for the sensor_start_sequence function with logging.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_logger = Mock()
@@ -111,9 +112,10 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
         mock_sleep.assert_has_calls(expected_calls_sleep)
 
+    @patch('modules.sensors.sleep', return_value=None)
     def test_sensor_start_sequence_no_log(self, mock_sleep):
         """
-        Test for the sensor_start_sequence function.
+        Test for the sensor_start_sequence function without logging.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_logger = Mock()
