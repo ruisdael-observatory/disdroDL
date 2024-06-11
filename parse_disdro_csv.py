@@ -91,42 +91,39 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     telegram_dict['timestamp'] = str(ts)
     return telegram_dict
 
-def process_row(telegram: list, sensor: str, config_dict: dict):
+def process_row(csv_list: list, sensor: str, config_dict: dict):
     '''
-    Determines which in which format the telegram is in, and preprocesses if necessary, currently able to parse 4 telegram formats:
-    Parsivel-> one format where all values are contained in a single column in a string, or each value in their own column
-    Thies-> one format where all values are contained in a single column in a string, or each value in their own column
+    Determines which in which format the csv is in, and preprocesses if necessary, currently able to parse 4 csv formats:
+    Parsivel-> one format where all values from a telegram are contained in a single column in a string, or each value in their own column
+    Thies-> one format where all values from a telegram are contained in a single column in a string, or each value in their own column
     All formats don't indicate when a value is part of a list, this is hardcoded based ont the respective documentation
     '''
-    if len(telegram) == 3:
+    if len(csv_list) == 3:
         #If the telegram consists of 3 columns, the
-        dt_str, ts_str, telegram_b = telegram
+        dt_str, ts_str, telegram_b = csv_list
         timestamp = datetime.strptime(dt_str, "%Y%m%d-%H%M%S")
         date = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
         if sensor == 'PAR':
             telegram = telegram_b[2:-1].split(";")
             return parsival_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
-        else: 
+        else: #Thies
             telegram = telegram_b[4:-1].split(";")
             return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
     else:
-        if sensor == "THIES":
-            dates = telegram[0].split(",")
-            timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
-            date = datetime.fromtimestamp(float(telegram[1]), tz=timezone.utc)
-            return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
-        else:
-            date = telegram[0]
+        if sensor == 'PAR':
+            date = csv_list[0]
             timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
-            return parsival_telegram_to_dict(telegram[1:], date, timestamp, config_dict), timestamp
+            return parsival_telegram_to_dict(csv_list[1:], date, timestamp, config_dict), timestamp
+        else: #Thies
+            dates = csv_list[0].split(",")
+            timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
+            date = datetime.fromtimestamp(float(csv_list[1]), tz=timezone.utc)
+            return thies_telegram_to_dict(csv_list, date, timestamp, config_dict), timestamp
 
-            
-
-if __name__ == '__main__':
+def parse_arguments():
     '''
-    Main script for parsing a csv of telegram
+    Parse arguments for the script
     '''
-    ## Parser
     parser = ArgumentParser(
         description="Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF. \
             Run: python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml\
@@ -143,15 +140,25 @@ if __name__ == '__main__':
         '--input',
         required=True,
         help='Path to input CSV file. ie. -i sample_data/20231106_PAR007_CabauwTower.csv')
-    args = parser.parse_args()
+    return parser.parse_args()            
+
+if __name__ == '__main__':
+    '''
+    Main script for parsing a csv of telegram
+    '''
+    args = parse_arguments()
     input_path = Path(args.input)
 
     sensor = choose_sensor(args.input)
     if sensor is None:
         raise ValueError("Sensor not recognized. Please check the input file name.")
 
-    #Get date from file name
-    get_date = args.input.split("/")[-1]
+    
+    argument_file_path = args.input.split("/")
+    #Get destination directory from file path
+    directory = argument_file_path[-2]
+    #Get date from file path
+    get_date = argument_file_path[-1].split("_")[0]
     date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
     ## Config
     wd = Path(__file__).parent
@@ -195,7 +202,7 @@ if __name__ == '__main__':
     #create NetCDF
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
-                data_dir='sample_data/',
+                data_dir=directory,
                 fn_start=output_fn,
                 full_version=True,
                 telegram_objs=telegram_objs,
