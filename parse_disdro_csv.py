@@ -140,13 +140,12 @@ def parse_arguments():
         '--input',
         required=True,
         help='Path to input CSV file. ie. -i sample_data/20231106_PAR007_CabauwTower.csv')
-    return parser.parse_args()            
+    return parser.parse_args() 
 
-if __name__ == '__main__':
+def main(args):
     '''
     Main script for parsing a csv of telegram
     '''
-    args = parse_arguments()
     input_path = Path(args.input)
 
     sensor = choose_sensor(args.input)
@@ -154,11 +153,8 @@ if __name__ == '__main__':
         raise ValueError("Sensor not recognized. Please check the input file name.")
 
     
-    argument_file_path = args.input.split("/")
-    #Get destination directory from file path
-    directory = argument_file_path[-2]
-    #Get date from file path
-    get_date = argument_file_path[-1].split("_")[0]
+    #get date from input file
+    get_date = input_path.stem.split('_')[0]
     date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
     ## Config
     wd = Path(__file__).parent
@@ -171,13 +167,10 @@ if __name__ == '__main__':
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name=Path(__file__).name,
                            sensor_name=config_dict['global_attrs']['sensor_name'])
-    # output file
-    site_name = config_dict['global_attrs']['site_name']
-    st_code = config_dict['station_code']
-    sensor_name = config_dict['global_attrs']['sensor_name']
+    # output file name
     output_fn = f"{input_path.stem}"
-    output_path = input_path.parent / output_fn
-    
+    output_directory = input_path.parent
+
     #iterate over all telegrams
     with open(input_path , newline='') as csvfile:  # pylint: disable=W1514
         reader = csv.reader(csvfile, delimiter=';')
@@ -202,7 +195,7 @@ if __name__ == '__main__':
     #create NetCDF
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
-                data_dir=directory,
+                data_dir=output_directory,
                 fn_start=output_fn,
                 full_version=True,
                 telegram_objs=telegram_objs,
@@ -210,4 +203,7 @@ if __name__ == '__main__':
     
     nc.create_netCDF()
     nc.write_data_to_netCDF_parsivel() if sensor == 'PAR' else nc.write_data_to_netCDF_thies() 
-    nc.compress()
+    nc.compress()   
+
+if __name__ == '__main__':
+    main(parse_arguments())
