@@ -15,6 +15,7 @@ Functions:
 - test_parse_telegram_row_edge_cases: Tests 2 edge cases. Parsing a telegram row with a key that has assigned
   multiple values (key:val;val;) and parsing a telegram with a key that is not in the configuration
   dictionary of the sensor.
+- test_str2list_thies: Tests str2list method for ThiesTelegram class
 """
 
 import logging
@@ -228,3 +229,18 @@ def test_parse_telegram_row_edge_cases():
     telegram.parse_telegram_row()
     assert telegram.telegram_data['2'] == ['1','2']
     assert '800' not in telegram.telegram_data.keys()
+
+def test_str2list_thies():
+    """
+    Tests that str2list works with Thies telegrams
+    """
+    telegram_data =  {'1': '1,2,3,4,5'}
+    telegram = ThiesTelegram(
+        config_dict=None,
+        telegram_lines=None,
+        timestamp=None,
+        db_cursor=None,
+        telegram_data=telegram_data,
+        logger=None)
+    telegram.str2list('1',',')
+    assert telegram_data['1'] == ['1','2','3','4','5']
