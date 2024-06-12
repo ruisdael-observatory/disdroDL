@@ -137,7 +137,6 @@ def test_db_insert_parsivel(create_db_parsivel): # pylint: disable=unused-argume
         assert isinstance(datetime_, str) is True
         assert parsivel_id == config_dict_parsivel['global_attrs']['sensor_name']
         assert isinstance(telegram_str, str) is True
-        print('test_parsivel.db', timestamp, datetime_)
 
     res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
     assert res.fetchone()[0] == 1
@@ -148,11 +147,11 @@ def test_db_insert_parsivel(create_db_parsivel): # pylint: disable=unused-argume
 
 def test_db_insert_thies(create_db_thies): # pylint: disable=unused-argument
     """
-    This function tests that inserting a ParsivelTelegram object into the database works correctly.
-    :param create_db_parsivel: the function to create the test database
+    This function tests that inserting a ThiesTelegram object into the database works correctly.
+    :param create_db_thies: the function to create the test database
     """
     con, cur = connect_db(dbpath=str(db_path_thies))
-    telegram = ThiesTelegram(config_dict=config_dict_parsivel,
+    telegram = ThiesTelegram(config_dict=config_dict_thies,
                                 telegram_lines=thies_lines,
                                 timestamp=now.utc,
                                 db_cursor=cur,
@@ -182,9 +181,8 @@ def test_db_insert_thies(create_db_thies): # pylint: disable=unused-argument
         assert datetime_as_dt == now.utc
         assert timestamp_as_dt == datetime_as_dt
         assert isinstance(datetime_, str) is True
-        assert parsivel_id == config_dict_parsivel['global_attrs']['sensor_name']
+        assert parsivel_id == config_dict_thies['global_attrs']['sensor_name']
         assert isinstance(telegram_str, str) is True
-        print('test_parsivel.db', timestamp, datetime_)
 
     res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
     assert res.fetchone()[0] == 1
