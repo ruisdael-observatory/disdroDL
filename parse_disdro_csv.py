@@ -27,9 +27,13 @@ def choose_sensor(input: str) -> str:
     '''
     sensors = telegrams.keys()
     '''
-    Checks 
+    Check if the input string is in the list of sensors
     '''
-    return next((sensor for sensor in sensors if (sensor in input)), None)
+    for sensor in sensors:
+        if sensor in input:
+            return sensor
+        
+    return None
 
 
 
@@ -157,6 +161,9 @@ def main(args):
     config_dict_site = yaml2dict(path=wd / args.config)
     sensor_name = config_dict_site['global_attrs']['sensor_name']
     sensor = choose_sensor(sensor_name)
+
+    if sensor is None:
+        raise ValueError('Sensor not found in site config file')
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
