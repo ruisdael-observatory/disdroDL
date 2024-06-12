@@ -8,13 +8,18 @@ Functions:
 - resetSerialBuffers: This function resets the input and output buffers of the serial connection.
 - interruptHandler: This function interrupts the execution of the serial connection.
 - create_logger: This function creates a logger object that logs to a file.
+- create_sensor: This function creates a sensor object based on the provided sensor type.
 """
 
 import os
+import sys
+from logging import Logger
 from time import sleep
 from pathlib import Path
 from typing import Dict
 import yaml
+
+from modules.sensors import Parsivel, Thies, Sensor
 
 if __name__ == '__main__':
     from log import log  # pylint: disable=import-error
@@ -34,7 +39,7 @@ def yaml2dict(path: Path) -> Dict:
     return yaml_dict
 
 
-def get_general_config(path: Path, sensor_type: str) -> Dict:
+def get_general_config(path: Path, sensor_type: str, logger: Logger) -> Dict:
     """
     This function returns a general config file based on the provided sensor type.
     :param path: the path to the directory
@@ -45,7 +50,8 @@ def get_general_config(path: Path, sensor_type: str) -> Dict:
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_parsivel.yml')
     if sensor_type == 'Thies Clima':
         return yaml2dict(path=path / 'configs_netcdf' / 'config_general_thies.yml')
-    raise Exception("unsupported sensor type")  # pylint: disable=broad-exception-raised
+    logger.error(msg=f"Sensor type {sensor_type} not recognized")
+    sys.exit(1)
 
 
 def create_dir(path: Path):
@@ -99,3 +105,20 @@ def create_logger(log_dir, script_name, sensor_name):
                  log_name=f"{script_name}: {sensor_name}")
     logger.info(msg=f"Starting {script_name} for {sensor_name}")
     return logger
+
+def create_sensor(sensor_type: str, logger: Logger, sensor_id: str = '00',) -> Sensor:
+    """
+    This function creates a sensor object based on the provided sensor type.
+    :param sensor_type: a string indicating the sensor type
+    :param sensor_id: a string indicating the sensor id
+    :return: sensor object
+    """
+    sensors = {
+        'OTT Hydromet Parsivel2': Parsivel(),
+        'Thies Clima': Thies(thies_id=sensor_id)
+    }
+    try:
+        return sensors[sensor_type]
+    except KeyError:
+        logger.error(msg=f"Sensor type {sensor_type} not recognized")
+        sys.exit(1)

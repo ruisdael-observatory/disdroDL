@@ -18,8 +18,10 @@ import unittest
 from unittest.mock import patch, Mock
 
 from pydantic.v1.utils import deep_update
+
+from modules.sensors import Parsivel, Thies
 from modules.util_functions import yaml2dict, get_general_config, create_logger, \
-    create_dir, resetSerialBuffers, interruptHandler # pylint: disable=import-error
+    create_dir, resetSerialBuffers, interruptHandler, create_sensor  # pylint: disable=import-error
 from modules.netCDF import unpack_telegram_from_db
 
 wd = Path(__file__).parent.parent
@@ -92,12 +94,13 @@ class UtilFunctionsTests(unittest.TestCase):
         This function tests whether for exporting the correct
          general config file is chosen based on the site config file.
         """
+        mock_logger = Mock()
         config_dict_par008 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
-        config_dict_general = get_general_config(wd, config_dict_par008['global_attrs']['sensor_type'])
+        config_dict_general = get_general_config(wd, config_dict_par008['global_attrs']['sensor_type'], mock_logger)
         assert config_dict_general['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
 
         config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_006_GV_THIES.yml')
-        config_dict_general = get_general_config(wd, config_dict_thies006['global_attrs']['sensor_type'])
+        config_dict_general = get_general_config(wd, config_dict_thies006['global_attrs']['sensor_type'], mock_logger)
         assert config_dict_general['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number'
 
     @patch('modules.util_functions.os.path.exists', return_value=False)
@@ -159,6 +162,43 @@ class UtilFunctionsTests(unittest.TestCase):
         mock_print.assert_called_once_with('Interrupting execution')
         mock_logger.info.assert_called_with(msg='Interrupting execution')
         mock_serial_connection.close.assert_called_once()
+
+    def test_create_sensor_parsivel(self):
+        """
+        Test for the create_sensor function with a Parsivel sensor
+        """
+
+        mock_logger = Mock()
+        sensor_type = 'OTT Hydromet Parsivel2'
+        sensor = create_sensor(sensor_type=sensor_type, logger=mock_logger, sensor_id='00')
+        assert isinstance(sensor, Parsivel)
+        mock_logger.assert_not_called()
+
+    def test_create_sensor_thies(self):
+        """
+        Test for the create_sensor function with a Parsivel sensor
+        """
+
+        mock_logger = Mock()
+        sensor_type = 'Thies Clima'
+        sensor_id = '06'
+        sensor = create_sensor(sensor_type=sensor_type, logger=mock_logger, sensor_id=sensor_id)
+        assert isinstance(sensor, Thies)
+        assert sensor.thies_id == sensor_id
+        mock_logger.assert_not_called()
+
+    @patch('modules.util_functions.sys')
+    def test_create_sensor_fail(self, mock_sys):
+        """
+        Test for the create_sensor function with a Parsivel sensor
+        """
+
+        mock_logger = Mock()
+        sensor_type = 'fail'
+        sensor_id = '06'
+        sensor = create_sensor(sensor_type=sensor_type, logger=mock_logger, sensor_id=sensor_id)
+        mock_logger.error.called_once_with(msg="Sensor type fail not recognized")
+        mock_sys.exit.called_once_with(1)
 
     @staticmethod
     def test_unpack_telegram_from_db_no_None():
