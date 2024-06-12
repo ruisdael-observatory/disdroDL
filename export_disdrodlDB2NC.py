@@ -92,11 +92,8 @@ def main(args):
     if full_version is False:
         fn_start = f"{fn_start}_light"
 
-    # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
-        db_path = Path("sample_data/disdrodl-test1.db")
-    else:
-        db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+    # Path to the database
+    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
 
     # Log the starting messages to the logger
     msg_conf = f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}"
@@ -135,11 +132,7 @@ def main(args):
         sys.exit(1)
 
     # Directory to put the netCDF file in
-    # Put the netCDF in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
-        data_dir = Path('sample_data/')
-    else:
-        data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+    data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
 
     # Create data directory if it does not exist yet
     created_data_dir = create_dir(path=data_dir)
@@ -160,10 +153,7 @@ def main(args):
 
     nc.create_netCDF()
 
-    if sensor_type == 'Thies Clima':
-        nc.write_data_to_netCDF_thies()
-    else:
-        nc.write_data_to_netCDF_parsivel()
+    nc.write_data_to_netCDF()
 
     nc.compress()
 
