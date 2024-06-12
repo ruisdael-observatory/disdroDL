@@ -15,9 +15,10 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     - test___init__: Constructor test.
     - test_init_serial_connection_success: Good weather test for the init_serial_connection_success function.
     - test_init_serial_connection_exception: Bad weather test for the init_serial_connection_success function.
-    - test_sensor_start_sequence: Test for the sensor_start_sequence function.
-    - test_reset_sensor_success: Good weather test for the reset_sensor function.
-    - test_reset_sensor_fail: Bad weather test for the test_sensor function.
+    - test_sensor_start_sequence: Test for the sensor_start_sequence function with logging.
+    - test_sensor_start_sequence_no_log: Test for the sensor_start_sequence function without logging.
+    - test_reset_sensor_factory_reset: Good weather test for the reset_sensor function with factory_reset=True.
+    - test_reset_sensor_restart: Good weather test for the reset_sensor function with factory_reset=False.
     - test_write_success: Good weather test for the write function.
     - test_write_fail: Bad weather test for the write function.
     - test_read_success: Good weather test for the read function.
@@ -73,7 +74,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     @patch('modules.sensors.sleep', return_value=None)
     def test_sensor_start_sequence(self, mock_sleep):
         """
-        Test for the sensor_start_sequence function.
+        Test for the sensor_start_sequence function with logging.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_logger = Mock()
@@ -114,7 +115,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
     @patch('modules.sensors.sleep', return_value=None)
     def test_sensor_start_sequence_no_log(self, mock_sleep):
         """
-        Test for the sensor_start_sequence function.
+        Test for the sensor_start_sequence function without logging.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_logger = Mock()
@@ -135,9 +136,9 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
         mock_logger.info.assert_not_called()
 
     @patch('modules.sensors.sleep', return_value=None)
-    def test_reset_sensor_success(self, mock_sleep):
+    def test_reset_sensor_factory_reset(self, mock_sleep):
         """
-        Good weather test for the reset_sensor function.
+        Good weather test for the reset_sensor function with factory_reset=True.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_serial_connection = Mock()
@@ -148,14 +149,14 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
         parsivel_obj.reset_sensor(mock_logger, True)
 
-        mock_logger.info.assert_called_once_with(msg="Reseting Parsivel")
+        mock_logger.info.assert_called_once_with(msg="Resetting Parsivel")
         parsivel_obj.write.assert_called_once_with(b'CS/F/1\r', mock_logger)
         mock_sleep.assert_called_once_with(5)
 
     @patch('modules.sensors.sleep', return_value=None)
-    def test_reset_sensor_fail(self, mock_sleep):
+    def test_reset_sensor_restart(self, mock_sleep):
         """
-        Bad weather test for the test_sensor function.
+        Good weather test for the reset_sensor function with factory_reset=False.
         :param mock_sleep: Mock of the time.sleep call
         """
         mock_serial_connection = Mock()
@@ -166,7 +167,7 @@ class TestParsivel(unittest.TestCase):  # pylint: disable=too-many-public-method
 
         parsivel_obj.reset_sensor(mock_logger, False)
 
-        mock_logger.info.assert_called_once_with(msg="Reseting Parsivel")
+        mock_logger.info.assert_called_once_with(msg="Resetting Parsivel")
         parsivel_obj.write.assert_called_once_with(b'CS/Z/1\r', mock_logger)
         mock_sleep.assert_called_once_with(5)
 
