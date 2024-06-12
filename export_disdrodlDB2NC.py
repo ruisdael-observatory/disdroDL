@@ -62,16 +62,16 @@ def main(args):
     # Get the sensor type from the site specific config file
     sensor_type = config_dict_site['global_attrs']['sensor_type']
 
+    # Create the logger object
+    logger = create_logger(log_dir=Path(config_dict_site['log_dir']),
+                           script_name='disdro_db2nc',
+                           sensor_name=config_dict_site['global_attrs']['sensor_name'])
+
     # Use the general config file which corresponds to the sensor type
-    config_dict = get_general_config(wd, sensor_type)
+    config_dict = get_general_config(wd, sensor_type, logger)
 
     # Combine the site specific config file and the sensor type specific config file into one
     config_dict = deep_update(config_dict, config_dict_site)
-
-    # Create the logger object
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                           script_name='disdro_db2nc',
-                           sensor_name=config_dict['global_attrs']['sensor_name'])
 
     # Create a boolean from the version name to indicate a full or light version
     if args.version == 'full':
