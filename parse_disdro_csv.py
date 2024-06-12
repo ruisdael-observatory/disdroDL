@@ -128,6 +128,7 @@ def parse_arguments():
         description="Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF. \
             Run: python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml\
                 -i sample_data/20231106_PAR007_CabauwTower.csv \
+                -s PAR \
             Output netCDF: store in same directory as input file"
         )
     parser.add_argument(
@@ -147,19 +148,17 @@ def main(args):
     Main script for parsing a csv of telegram
     '''
     input_path = Path(args.input)
-
-    sensor = choose_sensor(args.input)
-    if sensor is None:
-        raise ValueError("Sensor not recognized. Please check the input file name.")
-
     
     #get date from input file
     get_date = input_path.stem.split('_')[0]
     date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
     ## Config
     wd = Path(__file__).parent
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict_site = yaml2dict(path=wd / args.config)
+    sensor_name = config_dict_site['global_attrs']['sensor_name']
+    sensor = choose_sensor(sensor_name)
+
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
     ## Logger
