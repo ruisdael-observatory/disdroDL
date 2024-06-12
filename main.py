@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
 
 from modules.sensors import Parsivel, Thies
-from modules.util_functions import yaml2dict, create_logger
+from modules.util_functions import yaml2dict, get_general_config_dict, create_logger
 from modules.telegram import ParsivelTelegram, ThiesTelegram, create_telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
@@ -37,19 +37,13 @@ def main(config_site):
     print(f"{__file__} running\nLogs written to {config_dict_site['log_dir']}")
 
     sensor_type = config_dict_site['global_attrs']['sensor_type']
-    config_file = None
 
-    if sensor_type == 'OTT Hydromet Parsivel2':
-        config_file = 'config_general_parsivel.yml'
-    elif sensor_type == 'Thies Clima':
-        config_file = 'config_general_thies.yml'
-    else:
-        logger.error(msg=f"Sensor type {sensor_type} not recognized")
+    config_dict_general = get_general_config_dict(wd, sensor_type, logger)
+
+    if not config_dict_general:
         sys.exit(1)
 
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_file)
-
-    config_dict = deep_update(config_dict, config_dict_site)
+    config_dict = deep_update(config_dict_general, config_dict_site)
 
     ### Serial connection ###
 
