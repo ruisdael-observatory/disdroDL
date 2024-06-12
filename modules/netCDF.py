@@ -75,6 +75,14 @@ class NetCDF:
         netCDF_rootgrp.close()
         self.logger.info(msg='class NetCDF executed create_netCDF()')
 
+    def write_data_to_netCDF(self):
+        telegram_instance = type(self.telegram_objs[0])
+        write = {
+            'ThiesTelegram': self.write_data_to_netCDF_thies,
+            'ParsivelTelegram': self.write_data_to_netCDF_parsivel
+        }
+        write[telegram_instance]()
+
     def write_data_to_netCDF_thies(self):
         """
         This function writes data from self.telegram_objs, containing ThiesTelegram objects, to the netCDF file.
