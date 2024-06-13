@@ -76,6 +76,10 @@ class NetCDF:
         self.logger.info(msg='class NetCDF executed create_netCDF()')
 
     def write_data_to_netCDF(self):
+        """
+        This function choices the right function to write data to the netCDF file.
+        It uses the name of the telegram objects in self.telegram_objs to determine which function to use.
+        """
         telegram_instance = type(self.telegram_objs[0]).__name__
         write = {
             'ThiesTelegram': self.write_data_to_netCDF_thies,
