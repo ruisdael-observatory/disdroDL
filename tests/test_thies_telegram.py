@@ -2,7 +2,7 @@
 Module that tests Thies telegram methods.
 
 Functions:
-- test_capture_prefixes_and_data: Tests the correctness of capturing telegram data.
+- test_capture_prefixes_and_data_thies: Tests the correctness of capturing telegram data.
 - test_capture_prefixes_and_data_empty: Tests the correctness of capturing telegram when telegram is empty.
 - test_capture_prefixes_and_data_partial_telegram: Tests the correctness of capturing telegram data when
   only a partial Thies telegram is given.
@@ -61,7 +61,7 @@ log_handler = StreamHandler()
 logger = logging.getLogger('test-log')
 logger.addHandler(log_handler)
 
-def test_capture_prefixes_and_data():
+def test_capture_prefixes_and_data_thies():
     """
     This function tests that the capture_prefixes_and_data method correctly fills
     the telegram data dictionary.
