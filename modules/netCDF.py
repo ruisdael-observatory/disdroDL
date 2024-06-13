@@ -76,7 +76,7 @@ class NetCDF:
         self.logger.info(msg='class NetCDF executed create_netCDF()')
 
     def write_data_to_netCDF(self):
-        telegram_instance = type(self.telegram_objs[0])
+        telegram_instance = type(self.telegram_objs[0]).__name__
         write = {
             'ThiesTelegram': self.write_data_to_netCDF_thies,
             'ParsivelTelegram': self.write_data_to_netCDF_parsivel
