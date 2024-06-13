@@ -27,9 +27,13 @@ def choose_sensor(input: str) -> str:
     '''
     sensors = telegrams.keys()
     '''
-    Checks 
+    Check if the input string is in the list of sensors
     '''
-    return next((sensor for sensor in sensors if (sensor in input)), None)
+    for sensor in sensors:
+        if sensor in input:
+            return sensor
+        
+    return None
 
 
 
@@ -198,19 +202,20 @@ def main(args):
     Main script for parsing a csv of telegram
     '''
     input_path = Path(args.input)
-
-    sensor = choose_sensor(args.input)
-    if sensor is None:
-        raise ValueError("Sensor not recognized. Please check the input file name.")
-
     
     #get date from input file
     get_date = input_path.stem.split('_')[0]
     date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
     ## Config
     wd = Path(__file__).parent
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict_site = yaml2dict(path=wd / args.config)
+    sensor_name = config_dict_site['global_attrs']['sensor_name']
+    sensor = choose_sensor(sensor_name)
+
+    if sensor is None:
+        raise ValueError('Sensor not found in site config file')
+
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
     ## Logger

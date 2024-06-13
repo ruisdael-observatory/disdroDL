@@ -222,7 +222,7 @@ class ExportArgumentExceptionTests(unittest.TestCase):
 
         mock_NetCDF.side_effect = side_effect
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(FileNotFoundError):
             export_disdrodlDB2NC.main(mock_args)
 
     @patch('export_disdrodlDB2NC.create_dir')
