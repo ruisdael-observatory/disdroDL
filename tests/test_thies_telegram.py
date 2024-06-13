@@ -94,7 +94,7 @@ def test_capture_prefixes_and_data_empty_thies():
                              db_cursor=None,
                              telegram_data={},
                              logger=None)
-    telegram.capture_prefixes_and_data_thies()
+    telegram.capture_prefixes_and_data()
 
     data_dictionary = telegram.telegram_data
     #check that telegram data is empty
