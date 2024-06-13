@@ -40,7 +40,7 @@ def main(config_site):
 
     config_dict_general = get_general_config_dict(wd, sensor_type, logger)
 
-    if not config_dict_general:
+    if config_dict_general is None:
         sys.exit(1)
 
     config_dict = deep_update(config_dict_general, config_dict_site)

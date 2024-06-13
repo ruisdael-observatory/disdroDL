@@ -70,7 +70,7 @@ def main(args):
     # Use the general config file which corresponds to the sensor type
     config_dict_general = get_general_config_dict(wd, sensor_type, logger)
 
-    if not config_dict_general:
+    if config_dict_general is None:
         sys.exit(1)
 
     # Combine the site specific config file and the sensor type specific config file into one
