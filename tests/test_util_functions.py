@@ -18,8 +18,10 @@ import unittest
 from unittest.mock import patch, Mock
 
 from pydantic.v1.utils import deep_update
+
+from modules.sensors import Thies, Parsivel
 from modules.util_functions import yaml2dict, get_general_config_dict, create_logger, \
-    create_dir, resetSerialBuffers, interruptHandler # pylint: disable=import-error
+    create_dir, resetSerialBuffers, interruptHandler, create_sensor  # pylint: disable=import-error
 from modules.netCDF import unpack_telegram_from_db
 
 wd = Path(__file__).parent.parent

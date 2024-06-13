@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
 
 from modules.sensors import Parsivel, Thies
-from modules.util_functions import yaml2dict, get_general_config_dict, create_logger
+from modules.util_functions import yaml2dict, get_general_config_dict, create_logger, create_sensor
 from modules.telegram import ParsivelTelegram, ThiesTelegram, create_telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
