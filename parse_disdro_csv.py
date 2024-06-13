@@ -4,7 +4,7 @@ as the functions from the telegram object didn't work on the string of data from
 It then makes a telegram object with the parsed data already inserted, before it gets passed on to a NetCDF object.
 """
 import csv
-import math
+import os
 from pathlib import Path
 from typing import Dict
 from datetime import datetime, timezone
@@ -120,6 +120,51 @@ def process_row(csv_list: list, sensor: str, config_dict: dict):
             date = datetime.fromtimestamp(float(csv_list[1]), tz=timezone.utc)
             return thies_telegram_to_dict(csv_list, date, timestamp, config_dict), timestamp
 
+def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fields: dict, logger):
+    for file in os.listdir(input_path):
+        if file.endswith(".txt"):
+            telegram_objs = []
+            txt_file = open(input_path / file, "r")
+            txt_telegram = txt_file.read().splitlines()
+            print(txt_telegram)
+            print(file)
+            telegram, timestamp = process_row(txt_telegram, sensor, conf_telegram_fields)
+
+            telegram_instance = telegrams[sensor](
+                config_dict=config_dict,
+                telegram_lines="",
+                timestamp=timestamp,
+                db_cursor=None,
+                logger=logger,
+                telegram_data=telegram,
+            )
+
+            telegram_objs.append(telegram_instance)
+
+    return telegram_objs
+def csv_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fields: dict, logger):
+
+    with open(input_path , newline='') as csvfile:  # pylint: disable=W1514
+        reader = csv.reader(csvfile, delimiter=';')
+        telegram_objs = []
+        for row in reader:
+            if(row[0] == 'Timestamp (UTC)'):
+                continue
+            #parse single telegram row from csv
+            telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
+            #choose telegram object based on sensor
+            telegram_instance = telegrams[sensor](
+                config_dict=config_dict,
+                telegram_lines="",
+                timestamp=timestamp,
+                db_cursor=None,
+                logger=logger,
+                telegram_data=telegram,
+            )
+
+            telegram_objs.append(telegram_instance)
+
+    return telegram_objs
 def parse_arguments():
     '''
     Parse arguments for the script
@@ -140,6 +185,12 @@ def parse_arguments():
         '--input',
         required=True,
         help='Path to input CSV file. ie. -i sample_data/20231106_PAR007_CabauwTower.csv')
+    parser.add_argument(
+        '-f',
+        '--file_type',
+        required=False,
+        default='csv',
+        help='File type of the input file(s). ie. -f csv or -f txt')	
     return parser.parse_args() 
 
 def main(args):
@@ -172,25 +223,10 @@ def main(args):
     output_directory = input_path.parent
 
     #iterate over all telegrams
-    with open(input_path , newline='') as csvfile:  # pylint: disable=W1514
-        reader = csv.reader(csvfile, delimiter=';')
-        telegram_objs = []
-        for row in reader:
-            if(row[0] == 'Timestamp (UTC)'):
-                continue
-            #parse single telegram row from csv
-            telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
-            #choose telegram object based on sensor
-            telegram_instance = telegrams[sensor](
-                config_dict=config_dict,
-                telegram_lines="",
-                timestamp=timestamp,
-                db_cursor=None,
-                logger=logger,
-                telegram_data=telegram,
-            )
-
-            telegram_objs.append(telegram_instance)
+    if args.file_type == 'txt':
+        telegram_objs = txt_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
+    else:
+        telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
 
     #create NetCDF
     nc = NetCDF(logger=logger,
