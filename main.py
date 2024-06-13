@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
 
 from modules.sensors import Parsivel, Thies
-from modules.util_functions import yaml2dict, create_logger, get_general_config, create_sensor
+from modules.util_functions import yaml2dict, get_general_config_dict, create_logger
 from modules.telegram import ParsivelTelegram, ThiesTelegram, create_telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
@@ -38,9 +38,12 @@ def main(config_site):
 
     sensor_type = config_dict_site['global_attrs']['sensor_type']
 
-    config_dict = get_general_config(path=wd, sensor_type=sensor_type, logger=logger)
+    config_dict_general = get_general_config_dict(wd, sensor_type, logger)
 
-    config_dict = deep_update(config_dict, config_dict_site)
+    if config_dict_general is None:
+        sys.exit(1)
+
+    config_dict = deep_update(config_dict_general, config_dict_site)
 
     ### Serial connection ###
 
