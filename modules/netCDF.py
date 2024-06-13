@@ -36,6 +36,7 @@ class NetCDF:
 
     Functions:
     - create_netCDF: creates a new netCDF file
+    - write_data_to_netCDF: chooses the right function to write data to the netCDF file
     - write_data_to_netCDF_thies: writes data from ThiesTelegram objects to the netCDF file
     - write_data_to_netCDF_parsivel: writes data from ParsivelTelegram objects to the netCDF file
     - compress: compresses the netCDF file
