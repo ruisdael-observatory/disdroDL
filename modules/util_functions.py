@@ -3,7 +3,7 @@ This module contains a variety of functions with different utilities.
 
 Functions:
 - yaml2dict: This function reads a yaml file and returns a dictionary with all the field and values.
-- get_general_config: This function returns a general config file based on the provided sensor type.
+- get_general_config_dict: This function returns a general config dict based on the provided sensor type.
 - create_dir: This function creates a directory if it does not already exist.
 - resetSerialBuffers: This function resets the input and output buffers of the serial connection.
 - interruptHandler: This function interrupts the execution of the serial connection.
@@ -13,7 +13,8 @@ Functions:
 import os
 from time import sleep
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Union
+from logging import Logger
 import yaml
 
 if __name__ == '__main__':
@@ -34,19 +35,26 @@ def yaml2dict(path: Path) -> Dict:
     return yaml_dict
 
 
-def get_general_config(path: Path, sensor_type: str) -> Dict:
+def get_general_config_dict(path: Path, sensor_type: str, logger: Logger) -> Union[Dict, None]:
     """
-    This function returns a general config file based on the provided sensor type.
+    This function returns a general config dict based on the provided sensor type.
     :param path: the path to the directory
     :param sensor_type: a string indicating the sensor type
+    :param logger: logger for logging a potential KeyError
     :return: dict of the respective general config file
     """
-    if sensor_type == 'OTT Hydromet Parsivel2':
-        return yaml2dict(path=path / 'configs_netcdf' / 'config_general_parsivel.yml')
-    if sensor_type == 'Thies Clima':
-        return yaml2dict(path=path / 'configs_netcdf' / 'config_general_thies.yml')
-    raise Exception("unsupported sensor type")  # pylint: disable=broad-exception-raised
+    # Create dictionary with the sensor types as keys and the respective config files as values
+    config_files = {
+        "OTT Hydromet Parsivel2": 'config_general_parsivel.yml',
+        "Thies Clima": 'config_general_thies.yml'
+    }
 
+    try:
+        return yaml2dict(path=path / 'configs_netcdf' / config_files[sensor_type])
+    except KeyError:
+        # If the sensor type is not recognized, log an error and return None
+        logger.error(msg=f"Sensor type {sensor_type} not recognized")
+        return None
 
 def create_dir(path: Path):
     """

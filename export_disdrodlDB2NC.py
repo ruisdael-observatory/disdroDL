@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
+from modules.util_functions import yaml2dict, get_general_config_dict, create_dir, create_logger
 from modules.telegram import create_telegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
@@ -62,16 +62,19 @@ def main(args):
     # Get the sensor type from the site specific config file
     sensor_type = config_dict_site['global_attrs']['sensor_type']
 
+    # Create the logger object
+    logger = create_logger(log_dir=Path(config_dict_site['log_dir']),
+                           script_name='disdro_db2nc',
+                           sensor_name=config_dict_site['global_attrs']['sensor_name'])
+
     # Use the general config file which corresponds to the sensor type
-    config_dict = get_general_config(wd, sensor_type)
+    config_dict_general = get_general_config_dict(wd, sensor_type, logger)
+
+    if config_dict_general is None:
+        sys.exit(1)
 
     # Combine the site specific config file and the sensor type specific config file into one
-    config_dict = deep_update(config_dict, config_dict_site)
-
-    # Create the logger object
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                           script_name='disdro_db2nc',
-                           sensor_name=config_dict['global_attrs']['sensor_name'])
+    config_dict = deep_update(config_dict_general, config_dict_site)
 
     # Create a boolean from the version name to indicate a full or light version
     if args.version == 'full':
