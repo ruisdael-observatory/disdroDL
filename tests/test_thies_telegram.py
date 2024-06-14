@@ -2,19 +2,20 @@
 Module that tests Thies telegram methods.
 
 Functions:
-- test_capture_prefixes_and_data: Tests the correctness of capturing telegram data.
-- test_capture_prefixes_and_data_empty: Tests the correctness of capturing telegram when telegram is empty.
-- test_capture_prefixes_and_data_partial_telegram: Tests the correctness of capturing telegram data when
+- test_capture_prefixes_and_data_thies: Tests the correctness of capturing telegram data.
+- test_capture_prefixes_and_data_empty_thies: Tests the correctness of capturing telegram when telegram is empty.
+- test_capture_prefixes_and_data_partial_telegram_thies: Tests the correctness of capturing telegram data when
   only a partial Thies telegram is given.
-- test_capture_prefixes_and_data_one_missing_value: Tests the correctness of capturing telegram data when
+- test_capture_prefixes_and_data_one_missing_value_thies: Tests the correctness of capturing telegram data when
   a Thies telegram with a missing value is given.
-- test_parse_thies_telegram_row: Tests the correctness of creating a ThiesTelegram object with contents.
-- test_parse_thies_empty_telegram_row: Tests the correctness of creating a ThiesTelegram object without contents.
-- test_parse_telegram_row_missing_value: Tests the correctness of creating a ThiesTelegram object with one value
+- test_parse_telegram_row_thies: Tests the correctness of creating a ThiesTelegram object with contents.
+- test_parse_empty_telegram_row_thies: Tests the correctness of creating a ThiesTelegram object without contents.
+- test_parse_telegram_row_missing_value_thies: Tests the correctness of creating a ThiesTelegram object with one value
   missing.
-- test_parse_telegram_row_edge_cases: Tests 2 edge cases. Parsing a telegram row with a key that has assigned
+- test_parse_telegram_row_edge_cases_thies: Tests 2 edge cases. Parsing a telegram row with a key that has assigned
   multiple values (key:val;val;) and parsing a telegram with a key that is not in the configuration
   dictionary of the sensor.
+- test_str2list_thies: Tests str2list method for ThiesTelegram class.
 """
 
 import logging
@@ -60,7 +61,7 @@ log_handler = StreamHandler()
 logger = logging.getLogger('test-log')
 logger.addHandler(log_handler)
 
-def test_capture_prefixes_and_data():
+def test_capture_prefixes_and_data_thies():
     """
     This function tests that the capture_prefixes_and_data method correctly fills
     the telegram data dictionary.
@@ -82,7 +83,7 @@ def test_capture_prefixes_and_data():
     #check that values for 22x20 matrix are correctly added
     assert data_dictionary['81'] == matrix_values
 
-def test_capture_prefixes_and_data_empty():
+def test_capture_prefixes_and_data_empty_thies():
     """
     This function tests that the capture_prefixes_and_data method correctly fills
     the telegram data dictionary when an empty telegram is given.
@@ -99,7 +100,7 @@ def test_capture_prefixes_and_data_empty():
     #check that telegram data is empty
     assert len(data_dictionary.keys()) == 0
 
-def test_capture_prefixes_and_data_partial_telegram():
+def test_capture_prefixes_and_data_partial_telegram_thies():
     """
     This function tests that the capture_prefixes_and_data method correctly fills
     the telegram data dictionary when a partial telegram is given.
@@ -116,7 +117,7 @@ def test_capture_prefixes_and_data_partial_telegram():
     #check that telegram data dictionary is empty, partial telegrams are not parsed
     assert len(data_dictionary.keys()) == 0
 
-def test_capture_prefixes_and_data_one_missing_value():
+def test_capture_prefixes_and_data_one_missing_value_thies():
     """
     This function tests that the capture_prefixes_and_data method correctly fills
     the telegram data dictionary when a telegram with one missing value (val;;val;) is given.
@@ -136,7 +137,7 @@ def test_capture_prefixes_and_data_one_missing_value():
     assert telegram_str_list[2] == '3:None'
 
 
-def test_parse_thies_telegram_row(db_insert_two_telegrams_thies):
+def test_parse_telegram_row_thies(db_insert_two_telegrams_thies):
     """
     This function tests the correctness of creating a ThiesTelegram object with contents.
     :param db_insert_two_telegrams_thies: the function inserts 2 telegrams into the database.
@@ -171,7 +172,7 @@ def test_parse_thies_telegram_row(db_insert_two_telegrams_thies):
     con.close()
 
 
-def test_parse_thies_empty_telegram_row(db_insert_two_telegrams_thies):
+def test_parse_empty_telegram_row_thies(db_insert_two_telegrams_thies):
     """
     This function tests the correctness of creating a ThiesTelegram object without contents.
     """
@@ -192,7 +193,7 @@ def test_parse_thies_empty_telegram_row(db_insert_two_telegrams_thies):
     con.close()
     os.remove(db_path_thies)
 
-def test_parse_telegram_row_missing_value():
+def test_parse_telegram_row_missing_value_thies():
     """
     This function tests the correctness of creating a ThiesTelegram object with contents, but
     with one value missing.
@@ -212,7 +213,7 @@ def test_parse_telegram_row_missing_value():
     assert '3' in telegram.telegram_data.keys()
     assert telegram.telegram_data['3'] == ''
 
-def test_parse_telegram_row_edge_cases():
+def test_parse_telegram_row_edge_cases_thies():
     """
     This function tests 2 edge cases. Parsing a telegram row with a key that has assigned
     multiple values (key:val;val;) and parsing a telegram with a key that is not in the configuration
@@ -228,3 +229,18 @@ def test_parse_telegram_row_edge_cases():
     telegram.parse_telegram_row()
     assert telegram.telegram_data['2'] == ['1','2']
     assert '800' not in telegram.telegram_data.keys()
+
+def test_str2list_thies():
+    """
+    Tests that str2list works with Thies telegrams
+    """
+    telegram_data =  {'1': '1,2,3,4,5'}
+    telegram = ThiesTelegram(
+        config_dict=None,
+        telegram_lines=None,
+        timestamp=None,
+        db_cursor=None,
+        telegram_data=telegram_data,
+        logger=None)
+    telegram.str2list('1',',')
+    assert telegram_data['1'] == ['1','2','3','4','5']
