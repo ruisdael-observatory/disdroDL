@@ -20,6 +20,9 @@ telegrams = {'THIES': ThiesTelegram, 'PAR': ParsivelTelegram}
 config_files = {'THIES': 'config_general_thies.yml', 'PAR': 'config_general_parsivel.yml'}
 field_type = {'i4': int, 'i2': int, 'S4': str, 'f4': float}
 
+default_parsivel_telegram_indices = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
+    '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '30',
+    '31', '32', '33', '34', '35', '60', '90', '91', '93']
 
 def choose_sensor(input: str) -> str:
     '''
@@ -41,12 +44,10 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
     '''
     Creates 1 dict from a dataframe row representing a parsivel telegram, with the telegram values
     '''
-    default_telegram_indeces = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12',
-    '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '30',
-    '31', '32', '33', '34', '35', '60', '90', '91', '93']
+
     telegram_dict = {}
     x = 0
-    for i, key in enumerate(default_telegram_indeces):
+    for i, key in enumerate(default_parsivel_telegram_indices):
         if(key == '90' or key == '91'):
             '''
             Field 90 and 91 have a list of 32 values
@@ -95,6 +96,27 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     telegram_dict['timestamp'] = str(ts)
     return telegram_dict
 
+def process_txt_row(txt_list: list, config_dict: dict):
+    
+    telegram_dict = {}
+    fields = config_dict.keys()
+    for field in txt_list:
+        key_value = field.split(':')
+        if len(key_value) == 2:
+            print(key_value)
+            key, value = key_value
+            if key in fields:
+                if key == ('90' or '91' or '93'):    
+                    telegram_dict[key] = [float(x) for x in value.split(';')]
+                else:
+                    telegram_dict[key] = field_type[config_dict[key]['dtype']](value)
+
+    date = txt_list[22] + txt_list[21]
+    print(txt_list[21] , txt_list[22])
+    print(date)
+    telegram_dict['datetime'] = datetime.strptime(date, "%Y%m%d%H%M%S")
+    return telegram_dict, date 
+
 def process_row(csv_list: list, sensor: str, config_dict: dict):
     '''
     Determines which in which format the csv is in, and preprocesses if necessary, currently able to parse 4 csv formats:
@@ -124,6 +146,8 @@ def process_row(csv_list: list, sensor: str, config_dict: dict):
             date = datetime.fromtimestamp(float(csv_list[1]), tz=timezone.utc)
             return thies_telegram_to_dict(csv_list, date, timestamp, config_dict), timestamp
 
+
+
 def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fields: dict, logger):
     for file in os.listdir(input_path):
         if file.endswith(".txt"):
@@ -132,7 +156,7 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
             txt_telegram = txt_file.read().splitlines()
             print(txt_telegram)
             print(file)
-            telegram, timestamp = process_row(txt_telegram, sensor, conf_telegram_fields)
+            telegram, timestamp = process_txt_row(txt_telegram, conf_telegram_fields)
 
             telegram_instance = telegrams[sensor](
                 config_dict=config_dict,
@@ -146,6 +170,11 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
             telegram_objs.append(telegram_instance)
 
     return telegram_objs
+
+
+
+
+
 def csv_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fields: dict, logger):
 
     with open(input_path , newline='') as csvfile:  # pylint: disable=W1514
@@ -169,6 +198,9 @@ def csv_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
             telegram_objs.append(telegram_instance)
 
     return telegram_objs
+
+
+
 def parse_arguments():
     '''
     Parse arguments for the script
