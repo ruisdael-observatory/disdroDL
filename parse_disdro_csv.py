@@ -103,19 +103,25 @@ def process_txt_row(txt_list: list, config_dict: dict):
     for field in txt_list:
         key_value = field.split(':')
         if len(key_value) == 2:
-            print(key_value)
+            
             key, value = key_value
             if key in fields:
-                if key == ('90' or '91' or '93'):    
-                    telegram_dict[key] = [float(x) for x in value.split(';')]
+                data_type = field_type[config_dict[key]['dtype']]
+                if key == '90' or key == '91' or key == '93':  
+                    list_values = value.split(';')
+                    list_values.remove('')
+                    telegram_dict[key] = [data_type(x) for x in list_values]
                 else:
-                    telegram_dict[key] = field_type[config_dict[key]['dtype']](value)
+                    telegram_dict[key] = data_type(value)
 
-    date = txt_list[22] + txt_list[21]
-    print(txt_list[21] , txt_list[22])
-    print(date)
-    telegram_dict['datetime'] = datetime.strptime(date, "%Y%m%d%H%M%S")
-    return telegram_dict, date 
+    field_20 = txt_list[20].split(':')
+    field_21 = txt_list[21].split(':')
+    date = field_21[1] + field_20[1] + field_20[2] + field_20[3]
+    timestamp = datetime.strptime(date, "%d.%m.%Y%H%M%S")
+
+    telegram_dict['timestamp'] = str(timestamp)
+    telegram_dict['datetime'] = datetime.fromtimestamp(timestamp.timestamp(), tz=timezone.utc)
+    return telegram_dict, timestamp
 
 def process_row(csv_list: list, sensor: str, config_dict: dict):
     '''
@@ -154,8 +160,6 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
             telegram_objs = []
             txt_file = open(input_path / file, "r")
             txt_telegram = txt_file.read().splitlines()
-            print(txt_telegram)
-            print(file)
             telegram, timestamp = process_txt_row(txt_telegram, conf_telegram_fields)
 
             telegram_instance = telegrams[sensor](
@@ -166,7 +170,7 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
                 logger=logger,
                 telegram_data=telegram,
             )
-
+            #print(telegram)
             telegram_objs.append(telegram_instance)
 
     return telegram_objs
@@ -264,7 +268,7 @@ def main(args):
         telegram_objs = txt_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
     else:
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
-
+    print(telegram_objs[0].telegram_data )
     #create NetCDF
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
