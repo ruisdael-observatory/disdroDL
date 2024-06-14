@@ -27,6 +27,7 @@ default_parsivel_telegram_indices = ['01', '02', '03', '04', '05', '06', '07', '
 def choose_sensor(input: str) -> str:
     '''
     Choose a sensor based on the input string
+    :param input: string, filepath of the input file/directory
     '''
     sensors = telegrams.keys()
     '''
@@ -40,9 +41,13 @@ def choose_sensor(input: str) -> str:
 
 
 
-def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: Dict):
+def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, config_telegram_fields: Dict):
     '''
     Creates 1 dict from a dataframe row representing a parsivel telegram, with the telegram values
+    :param telegram: list of strings, each string is a value in the telegram
+    :param dt: datetime object, date of the telegram
+    :param ts: datetime object, timestamp of the telegram
+    :param config_telegram_fields: dict of the config file, only the telegram_fields are passed
     '''
 
     telegram_dict = {}
@@ -53,7 +58,7 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
             Field 90 and 91 have a list of 32 values
             Grab the corresponding 32 values for field 90 or 91
             '''
-            value_type = field_type[config_dict[key]['dtype']] #Get value type, e.g float or integer
+            value_type = field_type[config_telegram_fields[key]['dtype']] #Get value type, e.g float or integer
             telegram_value = telegram[-65:-33] if key == '90' else telegram[-33:-1] #Copy all values and cast to respective type
             telegram_dict[key] = [value_type(value) for value in telegram_value]
         elif(key == '93'):
@@ -70,50 +75,67 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
             Value is cast to type based on the config dict
             '''
             #print(i, key, telegram[i])
-            telegram_value = field_type[config_dict[key]['dtype']](telegram[i])
+            telegram_value = field_type[config_telegram_fields[key]['dtype']](telegram[i])
             telegram_dict[key] = telegram_value
     
     telegram_dict['datetime'] = dt
     telegram_dict['timestamp'] = str(ts)
     return telegram_dict
 
-def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, config_dict: Dict) -> Dict:
+def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, config_telegram_fields: Dict) -> Dict:
     '''
     Creates 1 dict from a dataframe row representing a Thies telegram, with the telegram values
+    :param telegram: list of strings, each string is a value in the telegram
+    :param dt: datetime object, date of the telegram
+    :param ts: datetime object, timestamp of the telegram
+    :param config_telegram_fields: telegram fields from the config file
     '''
-    telegram_indices = list(config_dict.keys())[1:]
+    telegram_indices = list(config_telegram_fields.keys())[1:]
     telegram_dict = {}
     for index, field_n in enumerate(telegram_indices):
         if(field_n == '81'):
             telegram_dict[field_n] = [int(x) for x in telegram[index:index+439]]
         elif(field_n > '520'):
-            telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index+439])
+            telegram_dict[field_n] = field_type[config_telegram_fields[field_n]['dtype']](telegram[index+439])
         else:
-            telegram_dict[field_n] = field_type[config_dict[field_n]['dtype']](telegram[index])
+            telegram_dict[field_n] = field_type[config_telegram_fields[field_n]['dtype']](telegram[index])
     telegram_dict['2'] = telegram_dict['2'].split(',')[-1]
     telegram_dict['datetime'] = dt
     
     telegram_dict['timestamp'] = str(ts)
     return telegram_dict
 
-def process_txt_row(txt_list: list, config_dict: dict):
-    
+def process_txt_file(txt_list: list, config_telegram_fields: dict):
+    '''
+    Processes a txt file, and returns a telegram dict with the values
+    :param txt_list: list of strings, each string is a line in the txt file
+    :param config_telegram_fields: telegram fields from the config file
+    '''
     telegram_dict = {}
-    fields = config_dict.keys()
+    #All fields in the config dict
+    fields = config_telegram_fields.keys()
     for field in txt_list:
         key_value = field.split(':')
+        #Skip empty fields or fields without key:value
         if len(key_value) == 2:
-            
             key, value = key_value
+            #Union of fields in the config dict and the telegram
             if key in fields:
-                data_type = field_type[config_dict[key]['dtype']]
+                data_type = field_type[config_telegram_fields[key]['dtype']]
+                #List fields
                 if key == '90' or key == '91' or key == '93':  
                     list_values = value.split(';')
+                    #List fields end with an empty string after split, remove it
                     list_values.remove('')
                     telegram_dict[key] = [data_type(x) for x in list_values]
+                #Single value fields
                 else:
                     telegram_dict[key] = data_type(value)
 
+    '''
+    Date can be found in field 21 and is in format key:dd.mm.yyyy
+    Time can be found in field 20 and is in format key:HH:MM:SS
+    '''
     field_20 = txt_list[20].split(':')
     field_21 = txt_list[21].split(':')
     date = field_21[1] + field_20[1] + field_20[2] + field_20[3]
@@ -123,12 +145,15 @@ def process_txt_row(txt_list: list, config_dict: dict):
     telegram_dict['datetime'] = datetime.fromtimestamp(timestamp.timestamp(), tz=timezone.utc)
     return telegram_dict, timestamp
 
-def process_row(csv_list: list, sensor: str, config_dict: dict):
+def process_row(csv_list: list, sensor: str, config_telegram_fields: dict):
     '''
     Determines which in which format the csv is in, and preprocesses if necessary, currently able to parse 4 csv formats:
     Parsivel-> one format where all values from a telegram are contained in a single column in a string, or each value in their own column
     Thies-> one format where all values from a telegram are contained in a single column in a string, or each value in their own column
     All formats don't indicate when a value is part of a list, this is hardcoded based ont the respective documentation
+    :param csv_list: list, a row from a csv file -> represents a telegram
+    :param sensor: string, the sensor type
+    :param config_telegram_fields: dict, the telegram fields from the config file
     '''
     if len(csv_list) == 3:
         #If the telegram consists of 3 columns, the
@@ -137,33 +162,38 @@ def process_row(csv_list: list, sensor: str, config_dict: dict):
         date = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
         if sensor == 'PAR':
             telegram = telegram_b[2:-1].split(";")
-            return parsival_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
+            return parsival_telegram_to_dict(telegram, date, timestamp, config_telegram_fields), timestamp
         else: #Thies
             telegram = telegram_b[4:-1].split(";")
-            return thies_telegram_to_dict(telegram, date, timestamp, config_dict), timestamp
+            return thies_telegram_to_dict(telegram, date, timestamp, config_telegram_fields), timestamp
     else:
         if sensor == 'PAR':
             date = csv_list[0]
             timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
-            return parsival_telegram_to_dict(csv_list[1:], date, timestamp, config_dict), timestamp
+            return parsival_telegram_to_dict(csv_list[1:], date, timestamp, config_telegram_fields), timestamp
         else: #Thies
             dates = csv_list[0].split(",")
             timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
             date = datetime.fromtimestamp(float(csv_list[1]), tz=timezone.utc)
-            return thies_telegram_to_dict(csv_list, date, timestamp, config_dict), timestamp
+            return thies_telegram_to_dict(csv_list, date, timestamp, config_telegram_fields), timestamp
 
 
 
 def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fields: dict, logger):
+    '''
+    Loop over all txt files in a directory, and process them
+    :param input_path: Path, path to the directory with txt files
+    :param sensor: string, the sensor type
+    :param config_dict: dict, the config file
+    :param conf_telegram_fields: dict, the telegram fields from the config file	
+    '''
     telegram_objs = []
     for file in os.listdir(input_path):
         
         if file.endswith(".txt"):
-            print(file)
-            
             txt_file = open(input_path / file, "r")
             txt_telegram = txt_file.read().splitlines()
-            telegram, timestamp = process_txt_row(txt_telegram, conf_telegram_fields)
+            telegram, timestamp = process_txt_file(txt_telegram, conf_telegram_fields)
 
             telegram_instance = telegrams[sensor](
                 config_dict=config_dict,
@@ -182,7 +212,13 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
 
 
 def csv_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fields: dict, logger):
-
+    '''
+    Loop over all csv files in a directory, and process them
+    :param input_path: Path, path to the directory with csv files
+    :param sensor: string, the sensor type
+    :param config_dict: dict, the config file
+    :param conf_telegram_fields: dict, the telegram fields from the config file
+    '''
     with open(input_path , newline='') as csvfile:  # pylint: disable=W1514
         reader = csv.reader(csvfile, delimiter=';')
         telegram_objs = []
@@ -268,12 +304,9 @@ def main(args):
     #iterate over all telegrams
     if args.file_type == 'txt':
         telegram_objs = txt_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
-        print(len(telegram_objs))
     else:
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
-    print(telegram_objs[0].telegram_data)
     #create NetCDF
-    print(config_dict)
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
                 data_dir=output_directory,

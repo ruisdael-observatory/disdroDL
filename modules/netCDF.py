@@ -289,7 +289,6 @@ class NetCDF:
         # checks if variable is in telegram data
         if var_key_ in self.telegram_objs[0].telegram_data.keys():
             for i, telegram_obj in enumerate(self.telegram_objs):
-                print(f'var_key_ {var_key_} telegram_obj.telegram_data[var_key_] {telegram_obj.telegram_data[var_key_]}')
                 netCDF_var_[i] = telegram_obj.telegram_data[var_key_]
 
         # checks if variable is the time, if so convert to iso format
