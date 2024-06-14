@@ -1,4 +1,4 @@
-# Guide to parsing old CSV's
+# Guide to parsing old CSVs
 
 This file explains how to convert old CSV files to netCDF files and the difference in formats between certain files. The CSV's to parse can be found here: [Parsivel](https://ruisdael.citg.tudelft.nl/parsivel) or [Thies](https://ruisdael.citg.tudelft.nl/thies/). Ideally the CSV should contain all telegrams from one 24 hour period, but it should work with less or more.
 
