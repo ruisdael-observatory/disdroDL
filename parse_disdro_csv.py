@@ -155,9 +155,12 @@ def process_row(csv_list: list, sensor: str, config_dict: dict):
 
 
 def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fields: dict, logger):
+    telegram_objs = []
     for file in os.listdir(input_path):
+        
         if file.endswith(".txt"):
-            telegram_objs = []
+            print(file)
+            
             txt_file = open(input_path / file, "r")
             txt_telegram = txt_file.read().splitlines()
             telegram, timestamp = process_txt_row(txt_telegram, conf_telegram_fields)
@@ -170,7 +173,6 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
                 logger=logger,
                 telegram_data=telegram,
             )
-            #print(telegram)
             telegram_objs.append(telegram_instance)
 
     return telegram_objs
@@ -266,10 +268,12 @@ def main(args):
     #iterate over all telegrams
     if args.file_type == 'txt':
         telegram_objs = txt_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
+        print(len(telegram_objs))
     else:
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
-    print(telegram_objs[0].telegram_data )
+    print(telegram_objs[0].telegram_data)
     #create NetCDF
+    print(config_dict)
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
                 data_dir=output_directory,
