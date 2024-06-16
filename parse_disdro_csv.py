@@ -117,7 +117,7 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
         #Skip empty fields or fields without key:value
         if len(key_value) != 2:
             continue
-        
+
         key, value = key_value
 
         #Skip if key is not in the config dict
@@ -133,7 +133,7 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
             telegram_dict[key] = [data_type(x) for x in list_values]
         #Single value fields
         else:
-            telegram_dict[key] = data_type(value)
+            telegram_dict[key] = data_type(value) 
 
     '''
     Date can be found in field 21 and is in format key:dd.mm.yyyy
