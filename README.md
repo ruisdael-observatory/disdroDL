@@ -121,6 +121,8 @@ The NetCDF files are automatically compressed.
 
 *Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF*
 
+For more information [CONVERSIONS.md](CONVERSIONS.md)
+
 Run: `python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml -i sample_data/20231106_PAR007_CabauwTower.csv`
 
 # Tests
