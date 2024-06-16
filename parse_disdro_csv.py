@@ -51,7 +51,6 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
     '''
 
     telegram_dict = {}
-    x = 0
     for i, key in enumerate(default_parsivel_telegram_indices):
         if(key == '90' or key == '91'):
             '''
@@ -74,7 +73,6 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
             '''
             Value is cast to type based on the config dict
             '''
-            #print(i, key, telegram[i])
             telegram_value = field_type[config_telegram_fields[key]['dtype']](telegram[i])
             telegram_dict[key] = telegram_value
     
@@ -117,20 +115,25 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
     for field in txt_list:
         key_value = field.split(':')
         #Skip empty fields or fields without key:value
-        if len(key_value) == 2:
-            key, value = key_value
-            #Union of fields in the config dict and the telegram
-            if key in fields:
-                data_type = field_type[config_telegram_fields[key]['dtype']]
-                #List fields
-                if key == '90' or key == '91' or key == '93':  
-                    list_values = value.split(';')
-                    #List fields end with an empty string after split, remove it
-                    list_values.remove('')
-                    telegram_dict[key] = [data_type(x) for x in list_values]
-                #Single value fields
-                else:
-                    telegram_dict[key] = data_type(value)
+        if len(key_value) != 2:
+            continue
+        
+        key, value = key_value
+
+        #Skip if key is not in the config dict
+        if key is not fields:
+            continue
+
+        data_type = field_type[config_telegram_fields[key]['dtype']]
+        #List fields
+        if key == '90' or key == '91' or key == '93':  
+            list_values = value.split(';')
+            #List fields end with an empty string after split, remove it
+            list_values.remove('')
+            telegram_dict[key] = [data_type(x) for x in list_values]
+        #Single value fields
+        else:
+            telegram_dict[key] = data_type(value)
 
     '''
     Date can be found in field 21 and is in format key:dd.mm.yyyy
