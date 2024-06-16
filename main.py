@@ -98,12 +98,13 @@ def main(config_site):
                                    logger=logger)
 
         if telegram is None:
-            sys.exit(1)
+            logger.error(msg=f"telegram is None on: {now_utc.time_list}, {now_utc.utc}")
+        else:
+            telegram.capture_prefixes_and_data()
+            telegram.prep_telegram_data4db()
+            telegram.insert2db()
+            con.commit()
 
-        telegram.capture_prefixes_and_data()
-        telegram.prep_telegram_data4db()
-        telegram.insert2db()
-        con.commit()
         cur.close()
         con.close()
 
