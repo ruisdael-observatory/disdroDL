@@ -290,11 +290,7 @@ def main(args):
     Main script for parsing a csv of telegram
     '''
     input_path = Path(args.input)
-    ## Logger
-    # import pdb; pdb.set_trace()
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                           script_name=Path(__file__).name,
-                           sensor_name=config_dict['global_attrs']['sensor_name'])
+    
     
     #get date from input file
     get_date = input_path.stem.split('_')[0]
@@ -313,6 +309,13 @@ def main(args):
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
+    
+
+    ## Logger
+    # import pdb; pdb.set_trace()
+    logger = create_logger(log_dir=Path(config_dict['log_dir']),
+                           script_name=Path(__file__).name,
+                           sensor_name=config_dict['global_attrs']['sensor_name'])
     
     # output file name
     output_fn = f"{input_path.stem}"
