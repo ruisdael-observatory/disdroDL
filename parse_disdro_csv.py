@@ -159,26 +159,33 @@ def process_row(csv_list: list, sensor: str, config_telegram_fields: dict):
     :param config_telegram_fields: dict, the telegram fields from the config file
     '''
     if len(csv_list) == 3:
-        #If the telegram consists of 3 columns, the
+        #If the telegram consists of 3 columns, that means it is in the format: date, timestamp, telegram
         dt_str, ts_str, telegram_b = csv_list
         timestamp = datetime.strptime(dt_str, "%Y%m%d-%H%M%S")
         date = datetime.fromtimestamp(float(ts_str), tz=timezone.utc)
         if sensor == 'PAR':
             telegram = telegram_b[2:-1].split(";")
             return parsival_telegram_to_dict(telegram, date, timestamp, config_telegram_fields), timestamp
-        else: #Thies
+        elif sensor == 'THIES': #Thies
             telegram = telegram_b[4:-1].split(";")
             return thies_telegram_to_dict(telegram, date, timestamp, config_telegram_fields), timestamp
-    else:
+        else:
+            raise ValueError("Sensor not found")
+    elif len(csv_list) > 3:
+        #If the telegram consists of more than 3 columns, that means each value is in a separate column
         if sensor == 'PAR':
             date = csv_list[0]
             timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
             return parsival_telegram_to_dict(csv_list[1:], date, timestamp, config_telegram_fields), timestamp
-        else: #Thies
+        elif sensor == 'Thies': #Thies
             dates = csv_list[0].split(",")
             timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
             date = datetime.fromtimestamp(float(csv_list[1]), tz=timezone.utc)
             return thies_telegram_to_dict(csv_list, date, timestamp, config_telegram_fields), timestamp
+        else:
+            raise ValueError("Sensor not found")
+    else:
+        raise ValueError("CSV format not recognized")
 
 
 
@@ -193,20 +200,23 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
     telegram_objs = []
     for file in os.listdir(input_path):
         
-        if file.endswith(".txt"):
-            txt_file = open(input_path / file, "r")
-            txt_telegram = txt_file.read().splitlines()
-            telegram, timestamp = process_txt_file(txt_telegram, conf_telegram_fields)
+        if not file.endswith(".txt"):
+            continue
 
-            telegram_instance = telegrams[sensor](
-                config_dict=config_dict,
-                telegram_lines="",
-                timestamp=timestamp,
-                db_cursor=None,
-                logger=logger,
-                telegram_data=telegram,
-            )
-            telegram_objs.append(telegram_instance)
+        txt_file = open(input_path / file, "r")
+        txt_telegram = txt_file.read().splitlines()
+        telegram, timestamp = process_txt_file(txt_telegram, conf_telegram_fields)
+
+        telegram_instance = telegrams[sensor](
+            config_dict=config_dict,
+            telegram_lines="",
+            timestamp=timestamp,
+            db_cursor=None,
+            logger=logger,
+            telegram_data=telegram,
+        )
+        telegram_objs.append(telegram_instance)
+            
 
     return telegram_objs
 
@@ -279,6 +289,11 @@ def main(args):
     Main script for parsing a csv of telegram
     '''
     input_path = Path(args.input)
+    ## Logger
+    # import pdb; pdb.set_trace()
+    logger = create_logger(log_dir=Path(config_dict['log_dir']),
+                           script_name=Path(__file__).name,
+                           sensor_name=config_dict['global_attrs']['sensor_name'])
     
     #get date from input file
     get_date = input_path.stem.split('_')[0]
@@ -286,6 +301,8 @@ def main(args):
     ## Config
     wd = Path(__file__).parent
     config_dict_site = yaml2dict(path=wd / args.config)
+
+    #Choose what sensor is used
     sensor_name = config_dict_site['global_attrs']['sensor_name']
     sensor = choose_sensor(sensor_name)
 
@@ -295,11 +312,7 @@ def main(args):
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
-    ## Logger
-    # import pdb; pdb.set_trace()
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                           script_name=Path(__file__).name,
-                           sensor_name=config_dict['global_attrs']['sensor_name'])
+    
     # output file name
     output_fn = f"{input_path.stem}"
     output_directory = input_path.parent
@@ -307,8 +320,10 @@ def main(args):
     #iterate over all telegrams
     if args.file_type == 'txt':
         telegram_objs = txt_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
-    else:
+    elif args.file_type == 'csv':
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
+    else:
+        logger.error(msg=f"File type {args.file_type} not recognized.") 
     #create NetCDF
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
