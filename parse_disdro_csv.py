@@ -5,6 +5,7 @@ It then makes a telegram object with the parsed data already inserted, before it
 """
 import csv
 import os
+import sys
 from pathlib import Path
 from typing import Dict
 from datetime import datetime, timezone
@@ -299,22 +300,18 @@ def main(args):
     wd = Path(__file__).parent
     config_dict_site = yaml2dict(path=wd / args.config)
 
-    
+    #Choose what sensor is used
+    sensor_name = config_dict_site['global_attrs']['sensor_name']
+    sensor = choose_sensor(sensor_name)
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
-    
 
     ## Logger
-    # import pdb; pdb.set_trace()
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name=Path(__file__).name,
                            sensor_name=config_dict['global_attrs']['sensor_name'])
-    
-    #Choose what sensor is used
-    sensor_name = config_dict_site['global_attrs']['sensor_name']
-    sensor = choose_sensor(sensor_name)
 
     if sensor is None:
         logger.error(msg=f"Sensor {sensor_name} not found")
@@ -329,7 +326,9 @@ def main(args):
     elif args.file_type == 'csv':
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
     else:
-        logger.error(msg=f"File type {args.file_type} not recognized.") 
+        raise ValueError(f"File {args.file_type} type not recognized")
+        sys.exit(1)
+
     #create NetCDF
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
