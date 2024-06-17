@@ -299,12 +299,7 @@ def main(args):
     wd = Path(__file__).parent
     config_dict_site = yaml2dict(path=wd / args.config)
 
-    #Choose what sensor is used
-    sensor_name = config_dict_site['global_attrs']['sensor_name']
-    sensor = choose_sensor(sensor_name)
-
-    if sensor is None:
-        raise ValueError('Sensor not found in site config file')
+    
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
@@ -316,6 +311,13 @@ def main(args):
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
                            script_name=Path(__file__).name,
                            sensor_name=config_dict['global_attrs']['sensor_name'])
+    
+    #Choose what sensor is used
+    sensor_name = config_dict_site['global_attrs']['sensor_name']
+    sensor = choose_sensor(sensor_name)
+
+    if sensor is None:
+        logger.error(msg=f"Sensor {sensor_name} not found")
     
     # output file name
     output_fn = f"{input_path.stem}"
