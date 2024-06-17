@@ -306,7 +306,8 @@ def main(args):
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
-    conf_telegram_fields = config_dict['telegram_fields']  # multivalue fileds have > 1 dimension
+    conf_telegram_fields = config_dict['telegram_fields']  # multivalue fields have > 1 dimension
+    
 
     ## Logger
     logger = create_logger(log_dir=Path(config_dict['log_dir']),
