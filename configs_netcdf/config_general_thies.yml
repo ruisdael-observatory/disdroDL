@@ -1011,7 +1011,7 @@ telegram_fields:
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
             long_name: 'Temperature [°C]'
             standard_name: 'temperature'
@@ -1021,7 +1021,7 @@ telegram_fields:
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
            long_name: 'Relative air humidity [%r.h.]'
            standard_name: 'relative_humidity'
@@ -1030,7 +1030,7 @@ telegram_fields:
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
            long_name: 'Wind speed [m/s]'
            standard_name: 'wind_speed'
@@ -1039,7 +1039,7 @@ telegram_fields:
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
            long_name: 'Wind direction [°]'
            standard_name: 'wind_direction'
