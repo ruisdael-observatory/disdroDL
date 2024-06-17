@@ -218,3 +218,72 @@ class TestIntegration(unittest.TestCase):
         con.close()
         os.remove(f'sample_data/{db_name}')
         os.remove('sample_data/log_test_log.json')
+
+    @patch('modules.sensors.sleep', return_value=None)
+    @patch.object(Thies, 'read')
+    @patch('main.NowTime')
+    @patch('main.yaml2dict')
+    @patch('main.sleep', return_value=None)
+    @patch('modules.sensors.serial')
+    @patch('main.create_db')
+    @patch('main.connect_db')
+    @patch('main.create_telegram', return_value=None)
+    @patch('main.create_logger')
+    def test_telegram_is_none(self, mock_create_logger, mock_create_telegram, mock_connect_db, mock_create_db, mock_serial, mock_sleep, mock_yaml2dict,  # pylint: disable=unused-argument
+                             mock_now_time, mock_read, mock_sensor_sleep):  # pylint: disable=unused-argument
+        """
+        Test for the main loop of the Thies sensor, it checks whether there are 1440 rows in the database.
+        :param mock_serial: mock serial object
+        :param mock_sleep: mock sleep object to skip the sleep time
+        :param mock_yaml2dict: mock yaml2dict object
+        :param mock_now_time: mock NowTime object to always be on a whole minute
+        :param mock_read: mock read object to return a Thies line
+        :param mock_sensor_sleep: mock sensor sleep object to skip sleep in sensor class
+        """
+
+        mock_read.return_value = self.thies_line
+
+        test_conf_dict_site = {
+            'log_dir': 'sample_data',
+            'data_dir': 'sample_data',
+            'script_name': 'test_log',
+            'port': '/dev/ttyACM0',
+            'baud': 9600,
+            'global_attrs': {
+                'sensor_name': 'THIES006',
+                'sensor_type': 'Thies Clima',
+            }
+
+        }
+
+        mock_connection = Mock()
+        mock_cursor = Mock()
+        mock_connect_db.return_value = mock_connection, mock_cursor
+
+        mock_logger = Mock()
+
+        mock_create_logger.return_value = mock_logger
+
+        mock_yaml2dict.return_value = test_conf_dict_site
+
+        mock_now_time.return_value.time_list = ['10', '10', '00']
+        mock_now_time.return_value.utc = 420
+
+        def side_effect(seconds):  # pylint: disable=unused-argument
+            if mock_sleep.call_count > 1:
+                raise KeyboardInterrupt
+
+        mock_sleep.side_effect = side_effect
+
+        # If the db already exists, remove it, otherwise test will fail
+        if os.path.exists(f'sample_data/{db_name}'):
+            os.remove(f'sample_data/{db_name}')
+
+        with self.assertRaises(KeyboardInterrupt):
+            main('configs_netcdf/config_006_GV_THIES.yml')
+
+        assert mock_connection.commit.call_count == 0
+        assert mock_connection.close.call_count == 1
+        assert mock_cursor.close.call_count == 1
+        assert mock_logger.error.call_count == 1
+        mock_logger.error.assert_called_with(msg=f"telegram is None on: {['10', '10', '00']}, 420")
