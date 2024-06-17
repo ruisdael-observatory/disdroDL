@@ -36,6 +36,7 @@ class NetCDF:
 
     Functions:
     - create_netCDF: creates a new netCDF file
+    - write_data_to_netCDF: chooses the right function to write data to the netCDF file
     - write_data_to_netCDF_thies: writes data from ThiesTelegram objects to the netCDF file
     - write_data_to_netCDF_parsivel: writes data from ParsivelTelegram objects to the netCDF file
     - compress: compresses the netCDF file
@@ -74,6 +75,18 @@ class NetCDF:
         self.__netcdf_variables(nc_rootgrp=netCDF_rootgrp)
         netCDF_rootgrp.close()
         self.logger.info(msg='class NetCDF executed create_netCDF()')
+
+    def write_data_to_netCDF(self):
+        """
+        This function choices the right function to write data to the netCDF file.
+        It uses the name of the telegram objects in self.telegram_objs to determine which function to use.
+        """
+        telegram_instance = type(self.telegram_objs[0]).__name__
+        write = {
+            'ThiesTelegram': self.write_data_to_netCDF_thies,
+            'ParsivelTelegram': self.write_data_to_netCDF_parsivel
+        }
+        write[telegram_instance]()
 
     def write_data_to_netCDF_thies(self):
         """

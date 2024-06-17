@@ -201,7 +201,7 @@ class UtilFunctionsTests(unittest.TestCase):
 
     def test_create_sensor_thies(self):
         """
-        Test for the create_sensor function with a Parsivel sensor
+        Test for the create_sensor function with a Thies sensor
         """
 
         mock_logger = Mock()
@@ -215,7 +215,7 @@ class UtilFunctionsTests(unittest.TestCase):
     @patch('modules.util_functions.sys')
     def test_create_sensor_fail(self, mock_sys):
         """
-        Test for the create_sensor function with a Parsivel sensor
+        Test for the create_sensor function with a non-supported sensor type
         """
 
         mock_logger = Mock()
