@@ -985,7 +985,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 9'
+            long_name: 'Number of particles class 9 (unitless)'
             standard_name: 'number_of_particles_class_9'
     '80':
         dimensions:
