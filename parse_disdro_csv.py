@@ -177,7 +177,7 @@ def process_row(csv_list: list, sensor: str, config_telegram_fields: dict):
             date = csv_list[0]
             timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
             return parsival_telegram_to_dict(csv_list[1:], date, timestamp, config_telegram_fields), timestamp
-        elif sensor == 'Thies': #Thies
+        elif sensor == 'THIES': #Thies
             dates = csv_list[0].split(",")
             timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
             date = datetime.fromtimestamp(float(csv_list[1]), tz=timezone.utc)
