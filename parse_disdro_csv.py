@@ -148,7 +148,7 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
     telegram_dict['datetime'] = datetime.fromtimestamp(timestamp.timestamp(), tz=timezone.utc)
     return telegram_dict, timestamp
 
-def process_row(csv_list: list, sensor: str, config_telegram_fields: dict):
+def process_row(csv_list: list, sensor: str, config_telegram_fields: dict, logger):
     '''
     Determines which in which format the csv is in, and preprocesses if necessary, currently able to parse 4 csv formats:
     Parsivel-> one format where all values from a telegram are contained in a single column in a string, or each value in their own column
@@ -166,26 +166,26 @@ def process_row(csv_list: list, sensor: str, config_telegram_fields: dict):
         if sensor == 'PAR':
             telegram = telegram_b[2:-1].split(";")
             return parsival_telegram_to_dict(telegram, date, timestamp, config_telegram_fields), timestamp
-        elif sensor == 'THIES': #Thies
+        elif sensor == 'THIES': 
             telegram = telegram_b[4:-1].split(";")
             return thies_telegram_to_dict(telegram, date, timestamp, config_telegram_fields), timestamp
         else:
-            raise ValueError("Sensor not found")
+            logger.error(msg=f"Sensor {sensor} not found")
     elif len(csv_list) > 3:
         #If the telegram consists of more than 3 columns, that means each value is in a separate column
         if sensor == 'PAR':
             date = csv_list[0]
             timestamp = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
             return parsival_telegram_to_dict(csv_list[1:], date, timestamp, config_telegram_fields), timestamp
-        elif sensor == 'THIES': #Thies
+        elif sensor == 'THIES':
             dates = csv_list[0].split(",")
             timestamp = datetime.strptime(dates[0], "%Y%m%d-%H%M%S")
             date = datetime.fromtimestamp(float(csv_list[1]), tz=timezone.utc)
             return thies_telegram_to_dict(csv_list, date, timestamp, config_telegram_fields), timestamp
         else:
-            raise ValueError("Sensor not found")
+            logger.error(msg=f"Sensor {sensor} not found")
     else:
-        raise ValueError("CSV format not recognized")
+        logger.error(msg="CSV format not recognized")
 
 
 
@@ -201,6 +201,7 @@ def txt_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
     for file in os.listdir(input_path):
         
         if not file.endswith(".txt"):
+            logger.error(msg=f"File {file} is not a txt file")
             continue
 
         txt_file = open(input_path / file, "r")
@@ -239,7 +240,7 @@ def csv_loop(input_path: Path, sensor: str, config_dict: dict, conf_telegram_fie
             if(row[0] == 'Timestamp (UTC)'):
                 continue
             #parse single telegram row from csv
-            telegram, timestamp = process_row(row, sensor, conf_telegram_fields)
+            telegram, timestamp = process_row(row, sensor, conf_telegram_fields, logger)
             #choose telegram object based on sensor
             telegram_instance = telegrams[sensor](
                 config_dict=config_dict,
