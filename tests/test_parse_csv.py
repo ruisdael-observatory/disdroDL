@@ -174,7 +174,7 @@ class ExportCSV(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netCDF/config_008_GV.yml'	
+        mock_args.config = 'configs_netcdf/config_008_GV.yml'	
         mock_args.input = 'sample_data/20230116.csv'
         mock_args.file_type = 'csv'
         mock_NetCDF.side_effect = side_effect
@@ -195,7 +195,7 @@ class ExportCSV(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netCDF/config_001_CABAUW.yml'	
+        mock_args.config = 'configs_netcdf/config_001_CABAUW.yml'	
         mock_args.input = 'sample_data/20210129'
         mock_args.file_type = 'txt'
 
