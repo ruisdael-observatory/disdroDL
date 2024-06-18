@@ -120,7 +120,7 @@ class Telegram(ABC):
         self.prep_telegram_data4db()
 
         self.logger.info(msg=f'inserting to DB: {self.timestamp.isoformat()}')
-        insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
+        insert = 'INSERT INTO disdrodl(timestamp, datetime, sensor_id, telegram) VALUES'
 
         timestamp_str = self.timestamp.isoformat()
         ts = self.timestamp.timestamp()
