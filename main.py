@@ -113,7 +113,7 @@ def get_config_file():
     :return: the config file's name
     """
     parser = ArgumentParser(
-        description="Ruisdael: OTT Disdrometer data logger. Run: python capture_disdrometer_data.py -c config_*.yml")
+        description="Ruisdael: OTT Disdrometer data logger. Run: python main.py -c config_*.yml")
     parser.add_argument(
         '-c',
         '--config',
