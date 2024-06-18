@@ -51,7 +51,7 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 
 
 **As Linux Systemd Service**: 
-* edit the config file name in [disdrodlv2.service](disdrodlv2.service) to match that of the station
+* edit the config file name in [disdrodlv3_PARSIVEL.service](disdrodlv3_PARSIVEL.service) to match that of the station
 * create system link between local service file and service files location: `ln disdrodlv2.service /etc/systemd/system/disdrodlv2.service`
 * run: `systemctl enable disdrodlv2.service`
 * run: `systemctl start disdrodlv2.service`
@@ -94,7 +94,7 @@ The NetCDF files are automatically compressed.
 
 
 
-**[main.py](main.py)** (often as service, see example [disdrodlv2.service](disdrodlv2.service))
+**[main.py](main.py)** (often as service, see example [disdrodlv3_PARSIVEL.service](disdrodlv3_PARSIVEL.service))
 * reads configurations from [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) or [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) and target-device config
 * sets up the serial communication with the Parsivel/Thies 
 * in a while loop (every minute):
@@ -112,7 +112,7 @@ The NetCDF files are automatically compressed.
     * writes the `telegram_objs` data into the NetCDF 
     * compresses the NetCDF file using `nccopy -d9`
     
-**[disdrodlv2.service](disdrodlv2.service)**  - Linux's systemd service file responsible for running [main.py](main.py) as a service
+**[disdrodlv3_PARSIVEL.service](disdrodlv3_PARSIVEL.service)**  - Linux's systemd service file responsible for running [main.py](main.py) as a service
 * requires editing: replace default path of config file, with config for the instrument in question.
 
 
