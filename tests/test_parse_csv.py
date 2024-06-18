@@ -22,7 +22,7 @@ def side_effect(*args, **kwargs):
     Side effect to replace 'data_dir' in mocked netCDF objects.
     :return: netCDF instance with substituted 'data_dir'
     """
-    kwargs['data_dir'] = output_file_dir
+    #kwargs['data_dir'] = output_file_dir
     instance = NetCDF(*args, **kwargs)
     instance.logger = Mock()
     return instance
@@ -135,61 +135,48 @@ class ExportCSV(unittest.TestCase):
         self.assertEqual(timestamp, expected_timestamp)
         
 
-    @patch('parse_disdro_csv.process_txt_file')
-    @patch('os.listdir')
-    @patch('modules.telegram.ParsivelTelegram')
-    def test_txt_loop(self, mock_process_txt_file, mock_listdir, mock_telegram):
-        mock_listdir.return_value = ['sample_PAR.txt', 'sample_OTHER.csv']
-        mock_logger = Mock()
-        mock_telegram.return_value = ParsivelTelegram(
-            config_dict={},
-            telegram_lines="",
-            timestamp=datetime.now().timestamp(),
-            db_cursor=None,
-            logger=mock_logger,
-            telegram_data={'01': 8},
-        )
+    # @patch('parse_disdro_csv.process_txt_file')
+    # @patch('os.listdir')
+    # @patch('modules.telegram.ParsivelTelegram')
+    # def test_txt_loop(self, mock_process_txt_file, mock_listdir, mock_telegram):
+    #     mock_listdir.return_value = ['sample_PAR.txt', 'sample_OTHER.csv']
+    #     mock_logger = Mock()
+    #     mock_telegram.return_value = ParsivelTelegram(
+    #         config_dict={},
+    #         telegram_lines="",
+    #         timestamp=datetime.now().timestamp(),
+    #         db_cursor=None,
+    #         logger=mock_logger,
+    #         telegram_data={'01': 8},
+    #     )
 
-        mock_open = Mock.mock_open(read_data="01:8")
-        with Mock.patch('__builtin__.open', mock_open):
-            result = mock_open('sample_PAR.txt')
-            result.read.return_value = "01:8"
+    #     mock_open = Mock.mock_open(read_data="01:8")
+    #     with Mock.patch('__builtin__.open', mock_open):
+    #         result = mock_open('sample_PAR.txt')
+    #         result.read.return_value = "01:8"
 
-        mock_process_txt_file.return_value = ({'01': 8}, datetime.now())
+    #     mock_process_txt_file.return_value = ({'01': 8}, datetime.now())
 
-        expected_telegram_objs = [mock_telegram.return_value]
+    #     expected_telegram_objs = [mock_telegram.return_value]
 
-        telegram_objs = txt_loop(Path('sample_data'), 'PAR', self.parsivel_config_dict, self.parsivel_config_dict['telegram_fields'], mock_logger)
+    #     telegram_objs = txt_loop(Path('sample_data'), 'PAR', self.parsivel_config_dict, self.parsivel_config_dict['telegram_fields'], mock_logger)
 
-        mock_process_txt_file.assert_called()
+    #     mock_process_txt_file.assert_called()
 
-        assert telegram_objs == expected_telegram_objs
+    #     assert telegram_objs == expected_telegram_objs
 
-    @patch('parse_disdro_csv.csv_loop')
     @patch('parse_disdro_csv.NetCDF')
-    def test_main_loop(self, mock_csv_loop, mock_NetCDF):
+    def test_main_loop_csv(self, mock_NetCDF):
 
-        output_file_path =  output_file_dir / '20240101_Green_Village-GV_PAR008.nc'
+        output_file_path =  output_file_dir / '20230116_PAR008_Green_Village.nc'
 
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_logger = Mock()
         mock_args.config = 'configs_netCDF/config_008_GV.yml'	
-        mock_args.input = 'sample_data/20240101_Green_Village-GV_PAR008.csv'
-        mock_args.file_type = "csv"
-
-        mock_csv_loop.return_value = [ParsivelTelegram(
-            config_dict={},
-            telegram_lines="",
-            timestamp=datetime.now().timestamp(),
-            db_cursor=None,
-            logger=mock_logger,
-            telegram_data={},
-        
-        )]
-
+        mock_args.input = 'sample_data/20230116.csv'
+        mock_args.file_type = 'csv'
         mock_NetCDF.side_effect = side_effect
 
         main(mock_args)
@@ -199,7 +186,27 @@ class ExportCSV(unittest.TestCase):
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
     
-    
+    @patch('parse_disdro_csv.NetCDF')
+    def test_main_loop_txt(self, mock_NetCDF):
+
+        output_file_path =  output_file_dir / '20210129_PAR001_KNMI_CABAUW.nc'
+
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
+
+        mock_args = Mock()
+        mock_args.config = 'configs_netCDF/config_001_CABAUW.yml'	
+        mock_args.input = 'sample_data/20210129'
+        mock_args.file_type = 'txt'
+
+        mock_NetCDF.side_effect = side_effect
+
+        main(mock_args)
+        assert output_file_path.exists()
+
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
+
     # def test_main_integration(self):
     #     # Run the script with the sample input and configuration
     #     result = subprocess.run([

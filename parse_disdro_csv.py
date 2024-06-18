@@ -134,6 +134,10 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
 
         key, value = key_value
 
+        #Skip fields that are not in the config dict
+        if key not in fields:
+            continue
+
         #Skip fields that should never be included in the netCDF
         if(config_telegram_fields[key]['include_in_nc'] == 'never'):
             continue
@@ -303,7 +307,6 @@ def main(args):
     '''
     input_path = Path(args.input)
     
-    
     #get date from input file
     get_date = input_path.stem.split('_')[0]
     date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
@@ -313,6 +316,7 @@ def main(args):
 
     #Choose what sensor is used
     sensor_name = config_dict_site['global_attrs']['sensor_name']
+    site_name = config_dict_site['global_attrs']['site_name']
     sensor = choose_sensor(sensor_name)
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
@@ -329,7 +333,7 @@ def main(args):
         logger.error(msg=f"Sensor {sensor_name} not found")
     
     # output file name
-    output_fn = f"{input_path.stem}"
+    output_fn = f"{input_path.stem}_{sensor_name}_{site_name}"
     output_directory = input_path.parent
 
     #iterate over all telegrams
@@ -339,6 +343,7 @@ def main(args):
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
     else:
         raise ValueError(f"File {args.file_type} type not recognized")
+    
 
     #create NetCDF
     nc = NetCDF(logger=logger,
