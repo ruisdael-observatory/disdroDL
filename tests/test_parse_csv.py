@@ -20,7 +20,7 @@ output_file_dir = Path('sample_data/')
 
 def side_effect_parsival(*args, **kwargs):
     '''
-    Side effect for 
+    Side effect for the parsivel telegram object, called in the testing txt_loop
     '''
     telegram_objs = []
     for _ in range(2):
@@ -30,6 +30,8 @@ def side_effect_parsival(*args, **kwargs):
     return telegram_objs
 
 def side_effect(*args, **kwargs):
+    '''
+    Side effect for the NetCDF object, called in the testing txt_loop and in csv_loop'''
     instance = NetCDF(*args, **kwargs)
     instance.logger = Mock()
     return instance
@@ -66,6 +68,9 @@ class ExportCSV(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_parsivel_telegram_to_dict(self):
+        '''
+        Test the parsivel_telegram_to_dict function
+        '''
         telegram = '0000.246;0100.87;61;61;  -RA;  R-;16.854;17943;00060;21567;00083;006;450541;2.11.4;2.11.1;2.31;17.9;0; ;00:00:00;06.11.2023;PAR007;007;010.087;000;020;010;009;00.246;0000.2;0100.87;16.85;0001.79;0000.00;00000086;-9.999;-9.999;01.218;02.614;02.609;02.086;01.615;01.580;01.585;01.528;00.792;00.387;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;-9.999;00.000;00.000;01.500;01.652;01.794;02.427;03.080;03.320;03.966;03.759;04.099;05.199;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;00.000;000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001001003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002007000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004003004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001002003001000000000000000000000000000000000000000000000000000000000000000000000000000000000000001001003003002000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000002002002000000000000000000000000000000000000000000000000000000000000000000000000000000000000001001001002001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003001001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
         dt = datetime(2023, 11, 6, 0, 1, 51)
         ts = 1699225311.829183
@@ -80,11 +85,17 @@ class ExportCSV(unittest.TestCase):
 
 
     def test_choose_sensor(self):
+        '''
+        Test the choose_sensor function
+        '''
         self.assertEqual(choose_sensor("sample_PAR.csv"), "PAR")
         self.assertEqual(choose_sensor("sample_THIES.csv"), "THIES")
         self.assertIsNone(choose_sensor("sample_OTHER.csv"))
 
     def test_thies_telegram_to_dict(self):
+        '''
+        Test the thies_telegram_to_dict function
+        '''
         telegram = '0205;0459;2.11;27.02.14;10:03:00;00;00;NP   ;000.000;00;00;NP   ;000.000;000.000;000.000;0147.32;99999;-9.9;069;0.0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;+10;15;1713;4011;2886;213;148;152;+06.3;999;9999;9999;9999;00139;00000.000;00003;00000.000;00000;00000.000;00000;00000.000;00027;00000.124;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00000;00000.000;00109;00000.524;00000;00000.000;000;001;010;014;013;035;028;014;005;003;000;001;001;000;000;000;000;000;000;000;000;000;000;003;001;002;001;003;001;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;000;99999;99999;9999;999;72;\r\n'
 
         dt = datetime(2021, 1, 1, 0, 0, 0)
@@ -99,6 +110,10 @@ class ExportCSV(unittest.TestCase):
 
     
     def test_process_row(self):
+        '''
+        Test if the process row method returns the correct dictionary for Parsivel and Thies,
+        for all formats found in CSV files
+        '''
         mock_logger = Mock()
         mock_logger.error = Mock()
 
@@ -122,6 +137,10 @@ class ExportCSV(unittest.TestCase):
         self.assertEqual(timestamp_THIES_string, datetime.strptime("20210101-000000", "%Y%m%d-%H%M%S"))
 
     def test_process_txt_file(self):
+        '''
+        Test if the process txt file method returns the correct dictionary for Parsivel,
+        for all formats found in TXT files
+        '''
         expected_timestamp = datetime.strptime("2020-01-01 00:00:50", "%Y-%m-%d %H:%M:%S")
         
         expected_telegram_dict = {'01': 4.0, '06': 'haha', '91': [9, 9, 9], 'timestamp': '2020-01-01 00:00:50', 
@@ -134,12 +153,51 @@ class ExportCSV(unittest.TestCase):
         self.assertEqual(telegram_dict, expected_telegram_dict)
         self.assertEqual(timestamp, expected_timestamp)
         
-    def test_errors_process_row(self):
-        pass
+    
+    def test_sensor_not_found_bytestring_format(self):
+        '''
+        Test if the process row method raises an error if the sensor is not found,
+        when a csv row is of length 3, this happens if all values of a telegram
+        are in a bytestring
+        '''
+        csv_list = ['20220101-120000', '1641052800', "b'telegram;more_telegram'"]
+        sensor = 'UNKNOWN'
+        config_telegram_fields = {}
+        mock_logger = Mock()
+        process_row(csv_list, sensor, config_telegram_fields, mock_logger)
+        mock_logger.error.assert_called_once_with(msg=f"Sensor {sensor} not found")
+
+    def test_sensor_not_found_seperate_column_format(self):
+        '''
+        Test if the process row method raises an error if the sensor is not found,
+        when a csv row is of a larger length than 3, this happens if all values of a telegram
+        are in seperate columns
+        '''
+        csv_list = ['20220101-120000', '1641052800', 'telegram', 'more_telegram']
+        sensor = 'UNKNOWN'
+        config_telegram_fields = {}
+        mock_logger = Mock()
+        process_row(csv_list, sensor, config_telegram_fields, mock_logger)
+        mock_logger.error.assert_called_once_with(msg=f"Sensor {sensor} not found")
+
+
+    def test_csv_format_not_recognized(self):
+        '''
+        Test if the process row method raises an error if the CSV format is not recognized
+        '''
+        csv_list = ['20220101-120000', '1641052800']
+        sensor = 'PAR'
+        config_telegram_fields = {}
+        mock_logger = Mock()
+        process_row(csv_list, sensor, config_telegram_fields, mock_logger)
+        mock_logger.error.assert_called_once_with(msg="CSV format not recognized")
 
     @patch('parse_disdro_csv.NetCDF')
     @patch('parse_disdro_csv.csv_loop')
     def test_main_csv(self, mock_csv_loop, mock_NetCDF):
+        '''
+        Test if the main function creates a NetCDF file for a CSV file
+        '''
 
         output_file_path =  output_file_dir / '20230116_PAR008_Green_Village.nc'
 
@@ -165,7 +223,9 @@ class ExportCSV(unittest.TestCase):
     @patch('parse_disdro_csv.NetCDF')
     @patch('parse_disdro_csv.txt_loop')
     def test_main_txt(self, mock_txt_loop, mock_NetCDF):
-
+        '''
+        Test if the main function creates a NetCDF file for a TXT file
+        '''
         output_file_path =  output_file_dir / '20210129_PAR001_KNMI_Cabauw.nc'
 
         if os.path.exists(output_file_path):
@@ -190,7 +250,10 @@ class ExportCSV(unittest.TestCase):
     @patch('csv.reader')
     @patch('parse_disdro_csv.process_row')
     @patch('parse_disdro_csv.telegrams')
-    def test_csv_loop(self, mock_telegrams, mock_process_row, mock_csv_reader):
+    def test_csv_loop(self, mock_telegrams, mock_process_row, mock_csv_reader): 
+        ''' 
+        Test if the csv loop method returns a list of dictionaries
+        '''
         # Arrange
         mock_csv_reader.return_value = [
             ['Timestamp (UTC)', 'Other data'],
@@ -215,6 +278,10 @@ class ExportCSV(unittest.TestCase):
     @patch('parse_disdro_csv.process_txt_file')
     @patch('parse_disdro_csv.telegrams')
     def test_txt_loop(self, mock_telegrams, mock_process_txt_file, mock_listdir):
+        '''
+        Test if the txt loop method returns a list of dictionaries
+        :param mock_telegrams:
+        '''
         # Arrange
         mock_listdir.return_value = ['file1.csv', 'file2.txt', 'file3.txt']
         mock_process_txt_file.return_value = ('mocked telegram', 'mocked timestamp')
@@ -230,3 +297,21 @@ class ExportCSV(unittest.TestCase):
         self.assertEqual(len(result), 2)
         mock_process_txt_file.assert_called()
         mock_telegrams.__getitem__.assert_called_with('PAR')
+
+    @patch('parse_disdro_csv.choose_sensor', return_value=None)
+    @patch('parse_disdro_csv.yaml2dict')
+    @patch('parse_disdro_csv.Path')
+    def test_sensor_not_found(self, mock_path, mock_yaml2dict, mock_choose_sensor):
+        '''
+        Test if the main function raises an error if the sensor is not found
+        '''
+        mock_args = unittest.mock.Mock()
+        mock_args.input = 'input_file'
+        mock_args.config = 'config_file'
+        mock_path.return_value.stem.split.return_value = ['20220101']
+        mock_yaml2dict.return_value = {'global_attrs': {'sensor_name': 'UNKNOWN', 'site_name': 'site'}}
+
+        with self.assertRaises(ValueError) as context:
+            main(mock_args)
+
+        self.assertTrue('Sensor UNKNOWN not found' in str(context.exception))
