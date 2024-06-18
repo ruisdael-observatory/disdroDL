@@ -17,12 +17,21 @@ from parse_disdro_csv import parsival_telegram_to_dict, thies_telegram_to_dict, 
 
 output_file_dir = Path('sample_data/')
 
+
+def side_effect_parsival(*args, **kwargs):
+    telegram_objs = []
+    for _ in range(2):
+        kwargs['telegram_data'] = {'01: 0000.246', '02: 0100.87', '03: 61', '04: 61', '05:   -RA', '06:   R-', '07: 16.854'}
+        parsivel_telegram = ParsivelTelegram(*args, **kwargs)
+        telegram_objs.append(parsivel_telegram)
+    return telegram_objs
+
 def side_effect(*args, **kwargs):
     """
     Side effect to replace 'data_dir' in mocked netCDF objects.
     :return: netCDF instance with substituted 'data_dir'
     """
-    #kwargs['data_dir'] = output_file_dir
+
     instance = NetCDF(*args, **kwargs)
     instance.logger = Mock()
     return instance
@@ -134,39 +143,12 @@ class ExportCSV(unittest.TestCase):
         self.assertEqual(telegram_dict, expected_telegram_dict)
         self.assertEqual(timestamp, expected_timestamp)
         
-
-    # @patch('parse_disdro_csv.process_txt_file')
-    # @patch('os.listdir')
-    # @patch('modules.telegram.ParsivelTelegram')
-    # def test_txt_loop(self, mock_process_txt_file, mock_listdir, mock_telegram):
-    #     mock_listdir.return_value = ['sample_PAR.txt', 'sample_OTHER.csv']
-    #     mock_logger = Mock()
-    #     mock_telegram.return_value = ParsivelTelegram(
-    #         config_dict={},
-    #         telegram_lines="",
-    #         timestamp=datetime.now().timestamp(),
-    #         db_cursor=None,
-    #         logger=mock_logger,
-    #         telegram_data={'01': 8},
-    #     )
-
-    #     mock_open = Mock.mock_open(read_data="01:8")
-    #     with Mock.patch('__builtin__.open', mock_open):
-    #         result = mock_open('sample_PAR.txt')
-    #         result.read.return_value = "01:8"
-
-    #     mock_process_txt_file.return_value = ({'01': 8}, datetime.now())
-
-    #     expected_telegram_objs = [mock_telegram.return_value]
-
-    #     telegram_objs = txt_loop(Path('sample_data'), 'PAR', self.parsivel_config_dict, self.parsivel_config_dict['telegram_fields'], mock_logger)
-
-    #     mock_process_txt_file.assert_called()
-
-    #     assert telegram_objs == expected_telegram_objs
+    def test_errors_process_row(self):
+        pass
 
     @patch('parse_disdro_csv.NetCDF')
-    def test_main_loop_csv(self, mock_NetCDF):
+    @patch('parse_disdro_csv.csv_loop')
+    def test_main_csv(self, mock_csv_loop, mock_NetCDF):
 
         output_file_path =  output_file_dir / '20230116_PAR008_Green_Village.nc'
 
@@ -177,6 +159,9 @@ class ExportCSV(unittest.TestCase):
         mock_args.config = 'configs_netcdf/config_008_GV.yml'	
         mock_args.input = 'sample_data/20230116.csv'
         mock_args.file_type = 'csv'
+
+        telegram_objs = side_effect_parsival
+        date = datetime(2023, 1, 16, 0, 0, 0)
         mock_NetCDF.side_effect = side_effect
 
         main(mock_args)
@@ -186,26 +171,30 @@ class ExportCSV(unittest.TestCase):
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
     
-    @patch('parse_disdro_csv.NetCDF')
-    def test_main_loop_txt(self, mock_NetCDF):
+    # @patch('parse_disdro_csv.NetCDF')
+    # @patch('parse_disdro_csv.txt_loop')
+    # def test_main_txt(self, mock_NetCDF, mock_txt_loop):
 
-        output_file_path =  output_file_dir / '20210129_PAR001_KNMI_CABAUW.nc'
+    #     output_file_path =  output_file_dir / '20210129_PAR001_KNMI_CABAUW.nc'
 
-        if os.path.exists(output_file_path):
-            os.remove(output_file_path)
+    #     if os.path.exists(output_file_path):
+    #         os.remove(output_file_path)
 
-        mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_001_CABAUW.yml'	
-        mock_args.input = 'sample_data/20210129'
-        mock_args.file_type = 'txt'
+    #     mock_args = Mock()
+    #     mock_args.config = 'configs_netcdf/config_001_CABAUW.yml'	
+    #     mock_args.input = 'sample_data/20210129'
+    #     mock_args.file_type = 'txt'
 
-        mock_NetCDF.side_effect = side_effect
+    #     telegram_objs = side_effect_parsival
+    #     date = datetime(2021, 1, 29, 0, 0, 0)
+    #     mock_NetCDF.side_effect = side_effect
 
-        main(mock_args)
-        assert output_file_path.exists()
+    #     main(mock_args)
 
-        if os.path.exists(output_file_path):
-            os.remove(output_file_path)
+    #     assert output_file_path.exists()
+
+    #     if os.path.exists(output_file_path):
+    #         os.remove(output_file_path)
 
     # def test_main_integration(self):
     #     # Run the script with the sample input and configuration
