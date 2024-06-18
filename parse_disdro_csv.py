@@ -51,7 +51,7 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
     :param config_telegram_fields: dict of the config file, only the telegram_fields are passed
     '''
 
-    telegram_dict = {}
+    telegram_dict = {} 
     for i, key in enumerate(default_parsivel_telegram_indices):
         if(key == '90' or key == '91'):
             '''

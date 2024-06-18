@@ -9,7 +9,7 @@ from modules.netCDF import NetCDF
 import tempfile
 import os
 import shutil
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, mock_open
 from modules.util_functions import yaml2dict, create_logger
 from datetime import datetime, timezone
 from parse_disdro_csv import parsival_telegram_to_dict, thies_telegram_to_dict, \
@@ -27,11 +27,6 @@ def side_effect_parsival(*args, **kwargs):
     return telegram_objs
 
 def side_effect(*args, **kwargs):
-    """
-    Side effect to replace 'data_dir' in mocked netCDF objects.
-    :return: netCDF instance with substituted 'data_dir'
-    """
-
     instance = NetCDF(*args, **kwargs)
     instance.logger = Mock()
     return instance
@@ -56,13 +51,6 @@ class ExportCSV(unittest.TestCase):
 
         # Create a sample configuration YAML file
         self.config_yaml_path = os.path.join(self.test_dir, 'config_sample.yml')
-        # with open('C:\Users\melsl\Documents\CSE\Y2\Software_Project\python-logging-software\config_007_CABAUW.yml', 'r') as template_file:
-        #     template_content = template_file.read()
-        
-        # with open(self.config_yaml_path, 'w') as f:
-        #     f.write(template_content.replace('log_dir: /path/to/log', f'log_dir: {self.test_dir}'))
-
-        # Create a sample configuration for netCDF (used by the script)
         self.netcdf_config_path = os.path.join(self.test_dir, 'config_general_parsivel.yml')
         with open(self.netcdf_config_path, 'w') as f:
             f.write("telegram_fields:\n")
@@ -171,31 +159,72 @@ class ExportCSV(unittest.TestCase):
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
     
-    # @patch('parse_disdro_csv.NetCDF')
-    # @patch('parse_disdro_csv.txt_loop')
-    # def test_main_txt(self, mock_NetCDF, mock_txt_loop):
+    @patch('parse_disdro_csv.NetCDF')
+    @patch('parse_disdro_csv.txt_loop')
+    def test_main_txt(self, mock_txt_loop, mock_NetCDF):
 
-    #     output_file_path =  output_file_dir / '20210129_PAR001_KNMI_CABAUW.nc'
+        output_file_path =  output_file_dir / '20210129_PAR001_KNMI_CABAUW.nc'
 
-    #     if os.path.exists(output_file_path):
-    #         os.remove(output_file_path)
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
 
-    #     mock_args = Mock()
-    #     mock_args.config = 'configs_netcdf/config_001_CABAUW.yml'	
-    #     mock_args.input = 'sample_data/20210129'
-    #     mock_args.file_type = 'txt'
+        mock_args = Mock()
+        mock_args.config = 'configs_netcdf/config_001_CABAUW.yml'	
+        mock_args.input = 'sample_data/20210129'
+        mock_args.file_type = 'txt'
 
-    #     telegram_objs = side_effect_parsival
-    #     date = datetime(2021, 1, 29, 0, 0, 0)
-    #     mock_NetCDF.side_effect = side_effect
+        telegram_objs = side_effect_parsival
+        date = datetime(2021, 1, 29, 0, 0, 0)
+        mock_NetCDF.side_effect = side_effect
 
-    #     main(mock_args)
+        main(mock_args)
 
-    #     assert output_file_path.exists()
+        assert output_file_path.exists()
 
-    #     if os.path.exists(output_file_path):
-    #         os.remove(output_file_path)
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
 
+    @patch('csv.reader')
+    @patch('parse_disdro_csv.process_row')
+    @patch('parse_disdro_csv.telegrams')
+    def test_csv_loop(self, mock_telegrams, mock_process_row, mock_csv_reader):
+        # Arrange
+        mock_csv_reader.return_value = [
+            ['Timestamp (UTC)', 'Other data'],
+            ['2022-01-01 00:00:00', 'Some data'],
+            ['2022-01-02 00:00:00', 'Some other data'],
+        ]
+        mock_process_row.return_value = ('mocked telegram', 'mocked timestamp')
+        mock_telegrams.__getitem__.return_value = Mock()
+
+        # Act
+        with patch('builtins.open', mock_open(read_data='data')) as mock_file:
+            result = csv_loop('input_path', 'sensor', 'config_dict', 'conf_telegram_fields', 'logger')
+
+        # Assert
+        self.assertEqual(len(result), 2)
+        mock_process_row.assert_called()
+        mock_telegrams.__getitem__.assert_called_with('sensor')
+        
+    @patch('os.listdir')
+    @patch('parse_disdro_csv.process_txt_file')
+    @patch('parse_disdro_csv.telegrams')
+    def test_txt_loop(self, mock_telegrams, mock_process_txt_file, mock_listdir):
+        # Arrange
+        mock_listdir.return_value = ['file1.csv', 'file2.txt', 'file3.txt']
+        mock_process_txt_file.return_value = ('mocked telegram', 'mocked timestamp')
+        mock_telegrams.__getitem__.return_value = Mock()
+
+        mock_logger = Mock()
+        input_path = Path('sample_data/20210129')
+        # Act
+        with patch('builtins.open', mock_open(read_data='data')) as mock_file:
+            result = txt_loop(input_path, 'sensor', 'config_dict', 'conf_telegram_fields', mock_logger)
+
+        # Assert
+        self.assertEqual(len(result), 2)
+        mock_process_txt_file.assert_called()
+        mock_telegrams.__getitem__.assert_called_with('sensor')
     # def test_main_integration(self):
     #     # Run the script with the sample input and configuration
     #     result = subprocess.run([
