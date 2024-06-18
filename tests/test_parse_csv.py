@@ -19,6 +19,9 @@ output_file_dir = Path('sample_data/')
 
 
 def side_effect_parsival(*args, **kwargs):
+    '''
+    Side effect for 
+    '''
     telegram_objs = []
     for _ in range(2):
         kwargs['telegram_data'] = {'01: 0000.246', '02: 0100.87', '03: 61', '04: 61', '05:   -RA', '06:   R-', '07: 16.854'}
@@ -163,7 +166,7 @@ class ExportCSV(unittest.TestCase):
     @patch('parse_disdro_csv.txt_loop')
     def test_main_txt(self, mock_txt_loop, mock_NetCDF):
 
-        output_file_path =  output_file_dir / '20210129_PAR001_KNMI_CABAUW.nc'
+        output_file_path =  output_file_dir / '20210129_PAR001_KNMI_Cabauw.nc'
 
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
