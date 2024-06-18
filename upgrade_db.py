@@ -20,7 +20,7 @@ def main(config_site):
 
     config_dict_site = yaml2dict(path=wd / config_site)
 
-    db_path = config_dict_site['data_dir'] / 'disdrodl.db'
+    db_path = Path(config_dict_site['data_dir']) / 'disdrodl.db'
 
     con, cur = connect_db(dbpath=str(db_path))
 
@@ -31,6 +31,8 @@ def main(config_site):
 
     exists = column_exists(cur, 'parsivel_id')
     if not exists:
+        cur.close()
+        con.close()
         sys.exit(0)
 
     cur.execute(query)
