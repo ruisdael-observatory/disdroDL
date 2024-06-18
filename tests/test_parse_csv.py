@@ -197,14 +197,16 @@ class ExportCSV(unittest.TestCase):
         mock_process_row.return_value = ('mocked telegram', 'mocked timestamp')
         mock_telegrams.__getitem__.return_value = Mock()
 
+        mock_logger = Mock()
+        input_path = Path('sample_data/20210129.csv')
         # Act
         with patch('builtins.open', mock_open(read_data='data')) as mock_file:
-            result = csv_loop('input_path', 'sensor', 'config_dict', 'conf_telegram_fields', 'logger')
+            result = csv_loop(input_path, 'THIES', 'config_dict', 'conf_telegram_fields', mock_logger)
 
         # Assert
         self.assertEqual(len(result), 2)
         mock_process_row.assert_called()
-        mock_telegrams.__getitem__.assert_called_with('sensor')
+        mock_telegrams.__getitem__.assert_called_with('THIES')
         
     @patch('os.listdir')
     @patch('parse_disdro_csv.process_txt_file')
@@ -219,23 +221,9 @@ class ExportCSV(unittest.TestCase):
         input_path = Path('sample_data/20210129')
         # Act
         with patch('builtins.open', mock_open(read_data='data')) as mock_file:
-            result = txt_loop(input_path, 'sensor', 'config_dict', 'conf_telegram_fields', mock_logger)
+            result = txt_loop(input_path, 'PAR', 'config_dict', 'conf_telegram_fields', mock_logger)
 
         # Assert
         self.assertEqual(len(result), 2)
         mock_process_txt_file.assert_called()
-        mock_telegrams.__getitem__.assert_called_with('sensor')
-    # def test_main_integration(self):
-    #     # Run the script with the sample input and configuration
-    #     result = subprocess.run([
-    #         'python3', 'parse_disdro_csv.py',
-    #         '-c', self.config_yaml_path,
-    #         '-i', self.input_csv_path
-    #     ], capture_output=True, text=True)
-
-    #     # Check if the script executed without errors
-    #     self.assertEqual(result.returncode, 0, msg=result.stderr)
-
-    #     # Verify the expected output netCDF file
-    #     output_nc_path = os.path.join(self.test_dir, 'sample_PAR')
-    #     self.assertTrue(os.path.isfile(output_nc_path), "NetCDF file was not created")
+        mock_telegrams.__getitem__.assert_called_with('PAR')
