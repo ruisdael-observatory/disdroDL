@@ -111,23 +111,37 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
     :param config_telegram_fields: telegram fields from the config file
     '''
     telegram_dict = {}
+    date = ''
+    time = ''
     #All fields in the config dict
     fields = config_telegram_fields.keys()
     for field in txt_list:
         key_value = field.split(':')
+        
+        #Get time
+        if key_value[0] == '20':
+            time = key_value[1] + key_value[2] + key_value[3]
+            continue
+
+        #Get date
+        if key_value[0] == '21':	
+            date = key_value[1]
+            continue
+
         #Skip empty fields or fields without key:value
         if len(key_value) != 2:
             continue
 
         key, value = key_value
 
-        #Skip if key is not in the config dict
-        if key is not fields:
+        #Skip fields that should never be included in the netCDF
+        if(config_telegram_fields[key]['include_in_nc'] == 'never'):
             continue
 
         data_type = field_type[config_telegram_fields[key]['dtype']]
-        #List fields
-        if key == '90' or key == '91' or key == '93':  
+
+        #Multivalue fields
+        if len(config_telegram_fields[key]['dimensions']) > 1:  
             list_values = value.split(';')
             #List fields end with an empty string after split, remove it
             list_values.remove('')
@@ -140,10 +154,7 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
     Date can be found in field 21 and is in format key:dd.mm.yyyy
     Time can be found in field 20 and is in format key:HH:MM:SS
     '''
-    field_20 = txt_list[20].split(':')
-    field_21 = txt_list[21].split(':')
-    date = field_21[1] + field_20[1] + field_20[2] + field_20[3]
-    timestamp = datetime.strptime(date, "%d.%m.%Y%H%M%S")
+    timestamp = datetime.strptime(date + time, "%d.%m.%Y%H%M%S")
 
     telegram_dict['timestamp'] = str(timestamp)
     telegram_dict['datetime'] = datetime.fromtimestamp(timestamp.timestamp(), tz=timezone.utc)
@@ -328,7 +339,6 @@ def main(args):
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
     else:
         raise ValueError(f"File {args.file_type} type not recognized")
-        sys.exit(1)
 
     #create NetCDF
     nc = NetCDF(logger=logger,

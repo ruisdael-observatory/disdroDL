@@ -5,7 +5,7 @@ from netCDF4 import Dataset
 from cftime import num2date
 from pydantic.v1.utils import deep_update
 from modules.telegram import ParsivelTelegram
-import modules.netCDF as netCDF
+from modules.netCDF import NetCDF
 import tempfile
 import os
 import shutil
@@ -23,7 +23,7 @@ def side_effect(*args, **kwargs):
     :return: netCDF instance with substituted 'data_dir'
     """
     kwargs['data_dir'] = output_file_dir
-    instance = netCDF(*args, **kwargs)
+    instance = NetCDF(*args, **kwargs)
     instance.logger = Mock()
     return instance
 
@@ -121,38 +121,83 @@ class ExportCSV(unittest.TestCase):
         self.assertEqual(timestamp_PAR_string, datetime.strptime("20210101-000000", "%Y%m%d-%H%M%S"))
         self.assertEqual(timestamp_THIES_string, datetime.strptime("20210101-000000", "%Y%m%d-%H%M%S"))
 
-    # def test_process_txt_file(self):
-    #     input_txt_path = os.path.join(self.test_dir, 'sample_PAR.txt')
-    #     output_csv_path = os.path.join(self.test_dir, 'sample_PAR.csv')
-    #     telegram_dict, timestamp = process_txt_file(input_txt_path, output_csv_path, self.parsivel_config_dict['telegram_fields'])
+    def test_process_txt_file(self):
+        expected_timestamp = datetime.strptime("2020-01-01 00:00:50", "%Y-%m-%d %H:%M:%S")
+        
+        expected_telegram_dict = {'01': 4.0, '06': 'haha', '91': [9, 9, 9], 'timestamp': '2020-01-01 00:00:50', 
+                                  'datetime': datetime.fromtimestamp(expected_timestamp.timestamp(), tz=timezone.utc)}
 
-    #     self.assertTrue(os.path.isfile(output_csv_path))
+        txt_list = ['01:4', '02:55', '20:00:00:50', '21:01.01.2020','06:haha', '91:9;9;9;']
+        telegram_dict, timestamp = process_txt_file(txt_list, self.parsivel_config_dict['telegram_fields'])
+        print(telegram_dict, timestamp)
 
-    # @patch('parse_disdro_csv.csv_loop')
-    # @patch('parse_disdro_csv.NetCDF')
-    # def test_main_loop(self, mock_csv_loop, mock_netcdf):
-
-    #     output_file_path =  '20240101_Green_Village-GV_PAR008.nc'
-
-    #     if os.path.exists(output_file_path):
-    #         os.remove(output_file_path)
-
-    #     mock_args = Mock()
-    #     mock_logger = Mock()
-    #     mock_args.config = self.config_yaml_path
-    #     mock_args.input = self.input_csv_path
-    #     mock_args.file_type = "csv"
-
-    #     mock_csv_loop.return_value = csv_loop(self.input_csv_path, 'PAR', self.config_yaml_path, self.parsivel_config_dict['telegram_fields'], mock_logger)
-    #     mock_netcdf.side = side_effect
+        self.assertEqual(telegram_dict, expected_telegram_dict)
+        self.assertEqual(timestamp, expected_timestamp)
         
 
-    #     main(mock_args)
+    @patch('parse_disdro_csv.process_txt_file')
+    @patch('os.listdir')
+    @patch('modules.telegram.ParsivelTelegram')
+    def test_txt_loop(self, mock_process_txt_file, mock_listdir, mock_telegram):
+        mock_listdir.return_value = ['sample_PAR.txt', 'sample_OTHER.csv']
+        mock_logger = Mock()
+        mock_telegram.return_value = ParsivelTelegram(
+            config_dict={},
+            telegram_lines="",
+            timestamp=datetime.now().timestamp(),
+            db_cursor=None,
+            logger=mock_logger,
+            telegram_data={'01': 8},
+        )
 
-    #     assert output_file_path.exists()
+        mock_open = Mock.mock_open(read_data="01:8")
+        with Mock.patch('__builtin__.open', mock_open):
+            result = mock_open('sample_PAR.txt')
+            result.read.return_value = "01:8"
 
-    #     if os.path.exists(output_file_path):
-    #         os.remove(output_file_path)
+        mock_process_txt_file.return_value = ({'01': 8}, datetime.now())
+
+        expected_telegram_objs = [mock_telegram.return_value]
+
+        telegram_objs = txt_loop(Path('sample_data'), 'PAR', self.parsivel_config_dict, self.parsivel_config_dict['telegram_fields'], mock_logger)
+
+        mock_process_txt_file.assert_called()
+
+        assert telegram_objs == expected_telegram_objs
+
+    @patch('parse_disdro_csv.csv_loop')
+    @patch('parse_disdro_csv.NetCDF')
+    def test_main_loop(self, mock_csv_loop, mock_NetCDF):
+
+        output_file_path =  output_file_dir / '20240101_Green_Village-GV_PAR008.nc'
+
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
+
+        mock_args = Mock()
+        mock_logger = Mock()
+        mock_args.config = 'configs_netCDF/config_008_GV.yml'	
+        mock_args.input = 'sample_data/20240101_Green_Village-GV_PAR008.csv'
+        mock_args.file_type = "csv"
+
+        mock_csv_loop.return_value = [ParsivelTelegram(
+            config_dict={},
+            telegram_lines="",
+            timestamp=datetime.now().timestamp(),
+            db_cursor=None,
+            logger=mock_logger,
+            telegram_data={},
+        
+        )]
+
+        mock_NetCDF.side_effect = side_effect
+
+        main(mock_args)
+
+        assert output_file_path.exists()
+
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
     
     
     # def test_main_integration(self):
