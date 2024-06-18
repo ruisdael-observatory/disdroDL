@@ -1,3 +1,10 @@
+"""
+This script is used to upgrade the disdrodl.db database to change the column name from 'parsivel_id' to 'sensor_id'
+
+- column_exists: Function to check if a column exists in the disdrodl table
+- main: Main function to upgrade the disdrodl.db database
+- get_config_file: Function that gets the config file from the command line
+"""
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
@@ -7,6 +14,12 @@ from modules.util_functions import yaml2dict
 
 
 def column_exists(cur, column_name):
+    """
+    Function to check if a column exists in the disdrodl table
+    :param cur: the database cursor
+    :param column_name: the name of the column to check
+    :return: True if the column exists, False otherwise
+    """
     cur.execute("PRAGMA table_info(disdrodl)")
     columns = cur.fetchall()
     for column in columns:
@@ -16,6 +29,10 @@ def column_exists(cur, column_name):
 
 
 def main(config_site):
+    """
+    Main function to upgrade the disdrodl.db database
+    :param config_site: The config file for the site
+    """
     wd = Path(__file__).parent
 
     config_dict_site = yaml2dict(path=wd / config_site)
