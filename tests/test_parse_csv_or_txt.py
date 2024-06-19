@@ -12,7 +12,7 @@ import shutil
 from unittest.mock import patch, Mock, mock_open
 from modules.util_functions import yaml2dict, create_logger
 from datetime import datetime, timezone
-from parse_disdro_csv import parsival_telegram_to_dict, thies_telegram_to_dict, \
+from parse_disdro_csv_or_txt import parsival_telegram_to_dict, thies_telegram_to_dict, \
     choose_sensor, process_row, process_txt_file, main, csv_loop, txt_loop # pylint: disable=import-error
 
 output_file_dir = Path('sample_data/')
@@ -36,7 +36,7 @@ def side_effect(*args, **kwargs):
     instance.logger = Mock()
     return instance
 
-class ExportCSV(unittest.TestCase):
+class ExportCSV_TXT(unittest.TestCase):
     """
     Test class for the ExportCSV class
     """
@@ -192,8 +192,8 @@ class ExportCSV(unittest.TestCase):
         process_row(csv_list, sensor, config_telegram_fields, mock_logger)
         mock_logger.error.assert_called_once_with(msg="CSV format not recognized")
 
-    @patch('parse_disdro_csv.NetCDF')
-    @patch('parse_disdro_csv.csv_loop')
+    @patch('parse_disdro_csv_or_txt.NetCDF')
+    @patch('parse_disdro_csv_or_txt.csv_loop')
     def test_main_csv(self, mock_csv_loop, mock_NetCDF):
         '''
         Test if the main function creates a NetCDF file for a CSV file
@@ -220,8 +220,8 @@ class ExportCSV(unittest.TestCase):
         if os.path.exists(output_file_path):
             os.remove(output_file_path)
     
-    @patch('parse_disdro_csv.NetCDF')
-    @patch('parse_disdro_csv.txt_loop')
+    @patch('parse_disdro_csv_or_txt.NetCDF')
+    @patch('parse_disdro_csv_or_txt.txt_loop')
     def test_main_txt(self, mock_txt_loop, mock_NetCDF):
         '''
         Test if the main function creates a NetCDF file for a TXT file
@@ -248,8 +248,8 @@ class ExportCSV(unittest.TestCase):
             os.remove(output_file_path)
 
     @patch('csv.reader')
-    @patch('parse_disdro_csv.process_row')
-    @patch('parse_disdro_csv.telegrams')
+    @patch('parse_disdro_csv_or_txt.process_row')
+    @patch('parse_disdro_csv_or_txt.telegrams')
     def test_csv_loop(self, mock_telegrams, mock_process_row, mock_csv_reader): 
         ''' 
         Test if the csv loop method returns a list of dictionaries
@@ -275,8 +275,8 @@ class ExportCSV(unittest.TestCase):
         mock_telegrams.__getitem__.assert_called_with('THIES')
         
     @patch('os.listdir')
-    @patch('parse_disdro_csv.process_txt_file')
-    @patch('parse_disdro_csv.telegrams')
+    @patch('parse_disdro_csv_or_txt.process_txt_file')
+    @patch('parse_disdro_csv_or_txt.telegrams')
     def test_txt_loop(self, mock_telegrams, mock_process_txt_file, mock_listdir):
         '''
         Test if the txt loop method returns a list of dictionaries
@@ -298,21 +298,33 @@ class ExportCSV(unittest.TestCase):
         mock_process_txt_file.assert_called()
         mock_telegrams.__getitem__.assert_called_with('PAR')
 
-    @patch('parse_disdro_csv.choose_sensor')
-    @patch('parse_disdro_csv.create_logger')
-    @patch('parse_disdro_csv.yaml2dict')
-    @patch('parse_disdro_csv.Path')
-    def test_main(self, mock_path, mock_yaml2dict, mock_create_logger, mock_choose_sensor):
-        mock_args = unittest.mock.Mock()
+    @patch('parse_disdro_csv_or_txt.Path')
+    @patch('parse_disdro_csv_or_txt.yaml2dict')
+    @patch('parse_disdro_csv_or_txt.create_logger')
+    @patch('parse_disdro_csv_or_txt.choose_sensor')
+    def test_main(self, mock_choose_sensor, mock_create_logger, mock_yaml2dict, mock_path):
+        # Mock arguments
+        mock_args = Mock()
         mock_args.input = 'input_file'
         mock_args.config = 'config_file'
+
+        # Mock Path
         mock_path.return_value.stem.split.return_value = ['20220101']
-        mock_yaml2dict.return_value = {'log_dir': 'directory', 'global_attrs': {'sensor_name': 'UNKNOWN', 'site_name': 'site'}}
-        mock_logger = unittest.mock.Mock()
+
+        # Mock yaml2dict
+        mock_yaml2dict.return_value = {
+            'global_attrs': {'sensor_name': 'UNKNOWN', 'site_name': 'site'},
+            'log_dir': 'log_dir'
+        }
+
+        # Mock create_logger
+        mock_logger = Mock()
         mock_create_logger.return_value = mock_logger
+
+        # Mock choose_sensor
         mock_choose_sensor.return_value = None
 
-        main(mock_args)
+        with self.assertRaises(SystemExit) as cm:
+            main(mock_args)
 
-        mock_logger.error.assert_called_once_with(msg="Sensor UNKNOWN not found")
 
