@@ -310,22 +310,22 @@ def main(args):
     wd = Path(__file__).parent
     config_dict_site = yaml2dict(path=wd / args.config)
 
+    ## Logger
+    logger = create_logger(log_dir=Path(config_dict_site['log_dir']),
+                           script_name=Path(__file__).name,
+                           sensor_name=config_dict_site['global_attrs']['sensor_name'])
+
     #Choose what sensor is used
     sensor_name = config_dict_site['global_attrs']['sensor_name']
     site_name = config_dict_site['global_attrs']['site_name']
+
     sensor = choose_sensor(sensor_name)
     if sensor is None:
-        raise ValueError(f"Sensor {sensor_name} not found")
+        logger.error(msg=f"Sensor {sensor_name} not found")
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fields have > 1 dimension
-    
-
-    ## Logger
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                           script_name=Path(__file__).name,
-                           sensor_name=config_dict['global_attrs']['sensor_name'])
     
     # output file name
     output_fn = f"{input_path.stem}_{sensor_name}_{site_name}"
