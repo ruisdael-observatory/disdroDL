@@ -327,4 +327,38 @@ class ExportCSV_TXT(unittest.TestCase):
         with self.assertRaises(SystemExit) as cm:
             main(mock_args)
 
+    @patch('parse_disdro_csv_or_txt.Path')
+    @patch('parse_disdro_csv_or_txt.yaml2dict')
+    @patch('parse_disdro_csv_or_txt.create_logger')
+    def test_main_invalid_file_type(self, mock_create_logger, mock_yaml2dict, mock_path):
+        # Mock arguments
+        mock_args = Mock()
+        mock_args.input = 'input_file'
+        mock_args.config = 'config_file'
+        mock_args.file_type = 'invalid'  # This will trigger the else condition
+
+        # Mock Path
+        mock_path.return_value.stem.split.return_value = ['20220101']
+
+        # Mock yaml2dict
+        mock_yaml2dict.return_value = {
+            'global_attrs': {'sensor_name': 'PAR008', 'site_name': 'site'},
+            'log_dir': 'log_dir',
+            'telegram_fields': 'telegram_fields'
+        }
+
+        # Mock create_logger
+        mock_logger = Mock()
+        mock_create_logger.return_value = mock_logger
+
+
+        with self.assertRaises(SystemExit) as cm:
+            main(mock_args)
+
+        # Check that logger.error was called with the expected message
+        mock_logger.error.assert_called_once_with(msg="File type invalid not recognized")
+
+        # Check that the script exited with status 1
+        self.assertEqual(cm.exception.code, 1)
+
 

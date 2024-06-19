@@ -339,6 +339,7 @@ def main(args):
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
     else:
         logger.error(msg=f"File type {args.file_type} not recognized")
+        sys.exit(1)
     
 
     #create NetCDF
