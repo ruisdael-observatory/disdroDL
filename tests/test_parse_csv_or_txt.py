@@ -302,7 +302,7 @@ class ExportCSV_TXT(unittest.TestCase):
     @patch('parse_disdro_csv_or_txt.yaml2dict')
     @patch('parse_disdro_csv_or_txt.create_logger')
     @patch('parse_disdro_csv_or_txt.choose_sensor')
-    def test_main(self, mock_choose_sensor, mock_create_logger, mock_yaml2dict, mock_path):
+    def test_main_sensor_not_found(self, mock_choose_sensor, mock_create_logger, mock_yaml2dict, mock_path):
         # Mock arguments
         mock_args = Mock()
         mock_args.input = 'input_file'
