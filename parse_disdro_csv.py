@@ -322,6 +322,7 @@ def main(args):
     sensor = choose_sensor(sensor_name)
     if sensor is None:
         logger.error(msg=f"Sensor {sensor_name} not found")
+        return
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
@@ -337,7 +338,7 @@ def main(args):
     elif args.file_type == 'csv':
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
     else:
-        raise ValueError(f"File {args.file_type} type not recognized")
+        logger.error(msg=f"File type {args.file_type} not recognized")
     
 
     #create NetCDF

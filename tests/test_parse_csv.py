@@ -88,9 +88,9 @@ class ExportCSV(unittest.TestCase):
         '''
         Test the choose_sensor function
         '''
-        self.assertEqual(choose_sensor("sample_PAR.csv"), "PAR")
-        self.assertEqual(choose_sensor("sample_THIES.csv"), "THIES")
-        self.assertIsNone(choose_sensor("sample_OTHER.csv"))
+        self.assertEqual(choose_sensor("PAR008"), "PAR")
+        self.assertEqual(choose_sensor("THIES001"), "THIES")
+        self.assertIsNone(choose_sensor("OTHER"))
 
     def test_thies_telegram_to_dict(self):
         '''
@@ -298,20 +298,21 @@ class ExportCSV(unittest.TestCase):
         mock_process_txt_file.assert_called()
         mock_telegrams.__getitem__.assert_called_with('PAR')
 
-    @patch('parse_disdro_csv.choose_sensor', return_value=None)
+    @patch('parse_disdro_csv.choose_sensor')
+    @patch('parse_disdro_csv.create_logger')
     @patch('parse_disdro_csv.yaml2dict')
     @patch('parse_disdro_csv.Path')
-    def test_sensor_not_found(self, mock_path, mock_yaml2dict, mock_choose_sensor):
-        '''
-        Test if the main function raises an error if the sensor is not found
-        '''
+    def test_main(self, mock_path, mock_yaml2dict, mock_create_logger, mock_choose_sensor):
         mock_args = unittest.mock.Mock()
         mock_args.input = 'input_file'
         mock_args.config = 'config_file'
         mock_path.return_value.stem.split.return_value = ['20220101']
-        mock_yaml2dict.return_value = {'global_attrs': {'sensor_name': 'UNKNOWN', 'site_name': 'site'}}
+        mock_yaml2dict.return_value = {'log_dir': 'directory', 'global_attrs': {'sensor_name': 'UNKNOWN', 'site_name': 'site'}}
+        mock_logger = unittest.mock.Mock()
+        mock_create_logger.return_value = mock_logger
+        mock_choose_sensor.return_value = None
 
-        with self.assertRaises(ValueError) as context:
-            main(mock_args)
+        main(mock_args)
 
-        self.assertTrue('Sensor UNKNOWN not found' in str(context.exception))
+        mock_logger.error.assert_called_once_with(msg="Sensor UNKNOWN not found")
+
