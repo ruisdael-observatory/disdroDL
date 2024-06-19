@@ -20,6 +20,7 @@ def column_exists(cur, column_name):
     :param column_name: the name of the column to check
     :return: True if the column exists, False otherwise
     """
+    # This query gets info about the table including the column names
     cur.execute("PRAGMA table_info(disdrodl)")
     columns = cur.fetchall()
     for column in columns:
