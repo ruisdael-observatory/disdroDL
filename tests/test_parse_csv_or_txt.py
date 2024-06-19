@@ -156,7 +156,7 @@ class ExportCSV_TXT(unittest.TestCase):
     
     def test_sensor_not_found_bytestring_format(self):
         '''
-        Test if the process row method raises an error if the sensor is not found,
+        Test if the process row method calls the logger with an error if the sensor is not found,
         when a csv row is of length 3, this happens if all values of a telegram
         are in a bytestring
         '''
@@ -169,7 +169,7 @@ class ExportCSV_TXT(unittest.TestCase):
 
     def test_sensor_not_found_seperate_column_format(self):
         '''
-        Test if the process row method raises an error if the sensor is not found,
+        Test if the process row method calls the logger with an error if the sensor is not found,
         when a csv row is of a larger length than 3, this happens if all values of a telegram
         are in seperate columns
         '''
@@ -183,7 +183,7 @@ class ExportCSV_TXT(unittest.TestCase):
 
     def test_csv_format_not_recognized(self):
         '''
-        Test if the process row method raises an error if the CSV format is not recognized
+        Test if the process row method calls the logger with an error if the CSV format is not recognized
         '''
         csv_list = ['20220101-120000', '1641052800']
         sensor = 'PAR'
@@ -280,7 +280,6 @@ class ExportCSV_TXT(unittest.TestCase):
     def test_txt_loop(self, mock_telegrams, mock_process_txt_file, mock_listdir):
         '''
         Test if the txt loop method returns a list of dictionaries
-        :param mock_telegrams:
         '''
         # Arrange
         mock_listdir.return_value = ['file1.csv', 'file2.txt', 'file3.txt']
@@ -303,6 +302,8 @@ class ExportCSV_TXT(unittest.TestCase):
     @patch('parse_disdro_csv_or_txt.create_logger')
     @patch('parse_disdro_csv_or_txt.choose_sensor')
     def test_main_sensor_not_found(self, mock_choose_sensor, mock_create_logger, mock_yaml2dict, mock_path):
+        '''
+        Test if the main function exits with status 1 if the sensor is not found'''
         # Mock arguments
         mock_args = Mock()
         mock_args.input = 'input_file'
@@ -331,6 +332,10 @@ class ExportCSV_TXT(unittest.TestCase):
     @patch('parse_disdro_csv_or_txt.yaml2dict')
     @patch('parse_disdro_csv_or_txt.create_logger')
     def test_main_invalid_file_type(self, mock_create_logger, mock_yaml2dict, mock_path):
+        '''
+        Test if the main function calls the logger with an error and if it
+        exits with status 1 if the file type is not recognized
+        '''
         # Mock arguments
         mock_args = Mock()
         mock_args.input = 'input_file'
