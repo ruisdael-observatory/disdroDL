@@ -118,12 +118,12 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
     for field in txt_list:
         key_value = field.split(':')
         
-        #Get time
+        #Time can be found in field 20 and is in format key:HH:MM:SS
         if key_value[0] == '20':
             time = key_value[1] + key_value[2] + key_value[3]
             continue
 
-        #Get date
+        #Date can be found in field 21 and is in format key:dd.mm.yyyy
         if key_value[0] == '21':	
             date = key_value[1]
             continue
@@ -153,11 +153,7 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
         #Single value fields
         else:
             telegram_dict[key] = data_type(value) 
-
-    '''
-    Date can be found in field 21 and is in format key:dd.mm.yyyy
-    Time can be found in field 20 and is in format key:HH:MM:SS
-    '''
+    
     timestamp = datetime.strptime(date + time, "%d.%m.%Y%H%M%S")
 
     telegram_dict['timestamp'] = str(timestamp)
