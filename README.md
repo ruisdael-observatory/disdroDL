@@ -56,10 +56,10 @@ Make sure you run this script with the same config file that was used to run the
 
 **As Linux Systemd Service**: 
 * edit the config file name in [disdrodlv3_PARSIVEL.service](disdrodlv3_PARSIVEL.service) to match that of the station
-* create system link between local service file and service files location: `ln disdrodlv2.service /etc/systemd/system/disdrodlv2.service`
-* run: `systemctl enable disdrodlv2.service`
-* run: `systemctl start disdrodlv2.service`
-* check status: `systemctl status disdrodlv2.service`
+* create system link between local service file and service files location: `ln disdrodlv3_PARSIVEL.service /etc/systemd/system/disdrodlv3_PARSIVEL.service`
+* run: `systemctl enable disdrodlv3_PARSIVEL.service`
+* run: `systemctl start disdrodlv3_PARSIVEL.service`
+* check status: `systemctl status disdrodlv3_PARSIVEL.service`
 
 
 ## Outputs
