@@ -43,6 +43,10 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 * create a station-specific file and commit it to this repo (see [configs_netcdf/config_008_GV.yml](./configs_netcdf/config_008_GV.yml) as an example) 
 * install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress NetCDFs
 
+If you have run a previous version of disdroDL, you might need to update the database schema. To do this, run the following script:
+`python upgrade_db.py --config config_*.yml`
+Make sure you run this script with the same config file that was used to run the previous version of disdroDL.
+
 ## Run scripts
 **Manually**: 
 * Writes Parsivel/Thies Telegrams to sqlite3 DB `python main.py --config configs_netcdf/config_008_GV.yml` (usually ran as service, but can also be run as a standalone script)

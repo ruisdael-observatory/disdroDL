@@ -51,7 +51,7 @@ def parsival_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, c
     :param config_telegram_fields: dict of the config file, only the telegram_fields are passed
     '''
 
-    telegram_dict = {}
+    telegram_dict = {} 
     for i, key in enumerate(default_parsivel_telegram_indices):
         if(key == '90' or key == '91'):
             '''
@@ -111,23 +111,41 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
     :param config_telegram_fields: telegram fields from the config file
     '''
     telegram_dict = {}
+    date = ''
+    time = ''
     #All fields in the config dict
     fields = config_telegram_fields.keys()
     for field in txt_list:
         key_value = field.split(':')
+        
+        #Time can be found in field 20 and is in format key:HH:MM:SS
+        if key_value[0] == '20':
+            time = key_value[1] + key_value[2] + key_value[3]
+            continue
+
+        #Date can be found in field 21 and is in format key:dd.mm.yyyy
+        if key_value[0] == '21':	
+            date = key_value[1]
+            continue
+
         #Skip empty fields or fields without key:value
         if len(key_value) != 2:
             continue
 
         key, value = key_value
 
-        #Skip if key is not in the config dict
-        if key is not fields:
+        #Skip fields that are not in the config dict
+        if key not in fields:
+            continue
+
+        #Skip fields that should never be included in the netCDF
+        if(config_telegram_fields[key]['include_in_nc'] == 'never'):
             continue
 
         data_type = field_type[config_telegram_fields[key]['dtype']]
-        #List fields
-        if key == '90' or key == '91' or key == '93':  
+
+        #Multivalue fields
+        if len(config_telegram_fields[key]['dimensions']) > 1:  
             list_values = value.split(';')
             #List fields end with an empty string after split, remove it
             list_values.remove('')
@@ -135,15 +153,8 @@ def process_txt_file(txt_list: list, config_telegram_fields: dict):
         #Single value fields
         else:
             telegram_dict[key] = data_type(value) 
-
-    '''
-    Date can be found in field 21 and is in format key:dd.mm.yyyy
-    Time can be found in field 20 and is in format key:HH:MM:SS
-    '''
-    field_20 = txt_list[20].split(':')
-    field_21 = txt_list[21].split(':')
-    date = field_21[1] + field_20[1] + field_20[2] + field_20[3]
-    timestamp = datetime.strptime(date, "%d.%m.%Y%H%M%S")
+    
+    timestamp = datetime.strptime(date + time, "%d.%m.%Y%H%M%S")
 
     telegram_dict['timestamp'] = str(timestamp)
     telegram_dict['datetime'] = datetime.fromtimestamp(timestamp.timestamp(), tz=timezone.utc)
@@ -292,7 +303,6 @@ def main(args):
     '''
     input_path = Path(args.input)
     
-    
     #get date from input file
     get_date = input_path.stem.split('_')[0]
     date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
@@ -300,25 +310,26 @@ def main(args):
     wd = Path(__file__).parent
     config_dict_site = yaml2dict(path=wd / args.config)
 
+    ## Logger
+    logger = create_logger(log_dir=Path(config_dict_site['log_dir']),
+                           script_name=Path(__file__).name,
+                           sensor_name=config_dict_site['global_attrs']['sensor_name'])
+
     #Choose what sensor is used
     sensor_name = config_dict_site['global_attrs']['sensor_name']
+    site_name = config_dict_site['global_attrs']['site_name']
+
     sensor = choose_sensor(sensor_name)
+    if sensor is None:
+        logger.error(msg=f"Sensor {sensor_name} not found")
+        sys.exit(1)
 
     config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_files[sensor])
     config_dict = deep_update(config_dict, config_dict_site)
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fields have > 1 dimension
     
-
-    ## Logger
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                           script_name=Path(__file__).name,
-                           sensor_name=config_dict['global_attrs']['sensor_name'])
-
-    if sensor is None:
-        logger.error(msg=f"Sensor {sensor_name} not found")
-    
     # output file name
-    output_fn = f"{input_path.stem}"
+    output_fn = f"{input_path.stem}_{sensor_name}_{site_name}"
     output_directory = input_path.parent
 
     #iterate over all telegrams
@@ -327,8 +338,9 @@ def main(args):
     elif args.file_type == 'csv':
         telegram_objs = csv_loop(input_path, sensor, config_dict, conf_telegram_fields, logger)
     else:
-        raise ValueError(f"File {args.file_type} type not recognized")
+        logger.error(msg=f"File type {args.file_type} not recognized")
         sys.exit(1)
+    
 
     #create NetCDF
     nc = NetCDF(logger=logger,
