@@ -89,7 +89,7 @@ def test_db_schema(create_db_parsivel): # pylint: disable=unused-argument
     con, cur = connect_db(dbpath=str(db_path_parsivel))
     table_info = cur.execute("PRAGMA table_info('disdrodl');")
     table_info_res = table_info.fetchall()
-    table_cols = ['id', 'timestamp', 'datetime', 'parsivel_id', 'telegram']
+    table_cols = ['id', 'timestamp', 'datetime', 'sensor_id', 'telegram']
     table_cols_dt = ['INTEGER', 'REAL', 'TEXT', 'TEXT', 'TEXT']
     for i, col in enumerate(table_info_res):
         print(col)
@@ -123,10 +123,10 @@ def test_db_insert_parsivel(create_db_parsivel): # pylint: disable=unused-argume
     con.commit()
 
     # query
-    res = cur.execute("SELECT id, timestamp, datetime, parsivel_id, telegram FROM disdrodl")
+    res = cur.execute("SELECT id, timestamp, datetime, sensor_id, telegram FROM disdrodl")
     for i in res.fetchall():
         assert isinstance(telegram.telegram_data_str, str) is True
-        id_, timestamp, datetime_, parsivel_id, telegram_str = i
+        id_, timestamp, datetime_, sensor_id, telegram_str = i
         assert isinstance(id_, int) is True
         assert isinstance(timestamp, float) is True
         timestamp_as_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
@@ -135,7 +135,7 @@ def test_db_insert_parsivel(create_db_parsivel): # pylint: disable=unused-argume
         assert datetime_as_dt == now.utc
         assert timestamp_as_dt == datetime_as_dt
         assert isinstance(datetime_, str) is True
-        assert parsivel_id == config_dict_parsivel['global_attrs']['sensor_name']
+        assert sensor_id == config_dict_parsivel['global_attrs']['sensor_name']
         assert isinstance(telegram_str, str) is True
 
     res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
@@ -169,10 +169,10 @@ def test_db_insert_thies(create_db_thies): # pylint: disable=unused-argument
     con.commit()
 
     # query
-    res = cur.execute("SELECT id, timestamp, datetime, parsivel_id, telegram FROM disdrodl")
+    res = cur.execute("SELECT id, timestamp, datetime, sensor_id, telegram FROM disdrodl")
     for i in res.fetchall():
         assert isinstance(telegram.telegram_data_str, str) is True
-        id_, timestamp, datetime_, parsivel_id, telegram_str = i
+        id_, timestamp, datetime_, sensor_id, telegram_str = i
         assert isinstance(id_, int) is True
         assert isinstance(timestamp, float) is True
         timestamp_as_dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
@@ -181,7 +181,7 @@ def test_db_insert_thies(create_db_thies): # pylint: disable=unused-argument
         assert datetime_as_dt == now.utc
         assert timestamp_as_dt == datetime_as_dt
         assert isinstance(datetime_, str) is True
-        assert parsivel_id == config_dict_thies['global_attrs']['sensor_name']
+        assert sensor_id == config_dict_thies['global_attrs']['sensor_name']
         assert isinstance(telegram_str, str) is True
 
     res = cur.execute("SELECT COUNT(*) FROM disdrodl;")
