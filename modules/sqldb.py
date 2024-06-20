@@ -30,7 +30,7 @@ def create_db(dbpath):
     """
     This function creates disdrodl.db at the specified path.
     with Table: disdrodl
-    with columns id, timestamp, parsivel_id, telegram
+    with columns id, timestamp, sensor_id, telegram
     :param dbpath: the path to create disdrodl.db at as a string
     """
     con, cur = connect_db(dbpath=str(dbpath))
@@ -40,7 +40,7 @@ def create_db(dbpath):
                     id INTEGER PRIMARY KEY,
                     timestamp REAL,
                     datetime TEXT,
-                    parsivel_id TEXT,
+                    sensor_id TEXT,
                     telegram TEXT
                 )
                 """)

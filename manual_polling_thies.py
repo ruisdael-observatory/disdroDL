@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
         output = thies.read(logger)
 
-        insert = 'INSERT INTO disdrodl(timestamp, datetime, parsivel_id, telegram) VALUES'
+        insert = 'INSERT INTO disdrodl(timestamp, datetime, sensor_id, telegram) VALUES'
 
         timestamp_str = now_time.utc.isoformat()
         ts = now_time.utc.timestamp()
