@@ -305,7 +305,10 @@ def main(args):
     
     #get date from input file
     get_date = input_path.stem.split('_')[0]
+    
     date = datetime(int(get_date[:4]), int(get_date[4:6]), int(get_date[6:8]))
+    #date string for output file
+    date_str = get_date[:8]
     ## Config
     wd = Path(__file__).parent
     config_dict_site = yaml2dict(path=wd / args.config)
@@ -329,7 +332,7 @@ def main(args):
     conf_telegram_fields = config_dict['telegram_fields']  # multivalue fields have > 1 dimension
     
     # output file name
-    output_fn = f"{input_path.stem}_{sensor_name}_{site_name}"
+    output_fn = f"{str(date_str)}_{sensor_name}_{site_name}"
     output_directory = input_path.parent
 
     #iterate over all telegrams
