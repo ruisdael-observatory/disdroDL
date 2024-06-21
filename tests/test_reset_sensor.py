@@ -25,19 +25,19 @@ class TestResetParsivel(unittest.TestCase):
         mock_parser = Mock()
         mock_argument_parser.return_value = mock_parser
         mock_args = Mock()
-        mock_args.config = "config_008_GV.yml"
+        mock_args.config = "config_PAR_008_GV.yml"
         mock_parser.parse_args.return_value = mock_args
 
         res = get_config_file()
 
-        self.assertEqual(res, "config_008_GV.yml")
+        self.assertEqual(res, "config_PAR_008_GV.yml")
         mock_argument_parser.assert_called_once_with(
             description="Ruisdael: OTT Disdrometer reset. Run: python reset_sensor.py -c config_*.yml"
         )
         mock_parser.add_argument.assert_called_once_with('-c',
                                                          '--config',
                                                          required=True,
-                                                         help='Observation site config file. ie. -c config_008_GV.yml')
+                                                         help='Observation site config file. ie. -c config_PAR_008_GV.yml')
         mock_parser.parse_args.assert_called_once()
 
     @patch('reset_sensor.create_logger')
@@ -70,10 +70,10 @@ class TestResetParsivel(unittest.TestCase):
         mock_parsivel.return_value = mock_parsivel_obj
 
         expected_calls_yaml2dict = [
-            call(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
+            call(path=wd / 'configs_netcdf' / 'config_PAR_008_GV.yml')
         ]
 
-        reset_sensor.main('config_008_GV.yml')
+        reset_sensor.main('config_PAR_008_GV.yml')
 
         mock_yaml2dict.assert_has_calls(expected_calls_yaml2dict)
         mock_parsivel.assert_called_once()

@@ -26,7 +26,7 @@ from modules.netCDF import unpack_telegram_from_db
 
 wd = Path(__file__).parent.parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
-config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_007_CABAUW.yml')
+config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_PAR_007_CABAUW.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 
 telegram_lines = [b'OK\r\n',
@@ -96,7 +96,7 @@ class UtilFunctionsTests(unittest.TestCase):
         """
         mock_logger = Mock()
 
-        config_dict_par008 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
+        config_dict_par008 = yaml2dict(path=wd / 'configs_netcdf' / 'config_PAR_008_GV.yml')
         config_dict_general = get_general_config_dict(wd, config_dict_par008['global_attrs']['sensor_type'], mock_logger)
 
         assert config_dict_general['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
@@ -110,7 +110,7 @@ class UtilFunctionsTests(unittest.TestCase):
         """
         mock_logger = Mock()
 
-        config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_006_GV_THIES.yml')
+        config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_THIES_006_GV.yml')
         config_dict_general = get_general_config_dict(wd, config_dict_thies006['global_attrs']['sensor_type'], mock_logger)
 
         assert config_dict_general['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number'

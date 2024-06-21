@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     # -- Config files --
     wd = Path(__file__).parent
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_006_GV_THIES.yml')
+    config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_THIES_006_GV.yml')
 
     # -- DB --
     db_path = Path(config_dict['data_dir']) / 'disdrodl-thies.db'
