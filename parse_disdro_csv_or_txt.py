@@ -92,15 +92,16 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
     telegram_indices = list(config_telegram_fields.keys())[1:]
     telegram_dict = {}
     for index, field_n in enumerate(telegram_indices):
+        if(config_telegram_fields[field_n]['include_in_nc'] == 'never'):
+            continue
         if(field_n == '81'):
-            telegram_dict[field_n] = [int(x) for x in telegram[index:index+439]]
-        elif(field_n > '520'):
-            telegram_dict[field_n] = field_type[config_telegram_fields[field_n]['dtype']](telegram[index+439])
-        else:
+            telegram_dict[field_n] = [int(x) for x in telegram[index:index+440]]
+        else: 
+            if((index > 60 and index < 79) or field_n == '47'):
+                print(index, field_n, telegram[index])
             telegram_dict[field_n] = field_type[config_telegram_fields[field_n]['dtype']](telegram[index])
-    telegram_dict['2'] = telegram_dict['2'].split(',')[-1]
+
     telegram_dict['datetime'] = dt
-    
     telegram_dict['timestamp'] = str(ts)
     return telegram_dict
 
@@ -341,7 +342,7 @@ def main(args):
         logger.error(msg=f"File type {args.file_type} not recognized")
         sys.exit(1)
     
-
+    
     #create NetCDF
     nc = NetCDF(logger=logger,
                 config_dict=config_dict,
