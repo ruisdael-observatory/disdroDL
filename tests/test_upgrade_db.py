@@ -16,19 +16,19 @@ class TestUpgradeDb(unittest.TestCase):
         mock_parser = Mock()
         mock_argument_parser.return_value = mock_parser
         mock_args = Mock()
-        mock_args.config = "config_008_GV.yml"
+        mock_args.config = "config_PAR_008_GV.yml"
         mock_parser.parse_args.return_value = mock_args
 
         res = get_config_file()
 
-        self.assertEqual(res, "config_008_GV.yml")
+        self.assertEqual(res, "config_PAR_008_GV.yml")
         mock_argument_parser.assert_called_once_with(
             description="Upgrade the disdrodl.db database to change the column name from 'parsivel_id' to 'sensor_id"
         )
         mock_parser.add_argument.assert_called_once_with('-c',
                                                          '--config',
                                                          required=True,
-                                                         help='Path to site config file. ie. -c configs_netcdf/config_008_GV.yml')
+                                                         help='Path to site config file. ie. -c configs_netcdf/config_PAR_008_GV.yml')
         mock_parser.parse_args.assert_called_once()
 
     @patch('upgrade_db.connect_db')
@@ -64,7 +64,7 @@ class TestUpgradeDb(unittest.TestCase):
             'data_dir': 'value1',
         }
 
-        upgrade_db.main('config_008_GV.yml')
+        upgrade_db.main('config_PAR_008_GV.yml')
         mock_cur.execute.assert_called_once()
         mock_con.commit.assert_called_once()
         mock_cur.close.assert_called_once()
@@ -88,7 +88,7 @@ class TestUpgradeDb(unittest.TestCase):
 
         exited = False
         try:
-            upgrade_db.main('config_008_GV.yml')
+            upgrade_db.main('config_PAR_008_GV.yml')
         except SystemExit:
             exited = True
         assert exited is True

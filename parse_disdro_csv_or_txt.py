@@ -275,7 +275,7 @@ def parse_arguments():
     '''
     parser = ArgumentParser(
         description="Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF. \
-            Run: python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml\
+            Run: python parse_disdro_csv.py -c configs_netcdf/config_PAR_007_CABAUW.yml\
                 -i sample_data/20231106_PAR007_CabauwTower.csv \
             Output netCDF: store in same directory as input file"
         )
@@ -283,7 +283,7 @@ def parse_arguments():
         '-c',
         '--config',
         required=True,
-        help='Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml')
+        help='Path to site config file. ie. -c configs_netcdf/config_PAR_007_CABAUW.yml')
     parser.add_argument(
         '-i',
         '--input',

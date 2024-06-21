@@ -57,7 +57,7 @@ class ExportParsivelTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV.yml'
+        mock_args.config = 'configs_netcdf/config_PAR_008_GV.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'full'
 
@@ -91,7 +91,7 @@ class ExportParsivelTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV.yml'
+        mock_args.config = 'configs_netcdf/config_PAR_008_GV.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'light'
 
@@ -135,7 +135,7 @@ class ExportThiesTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_006_GV_THIES.yml'
+        mock_args.config = 'configs_netcdf/config_THIES_006_GV.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'full'
 
@@ -169,7 +169,7 @@ class ExportThiesTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_006_GV_THIES.yml'
+        mock_args.config = 'configs_netcdf/config_THIES_006_GV.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'light'
 
@@ -236,7 +236,7 @@ class ExportArgumentExceptionTests(unittest.TestCase):
         :param mock_create_dir: Mock object for creating the output directory
         """
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV.yml'
+        mock_args.config = 'configs_netcdf/config_PAR_008_GV.yml'
         mock_args.date = '2024'
         mock_args.version = 'full'
 
@@ -266,7 +266,7 @@ class ExportArgumentExceptionTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV.yml'
+        mock_args.config = 'configs_netcdf/config_PAR_008_GV.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'bad'
 
@@ -314,7 +314,7 @@ class EmptyExportTests(unittest.TestCase):
             os.remove(output_file_path)
 
         mock_args = Mock()
-        mock_args.config = 'configs_netcdf/config_008_GV.yml'
+        mock_args.config = 'configs_netcdf/config_PAR_008_GV.yml'
         mock_args.date = '2024-01-01'
         mock_args.version = 'full'
 
