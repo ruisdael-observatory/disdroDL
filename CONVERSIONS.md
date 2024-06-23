@@ -8,6 +8,10 @@ Each TXT represents one telegram, which means a whole directory of 1440 TXT's ne
 ## Parsing a CSV
 When parsing a CSV, one should be in the main directory of `python-logging-software` where `parse_disdro_csv.py` is located. For calling the script the *site config* file and a CSV need to be specified, e.g. `python3 parse_disdro_csv.py -c configs_netcdf/config_008_GV.yml -i sample_data/20230116_Delft-GV_PAR008.csv -f csv`. The netCDF will then be exported to the same directory as the CSV, in this case `sample_data`. The script will detect what sensor is relevant from the site config file and it also detects what format the CSV is in.
 
+
+## Output 
+The NetCDF will be in the format `{date}_{sensor-name}_{site-name}.nc`. It can be opened in Panoply.
+
 ## Formats for CSV
 
 The CSVs this script can parse come in 4 different formats, 2 for Parsivel and 2 for Thies. Both formats for each respective sensor have the same difference, the values from the telegram are all saved in a byte string in a single column or each value has an own column. A matrix to illustrate in which 4 boxes a CSV format can be categorized in:
@@ -24,9 +28,14 @@ In the Parsivel CSVs field 61 is never documented, although it is in the config 
 
 On the website where one can find these CSVs, one might find CSVs labeled SVF (single value fields). The script isn't able to parse these CSVs.
 
-## Output 
-The NetCDF will be in the format `{date}_{sensor-name}_{site-name}.nc`. It can be opened in Panoply.
+### Examples
+#### Bytestring Thies
+![](docs/Thies_ByteSTr.png)
+#### Seperate Columns Thies
+![](docs/Thies_SV.png)
 
+#### Bytestring Parsivel
+![](docs/PAR_ByteStr.png)
+#### Seperate Columns Parsivel
+![](docs/PAR_SV.png)
 
-## Example CSV's
-### Bytestring Thies
