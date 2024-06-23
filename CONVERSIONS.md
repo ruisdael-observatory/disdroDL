@@ -26,7 +26,25 @@ For the bytestring CSVs, a row has 3 values: A datetime, a Posix timestamp, and 
 
 In the Parsivel CSVs field 61 is never documented, although it is in the config files and the Parsivel documentation. This is due to the way the Parsivels are set up, this field needs a different configuration to be requested. 
 
-On the website where one can find these CSVs, one might find CSVs labeled SVF (single value fields). The script isn't able to parse these CSVs.
+`$ python parse_disdro_csv_or_txt --help` printout:
+
+```Unix
+usage: parse_disdro_csv_or_txt.py [-h] -c CONFIG -i INPUT [-f FILE_TYPE]
+
+Parser for historical Ruisdael's OTT Parsivel CSVs or TXTs. Converts CSV or directory of TXTs to netCDF. Run: python
+parse_disdro_csv_or_txt.py -c configs_netcdf/config_007_CABAUW.yml -i sample_data/20231106_PAR007_CabauwTower.csv -f csv or
+python parse_disdro_csv_or_txt.py -c configs_netcdf/config_007_CABAUW.yml -i sample_data/20231106_PAR007_CabauwTower.txt -f txt
+Output netCDF: store in same directory as input file
+
+options:
+  -h, --help            show this help message and exit
+  -c CONFIG, --config CONFIG
+                        Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml
+  -i INPUT, --input INPUT
+                        Path to input CSV file. ie. -i sample_data/20231106_PAR007_CabauwTower.csv
+  -f FILE_TYPE, --file_type FILE_TYPE
+                        File type of the input file(s). ie. -f csv or -f txt
+```
 
 ### Examples
 #### Bytestring Thies
