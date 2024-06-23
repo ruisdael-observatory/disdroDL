@@ -118,7 +118,7 @@ def get_config_file():
         '-c',
         '--config',
         required=True,
-        help='Path to site config file. ie. -c configs_netcdf/config_008_GV.yml')
+        help='Path to site config file. ie. -c configs_netcdf/config_PAR_008_GV.yml')
     args = parser.parse_args()
     return args.config
 

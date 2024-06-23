@@ -287,7 +287,7 @@ def parse_arguments():
         '-c',
         '--config',
         required=True,
-        help='Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml')
+        help='Path to site config file. ie. -c configs_netcdf/config_PAR_007_CABAUW.yml')
     parser.add_argument(
         '-i',
         '--input',

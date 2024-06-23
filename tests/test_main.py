@@ -91,7 +91,7 @@ class TestIntegration(unittest.TestCase):
         mock_yaml2dict.return_value = test_conf_dict_site
         mock_sys.exit.side_effect = sys.exit
         with pytest.raises(SystemExit):
-            main('config_008_GV.yml')
+            main('config_PAR_008_GV.yml')
 
         mock_sys.exit.assert_called_once_with(1)
         mock_logger.error.assert_called_once_with(msg="Sensor type sensor_type not recognized")
@@ -147,7 +147,7 @@ class TestIntegration(unittest.TestCase):
             os.remove(f'sample_data/{db_name}')
 
         with self.assertRaises(KeyboardInterrupt):
-            main('configs_netcdf/config_006_GV_THIES.yml')
+            main('configs_netcdf/config_THIES_006_GV.yml')
 
         con, cur = connect_db(dbpath=f'sample_data/{db_name}')
         number_of_rows = len(con.execute('SELECT * FROM disdrodl').fetchall())
@@ -209,7 +209,7 @@ class TestIntegration(unittest.TestCase):
             os.remove(f'sample_data/{db_name}')
 
         with self.assertRaises(KeyboardInterrupt):
-            main('configs_netcdf/config_008_GV.yml')
+            main('configs_netcdf/config_PAR_008_GV.yml')
 
         con, cur = connect_db(dbpath=f'sample_data/{db_name}')
         number_of_rows = len(con.execute('SELECT * FROM disdrodl').fetchall())
@@ -280,7 +280,7 @@ class TestIntegration(unittest.TestCase):
             os.remove(f'sample_data/{db_name}')
 
         with self.assertRaises(KeyboardInterrupt):
-            main('configs_netcdf/config_006_GV_THIES.yml')
+            main('configs_netcdf/config_THIES_006_GV.yml')
 
         assert mock_connection.commit.call_count == 0
         assert mock_connection.close.call_count == 1

@@ -40,7 +40,7 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 * create a log directory with read and write permissions to all users: `sudo mkdir /var/log/disdroDL/; sudo chmod a+rw /var/log/disdroDL` 
 * create a data directory with read and write permissions to all users: `sudo mkdir /data/disdroDL/; sudo chmod a+rw /data/disdroDL` 
 * run [reset_parsivel](./reset_sensor.py): `python reset_sensor.py -c config_*.yml` to reset the sensor time and accumulated rain amount **(TODO:confirm)** 
-* create a station-specific file and commit it to this repo (see [configs_netcdf/config_008_GV.yml](./configs_netcdf/config_008_GV.yml) as an example) 
+* create a station-specific file and commit it to this repo (see [configs_netcdf/config_008_GV.yml](./configs_netcdf/config_PAR_008_GV.yml) as an example) 
 * install netcdf-bin: `sudo apt install netcdf-bin`, to be able to compress NetCDFs
 
 If you have run a previous version of disdroDL, you might need to update the database schema. To do this, run the following script:
@@ -83,8 +83,8 @@ The NetCDF files are automatically compressed.
 * Configuration files:
     * general Parsivel: [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml)
     * general Thies: [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml)
-    * specific Parsivel: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_008_GV.yml) - *create 1 per Parsivel*
-    * specific Thies: e.g., [configs_netcdf/config_006_GV_THIES.yml](configs_netcdf/config_006_GV_THIES.yml) - *create 1 per Thies*
+    * specific Parsivel: e.g., [configs_netcdf/config_008_GV.yml](configs_netcdf/config_PAR_008_GV.yml) - *create 1 per Parsivel*
+    * specific Thies: e.g., [configs_netcdf/config_006_GV_THIES.yml](configs_netcdf/config_THIES_006_GV.yml) - *create 1 per Thies*
 * Export script [export_disdrodlDB2NC.py](export_disdrodlDB2NC.py) - exports 1 day of measurements from DB to NetCDF file
 * Functions and classes are in their matching files in the modules folder:
 * function for creating the logger - [modules/log.py](modules/log.py)

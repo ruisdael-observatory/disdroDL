@@ -28,14 +28,14 @@ def get_arguments():
     """
     parser = ArgumentParser(
         description="Export 1 day of parsivel data from DB to NetCDF.\
-            Run: python export_daily_netcdf.py -c configs_netcdf/config_007_CABAUW.yml\
+            Run: python export_daily_netcdf.py -c configs_netcdf/config_PAR_007_CABAUW.yml\
                 -d 2023-12-17 \
             Output netCDF: store in same directory as input file")
     parser.add_argument(
         '-c',
         '--config',
         required=True,
-        help='Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml')
+        help='Path to site config file. ie. -c configs_netcdf/config_PAR_007_CABAUW.yml')
     parser.add_argument(
         '-d',
         '--date',

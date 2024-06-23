@@ -16,7 +16,7 @@ def get_config_file():
     """
     parser = ArgumentParser(
         description="Ruisdael: OTT Disdrometer reset. Run: python reset_sensor.py -c config_*.yml")
-    parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_008_GV.yml')
+    parser.add_argument('-c', '--config', required=True, help='Observation site config file. ie. -c config_PAR_008_GV.yml')
     args = parser.parse_args()
     return args.config
 
