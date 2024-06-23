@@ -26,7 +26,7 @@ For the bytestring CSVs, a row has 3 values: A datetime, a Posix timestamp, and 
 
 In the Parsivel CSVs field 61 is never documented, although it is in the config files and the Parsivel documentation. This is due to the way the Parsivels are set up, this field needs a different configuration to be requested. 
 
-`$ python parse_disdro_csv_or_txt --help` printout:
+`$ python parse_disdro_csv_or_txt.py --help` printout:
 
 ```Unix
 usage: parse_disdro_csv_or_txt.py [-h] -c CONFIG -i INPUT [-f FILE_TYPE]
