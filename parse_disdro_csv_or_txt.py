@@ -96,9 +96,7 @@ def thies_telegram_to_dict(telegram: list[str], dt: datetime, ts: datetime, conf
             continue
         if(field_n == '81'):
             telegram_dict[field_n] = [int(x) for x in telegram[index:index+440]]
-        else: 
-            if((index > 60 and index < 79) or field_n == '47'):
-                print(index, field_n, telegram[index])
+        else:
             telegram_dict[field_n] = field_type[config_telegram_fields[field_n]['dtype']](telegram[index])
 
     telegram_dict['datetime'] = dt
