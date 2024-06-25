@@ -6,4 +6,3 @@ netCDF4
 pydantic
 chardet
 pylint
-
