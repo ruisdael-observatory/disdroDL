@@ -142,6 +142,9 @@ class NetCDF:
 
                 # check that the variable has 2 or fewer dimensions and if so add to netCDF
                 if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
+                    # if(key == '63'):
+                    #     for telegram_obj in self.telegram_objs:
+                    #         print(telegram_obj.telegram_data[key])
                     all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
                     netCDF_var[:] = all_items_val
 
@@ -172,7 +175,6 @@ class NetCDF:
                             all_f81_items_val.append(reshaped_f81)
                             self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
                                                   f' from {telegram_obj.timestamp} successfully reshaped')
-
                     netCDF_var[:] = all_f81_items_val
 
         netCDF_rootgrp.close()

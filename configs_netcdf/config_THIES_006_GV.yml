@@ -18,7 +18,7 @@ global_attrs:
     site_name: 'Green_Village'
     sensor_name: THIES006
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
+    contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
     license: 'CC BY 4.0 https://creativecommons.org/licenses/by-sa/4.0/'
     logging_software: 'https://github.com/ruisdael-observatory/disdroDL'
     version: '0.3.0'
