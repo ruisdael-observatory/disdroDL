@@ -15,19 +15,19 @@ global_attrs:
     history: '-'
     netcdf_version: '0.1.0'
     Conventions: 'CF-1.7'
-    site_name: 'KNMI_Cabauw'
-    sensor_name: PAR002
+    site_name: 'KNMI_Cabauw_Tower'
+    sensor_name: PAR007
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
+    contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
     sensor_type: 'OTT Hydromet Parsivel2'
-    sensor_serial_number: '450543'
+    sensor_serial_number: '450541'
 
 variables:
     latitude:
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 51.968317
+            - 51.970275
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_north'
@@ -37,7 +37,7 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 4.929234
+            - 4.926202
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_east'
@@ -47,7 +47,7 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 1
+            - 180
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'm'

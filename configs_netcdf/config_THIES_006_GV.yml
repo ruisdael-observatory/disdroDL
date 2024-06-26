@@ -1,33 +1,37 @@
 # sensor and script settings
-station_code: 'REFORM2024' # keep under 10 characters, max accepted by Parsivel
-port: '/dev/ttyUSB0'
-baud: 19200
+station_code: 'GV'
+port: '/dev/ttyACM0'
+baud: 9600
 script_name: 'capture_disdro_data.py'
-data_dir: '/data/disdroDL/'
-log_dir: '/var/log/disdroDL/'
+data_dir: '/data/disdroDL/thies/'
+log_dir: '/var/log/disdroDL/thies/'
 
 ######### NETCDF ###########
 # global attributes (all will be written to netCDF as global attributes)
 global_attrs:
-    title: 'OTT Parsivel2 disdrometer data'
+    title: 'Thies Clima disdrometer data'
     institution: 'Delft University of Technology'
     source: 'surface observation'
     history: '-'
     netcdf_version: '0.1.0'
     Conventions: 'CF-1.7'
-    site_name: 'Warmenhuizen'
-    sensor_name: PAR003
+    site_name: 'Green_Village'
+    sensor_name: THIES006
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
-    sensor_type: 'OTT Hydromet Parsivel2'
-    sensor_serial_number: '450909'
+    contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
+    license: 'CC BY 4.0 https://creativecommons.org/licenses/by-sa/4.0/'
+    logging_software: 'https://github.com/ruisdael-observatory/disdroDL'
+    version: '0.3.0'
+    sensor_type: 'Thies Clima'
+    sensor_serial_number: '0854'
+    sensor_software_version: '2.1'
 
 variables:
     latitude:
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 52.725510
+            - 51.996068
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_north'
@@ -37,7 +41,7 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 4.775391
+            - 4.378701
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_east'
@@ -51,5 +55,6 @@ variables:
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'm'
-            long_name: 'Altitude of site'
+            long_name: 'Altitude of site, in meters above mean sea level'
             standard_name: 'altitude'
+    

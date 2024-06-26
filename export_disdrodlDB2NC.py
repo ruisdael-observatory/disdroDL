@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from datetime import datetime, date, timedelta, timezone
 from pathlib import Path
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, get_general_config, create_dir, create_logger
+from modules.util_functions import yaml2dict, get_general_config_dict, create_dir, create_logger
 from modules.telegram import create_telegram
 from modules.netCDF import NetCDF
 from modules.sqldb import query_db_rows_gen, connect_db
@@ -28,14 +28,14 @@ def get_arguments():
     """
     parser = ArgumentParser(
         description="Export 1 day of parsivel data from DB to NetCDF.\
-            Run: python export_daily_netcdf.py -c configs_netcdf/config_007_CABAUW.yml\
+            Run: python export_daily_netcdf.py -c configs_netcdf/config_PAR_007_CABAUW.yml\
                 -d 2023-12-17 \
             Output netCDF: store in same directory as input file")
     parser.add_argument(
         '-c',
         '--config',
         required=True,
-        help='Path to site config file. ie. -c configs_netcdf/config_007_CABAUW.yml')
+        help='Path to site config file. ie. -c configs_netcdf/config_PAR_007_CABAUW.yml')
     parser.add_argument(
         '-d',
         '--date',
@@ -62,16 +62,19 @@ def main(args):
     # Get the sensor type from the site specific config file
     sensor_type = config_dict_site['global_attrs']['sensor_type']
 
+    # Create the logger object
+    logger = create_logger(log_dir=Path(config_dict_site['log_dir']),
+                           script_name='disdro_db2nc',
+                           sensor_name=config_dict_site['global_attrs']['sensor_name'])
+
     # Use the general config file which corresponds to the sensor type
-    config_dict = get_general_config(wd, sensor_type)
+    config_dict_general = get_general_config_dict(wd, sensor_type, logger)
+
+    if config_dict_general is None:
+        sys.exit(1)
 
     # Combine the site specific config file and the sensor type specific config file into one
-    config_dict = deep_update(config_dict, config_dict_site)
-
-    # Create the logger object
-    logger = create_logger(log_dir=Path(config_dict['log_dir']),
-                           script_name='disdro_db2nc',
-                           sensor_name=config_dict['global_attrs']['sensor_name'])
+    config_dict = deep_update(config_dict_general, config_dict_site)
 
     # Create a boolean from the version name to indicate a full or light version
     if args.version == 'full':
@@ -92,11 +95,8 @@ def main(args):
     if full_version is False:
         fn_start = f"{fn_start}_light"
 
-    # Use the database with data from the Thies in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
-        db_path = Path("sample_data/disdrodl-test1.db")
-    else:
-        db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+    # Path to the database
+    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
 
     # Log the starting messages to the logger
     msg_conf = f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}"
@@ -135,11 +135,7 @@ def main(args):
         sys.exit(1)
 
     # Directory to put the netCDF file in
-    # Put the netCDF in sample_data if the provided site config file is from the Thies
-    if sensor_type == 'Thies Clima':
-        data_dir = Path('sample_data/')
-    else:
-        data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
+    data_dir = Path(config_dict['data_dir']) / date_dt.strftime('%Y%m')
 
     # Create data directory if it does not exist yet
     created_data_dir = create_dir(path=data_dir)
@@ -160,10 +156,7 @@ def main(args):
 
     nc.create_netCDF()
 
-    if sensor_type == 'Thies Clima':
-        nc.write_data_to_netCDF_thies()
-    else:
-        nc.write_data_to_netCDF_parsivel()
+    nc.write_data_to_netCDF()
 
     nc.compress()
 

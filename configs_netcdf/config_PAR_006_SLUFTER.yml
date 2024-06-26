@@ -1,5 +1,5 @@
 # sensor and script settings
-station_code: 'GV' # keep under 10 characters, max accepted by Parsivel
+station_code: 'SLUFTER' # keep under 10 characters, max accepted by Parsivel
 port: '/dev/ttyUSB0'
 baud: 19200
 script_name: 'capture_disdro_data.py'
@@ -15,19 +15,19 @@ global_attrs:
     history: '-'
     netcdf_version: '0.1.0'
     Conventions: 'CF-1.7'
-    site_name: 'Green_Village'
-    sensor_name: PAR008
+    site_name: 'TNO_Slufter'
+    sensor_name: PAR006
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
+    contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
     sensor_type: 'OTT Hydromet Parsivel2'
-    sensor_serial_number: '450994'
+    sensor_serial_number: '450906'
 
 variables:
     latitude:
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 51.996068
+            - 51.933496
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_north'
@@ -37,7 +37,7 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 4.378701
+            - 3.999849
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_east'
@@ -47,10 +47,9 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 1
+            - 3
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'm'
             long_name: 'Altitude of site'
             standard_name: 'altitude'
-    

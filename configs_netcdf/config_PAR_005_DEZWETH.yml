@@ -1,5 +1,5 @@
 # sensor and script settings
-station_code: 'LUTJEWAD' # keep under 10 characters, max accepted by Parsivel
+station_code: 'DEZWETH' # keep under 10 characters, max accepted by Parsivel
 port: '/dev/ttyUSB0'
 baud: 19200
 script_name: 'capture_disdro_data.py'
@@ -15,19 +15,19 @@ global_attrs:
     history: '-'
     netcdf_version: '0.1.0'
     Conventions: 'CF-1.7'
-    site_name: 'Lutjewad_Atmospheric_Station'
-    sensor_name: PAR009
+    site_name: 'TNO_De_Zweth'
+    sensor_name: PAR005
     project_name: 'https://ruisdael-observatory.nl/'
-    contributors: 'Marc Schleiss, Saverio Guzzo, Rob Mackenzie, Andre Castro, Mahaut Sourzac'
+    contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
     sensor_type: 'OTT Hydromet Parsivel2'
-    sensor_serial_number: '450907'
+    sensor_serial_number: '450905'
 
 variables:
     latitude:
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 53.4038888
+            - 51.964374
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_north'
@@ -37,7 +37,7 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 6.353868
+            - 4.394592
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_east'

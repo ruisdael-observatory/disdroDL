@@ -55,7 +55,7 @@ class Sensor(ABC):
         """
 
     @abstractmethod
-    def sensor_start_sequence(self, config_dict, logger):
+    def sensor_start_sequence(self, config_dict, logger, include_in_log: bool):
         """
         Abstract function for executing the startup sequence for a sensor.
         This function performs the necessary initialization steps to configure a
@@ -64,6 +64,7 @@ class Sensor(ABC):
         :param config_dict: Dictionary containing configuration parameters
                             for the sensor.
         :param logger: Logger for logging information and errors
+        :param include_in_log: Whether the start sequence should be included in the log
         """
 
     @abstractmethod
@@ -134,7 +135,7 @@ class Parsivel(Sensor):
             sys.exit()
         self.serial_connection = parsivel
 
-    def sensor_start_sequence(self, config_dict, logger):
+    def sensor_start_sequence(self, config_dict, logger, include_in_log: bool):
         """
         Executes the startup sequence for the Parsivel sensor.
         This function performs the necessary initialization steps to configure the
@@ -143,8 +144,10 @@ class Parsivel(Sensor):
         :param config_dict: Dictionary containing configuration parameters
                             for the sensor.
         :param logger: Logger for logging information and errors
+        :param include_in_log: Whether the start sequence should be included in the log
         """
-        logger.info(msg="Starting parsivel start sequence commands")
+        if include_in_log:
+            logger.info(msg="Starting parsivel start sequence commands")
         self.serial_connection.reset_input_buffer()  # Flushes input buffer
 
         # Sets the name of the Parsivel, maximum 10 characters
@@ -176,7 +179,7 @@ class Parsivel(Sensor):
         :param logger: Logger for logging information
         :param factory_reset: Whether the factory reset should be performed
         """
-        logger.info(msg="Reseting Parsivel")
+        logger.info(msg="Resetting Parsivel")
         if factory_reset:
             parsivel_reset_code = 'CS/F/1\r'.encode('utf-8')
             self.write(parsivel_reset_code, logger)
@@ -264,16 +267,18 @@ class Thies(Sensor):
             logger.error(msg=e)
             sys.exit()
 
-    def sensor_start_sequence(self, config_dict, logger):
+    def sensor_start_sequence(self, config_dict, logger, include_in_log: bool):
         """
         Send the serial commands to the thies that changes the necessary parameters.
         :param config_dict: the configuration dictionary
         :param logger: the logger object
+        :param include_in_log: whether the start sequence should be included in the log
         """
         self.serial_connection.reset_input_buffer()
         self.serial_connection.reset_output_buffer()
 
-        logger.info(msg="Starting thies start sequence commands")
+        if include_in_log:
+            logger.info(msg="Starting thies start sequence commands")
 
         thies_config_mode_enable = ('\r' + self.thies_id + 'KY00001\r').encode('utf-8')
         self.write(thies_config_mode_enable, logger)  # place in config mode

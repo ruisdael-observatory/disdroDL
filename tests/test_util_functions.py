@@ -9,7 +9,7 @@ ensuring that all expected keys are present.
 Functions:
 - test_logger: Tests the logger by creating a log message and checking if the message is written to the log file.
 - test_config_dict: Tests the integrity of the configuration dictionary `config_dict`.
-- test_get_general_config: Tests whether for exporting the correct general config file
+- test_get_general_config_dict: Tests whether for exporting the correct general config file
     is chosen based on the site config file.
 """
 import json
@@ -18,13 +18,15 @@ import unittest
 from unittest.mock import patch, Mock
 
 from pydantic.v1.utils import deep_update
-from modules.util_functions import yaml2dict, get_general_config, create_logger, \
-    create_dir, resetSerialBuffers, interruptHandler # pylint: disable=import-error
+
+from modules.sensors import Thies, Parsivel
+from modules.util_functions import yaml2dict, get_general_config_dict, create_logger, \
+    create_dir, resetSerialBuffers, interruptHandler, create_sensor  # pylint: disable=import-error
 from modules.netCDF import unpack_telegram_from_db
 
-wd = Path(__file__).parent
+wd = Path(__file__).parent.parent
 config_dict = yaml2dict(path=wd / 'configs_netcdf' / 'config_general_parsivel.yml')
-config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_007_CABAUW.yml')
+config_dict_site = yaml2dict(path=wd / 'configs_netcdf' / 'config_PAR_007_CABAUW.yml')
 config_dict = deep_update(config_dict, config_dict_site)
 
 telegram_lines = [b'OK\r\n',
@@ -87,18 +89,44 @@ class UtilFunctionsTests(unittest.TestCase):
     #  'velocity_classes_center', 'velocity_upper_bounds', 'velocity_lower_bounds', 'velocity_spread',
 
     @staticmethod
-    def test_get_general_config():
+    def test_get_general_config_dict_parsivel():
         """
         This function tests whether for exporting the correct
          general config file is chosen based on the site config file.
         """
-        config_dict_par008 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV.yml')
-        config_dict_general = get_general_config(wd, config_dict_par008['global_attrs']['sensor_type'])
-        assert config_dict_general['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
+        mock_logger = Mock()
 
-        config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_008_GV_THIES.yml')
-        config_dict_general = get_general_config(wd, config_dict_thies006['global_attrs']['sensor_type'])
+        config_dict_par008 = yaml2dict(path=wd / 'configs_netcdf' / 'config_PAR_008_GV.yml')
+        config_dict_general = get_general_config_dict(wd, config_dict_par008['global_attrs']['sensor_type'], mock_logger)
+
+        assert config_dict_general['telegram_fields']['03']['var_attrs']['standard_name'] == 'code_4680'
+        mock_logger.error.assert_not_called()
+
+    @staticmethod
+    def test_get_general_config_dict_thies():
+        """
+        This function tests whether for exporting the correct
+         general config file is chosen based on the site config file.
+        """
+        mock_logger = Mock()
+
+        config_dict_thies006 = yaml2dict(path=wd / 'configs_netcdf' / 'config_THIES_006_GV.yml')
+        config_dict_general = get_general_config_dict(wd, config_dict_thies006['global_attrs']['sensor_type'], mock_logger)
+
         assert config_dict_general['telegram_fields']['3']['var_attrs']['standard_name'] == 'serial_number'
+        mock_logger.error.assert_not_called()
+
+    @staticmethod
+    def test_get_general_config_dict_unsupported_sensor():
+        """
+        This function tests whether for exporting the correct
+         general config file is chosen based on the site config file.
+        """
+        mock_logger = Mock()
+
+        config_dict_general = get_general_config_dict(wd, 'unsupported_sensor', mock_logger)
+
+        mock_logger.error.assert_called_once()
 
     @patch('modules.util_functions.os.path.exists', return_value=False)
     @patch('modules.util_functions.Path.mkdir')
@@ -160,6 +188,43 @@ class UtilFunctionsTests(unittest.TestCase):
         mock_logger.info.assert_called_with(msg='Interrupting execution')
         mock_serial_connection.close.assert_called_once()
 
+    def test_create_sensor_parsivel(self):
+        """
+        Test for the create_sensor function with a Parsivel sensor
+        """
+
+        mock_logger = Mock()
+        sensor_type = 'OTT Hydromet Parsivel2'
+        sensor = create_sensor(sensor_type=sensor_type, logger=mock_logger, sensor_id='00')
+        assert isinstance(sensor, Parsivel)
+        mock_logger.assert_not_called()
+
+    def test_create_sensor_thies(self):
+        """
+        Test for the create_sensor function with a Thies sensor
+        """
+
+        mock_logger = Mock()
+        sensor_type = 'Thies Clima'
+        sensor_id = '06'
+        sensor = create_sensor(sensor_type=sensor_type, logger=mock_logger, sensor_id=sensor_id)
+        assert isinstance(sensor, Thies)
+        assert sensor.thies_id == sensor_id
+        mock_logger.assert_not_called()
+
+    @patch('modules.util_functions.sys')
+    def test_create_sensor_fail(self, mock_sys):
+        """
+        Test for the create_sensor function with a non-supported sensor type
+        """
+
+        mock_logger = Mock()
+        sensor_type = 'fail'
+        sensor_id = '06'
+        sensor = create_sensor(sensor_type=sensor_type, logger=mock_logger, sensor_id=sensor_id)
+        mock_logger.error.called_once_with(msg="Sensor type fail not recognized")
+        mock_sys.exit.called_once_with(1)
+
     @staticmethod
     def test_unpack_telegram_from_db_no_None():
         """
@@ -188,20 +253,3 @@ class UtilFunctionsTests(unittest.TestCase):
             '90': '-9.999,-9.999,-9.999,-9.999'
         }
         assert unpack_telegram_from_db(input_str) == expected_output
-
-
-class ExceptionTests(unittest.TestCase):
-    """
-    Class to make testing exceptions possible.
-
-    Functions:
-    - test_unsupported_site_config: Varifies that a site config file with an unsupported sensor type
-        will cause an error to be thrown.
-    """
-
-    def test_unsupported_site_config(self):
-        """
-        This function varifies that a site config file with an unsupported sensor type will cause an error to be thrown.
-        """
-        with self.assertRaises(Exception):
-            get_general_config(wd, 'unsupported_sensor_type')

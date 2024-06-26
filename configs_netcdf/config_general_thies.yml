@@ -30,21 +30,22 @@ variables:
     datetime:
         dimensions:
             - time
-        dtype: 'S4'  # string
+        dtype: 'S4'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
             standard_name: 'datetime'
+            units: 'UTC'
     velocity_classes_center:
         dimensions:
             - velocity_classes
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'center fall velocity of precipitation particles'
-            standard_name: 'velocity_center_classes'  # error when changed
+            long_name: 'center of fall velocity classes'
+            standard_name: 'velocity_center_classes'
             units: 'm/s'
-            comment: 'Predefined center of fall velocity classes'
+            comment: 'as defined in the technical documentation'
         value:
             - 0.100
             - 0.300
@@ -75,7 +76,7 @@ variables:
             long_name: 'upper bounds of fall velocity classes'
             standard_name: 'velocity_upper_bounds'
             units: 'm/s'
-            comment: 'Predefined velocity classes upper bound'
+            comment: 'as defined in the technical documentation'
         value:
             - 0.200
             - 0.400
@@ -106,7 +107,7 @@ variables:
             long_name: 'lower bounds of fall velocity classes'
             standard_name: 'velocity_lower_bounds'
             units: 'm/s'
-            comment: 'Predefined velocity classes lower bound'
+            comment: 'as defined in the technical documentation'
         value:
             - 0.000
             - 0.200
@@ -137,7 +138,7 @@ variables:
             long_name: 'width of fall velocity classes'
             standard_name: 'velocity_spread'
             units: 'm/s'
-            comment: 'Bin size of each velocity interval'
+            comment: 'the bin width is the difference between the upper and lower bounds'
         value:
             - 0.200
             - 0.200
@@ -159,16 +160,16 @@ variables:
             - 0.800
             - 1.000
             - 10.000
-    diameter_classes_center:
+    diameter_center_classes:
         dimensions:
             - diameter_classes
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'always'
         var_attrs:
             long_name: 'center of diameter classes'
             standard_name: 'diameter_center_classes'
             units: 'mm'
-            comment: 'Predefined center of diameter classes'
+            comment: 'as defined in the technical documentation'
         value:
             - 0.1875
             - 0.3125
@@ -191,7 +192,7 @@ variables:
             - 6.750
             - 7.250
             - 7.750
-            - .inf
+            - 8.250
     diameter_spread_classes:
         dimensions:
             - diameter_classes
@@ -201,7 +202,7 @@ variables:
             long_name: 'width of diameter classes'
             standard_name: 'diameter_spread'
             units: 'mm'
-            comment: 'Bin size of each of diameter classes'
+            comment: 'the bin width is the difference between the upper and lower bounds'
         value:
             - 0.125
             - 0.125
@@ -224,7 +225,7 @@ variables:
             - 0.500
             - 0.500
             - 0.500
-            - .inf
+            - 0.500
     diameter_upper_bounds:
         dimensions:
             - diameter_classes
@@ -234,7 +235,7 @@ variables:
             long_name: 'upper bounds of diameter classes'
             standard_name: 'diameter_upper_bounds'
             units: 'mm'
-            comment: 'Predefined diameter classes upper bound'
+            comment: 'as defined in the technical documentation'
         value:
           - 0.250
           - 0.375
@@ -267,7 +268,7 @@ variables:
             long_name: 'lower bounds of diameter classes'
             standard_name: 'diameter_lower_bounds'
             units: 'mm'
-            comment: 'Predefined diameter classes lower bound'
+            comment: 'as defined in the technical documentation'
         value:
             - 0.125
             - 0.250
@@ -299,104 +300,104 @@ telegram_fields:
         dtype: 'S4'
         include_in_nc: 'never'
         var_attrs:
-            units: None
-            long_name: 'start identifer'
+            long_name: 'start identifier'
             standard_name: 'STX'
     '2':
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
-            units: None
-            long_name: 'device address'
-            standard_name: 'device_address'
+            long_name: 'device id'
+            standard_name: 'device_id'
     '3':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            units: None
             long_name: 'Serial number'
             standard_name: 'serial_number'
     '4':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: 'Software version'
+            long_name: 'Software version of sensor'
             standard_name: 'software_version'
-    '5': # I do not think we need this value, as in any case it's wrong.
+    '5':
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
             long_name: 'Date of the sensor'
             standard_name: 'sensor_date'
-    '6': # I do not think we need this value, as in any case it's wrong.
+            units: 'date'
+    '6':
         dimensions:
             - time
-        dtype: 'S4'  # string
-        include_in_nc: 'always'
+        dtype: 'S4'
+        include_in_nc: 'never'
         var_attrs:
             long_name: 'Time of the sensor'
             standard_name: 'sensor_time'
+            units: 'time'
+            comment: 'note that the sensor time may deviate from the actual time'
     '7':
         dimensions:
             - time
-        dtype: 'f4'  # string
-        include_in_nc: 'always'                    
+        dtype: 'f4'
+        include_in_nc: 'always'
         var_attrs:
-            long_name: '5M SYNOP Tab.4677'
+            long_name: '5-minute SYNOP Tab.4677 code (unitless)'
             standard_name: 'weather_code_synop_4677_5min'
-            comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
+            comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '8':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'always'
         var_attrs:
-            long_name: '5M SYNOP Tab.4680'
+            long_name: '5-minute SYNOP Tab.4680 code (unitless)'
             standard_name: 'weather_code_synop_4680_5min'
-            comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
+            comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '9':
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'always'
         var_attrs:
-            long_name: 'M5M METAR Tab.4678'
-            standard_name: 'weather_code_metar_4678_5min'
-            comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
+            long_name: '5-minute METAR Tab.4678 code'
+            standard_name: 'weather_code_metar_4678_5min (unitless)'
+            comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '10':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '5M Intensität [mm/h]'
+            long_name: '5-minute averaged rainfall intensity in mm/h'
             standard_name: 'all_precip_intensity_5min'
             units: 'mm/h'
     '11':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'always'
         var_attrs:
-            long_name: '1M SYNOP Tab.4677'
+            long_name: '1-minute SYNOP Tab.4677 (unitless)'
             standard_name: 'weather_code_synop_4677'
-            comment: 'validated particles'
+            comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
 
     '12':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'always'
         var_attrs:
-            long_name: '1M SYNOP Tab.4680'
+            long_name: '1-minute SYNOP Tab.4680 (unitless)'
             standard_name: 'weather_code_synop_4680'
             comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
     '13':
@@ -405,7 +406,7 @@ telegram_fields:
         dtype: 'S4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M METAR Tab.4678'
+            long_name: '1-minute METAR Tab.4678 (unitless)'
             standard_name: 'weather_code_metar_4678'
             comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
     '14':
@@ -414,16 +415,17 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M Intensity [mm/h] total precipitation '
+            long_name: '1-minute precipitation intensity (all types)'
             standard_name: 'all_precip_intensity'
             units: 'mm/h'
+            comment: 'in equivalent liquid water depth per unit of time'
     '15':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M Intensity [mm/h] liquid precipitation'
+            long_name: '1-minute precipitation intensity (liquid only)'
             standard_name: 'liquid_precip_intensity'
             units: 'mm/h'
     '16':
@@ -432,9 +434,10 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M Intensity [mm/h] solid precipitation'
+            long_name: '1-minute precipitation intensity (solid only)'
             standard_name: 'solid_precip_intensity'
             units: 'mm/h'
+            comment: 'in equivalent liquid water depth per unit of time'
     '17':
         dimensions:
             - time
@@ -450,34 +453,37 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M Visibility in precipitation [0...99999m]'
+            long_name: '1-minute visibility in precipitation'
             standard_name: 'visibility'
             units: 'm'
+            comment: 'range [0...99999m]'
     '19':
         dimensions:
           - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M Radar reflectivity [-9.9...99.9dBZ] '
+            long_name: '1-minute radar reflectivity'
             standard_name: 'reflectivity'
             units: 'dBZ'
+            comment: 'range [-9.9...99.9dBZ]'
     '20':
         dimensions:
           - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M Measuring quality [0...100%] '
+            long_name: '1-minute measuring quality'
             standard_name: 'measurement_quality'
             units: '%'
+            comment: 'range [0...100%]'
     '21':
         dimensions:
           - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: '1M Maximum diameter hail [mm]'
+            long_name: '1-minute maximum diameter hail [mm]'
             standard_name: 'maximum_diameter_hail'
             units: 'mm'
     '22':
@@ -486,7 +492,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Laser'
+            long_name: 'Status Laser (unitless)'
             standard_name: 'status_laser'
             comment: 'OK/on:0, off:1'
     '23':
@@ -495,7 +501,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Static signal '
+            long_name: 'Static signal (unitless)'
             standard_name: 'static_signal'
             comment: 'OK:0, Error:1'
     '24':
@@ -504,7 +510,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Laser temperature (analogue) '
+            long_name: 'Status laser temperature analogue (unitless)'
             standard_name: 'status_laser_temperature_analogue'
             comment: 'OK:0, Error:1'
     '25':
@@ -513,7 +519,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Laser temperature (digital)'
+            long_name: 'Status laser temperature digital (unitless)'
             standard_name: 'status_laser_temperature_digital'
             comment: 'OK:0, Error:1'
     '26':
@@ -522,7 +528,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Laser current (analogue) '
+            long_name: 'Status laser current analogue (unitless)'
             standard_name: 'status_laser_current_analogue'
             comment: 'OK:0, Error:1'
     '27':
@@ -531,7 +537,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Laser current (digital)'
+            long_name: 'Status laser current digital (unitless)'
             standard_name: 'status_laser_current_digital'
             comment: 'OK:0, Error:1'
     '28':
@@ -540,7 +546,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Sensor supply'
+            long_name: 'Status sensor supply (unitless)'
             standard_name: 'status_sensor_supply'
             comment: 'OK:0, Error:1'
     '29':
@@ -549,7 +555,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Current pane heating laser head '
+            long_name: 'Status current pane heating laser head (unitless)'
             standard_name: 'status_heating_laser_head'
             comment: 'OK:0, warning:1'
     '30':
@@ -558,7 +564,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Current pane heating receiver head'
+            long_name: 'Status current pane heating receiver head (unitless)'
             standard_name: 'status_heating_receiver'
             comment: 'OK:0, warning:1'
     '31':
@@ -567,7 +573,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Temperature sensor'
+            long_name: 'Status temperature sensor (unitless)'
             standard_name: 'status_temperature_sensor'
             comment: 'OK:0, warning:1'
     '32':
@@ -576,7 +582,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Heating supply'
+            long_name: 'Status heating supply (unitless)'
             standard_name: 'status_heating_supply'
             comment: 'OK:0, warning:1'
     '33':
@@ -585,7 +591,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Current heating housing '
+            long_name: 'Status current heating housing (unitless)'
             standard_name: 'status_heating_housing'
             comment: 'OK:0, warning:1'
     '34':
@@ -594,7 +600,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Current heating heads'
+            long_name: 'Status current heating heads (unitless)'
             standard_name: 'status_heating_heads'
             comment: 'OK:0, warning:1'
     '35':
@@ -603,7 +609,7 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Current heating carriers'
+            long_name: 'Status current heating carriers (unitless)'
             standard_name: 'status_heating_carriers'
             comment: 'OK:0, warning:1'
     '36':
@@ -612,16 +618,16 @@ telegram_fields:
         dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Status Control output laser power'
+            long_name: 'Status control output laser power (unitless)'
             standard_name: 'status_output_laser_power'
             comment: 'OK:0, warning:1'
     '37':
         dimensions:
           - time
         dtype: 'i2'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: 'Reserve Status'
+            long_name: 'Reserve status (unitless)'
             standard_name: 'reserve_status'
             comment: 'value = 0'
     '38':
@@ -639,9 +645,10 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Temperature of laser driver 0-80°C'
-            standard_name: 'temperature_laser_driver'
+            long_name: 'Temperature of laser driver'
+            standard_name: 'temperature_of_laser_driver'
             units: '°C'
+            comment: 'this should be between 0-80°C'
     '40':
         dimensions:
             - time
@@ -650,41 +657,43 @@ telegram_fields:
         var_attrs:
             long_name: 'Mean value laser current [1/100 mA]'
             standard_name: 'mean_value_laser_current'
-            units: 'mA'
+            units: '1/100 mA'
     '41':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Control voltage [mV] (reference value: 4010±5)'
+            long_name: 'Control voltage'
             standard_name: 'control_voltage'
             units: 'mV'
+            comment: 'reference value is 4010 +/- 5 mV'
     '42':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Optical control output [mV] (2300 … 6500)'
+            long_name: 'Optical control output [mV]'
             standard_name: 'optical_control_output'
             units: 'mV'
+            comment: 'range [2300...6500]'
     '43':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Voltage sensor supply [1/10V] '
+            long_name: 'Voltage sensor supply [1/10V]'
             standard_name: 'voltage_sensor_supply'
-            units: 'V'
+            units: '1/10 V'
     '44':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Current pane heating laser head [mA] '
+            long_name: 'Current pane heating laser head [mA]'
             standard_name: 'current_heating_laser_head'
             units: 'mA'
     '45':
@@ -702,7 +711,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Ambient temperature [°C] '
+            long_name: 'Ambient temperature [°C]'
             standard_name: 'ambient_temperature'
             units: '°C'
     '47':
@@ -713,7 +722,7 @@ telegram_fields:
         var_attrs:
             long_name: 'Voltage Heating supply [1/10 V]'
             standard_name: 'voltage_heating_supply'
-            units: 'V'
+            units: '1/10 V'
     '48':
         dimensions:
             - time
@@ -738,7 +747,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Current heating carriers [mA] '
+            long_name: 'Current heating carriers [mA]'
             standard_name: 'current_heating_carriers'
             units: 'mA'
     '51':
@@ -747,31 +756,32 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of all measured particle'
+            long_name: 'total number of all measured particles (unitless)'
             standard_name: 'number_of_all_measured_particles'
     '52':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: '„00000.000“ (internal data)'
+            long_name: '„00000.000“ internal data (unitless)'
             standard_name: 'internal_data_1'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '53':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles < minimal speed (0.15m/s)'
+            long_name: 'Number of particles with a velocity smaller than 0.15 m/s (unitless)'
             standard_name: 'number_of_particles_slower_than_0.15'
     '54':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: '„00000.000“ (internal data)'
+            long_name: '„00000.000“ (unitless)'
             standard_name: 'internal_data_2'
     '55':
         dimensions:
@@ -779,55 +789,59 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles > maximal speed (20m/s)'
+            long_name: 'Number of particles with a velocity larger than 20m/s (unitless)'
             standard_name: 'number_of_particles_faster_than_20'
     '56':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: '„00000.000“ (internal data)'
+            long_name: '„00000.000“ internal data (unitless)'
             standard_name: 'internal_data_3'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '57':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles < minimal diameter (0.15mm)'
+            long_name: 'Number of particles with a diameter smaller than 0.15mm (unitless)'
             standard_name: 'number_of_particles_smaller_than_0.15'
     '58':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: '„00000.000“ (internal data)'
+            long_name: '„00000.000“ internal data (unitless)'
             standard_name: 'internal_data_4'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '59':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: 'Number of particles no hydrometeor '
+            long_name: 'Number of particles no hydrometeor (unitless)'
             standard_name: 'number_of_particles_no_hydrometeor'
+            comment: 'This variable is logged by the sensor but it is not fully clear from the documentation what it represents.'
     '60':
         dimensions:
             - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
-            long_name: 'Total volume (gross) of this class'
-            standard_name: 'total_volume_gross_of_class'
+            long_name: 'Total volume (gross) particles no hydrometeor (unitless)'
+            standard_name: 'total_volume_gross_particles_no_hydrometeor'
+            comment: 'Represents the total gross volume of particles belonging to: number_of_particles_no_hydrometeor'
     '61':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles with unknown classification'
+            long_name: 'Number of particles with unknown classification (unitless)'
             standard_name: 'number_of_particles_with_unknown_classification'
     '62':
         dimensions:
@@ -835,15 +849,15 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of this class'
-            standard_name: 'total_volume_gross_of_this_class'
+            long_name: 'Total volume (gross) of particles with unknown classification (unitless)'
+            standard_name: 'total_volume_gross_particles_unknown_classification'
     '63':
         dimensions:
             - time
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 1'
+            long_name: 'Number of particles class 1 (unitless)'
             standard_name: 'number_of_particles_class_1'
     '64':
         dimensions:
@@ -851,7 +865,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 1'
+            long_name: 'Total volume (gross) of class 1 (unitless)'
             standard_name: 'total_volume_gross_of_class_1'
     '65':
         dimensions:
@@ -859,7 +873,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 2'
+            long_name: 'Number of particles class 2 (unitless)'
             standard_name: 'number_of_particles_class_2'
     '66':
         dimensions:
@@ -867,7 +881,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 2'
+            long_name: 'Total volume (gross) of class 2 (unitless)'
             standard_name: 'total_volume_gross_of_class_2'
     '67':
         dimensions:
@@ -875,7 +889,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 3'
+            long_name: 'Number of particles class 3 (unitless)'
             standard_name: 'number_of_particles_class_3'
     '68':
         dimensions:
@@ -883,7 +897,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 3'
+            long_name: 'Total volume (gross) of class 3 (unitless)'
             standard_name: 'total_volume_gross_of_class_3'
     '69':
         dimensions:
@@ -891,7 +905,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 4'
+            long_name: 'Number of particles class 4 (unitless)'
             standard_name: 'number_of_particles_class_4'
     '70':
         dimensions:
@@ -899,7 +913,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 4'
+            long_name: 'Total volume (gross) of class 4 (unitless)'
             standard_name: 'total_volume_gross_of_class_4'
     '71':
         dimensions:
@@ -907,7 +921,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 5'
+            long_name: 'Number of particles class 5 (unitless)'
             standard_name: 'number_of_particles_class_5'
     '72':
         dimensions:
@@ -915,7 +929,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 5'
+            long_name: 'Total volume (gross) of class 5 (unitless)'
             standard_name: 'total_volume_gross_of_class_5'
     '73':
         dimensions:
@@ -923,7 +937,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 6'
+            long_name: 'Number of particles class 6 (unitless)'
             standard_name: 'number_of_particles_class_6'
     '74':
         dimensions:
@@ -931,7 +945,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 6'
+            long_name: 'Total volume (gross) of class 6 (unitless)'
             standard_name: 'total_volume_gross_of_class_6'
     '75':
         dimensions:
@@ -947,7 +961,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 7'
+            long_name: 'Total volume (gross) of class 7 (unitless)'
             standard_name: 'total_volume_gross_of_class_7'
     '77':
         dimensions:
@@ -955,7 +969,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 8'
+            long_name: 'Number of particles class 8 (unitless)'
             standard_name: 'number_of_particles_class_8'
     '78':
         dimensions:
@@ -963,7 +977,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 8'
+            long_name: 'Total volume (gross) of class 8 (unitless)'
             standard_name: 'total_volume_gross_of_class_8'
     '79':
         dimensions:
@@ -971,7 +985,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles class 9'
+            long_name: 'Number of particles class 9 (unitless)'
             standard_name: 'number_of_particles_class_9'
     '80':
         dimensions:
@@ -979,11 +993,10 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 9'
+            long_name: 'Total volume (gross) of class 9 (unitless)'
             standard_name: 'total_volume_gross_of_class_9'
-# The field 81 to 520 are the classes:
+# The field 81 to 520 are the particle diameter/velocity classes:
 #    1st diameter-1st speed, then 1st diameter-2nd speed etc... until Diameter 22, speed 20
-#    in the netcdf they are written into a 22 by 20 matrix
     '81':
         dimensions:
             - time
@@ -992,57 +1005,52 @@ telegram_fields:
         dtype: 'i4'
         include_in_nc: 'only_full'                    
         var_attrs:
-            long_name: 'Raw data as a function of particle diameter and velocity'
+            long_name: 'Raw particle counts for each diameter and velocity class (unitless)'
             standard_name: 'raw_data'
     '521':
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'                    
+        include_in_nc: 'never'
         var_attrs:
             long_name: 'Temperature [°C]'
             standard_name: 'temperature'
             units: '°C'
+            comment: 'Note that the temperature is measured inside the sensor housing and may therefore not be indicative of the outside air temperature'
     '522':
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
-           long_name: 'Relative Air humidity [%r.h.]'
+           long_name: 'Relative air humidity [%r.h.]'
            standard_name: 'relative_humidity'
-           units: '%r.h.'
+           units: '%'
     '523':
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
-           long_name: 'Wind speed [m/s] '
+           long_name: 'Wind speed [m/s]'
            standard_name: 'wind_speed'
            units: 'm/s'
     '524':
         dimensions:
            - time
         dtype: 'f4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
            long_name: 'Wind direction [°]'
            standard_name: 'wind_direction'
            units: '°'
-    '525': # or 521 without “<id>TM00005”
+           comment: 'wind direction represented in degrees clockwise from the North'
+    '525':
         dimensions:
             - time
         dtype: 'S4'
-        include_in_nc: 'always'
+        include_in_nc: 'never'
         var_attrs:
-            long_name: 'Checksum'
+            long_name: 'Checksum (unitless)'
             standard_name: 'checksum'
-#    '526-527': # or 522-523 without “<id>TM00005”
-#        dimensions:
-#           - time
-#        dtype: 'S4'
-#        include_in_nc: 'never'
-#        var_attrs:
-#           long_name: 'CRLF + ETX (End identifier)'
-#           standard_name: 'end_identifier'
+

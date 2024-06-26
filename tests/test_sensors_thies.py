@@ -4,7 +4,7 @@ Module for testing the Thies class from sensors.py
 
 import unittest
 from unittest.mock import MagicMock, patch, call, Mock
-from modules.sensors import Thies, SensorType  # pylint: disable=import-error
+from modules.sensors import Thies
 
 
 class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
@@ -12,20 +12,45 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
     Class for testing the Thies Sensor subclass.
 
     Functions:
+    - test___init__: Constructor test.
+    - test_init_serial_connection_success: Test if the init_serial_connection function
+        initializes the serial connection correctly.
     - test_init_serial_connection_exception: Test if the init_serial_connection function
         raises an exception when the serial connection fails.
-    - test_init_serial_connection: Test if the init_serial_connection function
-        initializes the serial connection correctly.
     - test_sensor_start_sequence: Test if the sensor_start_sequence function initializes the thies sensor correctly
         and tests if all the commands are sent in the correct order.
     - test_reset_sensor: Test if the reset_sensor function resets the sensor correctly.
-    - test_write_fail: Test if the logger writes an error when there is an exception in the write function.
-    - test_write_successful: Test if the write function writes the message to the serial connection
+    - test_write_success: Test if the write function writes the message to the serial connection
         and nothing gets written to the logger.
+    - test_write_fail: Test if the logger writes an error when there is an exception in the write function.
+    - test_read_success: Test if the read function reads the data from the serial connection.
     - test_read_fail: Test if the read function writes an error to the logger when there is an exception.
-    - test_read_successful: Test if the read function reads the data from the serial connection.
     - test_get_type: Test if the get_type function returns the correct sensor type.
     """
+
+    def test___init__(self):
+        """
+        Constructor test.
+        """
+        thies = Thies()
+        assert thies.serial_connection is None
+        assert thies.get_type() == "thies"
+
+    @patch('modules.sensors.serial.Serial')
+    def test_init_serial_connection_success(self, mock_serial):
+        """
+        Test if the init_serial_connection function initializes the serial connection correctly.
+        :param mock_serial: the mocked Serial object
+        """
+        mock_logger = MagicMock()
+        thies = Thies()
+
+        thies.init_serial_connection(port='/dev/ttyACM0', baud=9600, logger=mock_logger)
+
+        mock_logger.info.assert_called_once()
+        mock_serial.assert_called_once_with('/dev/ttyACM0', 9600, timeout=5)
+    
+        assert thies.serial_connection is not None
 
     @patch('modules.sensors.serial.Serial')
     @patch('modules.sensors.sys.exit')
@@ -43,17 +68,6 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
 
         logger.error.assert_called_once()
         mock_sys_exit.assert_called_once()
-
-    @patch('modules.sensors.serial.Serial')
-    def test_init_serial_connection(self, mock_serial):
-        """
-        Test if the init_serial_connection function initializes the serial connection correctly.
-        :param mock_serial: the mocked Serial object
-        """
-        thies = Thies()
-        logger = MagicMock()
-        thies.init_serial_connection(port='/dev/ttyACM0', baud=9600, logger=logger)
-        mock_serial.assert_called_once_with('/dev/ttyACM0', 9600, timeout=5)
 
     @patch('modules.sensors.NowTime')
     @patch('modules.sensors.sleep', return_value=None)
@@ -77,7 +91,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         now_time_instance.time_list = ['10', '20', '30']
         mock_now_time.return_value = now_time_instance
 
-        thies.sensor_start_sequence(config_dict={}, logger=logger)
+        thies.sensor_start_sequence(config_dict={}, logger=logger, include_in_log=True)
 
         logger.info.assert_called_once()
         calls = [
@@ -93,6 +107,32 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
             call.reset_output_buffer()
         ]
         mock_serial.assert_has_calls(calls, any_order=False)
+
+    @patch('modules.sensors.NowTime')
+    @patch('modules.sensors.sleep', return_value=None)
+    @patch('modules.sensors.serial.Serial')
+    def test_sensor_start_sequence_no_log(self, mock_serial, mock_sleep, mock_now_time):  # pylint: disable=unused-argument
+        """
+        Test if the sensor_start_sequence function initializes the thies sensor correctly
+        it also tests if all the commands are sent in the correct order.
+        :param mock_serial: the mocked Serial object
+        :param mock_sleep: temporary argument for now
+        :param mock_now_time: the mocked NowTime object
+        """
+
+        thies = Thies()
+        thies.thies_id = '06'
+        thies.serial_connection = mock_serial
+
+        logger = MagicMock()
+
+        now_time_instance = MagicMock()
+        now_time_instance.time_list = ['10', '20', '30']
+        mock_now_time.return_value = now_time_instance
+
+        thies.sensor_start_sequence(config_dict={}, logger=logger, include_in_log=False)
+
+        logger.info.assert_not_called()
 
     @patch('modules.sensors.serial.Serial')
     @patch('modules.sensors.sleep', return_value=None)
@@ -123,16 +163,7 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         logger.assert_has_calls(logger_calls)
         thies.serial_connection.assert_has_calls(serial_calls, any_order=False)
 
-    def test_write_fail(self):
-        """
-        Test if the logger writes an error when there is an exception in the write function.
-        """
-        thies = Thies()
-        logger = MagicMock()
-        thies.write("test", logger)
-        logger.error.assert_called_once()
-
-    def test_write_successful(self):
+    def test_write_success(self):
         """
         Test if the write function writes the message to the serial connection
         and nothing gets written to the logger.
@@ -144,17 +175,16 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         thies.serial_connection.write.assert_called_once_with("test")
         logger.assert_not_called()
 
-    def test_read_fail(self):
+    def test_write_fail(self):
         """
-        Test if the read function writes an error to the logger when there is an exception.
+        Test if the logger writes an error when there is an exception in the write function.
         """
         thies = Thies()
         logger = MagicMock()
-        return_value = thies.read(logger)
-        logger.error.assert_called_once_with(msg="serial_connection not initialized")
-        assert return_value is None
+        thies.write("test", logger)
+        logger.error.assert_called_once()
 
-    def test_read_successful(self):
+    def test_read_success(self):
         """
         Test if the read function reads the data from the serial connection.
         """
@@ -168,6 +198,16 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         logger.error.assert_not_called()
         assert return_value is not None
 
+    def test_read_fail(self):
+        """
+        Test if the read function writes an error to the logger when there is an exception.
+        """
+        thies = Thies()
+        logger = MagicMock()
+        return_value = thies.read(logger)
+        logger.error.assert_called_once_with(msg="serial_connection not initialized")
+        assert return_value is None
+
     def test_get_type(self):
         """
         Test if the get_type function returns the correct sensor type.
@@ -179,10 +219,10 @@ class TestThies(unittest.TestCase):  # pylint: disable=too-many-public-methods
         """
         Test for the close_serial_connection function
         """
-        parsivel_obj = Thies()
+        thies = Thies()
         mock_serial_connection = Mock()
-        parsivel_obj.serial_connection = mock_serial_connection
+        thies.serial_connection = mock_serial_connection
 
-        parsivel_obj.close_serial_connection()
+        thies.close_serial_connection()
 
         mock_serial_connection.close.assert_called_once()

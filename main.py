@@ -12,8 +12,8 @@ from argparse import ArgumentParser
 from pydantic.v1.utils import deep_update
 
 from modules.sensors import Parsivel, Thies
-from modules.util_functions import yaml2dict, create_logger
-from modules.telegram import ParsivelTelegram, ThiesTelegram
+from modules.util_functions import yaml2dict, get_general_config_dict, create_logger, create_sensor
+from modules.telegram import ParsivelTelegram, ThiesTelegram, create_telegram
 from modules.now_time import NowTime
 from modules.sqldb import create_db, connect_db
 
@@ -37,39 +37,25 @@ def main(config_site):
     print(f"{__file__} running\nLogs written to {config_dict_site['log_dir']}")
 
     sensor_type = config_dict_site['global_attrs']['sensor_type']
-    config_file = None
 
-    if sensor_type == 'OTT Hydromet Parsivel2':
-        config_file = 'config_general_parsivel.yml'
-    elif sensor_type == 'Thies Clima':
-        config_file = 'config_general_thies.yml'
-    else:
-        logger.error(msg=f"Sensor type {sensor_type} not recognized")
+    config_dict_general = get_general_config_dict(wd, sensor_type, logger)
+
+    if config_dict_general is None:
         sys.exit(1)
 
-    config_dict = yaml2dict(path=wd / 'configs_netcdf' / config_file)
-
-    config_dict = deep_update(config_dict, config_dict_site)
+    config_dict = deep_update(config_dict_general, config_dict_site)
 
     ### Serial connection ###
 
-    sensor = None
-    if sensor_type == 'OTT Hydromet Parsivel2':
-        sensor = Parsivel()
-    elif sensor_type == 'Thies Clima':
-        sensor_name = config_dict['global_attrs']['sensor_name']
-        thies_id = sensor_name[-2:]
-        sensor = Thies(thies_id=thies_id)
-    else:
-        logger.error(msg=f"Sensor type {sensor_type} not recognized")
-        sys.exit(1)
+    sensor_id = config_dict['global_attrs']['sensor_name'][-2:]
+    sensor = create_sensor(sensor_type=sensor_type, logger=logger, sensor_id=sensor_id)
 
     sensor.init_serial_connection(port=config_dict['port'], baud=config_dict['baud'], logger=logger)
-    sensor.sensor_start_sequence(config_dict=config_dict, logger=logger)
+    sensor.sensor_start_sequence(config_dict=config_dict, logger=logger, include_in_log=True)
     sleep(2)
 
     ### DB ###
-    db_path = Path(config_dict['data_dir']) / 'disdrodl-test1.db'  # change the db name
+    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
     create_db(dbpath=str(db_path))
 
     #########################################################
@@ -95,38 +81,26 @@ def main(config_site):
         except IndexError:
             logger.error(msg="sensor_lines is EMPTY")
 
-        # logger.debug(msg=f"parsivel_lines: {parsivel_lines}")
+        telegram = create_telegram(config_dict=config_dict,
+                                   telegram_lines=telegram_lines,
+                                   db_row_id=None,
+                                   timestamp=now_utc.utc,
+                                   db_cursor=cur,
+                                   telegram_data={},
+                                   logger=logger)
 
-        telegram = None
-
-        if sensor_type == 'OTT Hydromet Parsivel2':
-            telegram = ParsivelTelegram(config_dict=config_dict,
-                                        telegram_lines=telegram_lines,
-                                        timestamp=now_utc.utc,
-                                        db_cursor=cur,
-                                        telegram_data={},
-                                        logger=logger)
-        elif sensor_type == 'Thies Clima':
-            telegram = ThiesTelegram(config_dict=config_dict,
-                                     telegram_lines=telegram_lines,
-                                     timestamp=now_utc.utc,
-                                     db_cursor=cur,
-                                     telegram_data={},
-                                     logger=logger)
+        if telegram is None:
+            logger.error(msg=f"telegram is None on: {now_utc.time_list}, {now_utc.utc}")
         else:
-            logger.error(msg=f"Sensor type {sensor_type} not recognized")
-            sys.exit(1)
+            telegram.capture_prefixes_and_data()
+            telegram.prep_telegram_data4db()
+            telegram.insert2db()
+            con.commit()
 
-        # logger.debug(msg=f'telegram_lines:{telegram.telegram_lines}')
-
-        #telegram.capture_prefixes_and_data()
-        #telegram.prep_telegram_data4db()
-        telegram.insert2db()
-        con.commit()
         cur.close()
         con.close()
 
-        sensor.sensor_start_sequence(config_dict=config_dict, logger=logger)
+        sensor.sensor_start_sequence(config_dict=config_dict, logger=logger, include_in_log=False)
 
         # sleep for 2 seconds to guarantee you don't log the same data twice
         # this causes issues with a computation time of 58 seconds
@@ -139,12 +113,12 @@ def get_config_file():
     :return: the config file's name
     """
     parser = ArgumentParser(
-        description="Ruisdael: OTT Disdrometer data logger. Run: python capture_disdrometer_data.py -c config_*.yml")
+        description="Ruisdael: OTT Disdrometer data logger. Run: python main.py -c config_*.yml")
     parser.add_argument(
         '-c',
         '--config',
         required=True,
-        help='Path to site config file. ie. -c configs_netcdf/config_008_GV.yml')
+        help='Path to site config file. ie. -c configs_netcdf/config_PAR_008_GV.yml')
     args = parser.parse_args()
     return args.config
 

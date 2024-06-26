@@ -36,6 +36,7 @@ class NetCDF:
 
     Functions:
     - create_netCDF: creates a new netCDF file
+    - write_data_to_netCDF: chooses the right function to write data to the netCDF file
     - write_data_to_netCDF_thies: writes data from ThiesTelegram objects to the netCDF file
     - write_data_to_netCDF_parsivel: writes data from ParsivelTelegram objects to the netCDF file
     - compress: compresses the netCDF file
@@ -74,6 +75,18 @@ class NetCDF:
         self.__netcdf_variables(nc_rootgrp=netCDF_rootgrp)
         netCDF_rootgrp.close()
         self.logger.info(msg='class NetCDF executed create_netCDF()')
+
+    def write_data_to_netCDF(self):
+        """
+        This function choices the right function to write data to the netCDF file.
+        It uses the name of the telegram objects in self.telegram_objs to determine which function to use.
+        """
+        telegram_instance = type(self.telegram_objs[0]).__name__
+        write = {
+            'ThiesTelegram': self.write_data_to_netCDF_thies,
+            'ParsivelTelegram': self.write_data_to_netCDF_parsivel
+        }
+        write[telegram_instance]()
 
     def write_data_to_netCDF_thies(self):
         """
@@ -129,6 +142,9 @@ class NetCDF:
 
                 # check that the variable has 2 or fewer dimensions and if so add to netCDF
                 if len(netCDF_var._getdims()) <= 2:  # pylint: disable=protected-access
+                    # if(key == '63'):
+                    #     for telegram_obj in self.telegram_objs:
+                    #         print(telegram_obj.telegram_data[key])
                     all_items_val = [telegram_obj.telegram_data[key] for telegram_obj in self.telegram_objs]
                     netCDF_var[:] = all_items_val
 
@@ -159,7 +175,6 @@ class NetCDF:
                             all_f81_items_val.append(reshaped_f81)
                             self.logger.debug(msg=f'F81 to F520 values from DB item {telegram_obj.db_row_id}'
                                                   f' from {telegram_obj.timestamp} successfully reshaped')
-
                     netCDF_var[:] = all_f81_items_val
 
         netCDF_rootgrp.close()
@@ -290,15 +305,11 @@ class NetCDF:
         if var_key_ in self.telegram_objs[0].telegram_data.keys():
             for i, telegram_obj in enumerate(self.telegram_objs):
                 netCDF_var_[i] = telegram_obj.telegram_data[var_key_]
-        else:
-            # checks if variable is the time, if so convert to iso format
-            # otherwise just add to netcdf
-            if netCDF_var_.standard_name == 'datetime':
-                for i, telegram_obj in enumerate(self.telegram_objs):
-                    netCDF_var_[i] = getattr(telegram_obj, 'timestamp').isoformat()
-            else:
-                for i, telegram_obj in enumerate(self.telegram_objs):
-                    netCDF_var_[i] = getattr(telegram_obj, var_key_)
+
+        # checks if variable is the time, if so convert to iso format
+        elif netCDF_var_.standard_name == 'datetime':
+            for i, telegram_obj in enumerate(self.telegram_objs):
+                netCDF_var_[i] = getattr(telegram_obj, 'timestamp').isoformat()
 
     def __netcdf_variables(self, nc_rootgrp):
         """
@@ -330,13 +341,18 @@ class NetCDF:
                 # compression_method = dict(zlib=True, shuffle=True, complevel=5)
             else:
                 compression_method = None
+
+            if (one_var_dict['dtype'] == 'S4'):
+                fill_val = ''
+            else:
+                fill_val = -999
             # compresses and adds values depending on if the variables are scalar or not
             if 'dimensions' not in one_var_dict.keys() or one_var_dict['dimensions'] is None:
                 # scalar variables do not use dimensions
                 variable = nc_group.createVariable(
                     one_var_dict['var_attrs']['standard_name'],
                     one_var_dict['dtype'],
-                    fill_value=-1,
+                    fill_value=fill_val,
                     compression=compression_method,
                     complevel=9,
                     shuffle=True,
@@ -344,8 +360,6 @@ class NetCDF:
             elif len(one_var_dict['dimensions']) >= 1:
                 if 'fill_value' in one_var_dict.keys():
                     fill_val = one_var_dict['fill_value']
-                else:
-                    fill_val = -1
 
                 variable = nc_group.createVariable(
                     one_var_dict['var_attrs']['standard_name'],
