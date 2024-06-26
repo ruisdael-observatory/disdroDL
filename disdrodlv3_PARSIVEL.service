@@ -3,8 +3,8 @@ Description=disdrodlv3 Parsivel
 After=multi-user.target
 
 [Service]
-ExecStart=/usr/local/src/venv/python-logging-software/bin/python3  /usr/local/src/python-logging-software/main.py -c /usr/local/src/python-logging-software/configs_netcdf/config_008_GV.yml
-ExecReload=/usr/local/src/venv/python-logging-software/bin/python3  /usr/local/src/python-logging-software/main.py -c /usr/local/src/python-logging-software/configs_netcdf/config_008_GV.yml
+ExecStart=/usr/local/src/venv/disdrodl/bin/python3  /usr/local/src/disdrodl/main.py -c /usr/local/src/disdrodl/configs_netcdf/config_008_GV.yml
+ExecReload=/usr/local/src/venv/disdrodl/bin/python3  /usr/local/src/disdrodl/main.py -c /usr/local/src/disdrodl/configs_netcdf/config_008_GV.yml
 TimeoutStopSec=10
 Restart=always
 RestartSec=30

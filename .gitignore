@@ -1,5 +1,5 @@
 prototypes/*
-!prototypes/parse_disdro_csv.py
+!prototypes/parse_disdro_csv_or_txt.py
 !prototypes/serial_sniffer_parsivel.py
 !prototypes/serial_sniffer_thies.py
 !prototypes/manual_polling_thies.py
@@ -15,3 +15,4 @@ sample_data/*
 *.fixtures
 export_24Dec2023_db2nc.sh
 .idea
+venv
