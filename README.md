@@ -35,6 +35,7 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 
 ## Requirements
 
+* use linux or a linux environment
 * create a python virtual environment:
 * installed python dependencies: `pip -r requirements.txt`
 * create a log directory with read and write permissions to all users: `sudo mkdir /var/log/disdroDL/; sudo chmod a+rw /var/log/disdroDL` 
@@ -121,13 +122,13 @@ The NetCDF files are automatically compressed.
 
 
 # Auxiliary scripts
-## Work in Progress [parse_disdro_csv.py](parse_disdro_csv.py) 
+## Work in Progress [parse_disdro_csv_or_txt.py](parse_disdro_csv_or_txt.py) 
 
 *Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF*
 
 For more information [CONVERSIONS.md](CONVERSIONS.md)
 
-Run: `python parse_disdro_csv.py -c configs_netcdf/config_007_CABAUW.yml -i sample_data/20231106_PAR007_CabauwTower.csv`
+Run: `python parse_disdro_csv_or_txt.py -c configs_netcdf/config_007_CABAUW.yml -i sample_data/20231106_PAR007_CabauwTower.csv`
 
 # Tests
 * [test_functions.py](test_functions.py)
@@ -148,52 +149,6 @@ terminal one: listen to serial port `tail -f /dev/ttyUSB0`
 
 terminal two: send commands to serial port `echo -en "CS/L\r" > /dev/ttyUSB0`
 
-
-
-# disdrodl.db
-In most cases there will not be a need to interact directly with `disdrodl.db`, yet it might be useful, in some situations.
-
-
-connect: `sqlite3 disdrodl.db`
-
-Request all column names: `sqlite> PRAGMA table_info(disdrodl);`
-
-```sql
-0|id|INTEGER|0||1
-1|timestamp|REAL|0||0
-2|datetime|TEXT|0||0
-3|parsivel_id|TEXT|0||0
-4|telegram|TEXT|0||0
-```
-
-## Select first record:
-```sql 
-sqlite> SELECT id, timestamp, datetime FROM disdrodl ORDER BY id LIMIT 1;
-```
-`1|1702630920.30165|2023-12-15T09:02:00.301653`
-
-Note: if you want to print the values for all columns, including the `telegram` data column, simply use `SELECT *`:
-
-```sql
-SELECT * FROM disdrodl ORDER BY id LIMIT 1;
-```
-
-
-## Last record:
-```sql 
-sqlite> SELECT id, timestamp, datetime FROM disdrodl ORDER BY id DESC LIMIT 1;
-```
-`19966|1704194160.49732|2024-01-02T11:16:00.497322`
-
-
-# Note on POSIX timestamps 
-
-The column timestamp stores POSIX timestamps of each Parsivel's telegra
-
-Python docs on [datetime.datetime.fromtimestamp](https://docs.python.org/3.3/library/datetime.html#datetime.datetime.fromtimestamp) states that:
-> Return the local date and time corresponding to the POSIX timestamp, such as is returned by time.time(). If optional argument tz is None or not specified, the timestamp is converted to the platform’s local date and time, and the returned datetime object is naive.
-
-Hence, to prevent naive dates (without time-zone info), the conversion of a POSIX timestamp must include the UTC as the timezone ie. `datetime.fromtimestamp(ts, tz=timezone.utc)`.
 
 # Authors
 disdroDL is developed in the context of the [Ruisdael Observatory](https://ruisdael-observatory.nl/) by
