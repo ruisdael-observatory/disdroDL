@@ -56,11 +56,11 @@ Make sure you run this script with the same config file that was used to run the
 
 
 **As Linux Systemd Service**: 
-* edit the config file name in [disdrodlv3_PARSIVEL.service](disdrodlv3_PARSIVEL.service) to match that of the station
-* create system link between local service file and service files location: `ln disdrodlv3_PARSIVEL.service /etc/systemd/system/disdrodlv3_PARSIVEL.service`
-* run: `systemctl enable disdrodlv3_PARSIVEL.service`
-* run: `systemctl start disdrodlv3_PARSIVEL.service`
-* check status: `systemctl status disdrodlv3_PARSIVEL.service`
+* edit the service file [disdrodl.service](disdrodl.service) changing the config file it will use  
+* create system link between local service file and service files location: `ln disdrodl.service /etc/systemd/system/disdrodl.service`
+* run: `systemctl enable disdrodl.service`
+* run: `systemctl start disdrodl.service`
+* check status: `systemctl status disdrodl.service`
 
 
 ## Outputs
@@ -99,7 +99,7 @@ The NetCDF files are automatically compressed.
 
 
 
-**[main.py](main.py)** (often as service, see example [disdrodlv3_PARSIVEL.service](disdrodlv3_PARSIVEL.service))
+**[main.py](main.py)** (often as service, see example [disdrodl.service](disdrodl.service))
 * reads configurations from [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) or [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) and target-device config
 * sets up the serial communication with the Parsivel/Thies 
 * in a while loop (every minute):
@@ -117,7 +117,7 @@ The NetCDF files are automatically compressed.
     * writes the `telegram_objs` data into the NetCDF 
     * compresses the NetCDF file using `nccopy -d9`
     
-**[disdrodlv3_PARSIVEL.service](disdrodlv3_PARSIVEL.service)**  - Linux's systemd service file responsible for running [main.py](main.py) as a service
+**[disdrodl.service](disdrodl.service)**  - Linux's systemd service file responsible for running [main.py](main.py) as a service
 * requires editing: replace default path of config file, with config for the instrument in question.
 
 
