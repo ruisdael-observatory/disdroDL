@@ -1,23 +1,18 @@
-# Disdrometer data logging software - version 2
+# Disdrometer data logging software
 
-[[_TOC_]]
-
-disdroDL is a Python software for acquiring and storing data from the OTT Parsivel2 and Thies Clima optical disdrometer into daily NetCDF files. It was developed by TU Delft, within the framework of the Ruisdael observatory for atmospheric science. 
+***disdroDL* is a Python software for logging data from the OTT Parsivel2 and Thies Clima optical disdrometers and export it to 24-hours NetCDF files. It was developed at TU Delft, within the framework of the [Ruisdael Observatory](https://ruisdael-observatory.nl/).**
 
 One of the key aspects in disdroDL is the decision to separate code logic from the NetCDF structure and metadata. During the creation of the NetCDFs, a [Parsivel general yaml file](configs_netcdf/config_general_parsivel.yml) or a [Thies general yaml file](configs_netcdf/config_general_thies.yml) containing the description of Parsivel/Thies telegram variables and dimensions, that is applicable to all the Parsivel/Thies devices; is combined with site-specific metadata files that describe the variable components of the metadata such as location, name, etc.
 
-The software features a main script ([main.py](./main.py)) for setting up a serial connection with the disdrometers, requesting data at regular time intervals, and storing the Telegram data in a local sqlite3 database file `disdrodl.db`. And an export script ([export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)) that exports 1 day of device data, from `disdro.db` onto a NetCDF file. 
-
-
+The software features a main script ([main.py](./main.py)) for setting up a serial connection with the disdrometers, requesting data at regular time intervals, and storing the Telegram data in a local sqlite3 database file. And an export script ([export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)) that exports 1 day of disdrometer data, from the database onto a NetCDF file. 
 
 What data is included in the NetCDF depends on the [configuration files](configs_netcdf/) and whether the exported netCDF is a light or full version (described in [Outputs](#outputs)). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
-
 
 The structure of the NetCDF file depends on the sensor type and two configuration files, a general and site-specific one. The general configuration files [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) and [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) are applicable to all sensors of the same type, while the specific configuration files, 1 file per sensor (in [configs_netcdf/](configs_netcdf/)), describe the variable components such as site names, coordinates, etc.  
 
 ![_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors._](docs/20211011_17_crop.JPG)
 
-_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometers._
+_Parsivel2 disdrometer in the Cabauw tower, Netherlands._
 
 
 ![](docs/DSD_PAR001_Cabauw_20231021_1300_20231021_1730.png)
@@ -35,9 +30,10 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 
 ## Requirements
 
-* use linux or a linux environment
-* create a python virtual environment:
-* installed python dependencies: `pip -r requirements.txt`
+* operating system: linux-based
+* install [NetCDF utilities](https://www.unidata.ucar.edu/software/netcdf/workshops/2011/utilities/index.html) `sudo apt install netcdf-bin`
+* create a python virtual environment (venv)
+* installed python dependencies in venv: `pip -r requirements.txt`
 * create a log directory with read and write permissions to all users: `sudo mkdir /var/log/disdroDL/; sudo chmod a+rw /var/log/disdroDL` 
 * create a data directory with read and write permissions to all users: `sudo mkdir /data/disdroDL/; sudo chmod a+rw /data/disdroDL` 
 * run [reset_parsivel](./reset_sensor.py): `python reset_sensor.py -c config_*.yml` to reset the sensor time and accumulated rain amount **(TODO:confirm)** 
@@ -50,7 +46,7 @@ Make sure you run this script with the same config file that was used to run the
 
 ## Run scripts
 **Manually**: 
-* Writes Parsivel/Thies Telegrams to sqlite3 DB `python main.py --config configs_netcdf/config_008_GV.yml` (usually ran as service, but can also be run as a standalone script)
+* Writes Parsivel/Thies Telegrams to sqlite3 DB: `python main.py --config configs_netcdf/config_008_GV.yml` (usually runs as service, but can also be run as a standalone script)
 
 * Export DB entries of one day to a NetCDF `python export_disdrodlDB2NC.py (--version light/full) --date 2023-12-24 --config configs_netcdf/config_008_GV.yml`
 
@@ -66,10 +62,10 @@ Make sure you run this script with the same config file that was used to run the
 ## Outputs
 **Light vs full netCDFs**
 * The software can output a light or full NetCDF. This can be done by selecting `--version light` or `--version full`. Which variables will be written to the light/full NetCDF depends on their include_in_nc filed in the [configuration files](configs_netcdf). The field can be assigned values: 'always', 'only_full' or 'never'. Variables assigned 'always' will be included in both light and full NetCDFs. Variables assigned 'only_full' will be included only in full netCDFs. Variables assigned 'never' will not be included in either. 
-* If a NetCDF version is not chosen the software outputs the default which is a full NetCDF.
+*default: full NetCDF.
 
 **netCDF output**
-* [sample_data/20240115_Green_Village-GV_PAR008.nc](sample_data/20240115_Green_Village-GV_PAR008.nc)
+* [sample_data/20240722_Green_Village-GV_PAR008.nc](sample_data/20240722_Green_Village-GV_PAR008.nc)
 
 Note that some of the fields sent by the Parsivel are discarded during the creation of the NetCDF file. For example, all the 16bit fields are discarded and only the 32bit values are stored. Rainfall accumulation (field 24) is discarded because it is relative to an unknown starting time and can be re-calculated from the rain rate. Sensor time/date (fields 20-21) are replaced by the actual time (in UTC) of the computer running the logging software. This is more reliable than to use the internal clock of the Parsivel which can drift over time. Sample interval (field 9) is ignored, because it can be inferred from the time difference between successive measurements.
 
@@ -98,7 +94,6 @@ The NetCDF files are automatically compressed.
 
 
 
-
 **[main.py](main.py)** (often as service, see example [disdrodl.service](disdrodl.service))
 * reads configurations from [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) or [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) and target-device config
 * sets up the serial communication with the Parsivel/Thies 
@@ -122,7 +117,7 @@ The NetCDF files are automatically compressed.
 
 
 # Auxiliary scripts
-## Work in Progress [parse_disdro_csv_or_txt.py](parse_disdro_csv_or_txt.py) 
+## [parse_disdro_csv_or_txt.py](parse_disdro_csv_or_txt.py) 
 
 *Parser for historical Ruisdael's OTT Parsivel CSVs. Converts CSV to netCDF*
 
@@ -136,7 +131,6 @@ Run: `python parse_disdro_csv_or_txt.py -c configs_netcdf/config_007_CABAUW.yml 
 * [test_classes.py](test_classes.py)
 * [test_sensors_parsivel.py](test_sensors_parsivel.py)
 * [test_thies_sensor_class.py](test_thies_sensor_class.py)
-
 
 run: `pytest -s`
 
@@ -155,7 +149,8 @@ disdroDL is developed in the context of the [Ruisdael Observatory](https://ruisd
 
 * Marc Schleiss (Principal Investigator)
 * Andre Castro
-* Mahaut Sourzac 
+* Mahaut Sourzac
+* Saverio Guzzo
 * Rob MacKenzie
 * Vasil Chirov
 * Mels Lutgerink
