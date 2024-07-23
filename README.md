@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12800589.svg)](https://doi.org/10.5281/zenodo.12800589)
+
 # Disdrometer data logging software
 
 ***disdroDL* is a Python software for logging data from the OTT Parsivel2 and Thies Clima optical disdrometers and export it to 24-hours NetCDF files. It was developed at TU Delft, within the framework of the [Ruisdael Observatory](https://ruisdael-observatory.nl/).**
