@@ -2,6 +2,12 @@
 
 ***disdroDL* is a Python software for logging data from the OTT Parsivel2 and Thies Clima optical disdrometers and export it to 24-hours NetCDF files. It was developed at TU Delft, within the framework of the [Ruisdael Observatory](https://ruisdael-observatory.nl/).**
 
+
+![_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors._](docs/20211011_17_crop.JPG)
+
+_Parsivel2 disdrometer in the Cabauw tower, Netherlands._
+
+
 One of the key aspects in disdroDL is the decision to separate code logic from the NetCDF structure and metadata. During the creation of the NetCDFs, a [Parsivel general yaml file](configs_netcdf/config_general_parsivel.yml) or a [Thies general yaml file](configs_netcdf/config_general_thies.yml) containing the description of Parsivel/Thies telegram variables and dimensions, that is applicable to all the Parsivel/Thies devices; is combined with site-specific metadata files that describe the variable components of the metadata such as location, name, etc.
 
 The software features a main script ([main.py](./main.py)) for setting up a serial connection with the disdrometers, requesting data at regular time intervals, and storing the Telegram data in a local sqlite3 database file. And an export script ([export_disdrodlDB2NC.py](export_disdrodlDB2NC.py)) that exports 1 day of disdrometer data, from the database onto a NetCDF file. 
@@ -9,10 +15,6 @@ The software features a main script ([main.py](./main.py)) for setting up a seri
 What data is included in the NetCDF depends on the [configuration files](configs_netcdf/) and whether the exported netCDF is a light or full version (described in [Outputs](#outputs)). The NetCDF files are self-descriptive, and include metadata information about dimensions, variables names and units. 
 
 The structure of the NetCDF file depends on the sensor type and two configuration files, a general and site-specific one. The general configuration files [configs_netcdf/config_general_parsivel.yml](configs_netcdf/config_general_parsivel.yml) and [configs_netcdf/config_general_thies.yml](configs_netcdf/config_general_thies.yml) are applicable to all sensors of the same type, while the specific configuration files, 1 file per sensor (in [configs_netcdf/](configs_netcdf/)), describe the variable components such as site names, coordinates, etc.  
-
-![_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors._](docs/20211011_17_crop.JPG)
-
-_Parsivel2 disdrometer in the Cabauw tower, Netherlands._
 
 
 ![](docs/DSD_PAR001_Cabauw_20231021_1300_20231021_1730.png)
