@@ -55,7 +55,7 @@ def main(config_site):
     sleep(2)
 
     ### DB ###
-    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+    db_path = Path(config_dict['data_dir']) / config_dict['db_filename']
     create_db(dbpath=str(db_path))
 
     #########################################################
