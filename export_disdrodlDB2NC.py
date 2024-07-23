@@ -96,7 +96,7 @@ def main(args):
         fn_start = f"{fn_start}_light"
 
     # Path to the database
-    db_path = Path(config_dict['data_dir']) / 'disdrodl.db'
+    db_path = Path(config_dict['data_dir']) / config_dict['db_filename']
 
     # Log the starting messages to the logger
     msg_conf = f"Starting {__file__} for {config_dict['global_attrs']['sensor_name']}"

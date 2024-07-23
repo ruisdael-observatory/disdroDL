@@ -4,6 +4,7 @@ port: '/dev/ttyACM0'
 baud: 9600
 script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
+db_filename: 'disdrodl-thies.db'
 log_dir: '/var/log/disdroDL/'
 
 ######### NETCDF ###########

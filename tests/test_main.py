@@ -121,6 +121,7 @@ class TestIntegration(unittest.TestCase):
         test_conf_dict_site = {
             'log_dir': 'sample_data',
             'data_dir': 'sample_data',
+            'db_filename': db_name,
             'script_name': 'test_log',
             'port': '/dev/ttyACM0',
             'baud': 9600,
@@ -182,6 +183,7 @@ class TestIntegration(unittest.TestCase):
         test_conf_dict_site = {
             'log_dir': 'sample_data',
             'data_dir': 'sample_data',
+            'db_filename': db_name,
             'script_name': 'test_log',
             'port': '/dev/ttyUSB0',
             'baud': 19200,
@@ -246,6 +248,7 @@ class TestIntegration(unittest.TestCase):
         test_conf_dict_site = {
             'log_dir': 'sample_data',
             'data_dir': 'sample_data',
+            'db_filename': db_name,
             'script_name': 'test_log',
             'port': '/dev/ttyACM0',
             'baud': 9600,

@@ -4,6 +4,7 @@ port: '/dev/ttyUSB0'
 baud: 19200
 script_name: 'capture_disdro_data.py'
 data_dir: '/data/disdroDL/'
+db_filename: 'disdrodl.db'
 log_dir: '/var/log/disdroDL/'
 
 ######### NETCDF ###########
