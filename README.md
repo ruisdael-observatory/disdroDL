@@ -138,6 +138,7 @@ Run: `python parse_disdro_csv_or_txt.py -c configs_netcdf/config_007_CABAUW.yml 
 
 run: `pytest -s`
 
+Tests are run Github Actions. See [.github/workflows/test_n_lint.yml](.github/workflows/test_n_lint.yml)
 
 # Debugging Serial communication
 
