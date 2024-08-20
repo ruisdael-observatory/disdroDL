@@ -753,7 +753,7 @@ telegram_fields:
     '51':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'total number of all measured particles [unitless]'
@@ -770,7 +770,7 @@ telegram_fields:
     '53':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles with a velocity smaller than 0.15 m/s [unitless]'
@@ -786,7 +786,7 @@ telegram_fields:
     '55':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles with a velocity larger than 20m/s [unitless]'
@@ -803,7 +803,7 @@ telegram_fields:
     '57':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles with a diameter smaller than 0.15mm [unitless]'
@@ -820,7 +820,7 @@ telegram_fields:
     '59':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'never'
         var_attrs:
             long_name: 'Number of particles no hydrometeor [unitless]'
@@ -838,7 +838,7 @@ telegram_fields:
     '61':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles with unknown classification [unitless]'
@@ -854,7 +854,7 @@ telegram_fields:
     '63':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 1 [unitless]'
@@ -870,7 +870,7 @@ telegram_fields:
     '65':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 2 [unitless]'
@@ -878,7 +878,7 @@ telegram_fields:
     '66':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Total volume (gross) of class 2 [unitless]'
@@ -886,7 +886,7 @@ telegram_fields:
     '67':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 3 [unitless]'
@@ -902,7 +902,7 @@ telegram_fields:
     '69':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 4 [unitless]'
@@ -918,7 +918,7 @@ telegram_fields:
     '71':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 5 [unitless]'
@@ -934,7 +934,7 @@ telegram_fields:
     '73':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 6 [unitless]'
@@ -950,7 +950,7 @@ telegram_fields:
     '75':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 7 [unitless]'
@@ -966,7 +966,7 @@ telegram_fields:
     '77':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 8 [unitless]'
@@ -982,7 +982,7 @@ telegram_fields:
     '79':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Number of particles class 9 [unitless]'
