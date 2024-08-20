@@ -369,8 +369,8 @@ telegram_fields:
         dtype: 'S4'
         include_in_nc: 'always'
         var_attrs:
-            long_name: '5-minute METAR Tab.4678 code'
-            standard_name: 'weather_code_metar_4678_5min (unitless)'
+            long_name: '5-minute METAR Tab.4678 code (unitless)'
+            standard_name: 'weather_code_metar_4678_5min'
             comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '10':
         dimensions:
