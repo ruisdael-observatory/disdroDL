@@ -399,7 +399,7 @@ telegram_fields:
         var_attrs:
             long_name: '1-minute SYNOP Tab.4680 [unitless]'
             standard_name: 'weather_code_synop_4680'
-            comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
+            comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '13':
         dimensions:
             - time
@@ -408,7 +408,7 @@ telegram_fields:
         var_attrs:
             long_name: '1-minute METAR Tab.4678 [unitless]'
             standard_name: 'weather_code_metar_4678'
-            comment: 'Possible values in Thies documentation: Table 7: Code table SYNOP/METAR'
+            comment: 'See Table 7: Code SYNOP/METAR in the documentation for possible values'
     '14':
         dimensions:
             - time
