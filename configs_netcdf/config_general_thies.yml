@@ -42,7 +42,7 @@ variables:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-        long_name: 'center of fall velocity classes [m/s]'
+            long_name: 'center of fall velocity classes [m/s]'
             standard_name: 'velocity_center_classes'
             units: 'm/s'
             comment: 'as defined in the technical documentation'
@@ -664,7 +664,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-        long_name: 'Control voltage [mV]'
+            long_name: 'Control voltage [mV]'
             standard_name: 'control_voltage'
             units: 'mV'
             comment: 'reference value is 4010 +/- 5 mV'
