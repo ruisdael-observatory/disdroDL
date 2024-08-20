@@ -634,7 +634,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-        long_name: 'Temperature right sensor head [°C]'
+            long_name: 'Temperature right sensor head [°C]'
             standard_name: 'T_R_sensor_head'
             units: '°C'
     '30':
