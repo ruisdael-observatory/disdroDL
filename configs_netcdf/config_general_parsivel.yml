@@ -30,7 +30,7 @@ variables:
         dtype: 'f4'         
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: "Time UTC"
+            long_name: "Time [UTC]"
             standard_name: "time"
             axis: "T"
             calendar: "standard"
@@ -43,7 +43,7 @@ variables:
         include_in_nc: 'always'                    
         var_attrs:
             units: 's'
-            long_name: 'Length of measurement interval'
+            long_name: 'Length of measurement interval [s]'
             standard_name: 'time_interval'
     datetime:
         dimensions:
@@ -59,7 +59,7 @@ variables:
         dtype: 'f4'        
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'center fall velocity of precipitation particles'
+            long_name: 'center fall velocity of precipitation particles [m s-1]'
             standard_name: 'velocity_center_classes'  # error when changed
             units: 'm s-1'
             comment: 'Predefined center of fall velocity classes'
@@ -102,7 +102,7 @@ variables:
         dtype: 'f4'        
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'upper bounds of fall velocity classes'
+            long_name: 'upper bounds of fall velocity classes [m s-1]'
             standard_name: 'velocity_upper_bounds'
             units: 'm s-1'
             comment: 'Predefined velocity classes upper bound'
@@ -145,7 +145,7 @@ variables:
         dtype: 'f4'        
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'lower bounds of fall velocity classes'
+            long_name: 'lower bounds of fall velocity classes [m s-1]'
             standard_name: 'velocity_lower_bounds'
             units: 'm s-1'
             comment: 'Predefined velocity classes lower bound'
@@ -188,7 +188,7 @@ variables:
         dtype: 'f4'     
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'width of fall velocity classes'
+            long_name: 'width of fall velocity classes [m s-1]'
             standard_name: 'velocity_spread' 
             units: 'm s-1'
             comment: 'Bin size of each velocity interval'
@@ -231,7 +231,7 @@ variables:
         dtype: 'f4'     
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'center of diameter classes'
+            long_name: 'center of diameter classes [mm]'
             standard_name: 'diameter_center_classes'
             units: 'mm'
             comment: 'Predefined center of diameter classes'
@@ -274,7 +274,7 @@ variables:
         dtype: 'f4' 
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'width of diameter classes'
+            long_name: 'width of diameter classes [mm]'
             standard_name: 'diameter_spread'
             units: 'mm'
             comment: 'Bin size of each of diameter classes'
@@ -317,7 +317,7 @@ variables:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'upper bounds of diameter classes'
+            long_name: 'upper bounds of diameter classes [mm]'
             standard_name: 'diameter_upper_bounds'
             units: 'mm'
             comment: 'Predefined diameter classes upper bound'
@@ -360,7 +360,7 @@ variables:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'lower bounds of diameter classes'
+            long_name: 'lower bounds of diameter classes [mm]'
             standard_name: 'diameter_lower_bounds'
             units: 'mm'
             comment: 'Predefined diameter classes lower bound'
@@ -405,7 +405,7 @@ telegram_fields:
         include_in_nc: 'always'                    
         var_attrs:
             units: 'mm/h'
-            long_name: 'Rain intensity'
+            long_name: 'Rain intensity [mm/h]'
             standard_name: 'rain_intensity'
     '02':
         dimensions:
@@ -414,7 +414,7 @@ telegram_fields:
         include_in_nc: 'never'                    
         var_attrs:
             units: 'mm'
-            long_name: 'Rain amount accumulated'
+            long_name: 'Rain amount accumulated [mm]'
             standard_name: 'acc_rain_amount'
             comment: 'accumulated rainfall amount since the last reset'
     '03':
@@ -423,7 +423,7 @@ telegram_fields:
         dtype: 'i2'  # 16-bit signed integer               
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Weather code to SYNOP wawa'
+            long_name: 'Weather code to SYNOP wawa [unitless]'
             standard_name: 'code_4680'
     '04':
         dimensions:
@@ -431,7 +431,7 @@ telegram_fields:
         dtype: 'i2'  # 16-bit signed integer                
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Weather code to SYNOP ww'
+            long_name: 'Weather code to SYNOP ww [unitless]'
             standard_name: 'code_4677'
     '05':
         dimensions:
@@ -439,7 +439,7 @@ telegram_fields:
         dtype: 'S4'  # string            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Weather code METAR/SPECI'
+            long_name: 'Weather code METAR/SPECI [unitless]'
             standard_name: 'code_4678'
             comment: 'Possible values in OTT Parsivel documentation: Table 4678'
     '06':
@@ -448,7 +448,7 @@ telegram_fields:
         dtype: 'S4'  # string            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Weather code according to NWS'
+            long_name: 'Weather code according to NWS [unitless]'
             standard_name: 'code_NWS'
             comment: 'Possible values in OTT Parsivel documentation: Table NWS'
     '07':
@@ -457,7 +457,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Radar reflectivity'
+            long_name: 'Radar reflectivity [dBz]'
             standard_name: 'reflectivity'
             units: 'dBz'
             comment: '-9.999 means that the period was dry'
@@ -468,7 +468,7 @@ telegram_fields:
         dtype: 'i4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Meteorological Optical Range in precipitation'
+            long_name: 'Meteorological Optical Range in precipitation [m]'
             standard_name: 'MOR'
             units: 'm'
     '09':
@@ -477,7 +477,7 @@ telegram_fields:
         dtype: 'i4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'sample interval'
+            long_name: 'sample interval [1]'
             standard_name: 'sample_interval'
             units: '1'
     '10':
@@ -486,7 +486,7 @@ telegram_fields:
         dtype: 'i4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Signal amplitude of the laser strip'
+            long_name: 'Signal amplitude of the laser strip [1]'
             standard_name: 'amplitude'
             units: '1'
     '11':
@@ -495,7 +495,7 @@ telegram_fields:
         dtype: 'i4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles detected and validated'
+            long_name: 'Number of particles detected and validated [1]'
             standard_name: 'n_particles'
             units: '1'
             comment: 'validated particles'
@@ -505,28 +505,28 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Temperature in the sensor housing'
+            long_name: 'Temperature in the sensor housing [°C]'
             standard_name: 'T_sensor'
             units: '°C'  
     '13':   
         dtype: 'i4'   
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Sensor serial number'
+            long_name: 'Sensor serial number [1]'
             standard_name: 'serial_number'
             units: '1'  
     '14':   
         dtype: 'S4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Firmware IOP version number'
+            long_name: 'Firmware IOP version number [1]'
             standard_name: 'IOPversion'
             units: '1'  
     '15':   
         dtype: 'S4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Firmware DSP version number'
+            long_name: 'Firmware DSP version number [1]'
             standard_name: 'DSPversion'
             units: '1'  
     '16': 
@@ -535,7 +535,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Sensor head heating current'
+            long_name: 'Sensor head heating current [A]'
             standard_name: 'I_heating'
             units: 'A'
     '17': 
@@ -544,7 +544,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Power supply voltage'
+            long_name: 'Power supply voltage [V]'
             standard_name: 'V_power_supply'
             units: 'V'
     '18': 
@@ -553,42 +553,42 @@ telegram_fields:
         dtype: 'i2'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Sensor status'
+            long_name: 'Sensor status [unitless]'
             standard_name: 'state_sensor'
             comment: '0=OK, 1=Dirty, 2=No measurement possible'
     '19':   
         dtype: 'S4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'date-time measuring start'
+            long_name: 'date-time measuring start [1]'
             standard_name: 'measuring_start'
             units: '1'              
     '20':
         dtype: 'S4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'sensor time'
+            long_name: 'sensor time [1]'
             standard_name: 'sensor_time'
             units: '1'              
     '21':
         dtype: 'S4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'sensor date'
+            long_name: 'sensor date [1]'
             standard_name: 'sensor_date'
             units: '1'              
     '22':
         dtype: 'S4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'sensor name'
+            long_name: 'sensor name [1]'
             standard_name: 'sensor_name'
             units: '1'              
     '23':
         dtype: 'S4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'sensor number'
+            long_name: 'sensor number [1]'
             standard_name: 'sensor_number'
             units: '1'                       
     '24': 
@@ -597,7 +597,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Rain amount absolute'
+            long_name: 'Rain amount absolute [mm]'
             standard_name: 'absolute_rain_amount'
             units: 'mm' 
     '25': 
@@ -606,7 +606,7 @@ telegram_fields:
         dtype: 'i2'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Error code'
+            long_name: 'Error code [1]'
             standard_name: 'error_code'
             units: '1'
             comment: '0=OK, 1=Screens are dirty; 2=Screens are dirty (no measurements possible), 3=Laser damaged'
@@ -616,7 +616,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Temperature PCB'
+            long_name: 'Temperature PCB [°C]'
             standard_name: 'T_pcb'
             units: '°C'            
     '27': 
@@ -625,43 +625,44 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Temperature left sensor head'
+            long_name: 'Temperature left sensor head [°C]'
             standard_name: 'T_L_sensor_head'
+            units: '°C'            
     '28': 
         dimensions:
             - time
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Temperature right sensor head'
+        long_name: 'Temperature right sensor head °C'
             standard_name: 'T_R_sensor_head'
             units: '°C'
     '30':
         dtype: 'f4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Rain intensity max 30.000 mm/h'
+            long_name: 'Rain intensity max 30.000 mm/h [mm/h]'
             standard_name: 'rain_intensity_max30'
             units: 'mm/h'           
     '31':
         dtype: 'f4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Rain intensity max 1200.0 mm/h'
+            long_name: 'Rain intensity max 1200.0 mm/h [mm/h]'
             standard_name: 'rain_intensity_max1200'
             units: 'mm/h'           
     '32':
         dtype: 'f4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Rain amount accumulated'
+            long_name: 'Rain amount accumulated [mm]'
             standard_name: 'rain_accumulated'
             units: 'mm'     
     '33':
         dtype: 'f4'
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Radar reflectivity'
+            long_name: 'Radar reflectivity [dBz]'
             standard_name: 'radar_reflectivity'
             units: 'dBz'      
     '34': 
@@ -670,7 +671,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Kinetic energy'
+            long_name: 'Kinetic energy [J/(m^2*h)]'
             standard_name: 'kinetic_energy'
             units: 'J/(m^2*h)' 
     '35': 
@@ -679,7 +680,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Snow depth intensity'
+            long_name: 'Snow depth intensity mm/h'
             standard_name: 'snowfall_intensity'
             units: 'mm/h'
             comment: 'volume equivalent snow depth intensity'
@@ -689,7 +690,7 @@ telegram_fields:
         dtype: 'f4'  
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'Number of all particles detected'
+            long_name: 'Number of all particles detected [1]'
             standard_name: 'n_particles'
             units: '1'
             comment: 'not validated'
@@ -701,7 +702,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'never'                    
         var_attrs:
-            long_name: 'List of all particles detected between previous and current measurement'
+            long_name: 'List of all particles detected between previous and current measurement [unitless]'
             standard_name: 'all_particles'
             comment: 'Each particle is registered as value pair: particle-diameter, particle-velocity. The exact time at which the particle crossed the beam cannot be retrieved due to hardware limitation.'
     '90':
@@ -711,7 +712,7 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Number of particles per diameter class'
+            long_name: 'Number of particles per diameter class [log10()]'
             standard_name: 'fieldN'
             units: 'log10()'  # log 10
             comment: 'This is a processed summary of the raw_data matrix where some particles were removed based on an unknown particle size-velocity filter created by the manufacturer.'
@@ -735,7 +736,7 @@ telegram_fields:
         dtype: 'i4'            
         include_in_nc: 'only_full'                    
         var_attrs:
-            long_name: 'Raw data as a function of particle diameter and velocity'
+            long_name: 'Raw data as a function of particle diameter and velocity [1]'
             standard_name: 'data_raw'
             units: '1'
             comment: 'Value range: 0 ... 999. -99 means that an error was encountered in data_raw 3d-array'

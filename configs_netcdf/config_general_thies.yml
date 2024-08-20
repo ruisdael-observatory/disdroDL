@@ -25,7 +25,7 @@ variables:
         include_in_nc: 'always'                    
         var_attrs:
             units: 's'
-            long_name: 'Length of measurement interval [seconds]'
+            long_name: 'Length of measurement interval [s]'
             standard_name: 'time_interval'
     datetime:
         dimensions:
