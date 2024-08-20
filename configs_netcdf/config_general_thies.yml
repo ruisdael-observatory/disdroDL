@@ -24,16 +24,16 @@ variables:
             - 60
         include_in_nc: 'always'                    
         var_attrs:
-            units: 's'
             long_name: 'Length of measurement interval [s]'
             standard_name: 'time_interval'
+            units: 's'
     datetime:
         dimensions:
             - time
         dtype: 'S4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
+            long_name: 'timestamp (iso 8601) string from telegram request moment [UTC]'
             standard_name: 'datetime'
             units: 'UTC'
     velocity_classes_center:
@@ -332,18 +332,18 @@ telegram_fields:
         dtype: 'S4'
         include_in_nc: 'never'
         var_attrs:
-            long_name: 'Date of the sensor'
+            long_name: 'Date of the sensor [1]'
             standard_name: 'sensor_date'
-            units: 'date'
+            units: '1'
     '6':
         dimensions:
             - time
         dtype: 'S4'
         include_in_nc: 'never'
         var_attrs:
-            long_name: 'Time of the sensor'
+            long_name: 'Time of the sensor [1]'
             standard_name: 'sensor_time'
-            units: 'time'
+            units: '1'
             comment: 'note that the sensor time may deviate from the actual time'
     '7':
         dimensions:

@@ -51,7 +51,7 @@ variables:
         dtype: 'S4'  # string
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'UTC timestamp (iso 8601) string from telegram request moment'
+            long_name: 'timestamp (iso 8601) string from telegram request moment [UTC]'
             standard_name: 'datetime'
     velocity_classes_center:
         dimensions:
@@ -634,7 +634,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-        long_name: 'Temperature right sensor head °C'
+        long_name: 'Temperature right sensor head [°C]'
             standard_name: 'T_R_sensor_head'
             units: '°C'
     '30':
@@ -680,7 +680,7 @@ telegram_fields:
         dtype: 'f4'            
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Snow depth intensity mm/h'
+            long_name: 'Snow depth intensity [mm/h]'
             standard_name: 'snowfall_intensity'
             units: 'mm/h'
             comment: 'volume equivalent snow depth intensity'
