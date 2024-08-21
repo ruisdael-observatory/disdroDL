@@ -878,7 +878,7 @@ telegram_fields:
     '66':
         dimensions:
             - time
-        dtype: 'i2'
+        dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Total volume (gross) of class 2 [unitless]'
