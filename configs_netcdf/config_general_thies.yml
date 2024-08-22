@@ -865,8 +865,9 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 1 [unitless]'
+            long_name: 'Total volume (gross) of class 1'
             standard_name: 'total_volume_gross_of_class_1'
+            comment: 'internal data with unknown unit'
     '65':
         dimensions:
             - time
@@ -881,8 +882,10 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 2 [unitless]'
+            long_name: 'Total volume (gross) of class 2'
             standard_name: 'total_volume_gross_of_class_2'
+            comment: 'internal data with unknown unit'
+
     '67':
         dimensions:
             - time
@@ -897,8 +900,10 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 3 [unitless]'
+            long_name: 'Total volume (gross) of class 3'
             standard_name: 'total_volume_gross_of_class_3'
+            comment: 'internal data with unknown unit'
+
     '69':
         dimensions:
             - time
@@ -913,8 +918,9 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 4 [unitless]'
+            long_name: 'Total volume (gross) of class 4'
             standard_name: 'total_volume_gross_of_class_4'
+            comment: 'internal data with unknown unit'
     '71':
         dimensions:
             - time
@@ -929,8 +935,9 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 5 [unitless]'
+            long_name: 'Total volume (gross) of class 5'
             standard_name: 'total_volume_gross_of_class_5'
+            comment: 'internal data with unknown unit'
     '73':
         dimensions:
             - time
@@ -945,8 +952,9 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 6 [unitless]'
+            long_name: 'Total volume (gross) of class 6'
             standard_name: 'total_volume_gross_of_class_6'
+            comment: 'internal data with unknown unit'
     '75':
         dimensions:
             - time
@@ -961,8 +969,9 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 7 [unitless]'
+            long_name: 'Total volume (gross) of class 7'
             standard_name: 'total_volume_gross_of_class_7'
+            comment: 'internal data with unknown unit'
     '77':
         dimensions:
             - time
@@ -977,8 +986,9 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 8 [unitless]'
+            long_name: 'Total volume (gross) of class 8'
             standard_name: 'total_volume_gross_of_class_8'
+            comment: 'internal data with unknown unit'
     '79':
         dimensions:
             - time
@@ -993,8 +1003,9 @@ telegram_fields:
         dtype: 'f4'
         include_in_nc: 'always'                    
         var_attrs:
-            long_name: 'Total volume (gross) of class 9 [unitless]'
+            long_name: 'Total volume (gross) of class 9'
             standard_name: 'total_volume_gross_of_class_9'
+            comment: 'internal data with unknown unit'
 # The field 81 to 520 are the particle diameter/velocity classes:
 #    1st diameter-1st speed, then 1st diameter-2nd speed etc... until Diameter 22, speed 20
     '81':
