@@ -3,7 +3,7 @@
 
 # Disdrometer data logging software
 
-***disdroDL* is a Python software for logging data from the OTT Parsivel2 and Thies Clima optical disdrometers and export it to 24-hours NetCDF files. It was developed at TU Delft, within the framework of the [Ruisdael Observatory](https://ruisdael-observatory.nl/).**
+***disdroDL* is a Python software for logging data from the *OTT Parsivel2* and *Thies Clima* optical disdrometers and export it to 24-hours NetCDF files. It was developed at TU Delft, within the framework of the [Ruisdael Observatory](https://ruisdael-observatory.nl/).**
 
 
 ![_Parsivel2 disdrometer in the Cabauw tower, Netherlands. The signal attenuation caused by raindrops falling through the laser beam between the two plates can be used to estimate the size and velocity of hydrometeors._](docs/20211011_17_crop.JPG)
@@ -48,6 +48,13 @@ _The Parsivel2 measures the drop number concentrations for different diameter/ve
 If you have run a previous version of disdroDL, you might need to update the database schema. To do this, run the following script:
 `python upgrade_db.py --config config_*.yml`
 Make sure you run this script with the same config file that was used to run the previous version of disdroDL.
+
+## Manufacturers' Documentation:
+
+* OTT Parsivel2 - https://www.ott.com/download/operating-instructions-present-weather-sensor-ott-parsivel2-with-screen-heating-3/
+* Thies Clima LPM - https://www.thiesclima.com/db/dnl/5.4110.xx.x00_Laser_Precipitation_Monitor_eng.pdf
+
+
 
 ## Run scripts
 **Manually**: 
