@@ -1,4 +1,5 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12800589.svg)](https://doi.org/10.5281/zenodo.12800589)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13374317.svg)](https://doi.org/10.5281/zenodo.13374317)
+
 [![tests](https://github.com/ruisdael-observatory/disdroDL/actions/workflows/test_n_lint.yml/badge.svg?branch=main)](https://github.com/ruisdael-observatory/disdroDL/actions/workflows/test_n_lint.yml)
 
 # Disdrometer data logging software
