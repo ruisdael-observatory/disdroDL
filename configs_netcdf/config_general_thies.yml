@@ -450,7 +450,7 @@ telegram_fields:
     '18':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'u4'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '1-minute visibility in precipitation [m]'
@@ -470,7 +470,7 @@ telegram_fields:
     '20':
         dimensions:
           - time
-        dtype: 'f4'
+        dtype: 'u1'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: '1-minute measuring quality [%]'
@@ -633,7 +633,7 @@ telegram_fields:
     '38':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i1'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Interior temperature [°C]'
@@ -642,7 +642,7 @@ telegram_fields:
     '39':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'i1'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Temperature of laser driver [°C]'
@@ -652,7 +652,7 @@ telegram_fields:
     '40':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'u2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Mean value laser current [1/100 mA]'
@@ -661,7 +661,7 @@ telegram_fields:
     '41':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'u2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Control voltage [mV]'
@@ -671,7 +671,7 @@ telegram_fields:
     '42':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'u2'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Optical control output [mV]'
@@ -690,7 +690,7 @@ telegram_fields:
     '44':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'u1'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Current pane heating laser head [mA]'
@@ -699,7 +699,7 @@ telegram_fields:
     '45':
         dimensions:
             - time
-        dtype: 'f4'
+        dtype: 'u1'
         include_in_nc: 'always'                    
         var_attrs:
             long_name: 'Current pane heating receiver head [mA]'
