@@ -2,7 +2,7 @@
 station_code: 'LUTJEWAD' # keep under 10 characters, max accepted by Parsivel
 port: '/dev/ttyUSB0'
 baud: 19200
-script_name: 'capture_disdro_data.py'
+script_name: 'main.py'
 data_dir: '/data/disdroDL/'
 db_filename: 'disdrodl.db'
 log_dir: '/var/log/disdroDL/'
