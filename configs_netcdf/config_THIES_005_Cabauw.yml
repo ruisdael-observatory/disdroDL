@@ -1,34 +1,38 @@
 # sensor and script settings
-station_code: 'CABAUW' # keep under 10 characters, max accepted by Parsivel
-port: '/dev/ttyUSB0'
-baud: 19200
+station_code: 'CABAUW'
+port: '/dev/ttyACM0'
+baud: 9600
 script_name: 'main.py'
 data_dir: '/data/disdroDL/'
-db_filename: 'disdrodl.db'
+db_filename: 'disdrodl-thies.db'
 log_dir: '/var/log/disdroDL/'
 
 ######### NETCDF ###########
 # global attributes (all will be written to netCDF as global attributes)
 global_attrs:
-    title: 'OTT Parsivel2 disdrometer data'
+    title: 'Thies Clima disdrometer data'
     institution: 'Delft University of Technology'
     source: 'surface observation'
     history: '-'
     netcdf_version: '0.1.0'
     Conventions: 'CF-1.7'
-    site_name: 'KNMI_Cabauw'
-    sensor_name: PAR002
+    site_name: 'Cabauw'
+    sensor_name: 'THIES005'
     project_name: 'https://ruisdael-observatory.nl/'
     contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
-    sensor_type: 'OTT Hydromet Parsivel2'
-    sensor_serial_number: '450543'
+    license: 'CC BY 4.0 https://creativecommons.org/licenses/by-sa/4.0/'
+    logging_software: 'https://github.com/ruisdael-observatory/disdroDL'
+    version: '0.3.3'
+    sensor_type: 'Thies Clima'
+    sensor_serial_number: '0912162'
+    sensor_software_version: '2.1'
 
 variables:
     latitude:
         dimensions: # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 51.968317
+            - 51.968311
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_north'
@@ -38,7 +42,7 @@ variables:
         dimensions:  # empty for scalar variables
         dtype: 'f4'  # 32bit floating point
         value: 
-            - 4.929234
+            - 4.929244
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'degree_east'
@@ -52,5 +56,6 @@ variables:
         include_in_nc: 'always'                    
         var_attrs: 
             units: 'm'
-            long_name: 'Altitude of site'
+            long_name: 'Altitude of site, in meters above mean sea level'
             standard_name: 'altitude'
+    
