@@ -1,0 +1,61 @@
+# sensor and script settings
+station_code: 'TEST'
+port: '/dev/ttyUSB0'
+baud: 19200
+script_name: 'capture_disdro_data.py'
+data_dir: './sample_data/'
+db_filename: 'test_thies.db'
+log_dir: '/var/log/disdroDL/'
+
+######### NETCDF ###########
+# global attributes (all will be written to netCDF as global attributes)
+global_attrs:
+    title: 'Thies Clima disdrometer data'
+    institution: 'Delft University of Technology'
+    source: 'surface observation'
+    history: '-'
+    netcdf_version: '0.1.0'
+    Conventions: 'CF-1.7'
+    site_name: 'Test_Suite'
+    sensor_name: THIES000
+    project_name: 'https://ruisdael-observatory.nl/'
+    contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
+    license: 'CC BY 4.0 https://creativecommons.org/licenses/by-sa/4.0/'
+    logging_software: 'https://github.com/ruisdael-observatory/disdroDL'
+    version: '0.3.3'
+    sensor_type: 'Thies Clima'
+    sensor_serial_number: ''
+    sensor_software_version: '2.1'
+
+variables:
+    latitude:
+        dimensions: # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 51.967604
+        include_in_nc: 'always'                    
+        var_attrs: 
+            units: 'degree_north'
+            long_name: 'Latitude of site'
+            standard_name: 'latitude'
+    longitude:
+        dimensions:  # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 4.92727
+        include_in_nc: 'always'                    
+        var_attrs: 
+            units: 'degree_east'
+            long_name: 'Longitude of site'
+            standard_name: 'longitude'
+    altitude:
+        dimensions:  # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 1
+        include_in_nc: 'always'                    
+        var_attrs: 
+            units: 'm'
+            long_name: 'Altitude of site, in meters above mean sea level'
+            standard_name: 'altitude'
+    
