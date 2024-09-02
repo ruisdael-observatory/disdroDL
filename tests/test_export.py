@@ -11,15 +11,28 @@ Functions:
 
 import os
 import unittest
+import logging
 from pathlib import Path
+from logging import StreamHandler
+from datetime import datetime, timezone
 from unittest.mock import patch, Mock
 import pytest
+from netCDF4 import Dataset
 import export_disdrodlDB2NC
 from modules.util_functions import create_dir
 from modules.sqldb import connect_db
 from modules.netCDF import NetCDF
 
 output_file_dir = Path('sample_data/')
+db_path_thies = output_file_dir / 'test_thies.db'
+db_path_parsivel = output_file_dir / 'test_parsivel.db'
+
+start_dt = datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0, tzinfo=timezone.utc)
+
+log_handler = StreamHandler()
+logger = logging.getLogger('test-log')
+logger.addHandler(log_handler)
+
 
 def side_effect(*args, **kwargs):
     """
@@ -326,7 +339,6 @@ class EmptyExportTests(unittest.TestCase):
         mock_NetCDF.side_effect = side_effect
 
         result = 0
-
         try:
             export_disdrodlDB2NC.main(mock_args)
         except SystemExit:
@@ -336,3 +348,51 @@ class EmptyExportTests(unittest.TestCase):
         assert output_file_path.exists() is False
 
         os.remove("sample_data/test_parsivel.db")
+
+
+@pytest.mark.usefixtures("db_insert_24h_w_empty_telegram_parsivel")
+class MissingDataExportTests(unittest.TestCase):
+    """
+    Class tests  export_disdrodlDB2NC.py handling of DB with empty telegrams
+
+    Functions:
+    - test_NetCDF_export_w_gaps_parsivel: Verifies that running the export script for a date
+        without database entries resuls in a SystemExit.
+    """
+    @patch('export_disdrodlDB2NC.create_dir')
+    @patch('export_disdrodlDB2NC.connect_db')
+    @patch('export_disdrodlDB2NC.NetCDF')
+    def test_NetCDF_export_w_gaps_parsivel(self, mock_NetCDF, mock_connect_db, mock_create_dir):
+        output_file_path = output_file_dir / '20240101_Test_Suite-TEST_PAR000.nc'  # see configs_netcdf/config_PAR_000_TEST.yml
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
+
+        test_db_path_str = 'sample_data/test_parsivel.db'
+        test_db_path = Path(test_db_path_str)
+        data_points_24h = 1440  # (60min * 24h)
+        mock_args = Mock()
+        mock_args.config = 'configs_netcdf/config_PAR_000_TEST.yml'  # db_path sample_data/test_parsivel.db
+        mock_args.date = '2024-01-01'
+        mock_args.version = 'full'
+        mock_connect_db.return_value = connect_db(dbpath=str(test_db_path))
+        mock_create_dir.return_value = create_dir(path=output_file_dir)
+        mock_NetCDF.side_effect = side_effect
+        export_disdrodlDB2NC.main(mock_args)
+
+        # test netcdf:  only half of data points should have be included
+        assert output_file_path.exists()
+        rootgrp = Dataset(output_file_path, 'r', format="NETCDF4")
+        netCDF_var_time = rootgrp.variables['time']
+        netCDF_var_time_data = netCDF_var_time[:].data
+        assert len(netCDF_var_time_data) == data_points_24h / 2
+        netCDF_var_tsensor = rootgrp.variables['T_sensor']
+        netCDF_var_tsensor_data = netCDF_var_tsensor[:].data
+        assert len(netCDF_var_tsensor_data) == data_points_24h / 2
+        assert netCDF_var_tsensor_data[0] == 21 and netCDF_var_tsensor_data[1] == 21
+
+        if os.path.exists(output_file_path):
+            os.remove(output_file_path)
+        os.remove(test_db_path)
+
+# TODO: same with thies
+

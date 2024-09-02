@@ -574,13 +574,17 @@ def test_NetCDF_w_gaps_thies(db_insert_24h_w_empty_telegram_thies):  # pylint: d
     This function tests whether the db rows with empty telegram data are not included in NetCDF for Thies sensor.
     :param db_insert_24h_w_empty_telegram: the function to insert 24 hours worth of data into the database,
     with empty telegrams.
+
+    Andre's comment 2024.09.02: since the telegram_objs only include row_telegram with data
+    the test is not realy testing what happens to telegram rows without data
+    but whether the only half of 24h*60min data-points are present and whether there is a
+    2min gap between each data point.
     '''
     # delete old netCDF
     delete_netcdf(fn_start='test_w_gaps_thies', data_dir=data_dir,)
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path_thies))
     returned_rows = 0
-
     for row in query_db_rows_gen(con=con, date_dt=start_dt, logger=logger):
         returned_rows += 1
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
