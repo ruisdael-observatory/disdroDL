@@ -9,11 +9,11 @@ Functions:
 - db_insert_24h_parsivel: Inserts 24 hours worth of Parsivel telegrams into the test database.
 - db_insert_24h_thies: Inserts 24 hours worth of Thies telegrams into the test database.
 - db_insert_24h: Inserts 24 hours worth of telegrams into a test database.
-- db_insert_24h_w_gaps_parsivel: Inserts 24 hours worth of Parsivel telegrams into the test database,
-    but with some missing rows.
-- db_insert_24h_w_gaps_thies: Inserts 24 hours worth of Thies telegrams into the test database,
-    but with some missing rows.
-- db_insert_24h_w_gaps: Inserts 24 hours worth of data into the test database, but with some missing rows.
+- db_insert_24h_w_empty_telegram_parsivel: Inserts 24 hours worth of Parsivel telegrams into the test database,
+    with empty telegrams.
+- db_insert_24h_w_empty_telegram_thies: Inserts 24 hours worth of Thies telegrams into the test database,
+    with empty telegrams.
+- db_insert_24h_w_empty_telegram: Inserts 24 hours worth of data into the test database, with empty telegrams.
 - db_insert_24h_empty_parsivel: Inserts 24 hours worth of empty Telegram telegrams into the test database.
 - db_insert_24h_empty_thies: Inserts 24 hours worth of empty Thies telegrams into the test database.
 - db_insert_24h_empty: Inserts 24 hours worth of empty lines into a test database.
@@ -130,24 +130,24 @@ def db_insert_24h(db_path, config_dict, telegram_lines):
     con.close()
 
 @pytest.fixture()
-def db_insert_24h_w_gaps_parsivel(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
+def db_insert_24h_w_empty_telegram_parsivel(create_db_parsivel): # pylint: disable=unused-argument,redefined-outer-name
     """
-    This function inserts 24 hours worth of Parsivel telegrams into the test database, but with some missing rows.
+    This function inserts 24 hours worth of Parsivel telegrams into the test database, with empty telegrams.
     :param create_db_parsivel: the function to create the test database
     """
-    db_insert_24h_w_gaps(db_path_parsivel, config_dict_parsivel, parsivel_lines)
+    db_insert_24h_w_empty_telegram(db_path_parsivel, config_dict_parsivel, parsivel_lines)
 
 @pytest.fixture()
-def db_insert_24h_w_gaps_thies(create_db_thies): # pylint: disable=unused-argument,redefined-outer-name
+def db_insert_24h_w_empty_telegram_thies(create_db_thies): # pylint: disable=unused-argument,redefined-outer-name
     """
-    This function inserts 24 hours worth of Thies telegrams into the test database, but with some missing rows.
+    This function inserts 24 hours worth of Thies telegrams into the test database, with empty telegrams.
     :param create_db_thies: the function to create the test database
     """
-    db_insert_24h_w_gaps(db_path_thies, config_dict_thies, thies_lines)
+    db_insert_24h_w_empty_telegram(db_path_thies, config_dict_thies, thies_lines)
 
-def db_insert_24h_w_gaps(db_path, config_dict, telegram_lines):
+def db_insert_24h_w_empty_telegram(db_path, config_dict, telegram_lines):
     """
-    This function inserts 24 hours worth of data into the test database, but with some missing rows.
+    This function inserts 24 hours worth of data into the test database, with empty telegrams.
     :param db_path: the path to the database to insert data to
     :param config_dict: the combined site specific and general config files as a dictionary
     :param telegram_lines: the telegram lines to insert

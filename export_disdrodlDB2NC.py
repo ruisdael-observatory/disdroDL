@@ -106,25 +106,26 @@ def main(args):
 
     # Query the relevant data rows and create Telegram instances out of those
     telegram_objs = []
-    cur, con = connect_db(dbpath=str(db_path))
+    cur, con = connect_db(dbpath=str(db_path.absolute()))
     for row in query_db_rows_gen(con, date_dt=date_dt, logger=logger):
-        ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
 
-        telegram_instance = create_telegram(
-                config_dict=config_dict,
-                telegram_lines=row.get('telegram'),
-                db_row_id=row.get('id'),
-                timestamp=ts_dt,
-                db_cursor=None,
-                telegram_data={},
-                logger=logger)
+        if len(row['telegram']) > 1000:
+            ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
 
-        telegram_instance.parse_telegram_row()
+            telegram_instance = create_telegram(
+                    config_dict=config_dict,
+                    telegram_lines=row.get('telegram'),
+                    db_row_id=row.get('id'),
+                    timestamp=ts_dt,
+                    db_cursor=None,
+                    telegram_data={},
+                    logger=logger)
+            telegram_instance.parse_telegram_row()
 
-        # Append telegram_instance if it has data organized by keys(fields)
-        if (("11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima') or
-            ("90" in telegram_instance.telegram_data.keys() and sensor_type == 'OTT Hydromet Parsivel2')):
-            telegram_objs.append(telegram_instance)
+            # Append telegram_instance if it has data organized by keys(fields)
+            if (("11" in telegram_instance.telegram_data.keys() and sensor_type == 'Thies Clima') or
+                ("90" in telegram_instance.telegram_data.keys() and sensor_type == 'OTT Hydromet Parsivel2')):
+                telegram_objs.append(telegram_instance)
 
     con.close()
     cur.close()

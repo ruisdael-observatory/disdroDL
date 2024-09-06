@@ -12,7 +12,7 @@ Functions:
 - test_NetCDF_w_gaps_parsivel: Tests whether the db rows with empty telegram data are not included in NetCDF.
 - test_query_db_thies: Tests querying from the database and creates a test Thies netCDF file.
 - test_NetCDF_thies: Tests whether Thies netCDF files are correctly created and written.
-- test_NetCDF_w_gaps_thies: Tests whether the db rows with empty telegram data are not included in NetCDF.
+    - test_NetCDF_w_gaps_thies: Tests whether the db rows with empty telegram data are not included in NetCDF.
 - test_netcdf_wrong_f81_len_thies: Tests thies netcdf creation when matrix array is of wrong length.
 - test_netcdf_wrong_f93_len_parsivel: Tests parsivel netcdf creation when matrix array is of wrong length.
 - test_compress_non_existent_file: Tests compressing a non-existent NetCDF file.
@@ -489,10 +489,10 @@ def delete_netcdf(fn_start, data_dir): # pylint: disable=redefined-outer-name
         os.remove(test_nc_path)
 
 
-def test_NetCDF_w_gaps_parsivel(db_insert_24h_w_gaps_parsivel): # pylint: disable=unused-argument
+def test_NetCDF_w_gaps_parsivel(db_insert_24h_w_empty_telegram_parsivel): # pylint: disable=unused-argument
     '''
     This function tests whether the db rows with empty telegram data are not included in NetCDF.
-    :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
+    :param db_insert_24h_w_empty_telegram: the function to insert 24 hours worth of data into the database, with empty telegrams.
     '''
 
     # delete old netCDF
@@ -523,7 +523,7 @@ def test_NetCDF_w_gaps_parsivel(db_insert_24h_w_gaps_parsivel): # pylint: disabl
     con.close()
 
     # len(telegram_objs) should be half of returned_rows,
-    # as def db_insert_24h_w_gaps includes telegram data,
+    # as def db_insert_24h_w_empty_telegram includes telegram data,
     # only in half of the db entries
     assert len(telegram_objs) == returned_rows / 2
 
@@ -569,17 +569,22 @@ def test_NetCDF_w_gaps_parsivel(db_insert_24h_w_gaps_parsivel): # pylint: disabl
     os.remove(data_dir / 'test_w_gaps.nc')
 
 
-def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unused-argument
+def test_NetCDF_w_gaps_thies(db_insert_24h_w_empty_telegram_thies):  # pylint: disable=unused-argument
     '''
     This function tests whether the db rows with empty telegram data are not included in NetCDF for Thies sensor.
-    :param db_insert_24h_w_gaps: the function to insert 24 hours worth of data into the database, but with gaps.
+    :param db_insert_24h_w_empty_telegram: the function to insert 24 hours worth of data into the database,
+    with empty telegrams.
+
+    Andre's comment 2024.09.02: since the telegram_objs only include row_telegram with data
+    the test is not realy testing what happens to telegram rows without data
+    but whether the only half of 24h*60min data-points are present and whether there is a
+    2min gap between each data point.
     '''
     # delete old netCDF
     delete_netcdf(fn_start='test_w_gaps_thies', data_dir=data_dir,)
     telegram_objs = []
     con, cur = connect_db(dbpath=str(db_path_thies))
     returned_rows = 0
-
     for row in query_db_rows_gen(con=con, date_dt=start_dt, logger=logger):
         returned_rows += 1
         ts_dt = datetime.fromtimestamp(row.get('timestamp'), tz=timezone.utc)
@@ -601,7 +606,7 @@ def test_NetCDF_w_gaps_thies(db_insert_24h_w_gaps_thies): # pylint: disable=unus
     con.close()
 
     # len(telegram_objs) should be half of returned_rows,
-    # as def db_insert_24h_w_gaps includes telegram data, only in half of
+    # as def db_insert_24h_w_empty_telegram includes telegram data, only in half of
     # the db entries
     assert len(telegram_objs) == returned_rows / 2
 
