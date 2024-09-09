@@ -1,0 +1,57 @@
+# sensor and script settings
+station_code: 'TEST' # keep under 10 characters, max accepted by Parsivel
+port: '/dev/ttyUSB0'
+baud: 19200
+script_name: 'capture_disdro_data.py'
+data_dir: './sample_data/'
+db_filename: 'test_parsivel.db'
+log_dir: '/var/log/disdroDL/'
+
+######### NETCDF ###########
+# global attributes (all will be written to netCDF as global attributes)
+global_attrs:
+    title: 'OTT Parsivel2 disdrometer data'
+    institution: 'Delft University of Technology'
+    source: 'surface observation'
+    history: '-'
+    netcdf_version: '0.1.0'
+    Conventions: 'CF-1.7'
+    site_name: 'Test_Suite'
+    sensor_name: PAR000
+    project_name: 'https://ruisdael-observatory.nl/'
+    contributors: 'Marc Schleiss, Andre Castro, Rob Mackenzie, Mahaut Sourzac, Saverio Guzzo, Vasil Chirov, Mels Lutgerink, Ella Milinovic, Noky Soekarman, Jesse Vleeschdraager'
+    sensor_type: 'OTT Hydromet Parsivel2'
+    sensor_serial_number: '450994'
+
+variables:
+    latitude:
+        dimensions: # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 51.996068
+        include_in_nc: 'always'                    
+        var_attrs: 
+            units: 'degree_north'
+            long_name: 'Latitude of site'
+            standard_name: 'latitude'
+    longitude:
+        dimensions:  # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 4.378701
+        include_in_nc: 'always'                    
+        var_attrs: 
+            units: 'degree_east'
+            long_name: 'Longitude of site'
+            standard_name: 'longitude'
+    altitude:
+        dimensions:  # empty for scalar variables
+        dtype: 'f4'  # 32bit floating point
+        value: 
+            - 1
+        include_in_nc: 'always'                    
+        var_attrs: 
+            units: 'm'
+            long_name: 'Altitude of site'
+            standard_name: 'altitude'
+    
