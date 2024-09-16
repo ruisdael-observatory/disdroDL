@@ -1,6 +1,6 @@
 # sensor and script settings
 station_code: 'CABAUW'
-port: '/dev/ttyACM0'
+port: '/dev/ttyUSB0'
 baud: 9600
 script_name: 'main.py'
 data_dir: '/data/disdroDL/'
