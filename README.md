@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/ruisdael-observatory/disdroDL/actions/workflows/test_n_lint.yml/badge.svg?branch=main)](https://github.com/ruisdael-observatory/disdroDL/actions/workflows/test_n_lint.yml)
 
-![Repository wiki](https://img.shields.io/badge/repository%20wiki-purple?link=https%3A%2F%2Fgithub.com%2Fruisdael-observatory%2FdisdroDL%2Fwiki)
+[Repository wiki](https://github.com/ruisdael-observatory/disdroDL/wiki)
 
 # Disdrometer data logging software
 
