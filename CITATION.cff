@@ -1,0 +1,48 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: 'disdroDL: Disdrometer data logging software'
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: André
+    family-names: Castro
+    orcid: 'https://orcid.org/0000-0002-7839-3698'
+  - given-names: Marc
+    family-names: Schleiss
+    orcid: 'https://orcid.org/0000-0002-4667-5500'
+  - given-names: Mahaut
+    family-names: Sourzac
+  - given-names: Rob
+    family-names: Mackenzie
+  - given-names: Vasil
+    family-names: Chirov
+  - given-names: Mels
+    family-names: Lutgerink
+  
+  - given-names: Ella
+    family-names: Milinovic
+  - given-names: Noky
+    family-names: Soekarman
+  - given-names: Jesse
+    family-names: Vleeschdraager
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.12800589
+    description: v0.3.1 DOI
+repository-code: 'https://github.com/ruisdael-observatory/disdroDL/'
+abstract: ' disdrometer data logger to NetCDF '
+keywords:
+  - NetCDF
+  - Disdrometer
+  - Atmospheric Sciences
+  - Precipitation
+  - Python
+  - Ruisdael Observatory
+license: GPL-3.0
+commit: 97aaa245a3a38ac560cc4ed3bbe35d67ee2ba1b7
+version: 0.3.3
+date-released: '2024-07-23'
